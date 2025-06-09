@@ -6,7 +6,7 @@ import ContextMenu from "./Utility.jsx";
 import { Routes, Route, useLocation } from "react-router-dom";
 import React, { useEffect } from "react";
 
-export default function Square() {
+export function AppContent() {
   const location = useLocation();
 
   useEffect(() => {
@@ -36,6 +36,15 @@ export default function Square() {
         <Route path="/FAQ" element={<About />} />
         <Route path="*" element={<h1>404 - Page not found </h1>} />
       </Routes>
+      <ContextMenu onCopyLink={handleCopyLink} />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <Router basename="/"> {/* Remove /home-app */}
+      <AppContent />
+    </Router>
   );
 }
