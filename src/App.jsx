@@ -3,7 +3,7 @@ import Links from "./Links.jsx";
 import Menu from "./Menu.jsx";
 import About from "./FAQ.jsx";
 import ContextMenu from "./Utility.jsx";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, BrowserRouter } from "react-router-dom";
 import React, { useEffect } from "react";
 
 export function AppContent() {
