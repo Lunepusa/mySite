@@ -43,8 +43,8 @@ export function AppContent() {
 
 export default function App() {
   return (
-    <Router basename="/"> {/* Remove /home-app */}
+    <BrowserRouter basename="/"> {/* Remove /home-app */}
       <AppContent />
-    </Router>
+    </BrowserRouter>
   );
 }
