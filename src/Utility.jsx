@@ -54,6 +54,7 @@ export default function Collapse({ trigger, children }) {
   );
 }
 
+
 export function ContextMenu({ onCopyLink }) {
   const [visible, setVisible] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -63,32 +64,49 @@ export function ContextMenu({ onCopyLink }) {
 
   useEffect(() => {
     const handleContextMenu = (e) => {
-      console.log("Right-click detected on:", e.target); // Debug
-      // Target elements with id or their descendants
-      const target = e.target.closest(".collapsible,[id]");
-      if (target && (target.id || target.querySelector(".content[id]"))) {
-        const id = target.id || target.querySelector(".content[id]").id;
-        console.log("Target ID:", id); // Debug
-        e.preventDefault();
+      // Debug: Log event target and coordinates
+      console.log("Right-click detected:", {
+        target: e.target,
+        className: e.target.className,
+        clientX: e.clientX,
+        clientY: e.clientY,
+      });
+
+      // Broader selector to catch nested elements
+      const target = e.target.closest(".collapsible, .clickable-image, [id], .collapsible-trigger, .clickable-img-img");
+      const id =
+        target?.id ||
+        target?.querySelector(".content[id]")?.id ||
+        target?.closest(".collapsible")?.querySelector(".content[id]")?.id ||
+        target?.closest(".clickable-image")?.id;
+
+      if (id) {
+        console.log("Target ID found:", id);
+        e.preventDefault(); // Prevent default context menu
         setTargetId(id);
-        setPosition({ x: e.clientX, y: e.clientY });
+        const adjustedPosition = {
+          x: Math.min(e.clientX, window.innerWidth - 150), // Avoid overflow
+          y: Math.min(e.clientY, window.innerHeight - 50),
+        };
+        setPosition(adjustedPosition);
         setVisible(true);
       } else {
-        console.log("No valid ID found"); // Debug
+        console.log("No valid ID found for target:", target);
       }
     };
 
-    const handleClick = () => {
-      console.log("Click elsewhere, hiding menu"); // Debug
+    const handleClick = (e) => {
+      console.log("Click detected, hiding menu");
       setVisible(false);
     };
 
-    // Attach to both window and document for CodeSandbox
-    const targets = [window, document];
+    // Attach to multiple targets to ensure capture
+    const targets = [window, document, document.body];
     targets.forEach((target) => {
-      target.addEventListener("contextmenu", handleContextMenu);
+      target.addEventListener("contextmenu", handleContextMenu, { passive: false });
       target.addEventListener("click", handleClick);
     });
+
     return () => {
       targets.forEach((target) => {
         target.removeEventListener("contextmenu", handleContextMenu);
@@ -97,7 +115,6 @@ export function ContextMenu({ onCopyLink }) {
     };
   }, []);
 
-  // Handle clicks outside the menu
   useEffect(() => {
     const handleOutsideClick = (e) => {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
@@ -110,20 +127,19 @@ export function ContextMenu({ onCopyLink }) {
   }, []);
 
   if (!visible || !targetId) {
-    console.log("ContextMenu not rendering:", { visible, targetId }); // Debug
     return null;
   }
 
   const copyLink = () => {
     const baseUrl = window.location.origin;
-    const basename = "/home-app"; // Match BrowserRouter basename
-    const path = location.pathname.replace(basename, "");
+    const basename = process.env.REACT_APP_BASENAME || "/home-app";
+    const path = location.pathname.replace(new RegExp(`^${basename}`), "");
     const link = `${baseUrl}${basename}${path}#${targetId}`;
-    console.log("Copying link:", link); // Debug
+    console.log("Copying link:", link);
     navigator.clipboard.writeText(link).then(() => {
       setVisible(false);
       onCopyLink?.();
-    });
+    }).catch((err) => console.error("Failed to copy link:", err));
   };
 
   return (
@@ -146,6 +162,10 @@ export function ContextMenu({ onCopyLink }) {
         }}
       >
         Copy Section Link
+      </li>
+      {/* Debug overlay */}
+      <li style={{ padding: "5px", color: "white", fontSize: "12px" }}>
+        Debug ID: {targetId}
       </li>
     </ul>
   );
