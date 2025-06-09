@@ -1,0 +1,137 @@
+@import url("https://fonts.googleapis.com/css2?family=Julee&display=swap");
+* {
+  color: white;
+  font-family: Julee;
+  margin: 0 0 0 0;
+  vertical-align: middle;
+}
+body {
+  background-color: black;
+}
+ul {
+  list-style-type: none;
+  width: fit-content;
+  height: fit-content;
+  padding: 0px;
+}
+h5,
+h6 {
+  font-weight: normal;
+  font-style: normal;
+}
+.navbar {
+}
+li {
+  display: inline-block;
+}
+
+li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 5px;
+  text-decoration: none;
+  height: inherit;
+  font-size: 1.25em;
+}
+u,
+a {
+  vertical-align: baseline;
+}
+li a:hover {
+  background-color: grey;
+}
+#preferredlinks .link {
+  display: inline-block;
+  width: 25vw;
+  max-width: 50vw;
+  min-width: 100px;
+  position: relative;
+  margin: 3%;
+  aspect-ratio: 1/1;
+}
+.link {
+  display: inline-block;
+  width: 16vw;
+  max-width: 50vw;
+  min-width: 75px;
+  position: relative;
+  margin: 3%;
+  aspect-ratio: 1/1;
+}
+.link img {
+  height: 100%;
+  width: auto;
+}
+.link .info {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  border-radius: 75%;
+  background-color: transparent;
+  font-size: 100%;
+  text-align: right;
+  width: 100%;
+  z-index: 1;
+}
+#preferredlinks .link .info {
+  font-size: 150%;
+}
+.infotext {
+  display: none;
+}
+.info:hover .infotext {
+  display: inline-block;
+  opacity: 0.8;
+  background-color: black;
+  width: 100%;
+  text-align: center;
+  z-index: 1;
+}
+
+#otherlinks {
+  display: inline;
+}
+.collapse {
+  display: none;
+  width: 100%;
+}
+.collapse.expanded {
+  max-height: auto;
+  display: inline-block;
+  border-bottom: 2px dashed white;
+}
+.collapsible-trigger {
+  cursor: pointer;
+  display: inline-block;
+}
+.context-menu {
+  position: fixed !important; /* Force for CodeSandbox */
+  background-color: rgba(0, 0, 0, 0.9) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+  padding: 5px 0;
+  margin: 0;
+  list-style: none;
+  z-index: 10000 !important; /* Higher z-index */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+  font-family: Julee, Arial, sans-serif;
+}
+
+.context-menu-item {
+  padding: 8px 16px;
+  color: white;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+.context-menu-item:hover,
+.context-menu-item:focus {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Ensure clickable elements allow context menu */
+.collapsible,
+.clickable-image {
+  pointer-events: auto;
+}
