@@ -4,7 +4,6 @@ import { reactDOM } from "react-dom";
 import "./styles.css";
 import { Link } from "react-router-dom";
 import headerimg from "./Images/Preview/headerimg.png";
-import searchIndex from "./SearchIndex.js";
 
 function navbar() {
   return (
