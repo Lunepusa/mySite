@@ -6,7 +6,7 @@ import ContextMenu from "./Utility.jsx";
 import { Routes, Route, useLocation } from "react-router-dom";
 import React, { useEffect } from "react";
 
-default export function Square() {
+export default function Square() {
   const location = useLocation();
 
   useEffect(() => {
