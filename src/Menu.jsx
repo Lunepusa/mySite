@@ -9,7 +9,7 @@ import headerimg from "./Images/Preview/headerimg.png";
 
 export default function Menu() {
   return (
-    <div style={{ textAlign: "center", width: "100%", margin: "auto" }}>
+    <div style={{ textAlign: "center", width: "95%", margin: "auto" }}>
       <h1>Menu</h1>
       <div style={{ borderBottom: "2px dashed white" }}>
         {" "}

@@ -2,18 +2,19 @@
 * {
   color: white;
   font-family: Julee;
-  margin: 0 0 0 0;
   vertical-align: middle;
+  margin-top: 0%;
+  margin-bottom: 0%;
+  margin-left: auto;
+  margin-right: auto;
 }
 body {
   background-color: black;
+  width: 100vw;
+  align-content: center;
+  margin: 0x;
 }
-ul {
-  list-style-type: none;
-  width: fit-content;
-  height: fit-content;
-  padding: 0px;
-}
+
 h5,
 h6 {
   font-weight: normal;
