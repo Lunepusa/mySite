@@ -17,7 +17,7 @@ export default function Square() {
         element.scrollIntoView({ behavior: "smooth", block: "end" });
         // Optional: Add focus for accessibility
         element.setAttribute("tabindex", "-1");
-        element.focus();
+        element.focus({ focusVisible: true });
       }
     }
   }, [location]); // Run on route or hash change
