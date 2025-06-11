@@ -16,7 +16,7 @@ function navbar() {
       }}
     >
       <div
-        class="navbar"
+        className="navbar"
         style={{
           maxWidth: "90%",
           margin: "auto",

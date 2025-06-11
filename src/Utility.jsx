@@ -1,12 +1,18 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  createContext,
+  useContext,
+} from "react";
 import { useLocation } from "react-router-dom";
 import "./styles.css";
 
 export default function Collapse({ trigger, children }) {
   const [isCollapsed, setIsCollapsed] = useState(true);
   const location = useLocation();
+  const { analyticsData } = useAnalytics();
 
-  // Generate unique ID
   const triggerText =
     typeof trigger === "string" ? trigger : trigger.props.children;
   const id = `collapse-${(triggerText || "content")
@@ -14,19 +20,28 @@ export default function Collapse({ trigger, children }) {
     .replace(
       /[\p{Emoji}\p{Emoji_Presentation}\p{Emoji_Modifier}\p{Emoji_Modifier_Base}\p{Emoji_Component}]/gu,
       ""
-    ) // Remove emojis
-    .replace(/[^\w\s]/g, "") // Remove special characters except spaces
-    .trim() // Remove leading/trailing spaces
+    )
+    .replace(/[^\w\s]/g, "")
+    .trim()
     .toLowerCase()}`;
 
   useEffect(() => {
-    // Auto-expand if URL fragment matches
     if (location.hash === `#${id}`) {
       setIsCollapsed(false);
     }
   }, [location.hash, id]);
 
-  const toggleCollapse = () => setIsCollapsed(!isCollapsed);
+  const toggleCollapse = () => {
+    trackOnClick(
+      location.search,
+      "Navigation",
+      `collapsible_trigger_${id}`,
+      id,
+      analyticsData
+    );
+    setIsCollapsed(!isCollapsed);
+  };
+
   const handlerightclick = (e) => {
     Copylink(id, location);
   };
@@ -43,7 +58,14 @@ export default function Collapse({ trigger, children }) {
         onKeyDown: (e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
-            toggleCollapse();
+            trackOnClick(
+              location.search,
+              "Navigation",
+              `collapsible_trigger_${id}`,
+              id,
+              analyticsData
+            );
+            setIsCollapsed(!isCollapsed);
           }
         },
       })}
@@ -120,3 +142,97 @@ export const ConfirmationBox = ({ isOpen, onAgree, onDecline }) => {
     </div>
   );
 };
+
+// Send a GA event with optional additional parameters
+export const trackEvent = (
+  category,
+  action,
+  label = null,
+  value = null,
+  additionalParams = {}
+) => {
+  if (window.gtag) {
+    window.gtag("event", action, {
+      event_category: category,
+      event_label: label,
+      value: value,
+      ...additionalParams,
+    });
+  } else {
+    console.warn("Google Analytics not loaded");
+  }
+};
+
+// Map query parameters to source and medium
+export const getSourceMedium = (queryParam) => {
+  const mappings = {
+    twitterbio: { source: "twitter", medium: "bio" },
+    twitterdm: { source: "twitter", medium: "dm" },
+    blueskybio: { source: "bluesky", medium: "bio" },
+    blueskydm: { source: "bluesky", medium: "dm" },
+    discordbio: { source: "discord", medium: "bio" },
+    discorddm: { source: "discord", medium: "dm" },
+    instagrambio: { source: "instagram", medium: "bio" },
+    instagramdm: { source: "instagram", medium: "dm" },
+    redditbio: { source: "reddit", medium: "bio" },
+    redditdm: { source: "reddit", medium: "dm" },
+    beaconsold: { source: "beacons", medium: "old" },
+    tiktokbio: { source: "tiktok", medium: "bio" },
+    tiktokdm: { source: "tiktok", medium: "dm" },
+    me: { source: "personal", medium: "test" },
+    // Add more mappings as needed
+  };
+  return mappings[queryParam] || { source: "unknown", medium: "unknown" };
+};
+
+// Debounce function to prevent duplicate events
+export const debounce = (func, wait) => {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
+};
+
+// Reusable click tracking function
+export const trackOnClick = (
+  search,
+  category,
+  label,
+  destination,
+  analyticsData = null
+) => {
+  let source, medium;
+  if (search) {
+    const searchParams = new URLSearchParams(search);
+    const queryParam = searchParams.keys().next().value || "none";
+    ({ source, medium } = getSourceMedium(queryParam));
+  } else if (analyticsData) {
+    ({ source, medium } = analyticsData);
+  } else {
+    ({ source, medium } = { source: "unknown", medium: "unknown" });
+  }
+
+  trackEvent(category, "click", label, null, {
+    source,
+    medium,
+    destination,
+  });
+};
+
+const AnalyticsContext = createContext();
+
+export function AnalyticsProvider({ children }) {
+  const [analyticsData, setAnalyticsData] = useState({
+    source: "unknown",
+    medium: "unknown",
+  });
+
+  return (
+    <AnalyticsContext.Provider value={{ analyticsData, setAnalyticsData }}>
+      {children}
+    </AnalyticsContext.Provider>
+  );
+}
+
+export const useAnalytics = () => useContext(AnalyticsContext);
