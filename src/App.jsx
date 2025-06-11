@@ -2,41 +2,90 @@ import Navbar from "./Navbar.jsx";
 import Links from "./Links.jsx";
 import Menu from "./Menu.jsx";
 import About from "./FAQ.jsx";
-import ContextMenu from "./Utility.jsx";
+import {
+  useFirstVisit,
+  ConfirmationBox,
+  trackEvent,
+  getSourceMedium,
+  AnalyticsProvider,
+  useAnalytics,
+} from "./Utility.jsx";
 import { Routes, Route, useLocation } from "react-router-dom";
 import React, { useEffect } from "react";
 
-export default function Square() {
+function AppContent() {
   const location = useLocation();
+  const { setAnalyticsData } = useAnalytics();
+  const { showConfirmation, handleAgree, handleDecline } = useFirstVisit();
 
+  // GA4 Tracking useEffect
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const queryParam = searchParams.keys().next().value || "none";
+    const { source: querySource, medium: queryMedium } =
+      getSourceMedium(queryParam);
+    const { analyticsData } = useAnalytics();
+
+    // Use query if available, else context
+    const source = queryParam !== "none" ? querySource : analyticsData.source;
+    const medium = queryParam !== "none" ? queryMedium : analyticsData.medium;
+
+    if (queryParam !== "none") {
+      setAnalyticsData({ source: querySource, medium: queryMedium });
+    }
+
+    const destination = location.pathname || "/";
+    const referrer = document.referrer || "direct";
+
+    if (window.gtag) {
+      window.gtag("event", "page_view", {
+        page_path: location.pathname + location.search,
+        page_referrer: referrer,
+        source,
+        medium,
+        destination,
+        campaign: "social_launch",
+      });
+    } else {
+      console.error("GA not loaded, check script or ad blockers");
+    }
+  }, [location, setAnalyticsData]);
+
+  // Hash Scrolling useEffect
   useEffect(() => {
     if (location.hash) {
       const id = location.hash.replace("#", "");
       const element = document.getElementById(id);
       if (element) {
-        element.scrollIntoView({ behavior: "smooth" });
-        // Optional: Add focus for accessibility
-        element.setAttribute("tabindex", "-1");
-        element.focus({ preventScroll: false });
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: "smooth", block: "start" });
+          element.setAttribute("tabindex", "-1");
+          element.focus({ focusVisible: true });
+        }, 500);
       }
     }
-  }, [location]); // Run on route or hash change
-  const handleCopyLink = () => {
-    alert("Link copied to clipboard!"); // Replace with a toast if desired
-  };
+  }, [location]);
+
   return (
     <div style={{ backgroundColor: "black" }}>
+      <ConfirmationBox
+        isOpen={showConfirmation}
+        onAgree={handleAgree}
+        onDecline={handleDecline}
+      />
       <Navbar />
       <Routes>
-        <Route exact path="/" element={<Links />} />
+        <Route path="/" element={<Links />} />
         <Route path="/links" element={<Links />} />
-        <Route exact path="" element={<Links />} />
         <Route path="/menu" element={<Menu />} />
         <Route path="/about" element={<About />} />
         <Route path="/FAQ" element={<About />} />
-        <Route path="*" element={<h1>404 - Page not found </h1>} />
+        <Route path="*" element={<h1>404 - Page not found</h1>} />
       </Routes>
-      <ContextMenu onCopyLink={handleCopyLink} />
     </div>
   );
+}
+
+export default function App() {
+  return <AppContent />;
 }

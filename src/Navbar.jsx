@@ -9,13 +9,14 @@ function navbar() {
   return (
     <div
       style={{
-        width: "100vw",
+        width: "100%",
         borderBottom: "2px solid white",
-        textAlign: "center",
+        textAlign: "left",
+        alignContent: "left",
       }}
     >
       <div
-        class="navbar"
+        className="navbar"
         style={{
           maxWidth: "90%",
           margin: "auto",
@@ -27,15 +28,21 @@ function navbar() {
         }}
       >
         <br />
-        <ul>
+        <ul
+          style={{
+            listStyleType: "none",
+            width: "fit-content",
+            height: "fit-content",
+            padding: "0px",
+            textAlign: "left",
+            margin: "0px",
+          }}
+        >
           <li>
             <Link to="/">Links</Link>
           </li>
           <li>
             <Link to="/menu">Menu</Link>
-          </li>
-          <li>
-            <Link to="#contact">Contact</Link>
           </li>
           <li>
             <Link to="/about">About</Link>

@@ -1,12 +1,18 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  createContext,
+  useContext,
+} from "react";
 import { useLocation } from "react-router-dom";
 import "./styles.css";
 
 export default function Collapse({ trigger, children }) {
   const [isCollapsed, setIsCollapsed] = useState(true);
   const location = useLocation();
+  const { analyticsData } = useAnalytics();
 
-  // Generate unique ID
   const triggerText =
     typeof trigger === "string" ? trigger : trigger.props.children;
   const id = `collapse-${(triggerText || "content")
@@ -14,22 +20,34 @@ export default function Collapse({ trigger, children }) {
     .replace(
       /[\p{Emoji}\p{Emoji_Presentation}\p{Emoji_Modifier}\p{Emoji_Modifier_Base}\p{Emoji_Component}]/gu,
       ""
-    ) // Remove emojis
-    .replace(/[^\w\s]/g, "") // Remove special characters except spaces
-    .trim() // Remove leading/trailing spaces
+    )
+    .replace(/[^\w\s]/g, "")
+    .trim()
     .toLowerCase()}`;
 
   useEffect(() => {
-    // Auto-expand if URL fragment matches
     if (location.hash === `#${id}`) {
       setIsCollapsed(false);
     }
   }, [location.hash, id]);
 
-  const toggleCollapse = () => setIsCollapsed(!isCollapsed);
+  const toggleCollapse = () => {
+    trackOnClick(
+      location.search,
+      "Navigation",
+      `collapsible_trigger_${id}`,
+      id,
+      analyticsData
+    );
+    setIsCollapsed(!isCollapsed);
+  };
+
+  const handlerightclick = (e) => {
+    Copylink(id, location);
+  };
 
   return (
-    <div className="collapsible" id={id}>
+    <div className="collapsible" id={id} onContextMenu={handlerightclick}>
       {React.cloneElement(trigger, {
         className: `collapsible-trigger ${trigger.props.className || ""}`,
         onClick: toggleCollapse,
@@ -40,7 +58,14 @@ export default function Collapse({ trigger, children }) {
         onKeyDown: (e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
-            toggleCollapse();
+            trackOnClick(
+              location.search,
+              "Navigation",
+              `collapsible_trigger_${id}`,
+              id,
+              analyticsData
+            );
+            setIsCollapsed(!isCollapsed);
           }
         },
       })}
@@ -54,119 +79,160 @@ export default function Collapse({ trigger, children }) {
   );
 }
 
+export function Copylink(id, location) {
+  const baseUrl = window.location.origin;
+  const path = location.pathname;
+  const link = `${baseUrl}${path}#${id}`;
+  console.log("Copying:", link);
+  navigator.clipboard
+    .writeText(link)
+    .then(() => {
+      alert("Copied: " + link);
+    })
+    .catch((err) => console.error("Clipboard error:", err));
+}
 
-export function ContextMenu({ onCopyLink }) {
-  const [visible, setVisible] = useState(false);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [targetId, setTargetId] = useState(null);
-  const menuRef = useRef(null);
-  const location = useLocation();
-
-  useEffect(() => {
-    const handleContextMenu = (e) => {
-      // Debug: Log event target and coordinates
-      console.log("Right-click detected:", {
-        target: e.target,
-        className: e.target.className,
-        clientX: e.clientX,
-        clientY: e.clientY,
-      });
-
-      // Broader selector to catch nested elements
-      const target = e.target.closest(".collapsible, .clickable-image, [id], .collapsible-trigger, .clickable-img-img");
-      const id =
-        target?.id ||
-        target?.querySelector(".content[id]")?.id ||
-        target?.closest(".collapsible")?.querySelector(".content[id]")?.id ||
-        target?.closest(".clickable-image")?.id;
-
-      if (id) {
-        console.log("Target ID found:", id);
-        e.preventDefault(); // Prevent default context menu
-        setTargetId(id);
-        const adjustedPosition = {
-          x: Math.min(e.clientX, window.innerWidth - 150), // Avoid overflow
-          y: Math.min(e.clientY, window.innerHeight - 50),
-        };
-        setPosition(adjustedPosition);
-        setVisible(true);
-      } else {
-        console.log("No valid ID found for target:", target);
-      }
-    };
-
-    const handleClick = (e) => {
-      console.log("Click detected, hiding menu");
-      setVisible(false);
-    };
-
-    // Attach to multiple targets to ensure capture
-    const targets = [window, document, document.body];
-    targets.forEach((target) => {
-      target.addEventListener("contextmenu", handleContextMenu, { passive: false });
-      target.addEventListener("click", handleClick);
-    });
-
-    return () => {
-      targets.forEach((target) => {
-        target.removeEventListener("contextmenu", handleContextMenu);
-        target.removeEventListener("click", handleClick);
-      });
-    };
-  }, []);
+// Custom hook to detect first visit
+export const useFirstVisit = () => {
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   useEffect(() => {
-    const handleOutsideClick = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
-        setVisible(false);
-      }
-    };
+    const hasVisited = localStorage.getItem("hasVisited");
+    if (!hasVisited) {
+      setShowConfirmation(true);
+      localStorage.removeItem("hasVisited");
+    }
+  }, []); // Run once on mount
 
-    document.addEventListener("mousedown", handleOutsideClick);
-    return () => document.removeEventListener("mousedown", handleOutsideClick);
-  }, []);
-
-  if (!visible || !targetId) {
-    return null;
-  }
-
-  const copyLink = () => {
-    const baseUrl = window.location.origin;
-    const basename = process.env.REACT_APP_BASENAME || "/home-app";
-    const path = location.pathname.replace(new RegExp(`^${basename}`), "");
-    const link = `${baseUrl}${basename}${path}#${targetId}`;
-    console.log("Copying link:", link);
-    navigator.clipboard.writeText(link).then(() => {
-      setVisible(false);
-      onCopyLink?.();
-    }).catch((err) => console.error("Failed to copy link:", err));
+  const handleAgree = () => {
+    localStorage.setItem("hasVisited", "true");
+    setShowConfirmation(false);
   };
 
+  const handleDecline = () => {
+    localStorage.removeItem("hasVisited");
+    setShowConfirmation(false);
+    window.location.href = "https://www.coolmathgames.com/"; // Attempt to close the tab/window
+  };
+
+  return { showConfirmation, handleAgree, handleDecline };
+};
+
+// Confirmation box component
+export const ConfirmationBox = ({ isOpen, onAgree, onDecline }) => {
+  if (!isOpen) return null;
+
   return (
-    <ul
-      className="context-menu"
-      style={{ top: `${position.y}px`, left: `${position.x}px` }}
-      ref={menuRef}
-      role="menu"
-      aria-label="Context menu"
-    >
-      <li
-        className="context-menu-item"
-        onClick={copyLink}
-        role="menuitem"
-        tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            copyLink();
-          }
-        }}
-      >
-        Copy Section Link
-      </li>
-      {/* Debug overlay */}
-      <li style={{ padding: "5px", color: "white", fontSize: "12px" }}>
-        Debug ID: {targetId}
-      </li>
-    </ul>
+    <div className="fullpopup">
+      <div className="popup">
+        <h2>Welcome!</h2>
+        <p>
+          This site has NSFW content and is NOT suitable for anyone under 18
+          years old. <br />
+          In addition, this site is still a work in progress and may having
+          missing information.
+        </p>
+        <button onClick={onAgree}>
+          I am older then 18, and am ok with viewing an incomplete website
+        </button>
+        <button onClick={onDecline}>
+          I am younger then 18, or am not ok with viewing an incomplete website
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// Send a GA event with optional additional parameters
+export const trackEvent = (
+  category,
+  action,
+  label = null,
+  value = null,
+  additionalParams = {}
+) => {
+  if (window.gtag) {
+    window.gtag("event", action, {
+      event_category: category,
+      event_label: label,
+      value: value,
+      ...additionalParams,
+    });
+  } else {
+    console.warn("Google Analytics not loaded");
+  }
+};
+
+// Map query parameters to source and medium
+export const getSourceMedium = (queryParam) => {
+  const mappings = {
+    twitterbio: { source: "twitter", medium: "bio" },
+    twitterdm: { source: "twitter", medium: "dm" },
+    blueskybio: { source: "bluesky", medium: "bio" },
+    blueskydm: { source: "bluesky", medium: "dm" },
+    discordbio: { source: "discord", medium: "bio" },
+    discorddm: { source: "discord", medium: "dm" },
+    instagrambio: { source: "instagram", medium: "bio" },
+    instagramdm: { source: "instagram", medium: "dm" },
+    redditbio: { source: "reddit", medium: "bio" },
+    redditdm: { source: "reddit", medium: "dm" },
+    beaconsold: { source: "beacons", medium: "old" },
+    tiktokbio: { source: "tiktok", medium: "bio" },
+    tiktokdm: { source: "tiktok", medium: "dm" },
+    me: { source: "personal", medium: "test" },
+    // Add more mappings as needed
+  };
+  return mappings[queryParam] || { source: "unknown", medium: "unknown" };
+};
+
+// Debounce function to prevent duplicate events
+export const debounce = (func, wait) => {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
+};
+
+// Reusable click tracking function
+export const trackOnClick = (
+  search,
+  category,
+  label,
+  destination,
+  analyticsData = null
+) => {
+  let source, medium;
+  if (search) {
+    const searchParams = new URLSearchParams(search);
+    const queryParam = searchParams.keys().next().value || "none";
+    ({ source, medium } = getSourceMedium(queryParam));
+  } else if (analyticsData) {
+    ({ source, medium } = analyticsData);
+  } else {
+    ({ source, medium } = { source: "unknown", medium: "unknown" });
+  }
+
+  trackEvent(category, "click", label, null, {
+    source,
+    medium,
+    destination,
+  });
+};
+
+const AnalyticsContext = createContext();
+
+export function AnalyticsProvider({ children }) {
+  const [analyticsData, setAnalyticsData] = useState({
+    source: "unknown",
+    medium: "unknown",
+  });
+
+  return (
+    <AnalyticsContext.Provider value={{ analyticsData, setAnalyticsData }}>
+      {children}
+    </AnalyticsContext.Provider>
   );
 }
+
+export const useAnalytics = () => useContext(AnalyticsContext);

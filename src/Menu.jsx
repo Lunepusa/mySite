@@ -9,7 +9,7 @@ import headerimg from "./Images/Preview/headerimg.png";
 
 export default function Menu() {
   return (
-    <div style={{ textAlign: "center", width: "100%", margin: "auto" }}>
+    <div style={{ textAlign: "center", width: "95%", margin: "auto" }}>
       <h1>Menu</h1>
       <div style={{ borderBottom: "2px dashed white" }}>
         {" "}
@@ -66,12 +66,12 @@ export default function Menu() {
         <Collapse trigger={<h3>🖼️6,400+ Pic drive ~ $100 🖼️+</h3>}>
           Permanant access to a google drive that I update with all pictures I
           take of myself.
-          <img src={Picdrive} style={{ width: "100vw" }} />
+          <img src={Picdrive} style={{ width: "100%" }} />
         </Collapse>
         <Collapse trigger={<h3>📼700+ vid drive ~ $100 📼+</h3>}>
           Permanant access to a google drive that I update with all videos I
           take of myself.
-          <img src={Viddrive} style={{ width: "100vw" }} />
+          <img src={Viddrive} style={{ width: "100%" }} />
         </Collapse>
         <Collapse trigger={<h3>📸Custom photoset~ $15+📸+</h3>}>
           <div>

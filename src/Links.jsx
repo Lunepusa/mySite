@@ -2,6 +2,8 @@ import React, { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { reactDOM } from "react-dom";
 import "./styles.css";
+import { useLocation } from "react-router-dom";
+import { trackOnClick, useAnalytics } from "./Utility";
 import Collapse from "./Utility";
 import Fansly from "./Images/link/Fansly.jpg";
 import Throne from "./Images/link/throne.jpg";
@@ -24,18 +26,45 @@ import Skip from "./Images/link/Skip.jpg";
 import Steam from "./Images/link/Steam.jpg";
 import Manyvids from "./Images/link/Manyvids.png";
 import SP from "./Images/link/SP.jpg";
+import Messenger from "./Images/link/messenger.png";
+import Reddit from "./Images/link/Reddit.png";
+import Signal from "./Images/link/Signal.png";
+import Bluesky from "./Images/link/bluesky.png";
+import Tumblr from "./Images/link/Tumblr.png";
+import Snapchat from "./Images/link/Snapchat.png";
+import Telegram from "./Images/link/telegram.png";
+import Text from "./Images/link/Text.png";
+import TikTok from "./Images/link/TikTok.png";
+import Twitter from "./Images/link/Twt.png";
+import Discord from "./Images/link/Discord.png";
+import Email from "./Images/link/email.png";
+import Hangout from "./Images/link/hangout.png";
+import Instagram from "./Images/link/Instagram.png";
 
 export function Link({ name, desc, img, link = "" }) {
+  const location = useLocation();
+  const { analyticsData } = useAnalytics();
+
+  const handleLinkClick = () => {
+    trackOnClick(
+      location.search,
+      "Social",
+      `social_link_${name.toLowerCase().replace(/\s+/g, "-")}`,
+      link,
+      analyticsData
+    );
+  };
+
   return (
-    <div class="link">
-      <div class="info">
+    <div className="link">
+      <div className="info">
         +<br />
-        <div class="infotext">
+        <div className="infotext">
           <h2>{name}</h2>
           <h4>{desc}</h4>
         </div>
       </div>
-      <a href={link}>
+      <a href={link} onClick={handleLinkClick}>
         <img src={img} alt={name} />
       </a>
     </div>
@@ -46,10 +75,13 @@ export function Preferredlinks() {
   return (
     <div style={{ textAlign: "center", width: "100%", margin: "auto" }}>
       {" "}
-      <h1 style={{ textAlign: "center", display: "inline-block" }} class="info">
+      <h1
+        style={{ textAlign: "center", display: "inline-block" }}
+        className="info"
+      >
         {" "}
         Preferred Links
-        <div class="infotext">
+        <div className="infotext">
           <h6>where I like to be</h6>
         </div>
       </h1>
@@ -248,25 +280,6 @@ export function Otherlinks() {
             img={Clips4Sale}
             link="https://www.clips4sale.com/studio/247631/lunepusa"
           />
-
-          <div style={{ border: "3px dotted white" }}>
-            <h2>Social media</h2>
-            <h3 style={{ opacity: ".8" }}>
-              I rarely chat one on one here without a tip{" "}
-            </h3>
-            <Link
-              name="Xvideos"
-              desc="Free videos"
-              img={xvids}
-              link="https://www.xvideos.com/models/lunepusa-model"
-            />
-            <Link
-              name="Pornhub"
-              desc="Free videos"
-              img={Pornhub}
-              link="https://www.pornhub.com/model/Lunepusa"
-            />
-          </div>
         </div>
       </Collapse>
     </div>
@@ -289,66 +302,94 @@ export function Sociallinks() {
           </h1>
         }
       >
-        <div id="otherlinks">
+        <div id="freelinks">
           <h2 style={{ opacity: 0.8 }}>
             Social media / free accounts. I rarely chat one on one here without
-            extra motivation
+            $$
           </h2>
           <Link
-            name="Chaturbate"
-            desc=""
-            img={Chaturbate}
-            link="https://chaturbate.com/in/?tour=dT8X&campaign=pV7Y7&track=default&room=lunepusa"
-          />
-          <Link
-            name="Loyalfans"
-            desc=""
-            img={Loyalfans}
-            link="https://www.loyalfans.com/lunepusa"
-          />
-          <Link
-            name="MintStars"
-            desc=""
-            img={Mintstars}
-            link="https://app.mintstars.com/LunePusa"
-          />
-          <Link name="Alua" desc="" img={Alua} link="alua.com/lunepusa" />
-          <Link
-            name="Premium.Chat"
-            desc=""
-            img={PremiumChat}
-            link="https://premium.chat/LunePusa"
-          />
-          <Link
-            name="Amazon Wishlist"
-            desc="appreciated, but not considered payment"
-            img={Amazon}
-            link="https://www.amazon.ca/hz/wishlist/ls/2CFSD9EF206V?ref_=wl_share"
-          />
-          <Link
-            name="Lovense Wishlist"
-            desc=""
-            img={Lovense}
-            link="https://www.lovense.com/wish-list/9pk8"
-          />
-          <Link
-            name="Clips4Sale"
-            desc=""
-            img={Clips4Sale}
-            link="https://www.clips4sale.com/studio/247631/lunepusa"
-          />
-          <Link
             name="Xvideos"
-            desc="Free videos"
+            desc=""
             img={xvids}
             link="https://www.xvideos.com/models/lunepusa-model"
           />
           <Link
             name="Pornhub"
-            desc="Free videos"
+            desc=""
             img={Pornhub}
             link="https://www.pornhub.com/model/Lunepusa"
           />
+          <Link
+            name="Twitter"
+            desc=""
+            img={Twitter}
+            link="https://x.com/LunePusa"
+          />
+          <Link
+            name="Tumblr"
+            desc=""
+            img={Tumblr}
+            link="https://www.tumblr.com/blog/lunepusa"
+          />
+          <Link
+            name="Bluesky"
+            desc=""
+            img={Bluesky}
+            link="https://bsky.app/profile/lunepusa.bsky.social"
+          />
+          <Link
+            name="TikTok"
+            desc=""
+            img={TikTok}
+            link="https://www.tiktok.com/@lunepusa?_t=ZG-8x7XFczrjmb&_r=1"
+          />
+          <Link
+            name="Instagram"
+            desc=""
+            img={Instagram}
+            link="https://www.instagram.com/mooncatlune?igsh=MThveDVqNjh2NjRkZw=="
+          />
+          <Link
+            name="Reddit"
+            desc=""
+            img={Reddit}
+            link="https://www.reddit.com/u/LunePusa/s/Zf0SLuahbd"
+          />
+          <div style={{ border: "3px dotted white" }}>
+            <h2>Instant Messaging</h2>
+            <h3 style={{ opacity: ".8" }}>Good places for paid services.</h3>
+            <Link
+              name="Discord"
+              desc=""
+              img={Discord}
+              link="http://discordapp.com/users/191206268181020673"
+            />
+            <Link
+              name="Telegram"
+              desc=""
+              img={Telegram}
+              link="https://t.me/lunepusa3"
+            />
+            <Link
+              name="Signal"
+              desc=""
+              img={Signal}
+              link="https://signal.me/#eu/M3ns7Y0dvg8DS_5CzkuiOLaxECQMz40bZsmh27Df6qgUE1aWHdFFPq9GE1lT2cGv"
+            />
+            <Link
+              name="Email"
+              desc=""
+              img={Email}
+              link="mailto:lunepusa@gmail.com"
+            />
+            <Link name="SMS" desc="" img={Text} link="sms:+15878480806" />
+            <Link
+              name="Snapchat"
+              desc=""
+              img={Snapchat}
+              link="https://www.snapchat.com/add/lunepusa?share_id=qeZVVUXrswY&locale=en-US-u-mu-celsius"
+            />
+          </div>
         </div>
       </Collapse>
     </div>

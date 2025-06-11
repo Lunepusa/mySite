@@ -2,18 +2,22 @@
 * {
   color: white;
   font-family: Julee;
-  margin: 0 0 0 0;
   vertical-align: middle;
+  margin-top: 0%;
+  margin-bottom: 0%;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+  scrollbar-color: white black;
 }
-body {
+html {
   background-color: black;
-}
-ul {
-  list-style-type: none;
-  width: fit-content;
-  height: fit-content;
+  width: 100%;
+  align-content: center;
+  margin: 0px;
   padding: 0px;
 }
+
 h5,
 h6 {
   font-weight: normal;
@@ -43,17 +47,32 @@ li a:hover {
 }
 #preferredlinks .link {
   display: inline-block;
-  width: 25vw;
-  max-width: 50vw;
+  width: 25%;
+  max-width: 50%;
   min-width: 100px;
   position: relative;
   margin: 3%;
   aspect-ratio: 1/1;
 }
+#preferredlinks .link .info {
+  font-size: 150%;
+}
+#freelinks .link {
+  display: inline-block;
+  width: 10%;
+  max-width: 25%;
+  min-width: 50px;
+  position: relative;
+  margin: 3%;
+  aspect-ratio: 1/1;
+}
+#freelinks .link .info {
+  font-size: 100%;
+}
 .link {
   display: inline-block;
-  width: 16vw;
-  max-width: 50vw;
+  width: 16%;
+  max-width: 50%;
   min-width: 75px;
   position: relative;
   margin: 3%;
@@ -73,9 +92,6 @@ li a:hover {
   text-align: right;
   width: 100%;
   z-index: 1;
-}
-#preferredlinks .link .info {
-  font-size: 150%;
 }
 .infotext {
   display: none;
@@ -105,33 +121,47 @@ li a:hover {
   cursor: pointer;
   display: inline-block;
 }
-.context-menu {
-  position: fixed !important; /* Force for CodeSandbox */
-  background-color: rgba(0, 0, 0, 0.9) !important;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 5px;
-  padding: 5px 0;
-  margin: 0;
-  list-style: none;
-  z-index: 10000 !important; /* Higher z-index */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-  font-family: Julee, Arial, sans-serif;
+:focus {
+  background-image: linear-gradient(
+    rgba(255, 255, 255, 0.515),
+    rgba(0, 0, 0, 0),
+    rgba(0, 0, 0, 0),
+    rgba(0, 0, 0, 0),
+    rgba(0, 0, 0, 0)
+  );
 }
-
-.context-menu-item {
-  padding: 8px 16px;
-  color: white;
-  cursor: pointer;
+.fullpopup {
+  width: 100%;
+  height: 100%;
+  background-image: rgba(0, 0, 0, 0.652);
+  background-color: rgba(0, 0, 0, 0.697);
+  z-index: 10;
+  vertical-align: middle;
+  text-align: center;
+  margin: auto;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.popup {
+  z-index: 10;
+  vertical-align: middle;
+  text-align: center;
+  background-color: rgb(0, 0, 0);
+  width: 90%;
+  margin: auto;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 15px;
+}
+button {
+  background-color: black;
+  border: 1px double white;
   font-size: 1em;
 }
-
-.context-menu-item:hover,
-.context-menu-item:focus {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-/* Ensure clickable elements allow context menu */
-.collapsible,
-.clickable-image {
-  pointer-events: auto;
+button:hover {
+  background-color: grey;
 }
