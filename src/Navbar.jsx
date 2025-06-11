@@ -9,7 +9,7 @@ function navbar() {
   return (
     <div
       style={{
-        width: "100vw",
+        width: "100%",
         borderBottom: "2px solid white",
         textAlign: "left",
         alignContent: "left",

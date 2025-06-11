@@ -14,10 +14,12 @@ export default function Square() {
       const id = location.hash.replace("#", "");
       const element = document.getElementById(id);
       if (element) {
-        element.scrollIntoView({ behavior: "smooth", block: "end" });
-        // Optional: Add focus for accessibility
-        element.setAttribute("tabindex", "-1");
-        element.focus({ focusVisible: true });
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: "smooth", block: "start" });
+          // Optional: Add focus for accessibility
+          element.setAttribute("tabindex", "-1");
+          element.focus({ focusVisible: true });
+        }, 500);
       }
     }
   }, [location]); // Run on route or hash change
