@@ -2,12 +2,13 @@ import Navbar from "./Navbar.jsx";
 import Links from "./Links.jsx";
 import Menu from "./Menu.jsx";
 import About from "./FAQ.jsx";
-import ContextMenu from "./Utility.jsx";
+import { useFirstVisit, ConfirmationBox } from "./Utility.jsx";
 import { Routes, Route, useLocation } from "react-router-dom";
 import React, { useEffect } from "react";
 
 export default function Square() {
   const location = useLocation();
+  const { showConfirmation, handleAgree, handleDecline } = useFirstVisit();
 
   useEffect(() => {
     if (location.hash) {
@@ -28,6 +29,11 @@ export default function Square() {
   };
   return (
     <div style={{ backgroundColor: "black" }}>
+        <ConfirmationBox
+        isOpen={showConfirmation}
+        onAgree={handleAgree}
+        onDecline={handleDecline}
+      />
       <Navbar />
       <Routes>
         <Route exact path="/" element={<Links />} />

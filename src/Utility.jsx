@@ -69,3 +69,54 @@ export function Copylink(id, location) {
     })
     .catch((err) => console.error("Clipboard error:", err));
 }
+
+// Custom hook to detect first visit
+export const useFirstVisit = () => {
+  const [showConfirmation, setShowConfirmation] = useState(false);
+
+  useEffect(() => {
+    const hasVisited = localStorage.getItem("hasVisited");
+    if (!hasVisited) {
+      setShowConfirmation(true);
+      localStorage.removeItem("hasVisited");
+    }
+  }, []); // Run once on mount
+
+  const handleAgree = () => {
+    localStorage.setItem("hasVisited", "true");
+    setShowConfirmation(false);
+  };
+
+  const handleDecline = () => {
+    localStorage.removeItem("hasVisited");
+    setShowConfirmation(false);
+    window.location.href = "https://www.coolmathgames.com/"; // Attempt to close the tab/window
+  };
+
+  return { showConfirmation, handleAgree, handleDecline };
+};
+
+// Confirmation box component
+export const ConfirmationBox = ({ isOpen, onAgree, onDecline }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fullpopup">
+      <div className="popup">
+        <h2>Welcome!</h2>
+        <p>
+          This site has NSFW content and is NOT suitable for anyone under 18
+          years old. <br />
+          In addition, this site is still a work in progress and may having
+          missing information.
+        </p>
+        <button onClick={onAgree}>
+          I am older then 18, and am ok with viewing an incomplete website
+        </button>
+        <button onClick={onDecline}>
+          I am younger then 18, or am not ok with viewing an incomplete website
+        </button>
+      </div>
+    </div>
+  );
+};
