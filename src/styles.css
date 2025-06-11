@@ -54,6 +54,21 @@ li a:hover {
   margin: 3%;
   aspect-ratio: 1/1;
 }
+#preferredlinks .link .info {
+  font-size: 150%;
+}
+#freelinks .link {
+  display: inline-block;
+  width: 10%;
+  max-width: 25%;
+  min-width: 50px;
+  position: relative;
+  margin: 3%;
+  aspect-ratio: 1/1;
+}
+#freelinks .link .info {
+  font-size: 100%;
+}
 .link {
   display: inline-block;
   width: 16%;
@@ -77,9 +92,6 @@ li a:hover {
   text-align: right;
   width: 100%;
   z-index: 1;
-}
-#preferredlinks .link .info {
-  font-size: 150%;
 }
 .infotext {
   display: none;
