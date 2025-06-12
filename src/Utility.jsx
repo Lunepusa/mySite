@@ -199,6 +199,7 @@ export const getSourceMedium = (queryParam) => {
     tiktokdm: { source: "tiktok", medium: "dm" },
     me: { source: "personal", medium: "test" },
     twittersd: { source: "twitter", medium: "sugardaddy"},
+    twittered: { source: "twitter", medium: "sugardaddy"},
     // Add more mappings as needed
   };
   return mappings[queryParam] || { source: "unknown", medium: "unknown" };
