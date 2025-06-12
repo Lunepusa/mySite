@@ -13,9 +13,10 @@ import {
 import { Routes, Route, useLocation } from "react-router-dom";
 import React, { useEffect } from "react";
 
-function AppContent() {
+export default function App() {
   const location = useLocation();
   const { setAnalyticsData } = useAnalytics();
+  const { analyticsData } = useAnalytics();
   const { showConfirmation, handleAgree, handleDecline } = useFirstVisit();
 
   // GA4 Tracking useEffect
@@ -24,7 +25,6 @@ function AppContent() {
     const queryParam = searchParams.keys().next().value || "none";
     const { source: querySource, medium: queryMedium } =
       getSourceMedium(queryParam);
-    const { analyticsData } = useAnalytics();
 
     // Use query if available, else context
     const source = queryParam !== "none" ? querySource : analyticsData.source;
@@ -84,8 +84,4 @@ function AppContent() {
       </Routes>
     </div>
   );
-}
-
-export default function App() {
-  return <AppContent />;
 }
