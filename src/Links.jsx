@@ -2,6 +2,8 @@ import React, { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { reactDOM } from "react-dom";
 import "./styles.css";
+import { useLocation } from "react-router-dom";
+import { trackOnClick, useAnalytics } from "./Utility";
 import Collapse from "./Utility";
 import Fansly from "./Images/link/Fansly.jpg";
 import Throne from "./Images/link/throne.jpg";
@@ -40,16 +42,29 @@ import Hangout from "./Images/link/hangout.png";
 import Instagram from "./Images/link/Instagram.png";
 
 export function Link({ name, desc, img, link = "" }) {
+  const location = useLocation();
+  const { analyticsData } = useAnalytics();
+
+  const handleLinkClick = () => {
+    trackOnClick(
+      location.search,
+      "Social",
+      `social_link_${name.toLowerCase().replace(/\s+/g, "-")}`,
+      link,
+      analyticsData
+    );
+  };
+
   return (
-    <div class="link">
-      <div class="info">
+    <div className="link">
+      <div className="info">
         +<br />
-        <div class="infotext">
+        <div className="infotext">
           <h2>{name}</h2>
           <h4>{desc}</h4>
         </div>
       </div>
-      <a href={link}>
+      <a href={link} onClick={handleLinkClick}>
         <img src={img} alt={name} />
       </a>
     </div>
@@ -60,10 +75,13 @@ export function Preferredlinks() {
   return (
     <div style={{ textAlign: "center", width: "100%", margin: "auto" }}>
       {" "}
-      <h1 style={{ textAlign: "center", display: "inline-block" }} class="info">
+      <h1
+        style={{ textAlign: "center", display: "inline-block" }}
+        className="info"
+      >
         {" "}
         Preferred Links
-        <div class="infotext">
+        <div className="infotext">
           <h6>where I like to be</h6>
         </div>
       </h1>
