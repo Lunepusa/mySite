@@ -41,15 +41,16 @@ export default function App() {
       window.gtag("event", "page_view", {
         page_path: location.pathname + location.search,
         page_referrer: referrer,
+        custom_source: source,
+        custom_medium: medium,
         source,
         medium,
         destination,
-        campaign: "social_launch",
       });
     } else {
       console.error("GA not loaded, check script or ad blockers");
     }
-  }, [location, setAnalyticsData]);
+  }, [location, analyticsData, setAnalyticsData]);
 
   // Hash Scrolling useEffect
   useEffect(() => {

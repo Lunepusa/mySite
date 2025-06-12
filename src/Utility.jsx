@@ -83,12 +83,9 @@ export function Copylink(id, location) {
   const baseUrl = window.location.origin;
   const path = location.pathname;
   const link = `${baseUrl}${path}#${id}`;
-  console.log("Copying:", link);
+  console.log("Copying: ", link);
   navigator.clipboard
     .writeText(link)
-    .then(() => {
-      alert("Copied: " + link);
-    })
     .catch((err) => console.error("Clipboard error:", err));
 }
 
@@ -103,15 +100,31 @@ export const useFirstVisit = () => {
       localStorage.removeItem("hasVisited");
     }
   }, []); // Run once on mount
+  const location = useLocation();
+  const { analyticsData } = useAnalytics();
 
   const handleAgree = () => {
     localStorage.setItem("hasVisited", "true");
     setShowConfirmation(false);
+    trackOnClick(
+      location.search,
+      "Confirmation",
+      "confirm_agree",
+      "/agree",
+      analyticsData
+    );
   };
 
   const handleDecline = () => {
     localStorage.removeItem("hasVisited");
     setShowConfirmation(false);
+    trackOnClick(
+      location.search,
+      "Confirmation",
+      "confirm_decline",
+      "/decline",
+      analyticsData
+    );
     window.location.href = "https://www.coolmathgames.com/"; // Attempt to close the tab/window
   };
 
@@ -156,6 +169,11 @@ export const trackEvent = (
       event_category: category,
       event_label: label,
       value: value,
+      custom_source: additionalParams.custom_source || "unknown",
+      custom_medium: additionalParams.custom_medium || "unknown",
+      destination: additionalParams.destination || "unknown",
+      source: additionalParams.source || "unknown",
+      medium: additionalParams.medium || "unknown",
       ...additionalParams,
     });
   } else {
@@ -214,6 +232,8 @@ export const trackOnClick = (
   }
 
   trackEvent(category, "click", label, null, {
+    custom_source: source,
+    custom_medium: medium,
     source,
     medium,
     destination,
