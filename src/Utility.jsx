@@ -183,26 +183,42 @@ export const trackEvent = (
 
 // Map query parameters to source and medium
 export const getSourceMedium = (queryParam) => {
+  // Handle special cases
   const mappings = {
-    twitterbio: { source: "twitter", medium: "bio" },
-    twitterdm: { source: "twitter", medium: "dm" },
-    blueskybio: { source: "bluesky", medium: "bio" },
-    blueskydm: { source: "bluesky", medium: "dm" },
-    discordbio: { source: "discord", medium: "bio" },
-    discorddm: { source: "discord", medium: "dm" },
-    instagrambio: { source: "instagram", medium: "bio" },
-    instagramdm: { source: "instagram", medium: "dm" },
-    redditbio: { source: "reddit", medium: "bio" },
-    redditdm: { source: "reddit", medium: "dm" },
-    beaconsold: { source: "beacons", medium: "old" },
-    tiktokbio: { source: "tiktok", medium: "bio" },
-    tiktokdm: { source: "tiktok", medium: "dm" },
-    me: { source: "personal", medium: "test" },
-    twittersd: { source: "twitter", medium: "sugardaddy"},
-    twittered: { source: "twitter", medium: "sugardaddy"},
-    // Add more mappings as needed
+    me: { source: "personal", medium: "test" }
   };
-  return mappings[queryParam] || { source: "unknown", medium: "unknown" };
+
+  // Return special case if exists
+  if (mappings[queryParam]) {
+    return mappings[queryParam];
+  }
+
+  // Check for separator (- or _)
+  const hasSeparator = queryParam.includes("-") || queryParam.includes("_");
+  const separator = queryParam.includes("-") ? "-" : "_";
+  const parts = queryParam.split(separator);
+
+  // Handle source-medium format (e.g., twitter-bio)
+  if (hasSeparator && parts.length === 2) {
+    const [source, medium] = parts;
+    if (source && medium) {
+      return {
+        source: source.toLowerCase(),
+        medium: medium.toLowerCase()
+      };
+    }
+  }
+
+  // Handle single source (e.g., twitter)
+  if (!hasSeparator && queryParam && queryParam !== "none") {
+    return {
+      source: queryParam.toLowerCase(),
+      medium: "unknown"
+    };
+  }
+
+  // Fallback for invalid formats
+  return { source: "unknown", medium: "unknown" };
 };
 
 // Debounce function to prevent duplicate events
