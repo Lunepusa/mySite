@@ -42,12 +42,12 @@ export default function Collapse({ trigger, children }) {
     setIsCollapsed(!isCollapsed);
   };
 
-  const handlerightclick = (e) => {
-    Copylink(id, location);
-  };
-
   return (
-    <div className="collapsible" id={id} onContextMenu={handlerightclick}>
+    <div
+      className="collapsible"
+      id={id}
+      onContextMenu={() => handlerightclick(id, location)}
+    >
       {React.cloneElement(trigger, {
         className: `collapsible-trigger ${trigger.props.className || ""}`,
         onClick: toggleCollapse,
@@ -89,6 +89,9 @@ export function Copylink(id, location) {
     .catch((err) => console.error("Clipboard error:", err));
 }
 
+export const handlerightclick = (id, location) => {
+  Copylink(id, location);
+};
 // Custom hook to detect first visit
 export const useFirstVisit = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -199,8 +202,8 @@ export const getSourceMedium = (queryParam) => {
     tiktokbio: { source: "tiktok", medium: "bio" },
     tiktokdm: { source: "tiktok", medium: "dm" },
     me: { source: "personal", medium: "test" },
-    twittersd: { source: "twitter", medium: "sugardaddy"},
-    twittered: { source: "twitter", medium: "sugardaddy"},
+    twittersd: { source: "twitter", medium: "sugardaddy" },
+    twittered: { source: "twitter", medium: "sugardaddy" },
   };
 
   // Return special case if exists
@@ -219,7 +222,7 @@ export const getSourceMedium = (queryParam) => {
     if (source && medium) {
       return {
         source: source.toLowerCase(),
-        medium: medium.toLowerCase()
+        medium: medium.toLowerCase(),
       };
     }
   }
@@ -228,7 +231,7 @@ export const getSourceMedium = (queryParam) => {
   if (!hasSeparator && queryParam && queryParam !== "none") {
     return {
       source: queryParam.toLowerCase(),
-      medium: "unknown"
+      medium: "unknown",
     };
   }
 

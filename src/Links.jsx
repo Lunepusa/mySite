@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { reactDOM } from "react-dom";
 import "./styles.css";
 import { useLocation } from "react-router-dom";
-import { trackOnClick, useAnalytics } from "./Utility";
+import { trackOnClick, useAnalytics, handlerightclick } from "./Utility";
 import Collapse from "./Utility";
 import Fansly from "./Images/link/Fansly.jpg";
 import Throne from "./Images/link/throne.jpg";
@@ -44,19 +44,22 @@ import Instagram from "./Images/link/Instagram.png";
 export function Link({ name, desc, img, link = "" }) {
   const location = useLocation();
   const { analyticsData } = useAnalytics();
+  const id = `link-${(name || "link")
+    .replace(/\s+/g, "-")
+    .replace(
+      /[\p{Emoji}\p{Emoji_Presentation}\p{Emoji_Modifier}\p{Emoji_Modifier_Base}\p{Emoji_Component}]/gu,
+      ""
+    )
+    .replace(/[^\w\s]/g, "")
+    .trim()
+    .toLowerCase()}`;
 
   const handleLinkClick = () => {
-    trackOnClick(
-      location.search,
-      "Social",
-      `social_link_${name.toLowerCase().replace(/\s+/g, "-")}`,
-      link,
-      analyticsData
-    );
+    trackOnClick(location.search, "Social", id, link, analyticsData);
   };
 
   return (
-    <div className="link">
+    <div className="link" onContextMenu={() => handlerightclick(id, location)}>
       <div className="info">
         +<br />
         <div className="infotext">

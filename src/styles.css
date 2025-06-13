@@ -35,12 +35,14 @@ li a {
   text-align: center;
   padding: 5px;
   text-decoration: none;
-  height: inherit;
+  height: 100%;
   font-size: 1.25em;
 }
 u,
 a {
   vertical-align: baseline;
+  display: inline-block;
+  height: 100%;
 }
 li a:hover {
   background-color: grey;
@@ -78,7 +80,7 @@ li a:hover {
   margin: 3%;
   aspect-ratio: 1/1;
 }
-.link img {
+a img {
   height: 100%;
   width: auto;
 }
