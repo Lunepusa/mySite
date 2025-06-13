@@ -185,7 +185,22 @@ export const trackEvent = (
 export const getSourceMedium = (queryParam) => {
   // Handle special cases
   const mappings = {
-    me: { source: "personal", medium: "test" }
+    twitterbio: { source: "twitter", medium: "bio" },
+    twitterdm: { source: "twitter", medium: "dm" },
+    blueskybio: { source: "bluesky", medium: "bio" },
+    blueskydm: { source: "bluesky", medium: "dm" },
+    discordbio: { source: "discord", medium: "bio" },
+    discorddm: { source: "discord", medium: "dm" },
+    instagrambio: { source: "instagram", medium: "bio" },
+    instagramdm: { source: "instagram", medium: "dm" },
+    redditbio: { source: "reddit", medium: "bio" },
+    redditdm: { source: "reddit", medium: "dm" },
+    beaconsold: { source: "beacons", medium: "old" },
+    tiktokbio: { source: "tiktok", medium: "bio" },
+    tiktokdm: { source: "tiktok", medium: "dm" },
+    me: { source: "personal", medium: "test" },
+    twittersd: { source: "twitter", medium: "sugardaddy"},
+    twittered: { source: "twitter", medium: "sugardaddy"},
   };
 
   // Return special case if exists
