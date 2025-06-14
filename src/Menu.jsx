@@ -2,6 +2,7 @@ import React, { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { reactDOM } from "react-dom";
 import "./styles.css";
+import Invoice from "./invoice";
 import Collapse from "./Utility";
 import Picdrive from "./Images/Preview/PicDrive.png";
 import Viddrive from "./Images/Preview/vidDrive.png";
@@ -283,13 +284,9 @@ export default function Menu() {
           </Collapse>
         </div>
       </div>
-    </div>
-  );
-}
-export function Quote() {
-  return (
-    <div style={{ textAlign: "center", width: "100%", margin: "auto" }}>
-      <h1>About</h1>
+      <Collapse trigger={<h2>🧮Invoice form for making quotes🧮</h2>}>
+        <Invoice />
+      </Collapse>
     </div>
   );
 }

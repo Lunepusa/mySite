@@ -167,3 +167,53 @@ button {
 button:hover {
   background-color: grey;
 }
+
+.invoice {
+  width: 80%;
+  margin: 0 auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+td {
+  font-size: 0.8em;
+}
+th,
+td {
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+th {
+  background-color: rgb(84, 84, 84);
+  color: white;
+  text-align: center;
+}
+
+input {
+  width: 100%;
+  color: black;
+  background-color: grey;
+  vertical-align: baseline;
+  font-size: inherit;
+}
+
+/* Specific styling to match the image's gray headers */
+
+table th:first-child {
+  width: 50%;
+}
+
+table th:not(:first-child) {
+  width: calc(
+    50% / 9
+  ); /* Distribute the remaining 50% among the other 9 columns */
+}
+
+tfoot td {
+  background-color: grey;
+  font-weight: bold;
+}
