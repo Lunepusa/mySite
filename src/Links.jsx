@@ -130,7 +130,7 @@ export function Paymentlinks() {
               width: "100%",
             }}
           >
-            All Payment Methods +
+            All Payment Methods ⏬
           </h1>
         }
       >
@@ -246,7 +246,7 @@ export function Otherlinks() {
               width: "100%",
             }}
           >
-            Other accounts I have +
+            Other accounts I have ⏬
           </h1>
         }
       >

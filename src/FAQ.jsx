@@ -22,11 +22,11 @@ export default function About() {
         <br />I am chronically inconsistent and go MIA often. It almost never
         has anything to do with you, I am not quitting Sex work, and I am ok.
       </h4>
-      <Collapse trigger={<h1>Loves and Limits</h1>}>
+      <Collapse trigger={<h1>Loves and Limits ⏬</h1>}>
         <h3 style={{ opacity: ".8" }}>
           These are not complete lists! if it isnt mentioned: ASK
         </h3>
-        <Collapse trigger={<h2>SFW loves</h2>}>
+        <Collapse trigger={<h2>SFW loves ⏬</h2>}>
           <div style={{ columnCount: "3", columnFill: "balance-all" }}>
             Animals
             <br /> Spreadsheets
@@ -46,7 +46,7 @@ export default function About() {
             favorite genres, bonus points to a porn game in these genres)
           </div>
         </Collapse>
-        <Collapse trigger={<h2>NSFW loves</h2>}>
+        <Collapse trigger={<h2>NSFW loves ⏬</h2>}>
           <div style={{ columnCount: "3", columnFill: "balance-all" }}>
             Pet play
             <br /> deep throating
@@ -62,11 +62,11 @@ export default function About() {
             <br /> furries
           </div>
         </Collapse>
-        <Collapse trigger={<h2>Soft Limits</h2>}>
+        <Collapse trigger={<h2>Soft Limits ⏬</h2>}>
           <h3 style={{ opacity: ".8" }}>
             {" "}
             These are things I may be willing to do, but will likely upcharge
-            for and CANNOT disscuss it on official adult platforms. 
+            for and CANNOT disscuss it on official adult platforms.
           </h3>
           <div style={{ columnCount: "3", columnFill: "balance-all" }}>
             Cnc rp
@@ -86,7 +86,7 @@ export default function About() {
             <br /> light sadism/masochism(no bruising or further)
           </div>
         </Collapse>
-        <Collapse trigger={<h2>Hard Limits</h2>}>
+        <Collapse trigger={<h2>Hard Limits ⏬</h2>}>
           <h3 style={{ opacity: ".8" }}>These are things I will not do ever</h3>
           <div style={{ columnCount: "3", columnFill: "balance-all" }}>
             Anything illegal or that I will get in trouble for <br />
@@ -100,7 +100,7 @@ export default function About() {
           </div>
         </Collapse>
       </Collapse>
-      <Collapse trigger={<h1>What is my CashApp? PayPal? Bank? Ect?</h1>}>
+      <Collapse trigger={<h1>What is my CashApp? PayPal? Bank? Ect? ⏬</h1>}>
         Cashapp, venmo, apple pay, and other simmilar platforms are not a thing
         in Canada so I cannot use them.
         <br />
@@ -120,7 +120,7 @@ export default function About() {
         </h6>
         TLDR: I dont have one to give you
       </Collapse>
-      <Collapse trigger={<h1>Do I need a cock to collab with?</h1>}>
+      <Collapse trigger={<h1>Do I need a cock to collab with? ⏬</h1>}>
         I am currently not interested in having non solo content on any of my
         pages, however I would be open to collaborating on your accounts if you
         pay for my escorting fees and follow my escorting rules.

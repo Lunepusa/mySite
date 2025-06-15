@@ -8,7 +8,7 @@ export default function Shh() {
   return (
     <div style={{ textAlign: "center", width: "95%", margin: "auto" }}>
       <h1>Secret page for my own personal use. You shouldnt know about this</h1>
-      <Collapse trigger={<h2>Link tracking</h2>}>
+      <Collapse trigger={<h2>Link tracking⏬</h2>}>
         <h3>
           automatic layout is lunepusa.onrender.com/?source-medium <br />
           hardcoded versions are <br />

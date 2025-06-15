@@ -275,7 +275,7 @@ export default function Menu() {
           <Collapse trigger={<h2> 🛏️Calgary meets🛏️⏬</h2>}>
             Full details listed{" "}
             <a href="https://tryst.link/escort/lunepusa"> here</a>
-            <Collapse trigger={<h3>Rules +</h3>}>
+            <Collapse trigger={<h3>Rules ⏬</h3>}>
               ~ Condoms required for everything <br />
               ~ no same day appointments <br />
               ~ I cannot guarentee availability till deposit is paid. <br />
