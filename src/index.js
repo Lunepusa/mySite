@@ -13,7 +13,7 @@ root.render(
       future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
     >
       <AnalyticsProvider>
-        <App />
+        <App /> <br /> <br />
       </AnalyticsProvider>
     </BrowserRouter>
   </StrictMode>
