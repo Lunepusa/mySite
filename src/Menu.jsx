@@ -227,7 +227,7 @@ export default function Menu() {
             />
           </div>
         </Collapse>
-        <Collapse trigger={<h3>💋1 week GFE ~ $100+💋⏬</h3>}>
+                <Collapse trigger={<h3>🗨️1 week Friend Experience ~ $25+🗨️ ⏬</h3>}>
           {" "}
           <div>
             <img
@@ -238,6 +238,21 @@ export default function Menu() {
                 verticleAlign: "middle",
               }}
             />
+            <p
+              style={{
+                display: "inline-block",
+                width: "80%",
+              }}
+            >
+              ~ 1 week of extremely casual no media texting resonding when I have time <br /> online only
+            </p>
+      
+          </div>
+        </Collapse>
+        <Collapse trigger={<h3>💋1 week Girfriend Experience ~ $95+💋⏬</h3>}>
+          {" "}
+          <div>
+            
             <p
               style={{
                 display: "inline-block",
@@ -245,21 +260,7 @@ export default function Menu() {
               }}
             >
               ~ 1 week of no media texting/sexting throughout the day, good
-              morning and good night pics
-            </p>
-          </div>
-        </Collapse>
-        <Collapse trigger={<h3>💍1 week True GFE ~ $600💍⏬</h3>}>
-          {" "}
-          <div>
-            <p
-              style={{
-                display: "inline-block",
-                width: "80%",
-              }}
-            >
-              ~ 1 week of live media texting/sexting throughout the day, free
-              content/customs all week, some amount of calls
+              morning and good night pics <br /> online only
             </p>
             <img
               src={headerimg}
@@ -269,6 +270,28 @@ export default function Menu() {
                 verticleAlign: "middle",
               }}
             />
+          </div>
+        </Collapse>
+        <Collapse trigger={<h3>💍1 week Premium Girlfriend Experience ~ $495+💍⏬</h3>}>
+          {" "}
+          <div>
+            <img
+              src={headerimg}
+              style={{
+                width: "15%",
+                display: "inline-block",
+                verticleAlign: "middle",
+              }}
+            />
+            <p
+              style={{
+                display: "inline-block",
+                width: "80%",
+              }}
+            >
+              ~ 1 week of live media texting/sexting throughout the day, up to 2 hours of customs or calls throughout the week <br /> online only
+            </p>
+      
           </div>
         </Collapse>
         <div>
