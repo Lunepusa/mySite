@@ -121,7 +121,6 @@ a img {
 }
 .collapsible-trigger {
   cursor: pointer;
-  display: inline-block;
 }
 :focus {
   background-image: linear-gradient(

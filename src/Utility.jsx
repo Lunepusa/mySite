@@ -46,7 +46,7 @@ export default function Collapse({ trigger, children }) {
     <div
       className="collapsible"
       id={id}
-      onContextMenu={() => handlerightclick(id, location)}
+      onContextMenu={(e) => handlerightclick(id, location, e)}
     >
       {React.cloneElement(trigger, {
         className: `collapsible-trigger ${trigger.props.className || ""}`,
@@ -89,7 +89,11 @@ export function Copylink(id, location) {
     .catch((err) => console.error("Clipboard error:", err));
 }
 
-export const handlerightclick = (id, location) => {
+export const handlerightclick = (id, location, event) => {
+  if (id) {
+    event.stopPropagation(); // Stop bubbling for elements with an ID
+    Copylink(id, location);
+  }
   Copylink(id, location);
 };
 // Custom hook to detect first visit

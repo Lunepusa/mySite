@@ -22,15 +22,16 @@ export default function Invoice() {
   const [exclusiveQty, setExclusiveQty] = useState(1);
   const [rushQty, setRushQty] = useState(0);
   const [extremeQty, setExtremeQty] = useState(0);
+  const [jerkQty, setjerkQty] = useState(0);
   const [bulkQty, setBulkQty] = useState(0);
   const [easyQty, setEasyQty] = useState(0);
   const [otherQty, setOtherQty] = useState(0);
 
   // Calculate costs
-  const discussionCost = (discussionQty / 60) * 10.0;
-  const setupCleanupCost = (setupCleanupQty / 60) * 20.0;
-  const contentCreationCost = (contentCreationQty / 60) * 180.0;
-  const editingCost = (editingQty / 60) * 20.0;
+  const discussionCost = discussionQty * 0.17;
+  const setupCleanupCost = setupCleanupQty * 0.33;
+  const contentCreationCost = contentCreationQty * 3;
+  const editingCost = editingQty * 0.33;
   const servicesSubtotal =
     discussionCost + setupCleanupCost + contentCreationCost + editingCost;
 
@@ -45,10 +46,12 @@ export default function Invoice() {
   const exclusiveTotal = (servicesSubtotal * 0.5 * exclusiveQty).toFixed(2);
   const rushTotal = (servicesSubtotal * 0.5 * rushQty).toFixed(2);
   const extremeTotal = (servicesSubtotal * 0.5 * extremeQty).toFixed(2);
+  const jerkTotal = (servicesSubtotal * 0.5 * jerkQty).toFixed(2);
   const markupsSubtotal =
     parseFloat(exclusiveTotal) +
     parseFloat(rushTotal) +
-    parseFloat(extremeTotal);
+    parseFloat(extremeTotal) +
+    parseFloat(jerkTotal);
 
   const bulkTotal = (servicesSubtotal * 0.25 * bulkQty).toFixed(2);
   const easyTotal = (servicesSubtotal * 0.25 * easyQty).toFixed(2);
@@ -98,19 +101,21 @@ export default function Invoice() {
         </colgroup>
         <thead>
           <tr>
-            <th colSpan="4">Services</th>
-          </tr>
-          <tr>
             <th>Service</th>
-            <th>$ per Hour</th>
+            <th>$ per minute</th>
             <th># of minutes</th>
             <th>Cost</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>Discussion</td>
-            <td>$10.00</td>
+            <td className="info">
+              ⏬Discussion
+              <div className="infotext">
+                Time we spend messaging back and forth for whatever reason
+              </div>
+            </td>
+            <td>$0.17</td>
             <td>
               <input
                 type="number"
@@ -122,8 +127,15 @@ export default function Invoice() {
             <td>${discussionCost.toFixed(2)}</td>
           </tr>
           <tr>
-            <td>Set up & Clean up</td>
-            <td>$20.00</td>
+            <td className="info">
+              ⏬Set up & Clean up
+              <div className="infotext">
+                Time spent cleaning area for filming, showering, getting
+                dressed, or doing any other preporation required. Plus the time
+                spent cleaning up after.
+              </div>
+            </td>
+            <td>$0.33</td>
             <td>
               <input
                 type="number"
@@ -135,8 +147,11 @@ export default function Invoice() {
             <td>${setupCleanupCost.toFixed(2)}</td>
           </tr>
           <tr>
-            <td>Content Creation</td>
-            <td>$180.00</td>
+            <td className="info">
+              ⏬Content Creation
+              <div className="infotext">time spent in front of the camera</div>
+            </td>
+            <td>$3.00</td>
             <td>
               <input
                 type="number"
@@ -148,8 +163,14 @@ export default function Invoice() {
             <td>${contentCreationCost.toFixed(2)}</td>
           </tr>
           <tr>
-            <td>Editing</td>
-            <td>$20.00</td>
+            <td className="info">
+              ⏬ Editing
+              <div className="infotext">
+                time spent cutting the content into clips, combining clips into
+                one, or otherwise editing the content after recording
+              </div>
+            </td>
+            <td>$0.33</td>
             <td>
               <input
                 type="number"
@@ -163,10 +184,20 @@ export default function Invoice() {
         </tbody>
         <thead>
           <tr>
-            <th colSpan="4">Consumables</th>
-          </tr>
-          <tr>
-            <th>Item</th>
+            <th className="info">
+              Consumables⏬
+              <div
+                className="infotext"
+                style={{
+                  fontSize: ".8em",
+                  fontWeight: "normal",
+                  backgroundColor: "inherit",
+                }}
+              >
+                Things that get used or destroyed during filming.
+                <br /> Cost is the cost to replace the thing
+              </div>
+            </th>
             <th>Cost</th>
             <th>Quantity</th>
             <th>Cost</th>
@@ -221,7 +252,6 @@ export default function Invoice() {
             <td>
               <input
                 type="number"
-                step="0.01"
                 value={customItemCost}
                 onChange={(e) => setCustomItemCost(e.target.value)}
                 placeholder="0.00"
@@ -251,7 +281,7 @@ export default function Invoice() {
                 border: "5px solid black",
               }}
             >
-              Services & Supplies Subtotal: $
+              Services & Consumables Subtotal: $
               {servicesAndSuppliesSubtotal.toFixed(2)}
             </td>
           </tr>
@@ -266,7 +296,14 @@ export default function Invoice() {
         </thead>
         <tbody>
           <tr>
-            <td>Exclusive</td>
+            <td className="info">
+              ⏬Exclusive
+              <div className="infotext">
+                {" "}
+                you want the media I make to be only seen by you and never
+                posted anywhere else(all calls must include this)
+              </div>
+            </td>
             <td>50%</td>
             <td>
               <input
@@ -278,7 +315,15 @@ export default function Invoice() {
             <td>${exclusiveTotal}</td>
           </tr>
           <tr>
-            <td>Rush</td>
+            <td className="info">
+              ⏬Rush
+              <div className="infotext">
+                you want the content to happen sooner then the time I estimated.
+                this can be applied multiple times depending on the amount
+                rush(if 1 estimated 1 week, 3 days may be 1 quantity, meanwhile
+                1 day may be 2 quantity)
+              </div>
+            </td>
             <td>50%</td>
             <td>
               <input
@@ -290,7 +335,16 @@ export default function Invoice() {
             <td>${rushTotal}</td>
           </tr>
           <tr>
-            <td>Extreme/taboo/difficult</td>
+            <td className="info">
+              ⏬Extreme/taboo/difficult
+              <div className="infotext">
+                The content is particularly tabboo,{" "}
+                <a href="/about#collapse-lovesandlimits" target="_blank">
+                  is something on my list of soft limits,
+                </a>
+                or otherwise is more difficult to resell such as name use.
+              </div>
+            </td>
             <td>50%</td>
             <td>
               <input
@@ -300,6 +354,25 @@ export default function Invoice() {
               />
             </td>
             <td>${extremeTotal}</td>
+          </tr>
+          <tr>
+            <td className="info">
+              ⏬Jerk
+              <div className="infotext">
+                you have been a particular jerk, not reading what I have sent
+                you, not respecting my stance on things, or have just been rude
+                without my agreeing to that.
+              </div>
+            </td>
+            <td>50%</td>
+            <td>
+              <input
+                type="number"
+                value={jerkQty}
+                onChange={(e) => setjerkQty(e.target.value)}
+              />
+            </td>
+            <td>${jerkTotal}</td>
           </tr>
         </tbody>
         <thead>
@@ -312,7 +385,13 @@ export default function Invoice() {
         </thead>
         <tbody>
           <tr>
-            <td>Bulk</td>
+            <td className="info">
+              ⏬Bulk
+              <div className="infotext">
+                You buy a lot of things at once. This can be applied multiple
+                times.(all "experiences" include this by default)
+              </div>
+            </td>
             <td>25%</td>
             <td>
               <input
@@ -324,7 +403,13 @@ export default function Invoice() {
             <td>${bulkTotal}</td>
           </tr>
           <tr>
-            <td>Easy</td>
+            <td className="info">
+              ⏬Easy
+              <div className="infotext">
+                You are wanting something that is incredibly easy to do or make,
+                such as a custom video of me shaking my tits.
+              </div>
+            </td>
             <td>25%</td>
             <td>
               <input
@@ -336,7 +421,13 @@ export default function Invoice() {
             <td>${easyTotal}</td>
           </tr>
           <tr>
-            <td>Other</td>
+            <td className="info">
+              ⏬Other
+              <div className="infotext">
+                Other reasons I may decide you deserve a discount, such as a
+                birthday sale or whatever
+              </div>
+            </td>
             <td>25%</td>
             <td>
               <input
@@ -370,8 +461,32 @@ export default function Invoice() {
       </table>
 
       {/* Final Total */}
-      <table>
+      <table
+        style={{
+          border: "10px double black",
+        }}
+      >
         <tbody>
+          <tr
+            style={{
+              background: "white",
+              opacity: 0.9,
+            }}
+          >
+            <td
+              colSpan="4"
+              style={{
+                color: "black",
+                fontSize: "1em",
+                textAlign: "center",
+                fontWeight: "normal",
+              }}
+            >
+              ${servicesAndSuppliesSubtotal.toFixed(2)}+$
+              {(markupsSubtotal - discountsSubtotal).toFixed(2)}=$
+              {finalTotal.toFixed(2)}
+            </td>
+          </tr>
           <tr
             style={{
               background: "white",
@@ -384,20 +499,30 @@ export default function Invoice() {
                 color: "black",
                 fontSize: "1.5em",
                 textAlign: "center",
-                border: "10px double black",
                 fontWeight: "bold",
               }}
             >
-              Final Total: ${finalTotal.toFixed(2)}
+              Final Total: ${(Math.floor(finalTotal / 5) * 5).toFixed(2)}
+              <p
+                style={{
+                  color: "black",
+                  fontSize: ".6em",
+                  fontWeight: "normal",
+                  backgroundColor: "inherit",
+                }}
+              >
+                {" "}
+                rounded down to the nearest $5
+              </p>
             </td>
           </tr>
         </tbody>
       </table>
 
       <p>
-        No content sent until payment is sent. I reserve the right to refuse any
-        request prior to payment. That said, am a pervert so ask about
-        exclusivity if that is something you are interested in.
+        No content sent until payment is sent.
+        <br /> I reserve the right to refuse any request prior to payment. That
+        said, am a pervert so ask.
       </p>
     </div>
   );

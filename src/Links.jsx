@@ -59,9 +59,12 @@ export function Link({ name, desc, img, link = "" }) {
   };
 
   return (
-    <div className="link" onContextMenu={() => handlerightclick(id, location)}>
+    <div
+      className="link"
+      onContextMenu={(e) => handlerightclick(id, location, e)}
+    >
       <div className="info">
-        +<br />
+        ⏬<br />
         <div className="infotext">
           <h2>{name}</h2>
           <h4>{desc}</h4>
@@ -301,7 +304,7 @@ export function Sociallinks() {
               width: "100%",
             }}
           >
-            Social Media +
+            Social Media ⏬
           </h1>
         }
       >
@@ -411,7 +414,7 @@ export function Guestlinks() {
               width: "100%",
             }}
           >
-            Places I guest star +
+            Places I guest star ⏬
           </h1>
         }
       >

@@ -19,7 +19,9 @@ export default function Menu() {
           following markups and discounts
         </h4>
         <Collapse
-          trigger={<h4>📈Exclusive, Rush, Taboo, Jerk ~ 50% markup each📈+</h4>}
+          trigger={
+            <h4>📈Exclusive, Rush, Taboo, Jerk ~ 50% markup each📈⏬</h4>
+          }
         >
           {" "}
           <p
@@ -37,15 +39,17 @@ export default function Menu() {
             ~ you want the content to happen sooner then the time I estimated.
             this can be applied multiple times depending on the amount rush(if 1
             estimated 1 week, 3 days may be 50%, meanwhile 1 day may be 100%)
-            <br />
-            ~ The content is particularly tabboo or is something on my list of
-            soft limits. Things such as ageplay, incest rp, CNC, or scat. <br />
-            ~ you have been a particular jerk, not reading what I have sent you,
+            <br />~ The content is particularly tabboo,{" "}
+            <a href="/about#collapse-softlimits">
+              is something on my list of soft limits,
+            </a>
+            or otherwise is more difficult to resell such as name use. <br />~
+            you have been a particular jerk, not reading what I have sent you,
             not respecting my stance on things, or just been mean without my
             agreeing to that.
           </p>
         </Collapse>
-        <Collapse trigger={<h4>📉Bulk, Easy ~ 25% discount each📉+</h4>}>
+        <Collapse trigger={<h4>📉Bulk, Easy ~ 25% discount each📉⏬</h4>}>
           {" "}
           <p
             style={{
@@ -64,17 +68,17 @@ export default function Menu() {
         </Collapse>
       </div>
       <div>
-        <Collapse trigger={<h3>🖼️6,400+ Pic drive ~ $100 🖼️+</h3>}>
+        <Collapse trigger={<h3>🖼️6,400+ Pic drive ~ $100 🖼️⏬</h3>}>
           Permanant access to a google drive that I update with all pictures I
           take of myself.
           <img src={Picdrive} style={{ width: "100%" }} />
         </Collapse>
-        <Collapse trigger={<h3>📼700+ vid drive ~ $100 📼+</h3>}>
+        <Collapse trigger={<h3>📼700+ vid drive ~ $100 📼⏬</h3>}>
           Permanant access to a google drive that I update with all videos I
           take of myself.
           <img src={Viddrive} style={{ width: "100%" }} />
         </Collapse>
-        <Collapse trigger={<h3>📸Custom photoset~ $15+📸+</h3>}>
+        <Collapse trigger={<h3>📸Custom photoset~ $15+📸⏬</h3>}>
           <div>
             <img
               src={headerimg}
@@ -93,11 +97,12 @@ export default function Menu() {
               ~ Want to see me in a specific pose or a specific outfit? Let me
               show you!
               <br />~ Price is higly dependent on the specifics so please reach
-              out for a <u style={{ margin: "0" }}>quote!</u>
+              out for a{" "}
+              <a href="/menu#collapse-invoiceformformakingquotes">quote!</a>
             </p>
           </div>
         </Collapse>
-        <Collapse trigger={<h3>🎬3m Custom Vid~ $20+🎬+</h3>}>
+        <Collapse trigger={<h3>🎬3m Custom Vid~ $20+🎬⏬</h3>}>
           {" "}
           <div>
             <p
@@ -108,7 +113,8 @@ export default function Menu() {
             >
               ~ Want to see me doing or saying anything specific? Let me show
               you! <br />~ Price is higly dependent on the specifics so please
-              reach out for a <u style={{ margin: "0" }}>quote!</u>
+              reach out for a{" "}
+              <a href="/menu#collapse-invoiceformformakingquotes">quote!</a>
             </p>
             <img
               src={headerimg}
@@ -120,7 +126,7 @@ export default function Menu() {
             />
           </div>
         </Collapse>
-        <Collapse trigger={<h3>🍌 Text Rating ~ $5🍌+</h3>}>
+        <Collapse trigger={<h3>🍌 Text Rating ~ $5🍌⏬</h3>}>
           {" "}
           <div>
             <img
@@ -147,7 +153,7 @@ export default function Menu() {
             </p>
           </div>
         </Collapse>
-        <Collapse trigger={<h3>🍆 Video Rating ~ $30🍆+</h3>}>
+        <Collapse trigger={<h3>🍆 Video Rating ~ $30🍆⏬</h3>}>
           {" "}
           <div>
             <p
@@ -176,7 +182,7 @@ export default function Menu() {
             />
           </div>
         </Collapse>
-        <Collapse trigger={<h3>💌15m Sexting Session ~ $30+💌+</h3>}>
+        <Collapse trigger={<h3>💌15m Sexting Session ~ $30+💌⏬</h3>}>
           {" "}
           <div>
             <img
@@ -198,7 +204,7 @@ export default function Menu() {
             </p>
           </div>
         </Collapse>
-        <Collapse trigger={<h3>📳5m Video Call ~ $55+📳+</h3>}>
+        <Collapse trigger={<h3>📳5m Video Call ~ $55+📳⏬</h3>}>
           {" "}
           <div>
             <p
@@ -221,7 +227,7 @@ export default function Menu() {
             />
           </div>
         </Collapse>
-        <Collapse trigger={<h3>💋1 week GFE ~ $100+💋+</h3>}>
+        <Collapse trigger={<h3>💋1 week GFE ~ $100+💋⏬</h3>}>
           {" "}
           <div>
             <img
@@ -243,7 +249,7 @@ export default function Menu() {
             </p>
           </div>
         </Collapse>
-        <Collapse trigger={<h3>💍1 week True GFE ~ $600💍+</h3>}>
+        <Collapse trigger={<h3>💍1 week True GFE ~ $600💍⏬</h3>}>
           {" "}
           <div>
             <p
@@ -266,7 +272,7 @@ export default function Menu() {
           </div>
         </Collapse>
         <div>
-          <Collapse trigger={<h2> 🛏️Calgary meets🛏️+</h2>}>
+          <Collapse trigger={<h2> 🛏️Calgary meets🛏️⏬</h2>}>
             Full details listed{" "}
             <a href="https://tryst.link/escort/lunepusa"> here</a>
             <Collapse trigger={<h3>Rules +</h3>}>
@@ -284,7 +290,7 @@ export default function Menu() {
           </Collapse>
         </div>
       </div>
-      <Collapse trigger={<h2>🧮Invoice form for making quotes🧮</h2>}>
+      <Collapse trigger={<h2>🧮Invoice form for making quotes🧮⏬</h2>}>
         <Invoice />
       </Collapse>
     </div>
