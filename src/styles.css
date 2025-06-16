@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Julee&display=swap");
 * {
   color: white;
-  font-family: Julee;
+  font-family: Julee !important;
   vertical-align: middle;
   margin-top: 0%;
   margin-bottom: 0%;
@@ -26,8 +26,7 @@ h6 {
   font-weight: normal;
   font-style: normal;
 }
-.navbar {
-}
+
 li {
   display: inline-block;
 }
