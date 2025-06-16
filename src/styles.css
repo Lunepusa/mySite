@@ -10,6 +10,9 @@
   box-sizing: border-box;
   scrollbar-color: white black;
 }
+.seo-hidden {
+  display: none !important;
+}
 html {
   background-color: black;
   width: 100%;
