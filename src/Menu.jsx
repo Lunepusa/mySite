@@ -313,7 +313,7 @@ export default function Menu() {
               ~ I cannot guarentee availability till deposit is paid. <br />
               ~ markups and discounts above may apply
               <br />~ No Fly Me to You. Calgary only.
-            </Collaps>
+            </Collapse>
             <img
               src={headerimg}
               style={{
