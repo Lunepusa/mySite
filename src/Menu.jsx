@@ -7,6 +7,8 @@ import Collapse from "./Utility";
 import Picdrive from "./Images/Preview/PicDrive.png";
 import Viddrive from "./Images/Preview/vidDrive.png";
 import headerimg from "./Images/Preview/headerimg.png";
+import fepreview from "./Images/Preview/FE.jpg";
+import pgfepreview from "./Images/Preview/PGFE.jpg";
 
 export default function Menu() {
   return (
@@ -83,7 +85,7 @@ export default function Menu() {
             <img
               src={headerimg}
               style={{
-                width: "15%",
+                width: "25%",
                 display: "inline-block",
                 verticleAlign: "middle",
               }}
@@ -91,7 +93,7 @@ export default function Menu() {
             <p
               style={{
                 display: "inline-block",
-                width: "80%",
+                width: "70%",
               }}
             >
               ~ Want to see me in a specific pose or a specific outfit? Let me
@@ -108,7 +110,7 @@ export default function Menu() {
             <p
               style={{
                 display: "inline-block",
-                width: "80%",
+                width: "70%",
               }}
             >
               ~ Want to see me doing or saying anything specific? Let me show
@@ -119,7 +121,7 @@ export default function Menu() {
             <img
               src={headerimg}
               style={{
-                width: "15%",
+                width: "25%",
                 display: "inline-block",
                 verticleAlign: "middle",
               }}
@@ -128,11 +130,11 @@ export default function Menu() {
         </Collapse>
         <Collapse trigger={<h3>🍌 Text Rating ~ $5🍌⏬</h3>}>
           {" "}
-          <div>
+          <div><div>
             <img
               src={headerimg}
               style={{
-                width: "15%",
+                width: "25%",
                 display: "inline-block",
                 verticleAlign: "middle",
               }}
@@ -140,42 +142,44 @@ export default function Menu() {
             <p
               style={{
                 display: "inline-block",
-                width: "80%",
+                width: "70%",
               }}
             >
               ~ Detailed paragraph rating where I talk about my thoughts on your
               shape and size, what I think it would be fun to do with, and a
-              rating out of 10. <br />
+              rating out of 10. <br /></p></div><p style={{
+                display: "inline-block",
+              }}>
               ~ You can send any number of pictures and videos. Do not send
               until after I tell you to so I can get my first reaction.
               <br />~ Let me know if you want me to be more complimentary or
-              mean rather then purely honest.
-            </p>
+              mean rather then purely honest.</p>
+          
           </div>
         </Collapse>
         <Collapse trigger={<h3>🍆 Video Rating ~ $30🍆⏬</h3>}>
           {" "}
-          <div>
+          <div><div>
             <p
               style={{
                 display: "inline-block",
-                width: "80%",
+                width: "70%",
               }}
             >
               ~ Detailed 3+ minute video rating where I talk about my thoughts
               on your shape and size, what I think it would be fun to do with,
               and a rating out of 10. I can be wearing anything you want.
               Including nothing.
-              <br />
+              <br /></p></div><p style={{
+                display: "inline-block"}}>
               ~ You can send any number of pictures and videos. Do not send
               until after I tell you to so I can get my first reaction.
               <br />~ Let me know if you want me to be more complimentary or
-              mean rather then purely honest.
-            </p>
+              mean rather then purely honest</p>
             <img
               src={headerimg}
               style={{
-                width: "15%",
+                width: "25%",
                 display: "inline-block",
                 verticleAlign: "middle",
               }}
@@ -188,7 +192,7 @@ export default function Menu() {
             <img
               src={headerimg}
               style={{
-                width: "15%",
+                width: "25%",
                 display: "inline-block",
                 verticleAlign: "middle",
               }}
@@ -196,7 +200,7 @@ export default function Menu() {
             <p
               style={{
                 display: "inline-block",
-                width: "80%",
+                width: "70%",
               }}
             >
               ~ 15 minutes of my dedicated attention chatting and sending live
@@ -210,7 +214,7 @@ export default function Menu() {
             <p
               style={{
                 display: "inline-block",
-                width: "80%",
+                width: "70%",
               }}
             >
               ~ 5 minute video call where we talk about or show whatever you
@@ -220,7 +224,7 @@ export default function Menu() {
             <img
               src={headerimg}
               style={{
-                width: "15%",
+                width: "25%",
                 display: "inline-block",
                 verticleAlign: "middle",
               }}
@@ -231,9 +235,9 @@ export default function Menu() {
           {" "}
           <div>
             <img
-              src={headerimg}
+              src={fepreview}
               style={{
-                width: "15%",
+                width: "25%",
                 display: "inline-block",
                 verticleAlign: "middle",
               }}
@@ -241,7 +245,7 @@ export default function Menu() {
             <p
               style={{
                 display: "inline-block",
-                width: "80%",
+                width: "70%",
               }}
             >
               ~ 1 week of extremely casual no media texting resonding when I have time <br /> online only
@@ -256,7 +260,7 @@ export default function Menu() {
             <p
               style={{
                 display: "inline-block",
-                width: "80%",
+                width: "70%",
               }}
             >
               ~ 1 week of no media texting/sexting throughout the day, good
@@ -265,7 +269,7 @@ export default function Menu() {
             <img
               src={headerimg}
               style={{
-                width: "15%",
+                width: "25%",
                 display: "inline-block",
                 verticleAlign: "middle",
               }}
@@ -276,9 +280,9 @@ export default function Menu() {
           {" "}
           <div>
             <img
-              src={headerimg}
+              src={pgfepreview}
               style={{
-                width: "15%",
+                width: "25%",
                 display: "inline-block",
                 verticleAlign: "middle",
               }}
@@ -286,7 +290,7 @@ export default function Menu() {
             <p
               style={{
                 display: "inline-block",
-                width: "80%",
+                width: "70%",
               }}
             >
               ~ 1 week of live media texting/sexting throughout the day, up to 2 hours of customs or calls throughout the week <br /> online only
@@ -297,19 +301,28 @@ export default function Menu() {
         <div>
           <Collapse trigger={<h2> 🛏️Calgary meets🛏️⏬</h2>}>
             Full details listed{" "}
-            <a href="https://tryst.link/escort/lunepusa"> here</a>
+            <a href="https://tryst.link/escort/lunepusa"> here</a><br /><div>
+             <h4>🏩1hr at my hotel room ~ $500🏩</h4>
+            Includes $200 deposit required minimum 3 days prior
+            <h4>🏠1hr at your place ~ $400🏠</h4>
+            Includes $100 deposit required minimum 12 hours prior
+            <h4>⏳Additional hour~ $200⏳</h4>
             <Collapse trigger={<h3>Rules ⏬</h3>}>
               ~ Condoms required for everything <br />
               ~ no same day appointments <br />
               ~ I cannot guarentee availability till deposit is paid. <br />
               ~ markups and discounts above may apply
               <br />~ No Fly Me to You. Calgary only.
-            </Collapse>
-            <h4>🏩1hr at my hotel room ~ $500🏩</h4>
-            Includes $200 deposit required minimum 3 days prior
-            <h4>🏠1hr at your place ~ $400🏠</h4>
-            Includes $100 deposit required minimum 12 hours prior
-            <h4>⏳Additional hour~ $200⏳</h4>
+            </Collaps>
+            <img
+              src={headerimg}
+              style={{
+                width: "25%",
+                display: "inline-block",
+                verticleAlign: "middle",
+              }}
+            />
+          </div>
           </Collapse>
         </div>
       </div>

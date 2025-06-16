@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Allow: /images/  # Explicitly allow image directories, if applicable
+Disallow: /api/  # Block API endpoints, if used
+Disallow: /private/  # Block sensitive directories, if any
+Sitemap: https://LunePusa.onrender.com/sitemap.xml
