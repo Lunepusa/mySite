@@ -92,7 +92,7 @@ export default function Menu() {
           <div>
             <img
               src={custompicpreview}
-              classname="previewimg"
+              class="previewimg"
             />{" "}
             <p
               style={{
@@ -124,7 +124,7 @@ export default function Menu() {
             </p>
             <img
               src={customvidpreview}
-              classname="previewimg"
+              class="previewimg"
             />
           </div>
         </Collapse>
@@ -133,7 +133,7 @@ export default function Menu() {
           <div><div>
             <img
               src={textratepreview}
-              classname="previewimg"
+              class="previewimg"
             />
             <p
               style={{
@@ -168,7 +168,7 @@ export default function Menu() {
               Including nothing.
               <br /></p><img
               src={vidratepreview}
-             classname="previewimg"
+             class="previewimg"
 
             /></div><p style={{
                 display: "inline-block"}}>
@@ -184,7 +184,7 @@ export default function Menu() {
           <div>
             <img
               src={sextpreview}
-              classname="previewimg"
+              class="previewimg"
 
             />
             <p
@@ -213,7 +213,7 @@ export default function Menu() {
             </p>
             <img
               src={vidcallpreview}
-              classname="previewimg"
+              class="previewimg"
             />
           </div>
         </Collapse>
@@ -222,7 +222,7 @@ export default function Menu() {
           <div>
             <img
               src={fepreview}
-              classname="previewimg"
+              class="previewimg"
             />
             <p
               style={{
@@ -259,7 +259,7 @@ export default function Menu() {
           <div>
             <img
               src={pgfepreview}
-              classname="previewimg"
+              class="previewimg"
             />
             <p
               style={{
@@ -290,7 +290,7 @@ export default function Menu() {
             </Collapse>
             <img
               src={meetpreview}
-              classname="previewimg"
+              class="previewimg"
             />
           </div>
           </Collapse>
