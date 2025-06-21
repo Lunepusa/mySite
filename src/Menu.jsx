@@ -9,6 +9,14 @@ import Viddrive from "./Images/Preview/vidDrive.png";
 import headerimg from "./Images/Preview/headerimg.png";
 import fepreview from "./Images/Preview/FE.jpg";
 import pgfepreview from "./Images/Preview/PGFE.jpg";
+import custompicpreview from "./Images/Preview/custompic.jpg";
+import customvidpreview from "./Images/Preview/custvid.jpg";
+import gfepreview from "./Images/Preview/gfe.jpg";
+import meetpreview from "./Images/Preview/Meet.jpg";
+import textratepreview from "./Images/Preview/textrate.jpg";
+import vidratepreview from "./Images/Preview/vidrate.jpg";
+import vidcallpreview from "./Images/Preview/vidcall.png";
+import sextpreview from "./Images/Preview/sext.jpg";
 
 export default function Menu() {
   return (
@@ -72,23 +80,19 @@ export default function Menu() {
       <div>
         <Collapse trigger={<h3>🖼️6,400+ Pic drive ~ $100 🖼️⏬</h3>}>
           Permanant access to a google drive that I update with all pictures I
-          take of myself.
-          <img src={Picdrive} style={{ width: "100%" }} />
+          take of myself.<br />
+          <img src={Picdrive} style={{ maxWidth: "100%",maxHeight: "60vh" }} />
         </Collapse>
         <Collapse trigger={<h3>📼700+ vid drive ~ $100 📼⏬</h3>}>
           Permanant access to a google drive that I update with all videos I
-          take of myself.
-          <img src={Viddrive} style={{ width: "100%" }} />
+          take of myself.<br />
+          <img src={Viddrive} style={{ maxWidth: "100%", maxHeight:"60vh" }} />
         </Collapse>
         <Collapse trigger={<h3>📸Custom photoset~ $15+📸⏬</h3>}>
           <div>
             <img
-              src={headerimg}
-              style={{
-                width: "25%",
-                display: "inline-block",
-                verticleAlign: "middle",
-              }}
+              src={custompicpreview}
+              classname="previewimg"
             />{" "}
             <p
               style={{
@@ -119,12 +123,8 @@ export default function Menu() {
               <a href="/menu#collapse-invoiceformformakingquotes">quote!</a>
             </p>
             <img
-              src={headerimg}
-              style={{
-                width: "25%",
-                display: "inline-block",
-                verticleAlign: "middle",
-              }}
+              src={customvidpreview}
+              classname="previewimg"
             />
           </div>
         </Collapse>
@@ -132,12 +132,8 @@ export default function Menu() {
           {" "}
           <div><div>
             <img
-              src={headerimg}
-              style={{
-                width: "25%",
-                display: "inline-block",
-                verticleAlign: "middle",
-              }}
+              src={textratepreview}
+              classname="previewimg"
             />
             <p
               style={{
@@ -170,32 +166,26 @@ export default function Menu() {
               on your shape and size, what I think it would be fun to do with,
               and a rating out of 10. I can be wearing anything you want.
               Including nothing.
-              <br /></p></div><p style={{
+              <br /></p><img
+              src={vidratepreview}
+             classname="previewimg"
+
+            /></div><p style={{
                 display: "inline-block"}}>
               ~ You can send any number of pictures and videos. Do not send
               until after I tell you to so I can get my first reaction.
               <br />~ Let me know if you want me to be more complimentary or
               mean rather then purely honest</p>
-            <img
-              src={headerimg}
-              style={{
-                width: "25%",
-                display: "inline-block",
-                verticleAlign: "middle",
-              }}
-            />
+            
           </div>
         </Collapse>
         <Collapse trigger={<h3>💌15m Sexting Session ~ $30+💌⏬</h3>}>
           {" "}
           <div>
             <img
-              src={headerimg}
-              style={{
-                width: "25%",
-                display: "inline-block",
-                verticleAlign: "middle",
-              }}
+              src={sextpreview}
+              classname="previewimg"
+
             />
             <p
               style={{
@@ -222,12 +212,8 @@ export default function Menu() {
               <br />~ $25 for every additional 5 minutes
             </p>
             <img
-              src={headerimg}
-              style={{
-                width: "25%",
-                display: "inline-block",
-                verticleAlign: "middle",
-              }}
+              src={vidcallpreview}
+              classname="previewimg"
             />
           </div>
         </Collapse>
@@ -236,11 +222,7 @@ export default function Menu() {
           <div>
             <img
               src={fepreview}
-              style={{
-                width: "25%",
-                display: "inline-block",
-                verticleAlign: "middle",
-              }}
+              classname="previewimg"
             />
             <p
               style={{
@@ -267,12 +249,8 @@ export default function Menu() {
               morning and good night pics <br /> online only
             </p>
             <img
-              src={headerimg}
-              style={{
-                width: "25%",
-                display: "inline-block",
-                verticleAlign: "middle",
-              }}
+              src={gfepreview}
+              classname="previewimg"
             />
           </div>
         </Collapse>
@@ -281,11 +259,7 @@ export default function Menu() {
           <div>
             <img
               src={pgfepreview}
-              style={{
-                width: "25%",
-                display: "inline-block",
-                verticleAlign: "middle",
-              }}
+              classname="previewimg"
             />
             <p
               style={{
@@ -315,12 +289,8 @@ export default function Menu() {
               <br />~ No Fly Me to You. Calgary only.
             </Collapse>
             <img
-              src={headerimg}
-              style={{
-                width: "25%",
-                display: "inline-block",
-                verticleAlign: "middle",
-              }}
+              src={meetpreview}
+              classname="previewimg"
             />
           </div>
           </Collapse>
