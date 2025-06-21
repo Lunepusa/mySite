@@ -100,6 +100,18 @@ export function Preferredlinks() {
           link="https://fans.ly/r/Lunepusa"
         />
         <Link
+            name="Sheer"
+            desc="hard fetish friendly platform"
+            img={Sheer}
+            link="https://www.sheer.com/LunePusa"
+          />
+          <Link
+            name="Manyvids"
+            desc=""
+            img={Manyvids}
+            link="https://lunepusa.manyvids.com"
+          />
+        <Link
           name="Throne"
           desc="Give me a gift"
           img={Throne}
