@@ -250,7 +250,7 @@ export default function Menu() {
             </p>
             <img
               src={gfepreview}
-              classname="previewimg"
+              class="previewimg"
             />
           </div>
         </Collapse>
