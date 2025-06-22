@@ -4,12 +4,9 @@ import "./styles.css";
 export default function Invoice() {
   // Individual state for each service
   const [discussionQty, setDiscussionQty] = useState(0);
-  const [setupCleanupQty, setSetupCleanupQty] = useState(60);
+  const [setupCleanupQty, setSetupCleanupQty] = useState(45);
   const [contentCreationQty, setContentCreationQty] = useState(5);
   const [editingQty, setEditingQty] = useState(0);
-  const [invoiceDescription, setInvoiceDescription] = useState(
-    "10 minute video call"
-  );
   // Individual state for each consumable
   const [cumLubeQty, setCumLubeQty] = useState(0);
   const [condomQty, setCondomQty] = useState(0);
@@ -21,11 +18,222 @@ export default function Invoice() {
   // State for markups and discounts
   const [exclusiveQty, setExclusiveQty] = useState(1);
   const [rushQty, setRushQty] = useState(0);
-  const [extremeQty, setExtremeQty] = useState(0);
+  const [extremeQty, setExtremeQty] = useState(1);
   const [jerkQty, setjerkQty] = useState(0);
   const [bulkQty, setBulkQty] = useState(0);
   const [easyQty, setEasyQty] = useState(0);
   const [otherQty, setOtherQty] = useState(0);
+
+ // State for invoice description
+  const [invoiceDescription, setInvoiceDescription] = useState("5m video call");
+  const presetOptions = [
+    "Custom Photoset",
+    "Custom Video",
+    "Text Rating",
+    "Video Rating",
+    "15m Sexting Session",
+    "5m Video Call",
+    "1 week Friend Experience",
+    "1 week GirlFriend Experience",
+    "1 week Premium GirlFriend Experience",
+    "other",
+  ];
+  const q15=[0,15,30,45,60,75,90,105,120]
+  const q60=[190,240, 300, 360, 420, 480, 540, 600,660, 720, 780, 840, 900, 960, 1020, 1080, 1140, 1200]
+  const q1=[0,1,2,3,4,5,6,7,8,9,10]
+  const q5=[15,20,25,30,35,40,45,50,55,60]
+
+  // Preset configurations for quantities
+  const presetQuantities = {
+    "Custom Photoset": {
+      discussionQty: 15,
+      setupCleanupQty: 15,
+      contentCreationQty: 3,
+      editingQty: 0,
+      cumLubeQty: 0,
+      condomQty: 0,
+      pantyhoseQty: 0,
+      customItemQty: 0,
+      exclusiveQty: 0,
+      rushQty: 0,
+      extremeQty: 0,
+      bulkQty: 0,
+      easyQty: 0,
+      otherQty: 0,
+    },
+    "Custom Video": {
+      discussionQty: 15,
+      setupCleanupQty: 30,
+      contentCreationQty: 3,
+      editingQty: 0,
+      cumLubeQty: 0,
+      condomQty: 0,
+      pantyhoseQty: 0,
+      customItemQty: 0,
+      exclusiveQty: 0,
+      rushQty: 0,
+      extremeQty: 0,
+      bulkQty: 0,
+      easyQty: 0,
+      otherQty: 0,
+    },
+    "Text Rating": {
+      discussionQty: 30,
+      setupCleanupQty: 0,
+      contentCreationQty: 0,
+      editingQty: 0,
+      cumLubeQty: 0,
+      condomQty: 0,
+      pantyhoseQty: 0,
+      customItemQty: 0,
+      exclusiveQty: 0,
+      rushQty: 0,
+      extremeQty: 0,
+      bulkQty: 0,
+      easyQty: 0,
+      otherQty: 0,
+    },
+    "Video Rating": {
+      discussionQty: 0,
+      setupCleanupQty: 30,
+      contentCreationQty: 5,
+      editingQty: 0,
+      cumLubeQty: 2,
+      condomQty: 0,
+      pantyhoseQty: 0,
+      customItemQty: 0,
+      exclusiveQty: 1,
+      rushQty: 0,
+      extremeQty: 0,
+      bulkQty: 0,
+      easyQty: 1,
+      otherQty: 0,
+    },
+    "15m Sexting Session": {
+      discussionQty: 10,
+      setupCleanupQty: 30,
+      contentCreationQty: 5,
+      editingQty: 0,
+      cumLubeQty: 0,
+      condomQty: 0,
+      pantyhoseQty: 0,
+      customItemQty: 0,
+      exclusiveQty: 0,
+      rushQty: 0,
+      extremeQty: 0,
+      bulkQty: 0,
+      easyQty: 0,
+      otherQty: 0,
+    },
+      "5m Video Call": {
+      discussionQty: 0,
+      setupCleanupQty: 45,
+      contentCreationQty: 5,
+      editingQty: 0,
+      cumLubeQty: 0,
+      condomQty: 0,
+      pantyhoseQty: 0,
+      customItemQty: 0,
+      exclusiveQty: 1,
+      rushQty: 0,
+      extremeQty: 1,
+      bulkQty: 0,
+      easyQty: 0,
+      otherQty: 0,
+    },
+     "1 week Friend Experience": {
+      discussionQty: 300,
+      setupCleanupQty: 0,
+      contentCreationQty: 0,
+      editingQty: 0,
+      cumLubeQty: 0,
+      condomQty: 0,
+      pantyhoseQty: 0,
+      customItemQty: 0,
+      exclusiveQty: 0,
+      rushQty: 0,
+      extremeQty: 0,
+      bulkQty: 1,
+      easyQty: 1,
+      otherQty: 0,
+    },
+   "1 week GirlFriend Experience": {
+      discussionQty: 600,
+      setupCleanupQty: 0,
+      contentCreationQty: 10,
+      editingQty: 0,
+      cumLubeQty: 0,
+      condomQty: 0,
+      pantyhoseQty: 0,
+      customItemQty: 0,
+      exclusiveQty: 0,
+      rushQty: 0,
+      extremeQty: 0,
+      bulkQty: 1,
+      easyQty: 0,
+      otherQty: 0,
+    },
+    "1 week Premium GirlFriend Experience": {
+      discussionQty: 600,
+      setupCleanupQty: 60,
+      contentCreationQty: 180,
+      editingQty: 0,
+      cumLubeQty: 0,
+      condomQty: 0,
+      pantyhoseQty: 0,
+      customItemQty: 0,
+      exclusiveQty: 0,
+      rushQty: 0,
+      extremeQty: 0,
+      bulkQty: 1,
+      easyQty: 0,
+      otherQty: 0,
+    },
+    "other": {
+      discussionQty: 0,
+      setupCleanupQty: 0,
+      contentCreationQty: 0,
+      editingQty: 0,
+      cumLubeQty: 0,
+      condomQty: 0,
+      pantyhoseQty: 0,
+      customItemQty: 0,
+      exclusiveQty: 0,
+      rushQty: 0,
+      extremeQty: 0,
+      bulkQty: 0,
+      easyQty: 0,
+      otherQty: 0,
+    },
+  };
+
+  // Function to apply preset quantities based on input value
+  const applyPreset = (value) => {
+    const matchedPreset = presetOptions.find((preset) =>
+      preset.toLowerCase() === value.toLowerCase()
+    );
+    if (matchedPreset) {
+      const quantities = presetQuantities[matchedPreset] || presetQuantities["5m video call"];
+      setDiscussionQty(quantities.discussionQty);
+      setSetupCleanupQty(quantities.setupCleanupQty);
+      setContentCreationQty(quantities.contentCreationQty);
+      setEditingQty(quantities.editingQty);
+      setCumLubeQty(quantities.cumLubeQty);
+      setCondomQty(quantities.condomQty);
+      setPantyhoseQty(quantities.pantyhoseQty);
+      setCustomItemQty(quantities.customItemQty);
+      setExclusiveQty(quantities.exclusiveQty);
+      setRushQty(quantities.rushQty);
+      setExtremeQty(quantities.extremeQty);
+      setBulkQty(quantities.bulkQty);
+      setEasyQty(quantities.easyQty);
+      setOtherQty(quantities.otherQty);
+      setInvoiceDescription(matchedPreset);
+    } else {
+      setInvoiceDescription(value); // Allow custom text
+    }
+  };
+
 
   // Calculate costs
   const discussionCost = discussionQty * 0.17;
@@ -77,18 +285,21 @@ export default function Invoice() {
         <label htmlFor="for" style={{ color: "black" }}>
           Invoice for:
         </label>
-        <textarea
+        <select
           id="for"
           value={invoiceDescription}
           onChange={(e) => setInvoiceDescription(e.target.value)}
-          wrap="hard"
-          rows={1}
           style={{
             display: "inline-block",
-            width: "50%",
+            width: "25%",
             color: "black",
-          }}
-        />
+          }}>
+             {presetOptions.map((option) => (
+            <option key={option} value={option}>{option}</option>
+          ))}
+            </select>
+            <textarea style={{width:"80", color:"black"}} rows={1} wrap="hard"></textarea>
+         
       </div>
 
       {/* Combined Services and Consumables Table */}
@@ -117,12 +328,17 @@ export default function Invoice() {
             </td>
             <td>$0.17</td>
             <td>
-              <input
-                type="number"
-                step={15}
+              <select
                 value={discussionQty}
                 onChange={(e) => setDiscussionQty(e.target.value)}
-              />
+              > {q15.map((option) => (
+            <option key={option} value={option}>{option}</option>
+          ))}<optgroup label="Larger Numbers">
+            {q60.map((option) => (
+            <option key={option} value={option}>{option}</option>
+          ))}
+          </optgroup>
+            </select>
             </td>
             <td>${discussionCost.toFixed(2)}</td>
           </tr>

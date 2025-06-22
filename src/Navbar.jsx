@@ -54,6 +54,7 @@ function navbar() {
             textAlign: "left",
             fontSize: "2em",
             display: "inline-block",
+            backgroundColor: "rgba(0, 0, 0, 0.5)"
           }}
         >
           <Link to="/" style={{ textDecoration: "none" }}>

@@ -39,6 +39,7 @@ li a {
   text-decoration: none;
   height: 100%;
   font-size: 1.25em;
+  background-color: rgba(0, 0, 0, 0.5);
 }
 u,
 a {
