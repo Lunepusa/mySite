@@ -50,6 +50,10 @@ a {
 li a:hover {
   background-color: grey;
 }
+select{background-color: grey; width: 100%;}
+option, optgroup{
+  background-color: grey;
+}
 #preferredlinks .link {
   display: inline-block;
   width: 25%;

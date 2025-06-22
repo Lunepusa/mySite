@@ -297,7 +297,7 @@ export default function Invoice() {
              {presetOptions.map((option) => (
             <option key={option} value={option}>{option}</option>
           ))}
-            </select>
+            </select><br />
             <textarea style={{width:"80", color:"black"}} rows={1} wrap="hard"></textarea>
          
       </div>
@@ -328,17 +328,12 @@ export default function Invoice() {
             </td>
             <td>$0.17</td>
             <td>
-              <select
+              <input
+                type="number"
+                step={15}
                 value={discussionQty}
                 onChange={(e) => setDiscussionQty(e.target.value)}
-              > {q15.map((option) => (
-            <option key={option} value={option}>{option}</option>
-          ))}<optgroup label="Larger Numbers">
-            {q60.map((option) => (
-            <option key={option} value={option}>{option}</option>
-          ))}
-          </optgroup>
-            </select>
+              /> 
             </td>
             <td>${discussionCost.toFixed(2)}</td>
           </tr>
