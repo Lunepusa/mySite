@@ -58,7 +58,7 @@ function navbar() {
           }}
         >
           <Link to="/" style={{ textDecoration: "none" }}>
-            LunePusa
+            LunePusa's Lewd Lounge
           </Link>
         </p>
         <br />
