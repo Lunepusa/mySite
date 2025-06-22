@@ -298,7 +298,7 @@ export default function Invoice() {
             <option key={option} value={option}>{option}</option>
           ))}
             </select><br />
-            <textarea style={{width:"80", color:"black"}} rows={1} wrap="hard"></textarea>
+            <textarea style={{width:"80%", color:"black"}} rows={1} wrap="hard"></textarea>
          
       </div>
 

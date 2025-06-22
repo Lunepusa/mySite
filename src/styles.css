@@ -50,9 +50,9 @@ a {
 li a:hover {
   background-color: grey;
 }
-select{background-color: grey; width: 100%;}
+select{background-color: lightgray; width: 100%; color: black; text-align: center;}
 option, optgroup{
-  background-color: grey;
+  background-color: lightgrey; color: black;
 }
 #preferredlinks .link {
   display: inline-block;
