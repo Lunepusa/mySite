@@ -296,3 +296,89 @@ export function AnalyticsProvider({ children }) {
 }
 
 export const useAnalytics = () => useContext(AnalyticsContext);
+
+import { useMemo } from "react";
+
+// Props interface for type safety
+interface LocalTimeConverterProps {
+  mstTime: string; // e.g., "8:30 PM", "20:30", "8pm", etc.
+  date?: string; // e.g., "2025-08-04", "August 4, 2025", "Aug 4 2025", etc.
+  format?: "time" | "date" | "datetime"; // Format preset
+}
+
+// Helper function to determine if a date is in DST (MDT) for Mountain Time
+const isDST = (date: Date): boolean => {
+  const year = date.getFullYear();
+  // Approximate DST: 2nd Sunday in March to 1st Sunday in November
+  const dstStart = new Date(year, 2, 14 - (new Date(year, 2, 1).getDay() || 7));
+  const dstEnd = new Date(year, 10, 7 - (new Date(year, 10, 1).getDay() || 7));
+  return date >= dstStart && date < dstEnd;
+};
+
+// Predefined format options for output
+const formatOptionsMap: Record<string, Intl.DateTimeFormatOptions> = {
+  time: {
+    hour: "2-digit", // e.g., "08"
+    minute: "2-digit", // e.g., "30"
+    hour12: true, // 12-hour format with AM/PM
+    timeZoneName: "short", // e.g., "PDT"
+  },
+  date: {
+    weekday: "short", // e.g., "Tue"
+    month: "short", // e.g., "Aug"
+    day: "2-digit", // e.g., "04"
+    year: "numeric", // e.g., "2025"
+  },
+  datetime: {
+    weekday: "short", // e.g., "Tue"
+    month: "short", // e.g., "Aug"
+    day: "2-digit", // e.g., "04"
+    year: "numeric", // e.g., "2025"
+    hour: "2-digit", // e.g., "08"
+    minute: "2-digit", // e.g., "30"
+    hour12: true, // 12-hour format with AM/PM
+    timeZoneName: "short", // e.g., "PDT"
+  },
+};
+
+export const LocalTimeConverter = ({
+  mstTime,
+  date = new Date().toISOString().split("T")[0], // Default to today (YYYY-MM-DD for DST check)
+  format = "datetime", // Default to datetime format
+}: LocalTimeConverterProps) => {
+  const localTime = useMemo(() => {
+    try {
+      // Parse the input date to determine DST
+      const inputDate = new Date(date);
+      if (isNaN(inputDate.getTime())) {
+        throw new Error("Invalid date");
+      }
+      // Use MDT during DST, MST otherwise
+      const timeZoneAbbr = isDST(inputDate) ? "MDT" : "MST";
+      // Combine time with date and timezone
+      const mstDateTimeStr = `${date} ${mstTime} ${timeZoneAbbr}`;
+      // Parse to Date object
+      const mstDate = new Date(mstDateTimeStr);
+      if (isNaN(mstDate.getTime())) {
+        throw new Error("Invalid time");
+      }
+      // Format to local timezone
+      const formatter = new Intl.DateTimeFormat("en-US", {
+        ...formatOptionsMap[format],
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      });
+      let result = formatter.format(mstDate);
+      // For datetime, insert a dash between date and time
+      if (format === "datetime") {
+        const [datePart, timePart] = result.split(", ");
+        result = `${datePart} - ${timePart}`;
+      }
+      return result;
+    } catch (error) {
+      console.error("Error converting time:", error);
+      return "Invalid time";
+    }
+  }, [mstTime, date, format]);
+
+  return <>{localTime}</>;
+};
