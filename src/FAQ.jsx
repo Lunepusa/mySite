@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { reactDOM } from "react-dom";
 import "./styles.css";
 import Collapse from "./Utility";
-import { LocalTimeConverter } from "./Utility";
+import { LocalTimeSchedule } from "./Utility";
 
 export function LoveandLimits() {
   return (
@@ -94,20 +94,26 @@ export function Availability() {
     <div>
       <Collapse trigger={<h1>Availability ⏬</h1>}>
         <h3 style={{ opacity: ".8" }}>
-          When I am more likely to be available. No guarentee I will be, and
-          with sufficient planning I may be available at other times as well.{" "}
+          When I am more likely to be available every day, however there is no
+          guarantee without discussion
+          <br />
+          I may be available at other times with sufficient notice
+          <br />
+          Please tell me your timezone when scheduling. I am in mountain time.
         </h3>
-        <h4> For casual limited media messaging or planning:</h4>
-        <LocalTimeConverter mstTime="10:00 am" format="time" />-
-        <LocalTimeConverter mstTime="3:00 pm" format="time" /> and{" "}
-        <LocalTimeConverter mstTime="8:00 pm" format="time" />-
-        <LocalTimeConverter mstTime="11:00 pm" format="time" /> Every Day
-        <h4>
-          {" "}
-          For my exclusive attention with a call, sexting, or custom creation
-        </h4>
-        <LocalTimeConverter mstTime="10:00 pm" format="time" />-
-        <LocalTimeConverter mstTime="1:00 am" format="time" /> Every Day
+
+        <LocalTimeSchedule
+          schedules={{
+            "Casual Availability": ["10:00 am - 4:00 pm", "8:00 pm - 12:00 am"],
+            "Dedicated Attention": ["10:00 pm - 2:00 am"],
+          }}
+          descriptions={{
+            "Casual Availability":
+              "For casual messaging, planning, and scheduling",
+            "Dedicated Attention":
+              "For having my dedicated attention on you for sexting, calls, or custom creation. Needs to be scheduled in advance",
+          }}
+        />
       </Collapse>
     </div>
   );
