@@ -463,15 +463,16 @@ export function LocalTimeSchedule({
       <table
         style={{
           borderCollapse: "collapse",
-          width: "80%",
+          width: "95%",
           border: "1px solid #ccc",
           height: "90vh",
+          fontSize: "small",
         }}
       >
         <colgroup>
           <col style={{ width: "20%" }} />
-          <col style={{ width: "40%" }} />
-          <col style={{ width: "40%" }} />
+          <col style={{ width: "30%" }} />
+          <col style={{ width: "50%" }} />
         </colgroup>
         <thead>
           <tr>
