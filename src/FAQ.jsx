@@ -74,14 +74,16 @@ export function LoveandLimits() {
         </Collapse>
         <Collapse trigger={<h2>Hard Limits ⏬</h2>}>
           <h3 style={{ opacity: ".8" }}>These are things I will not do ever</h3>
-          <div style={{ columnCount: "3", columnFill: "balance-all" }}>
+          <div style={{ columnCount: "3", columnFill: "balance-all", textSize:"small" }}>
             Anything illegal or that I will get in trouble for <br />
             vomit
-            <br /> anything more then discussions or directly into toilet scat{" "}
-            <br />
-            heavy sadism or masochism
             <br /> tickle torture
-            <br /> high risk public content
+            <br /> 
+            heavy sadism or masochism
+            <br />
+            high risk public content
+            <br />
+            most scat
             <br />
           </div>
         </Collapse>
