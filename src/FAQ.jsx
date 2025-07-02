@@ -3,13 +3,12 @@ import { createRoot } from "react-dom/client";
 import { reactDOM } from "react-dom";
 import "./styles.css";
 import Collapse from "./Utility";
-import{LocalTimeConverter} from "./Utility"
+import { LocalTimeSchedule } from "./Utility";
 
-
-export function LoveandLimits(){return
-
-  <div>
-    <Collapse trigger={<h1>Loves and Limits ⏬</h1>}>
+export function LoveandLimits() {
+  return (
+    <div>
+      <Collapse trigger={<h1>Loves and Limits ⏬</h1>}>
         <h3 style={{ opacity: ".8" }}>
           These are not complete lists! if it isnt mentioned: ASK
         </h3>
@@ -88,54 +87,85 @@ export function LoveandLimits(){return
         </Collapse>
       </Collapse>
     </div>
+  );
 }
-export function Availability() {return(
-  <div><Collapse trigger={<h1>Availability ⏬</h1>}>
-    <h3 style={{ opacity: ".8" }}>
-          When I am more likely to be available. No guarentee I will be, and with sufficient planning I may be available at other times as well. </h3>
-       <h4> For casual limited media messaging or planning:</h4>
-          <LocalTimeConverter mstTime="10:00 am" format="time" />-<LocalTimeConverter mstTime="3:00 pm" format="time" /> and <LocalTimeConverter mstTime="8:00 pm" format="time" />-<LocalTimeConverter mstTime="11:00 pm" format="time" /> Every Day
-    <h4>  For my exclusive attention with a call, sexting, or custom creation</h4>
-          <LocalTimeConverter mstTime="10:00 pm" format="time" />-<LocalTimeConverter mstTime="1:00 am" format="time" /> Every Day
-   
-        </Collapse></div>
-)}
+export function Availability() {
+  return (
+    <div>
+      <Collapse trigger={<h1>Availability ⏬</h1>}>
+        <h3 style={{ opacity: ".8" }}>
+          When I am more likely to be available every day, however there is no
+          guarantee without discussion
+          <br />
+          I may be available at other times with sufficient notice
+          <br />
+          Please tell me your timezone when scheduling. I am in mountain time.
+        </h3>
 
-export function Cashapp(){return(
-  <div><Collapse trigger={<h1>What is my CashApp? PayPal? Bank? Ect? ⏬</h1>}>
-  Cashapp, venmo, apple pay, and other simmilar platforms are not a thing
-  in Canada so I cannot use them.
-  <br />
-  Paypal is extremly anti sex work and will shut down my account if I used
-  it for this.
-  <br />
-  I cant deposit non canadian checks, but if you have a canadian bank then
-  you can use Etransfer so there is no reason for me to accept a check.
-  <br />
-  <h3>
-    IF YOU DONT HAVE ONE OF MY ALREADY LINKED METHODS THEN YOU CAN NOT PAY
-    ME{" "}
-  </h3>
-  <h6>
-    If you cant accept that, then I dont care to interact with someone who
-    has so little respect for me and what I say
-  </h6>
-  TLDR: I dont use anything not <a href="/#collapse-allpaymentmethods">already linked</a>
-</Collapse>
-    </div>)
+        <LocalTimeSchedule
+          schedules={{
+            "Casual Availability": ["10:00 am - 4:00 pm", "8:00 pm - 12:00 am"],
+            "Dedicated Attention": ["10:00 pm - 2:00 am"],
+          }}
+          descriptions={{
+            "Casual Availability":
+              "For casual messaging, planning, and scheduling",
+            "Dedicated Attention":
+              "For having my dedicated attention on you for sexting, calls, or custom creation. Needs to be scheduled in advance",
+          }}
+        />
+      </Collapse>
+    </div>
+  );
 }
-export function Collab(){return(
-  <div>
-     <Collapse trigger={<h1>Do I need a cock to collab with? ⏬</h1>}>
+
+export function Cashapp() {
+  return (
+    <div>
+      <Collapse trigger={<h1>What is my CashApp? PayPal? Bank? Ect? ⏬</h1>}>
+        Cashapp, venmo, apple pay, and other simmilar platforms are not a thing
+        in Canada so I cannot use them.
+        <br />
+        Paypal is extremly anti sex work and will shut down my account if I used
+        it for this.
+        <br />
+        I cant deposit non canadian checks, but if you have a canadian bank then
+        you can use Etransfer so there is no reason for me to accept a check.
+        <br />
+        <h3>
+          IF YOU DONT HAVE ONE OF MY ALREADY LINKED METHODS THEN YOU CAN NOT PAY
+          ME{" "}
+        </h3>
+        <h6>
+          If you cant accept that, then I dont care to interact with someone who
+          has so little respect for me and what I say
+        </h6>
+        TLDR: I dont use anything not{" "}
+        <a href="/#collapse-allpaymentmethods">already linked</a>
+      </Collapse>
+    </div>
+  );
+}
+export function Collab() {
+  return (
+    <div>
+      <Collapse trigger={<h1>Do I need a cock to collab with? ⏬</h1>}>
         I am currently not interested in having non solo content on any of my
-        pages, however below is what I require to guest star on your profiles.<br />
-        ~ You will be required to pay my <a href="/menu#collapse-calgarymeets">escorting rates</a>, however you will get full rights to the content we create together and get to monetize it however you want and keep all earnings.<br />
+        pages, however below is what I require to guest star on your profiles.
+        <br />~ You will be required to pay my{" "}
+        <a href="/menu#collapse-calgarymeets">escorting rates</a>, however you
+        will get full rights to the content we create together and get to
+        monetize it however you want and keep all earnings.
+        <br />
         ~ Properly tag or credit me <br />
-        ~ You have to come to Calgary, AB Canada<br />
-        ~ Condoms are required for everything<br />
+        ~ You have to come to Calgary, AB Canada
+        <br />
+        ~ Condoms are required for everything
+        <br />
         <br />~ TLDR: No I dont.
       </Collapse>
-    </div>)
+    </div>
+  );
 }
 export default function About() {
   return (
@@ -149,17 +179,17 @@ export default function About() {
         <br />
         ~ Dating and make content with LilytheElfGirl and Katya_Luv
         <br />
-       ~ Porn descriptions of me: girl next door, natural, and big boobs (10+
+        ~ Porn descriptions of me: girl next door, natural, and big boobs (10+
         inch difference in bust to underbust), Hentai milf (I have the body of a
         milf, but have no kids :p)
-        <br />~I am chronically inconsistent and go MIA often. It almost never
-        has anything to do with you, I am not quitting Sex work, and I am ok.
+        <br />
+        ~I am chronically inconsistent and go MIA often. It almost never has
+        anything to do with you, I am not quitting Sex work, and I am ok.
       </h4>
       <LoveandLimits />
       <Availability />
       <Cashapp />
-     <Collab />
+      <Collab />
     </div>
   );
 }
-

@@ -50,9 +50,16 @@ a {
 li a:hover {
   background-color: grey;
 }
-select{background-color: lightgray; width: 100%; color: black; text-align: center;}
-option, optgroup{
-  background-color: lightgrey; color: black;
+select {
+  background-color: lightgray;
+  width: 100%;
+  color: black;
+  text-align: center;
+}
+option,
+optgroup {
+  background-color: lightgrey;
+  color: black;
 }
 #preferredlinks .link {
   display: inline-block;
@@ -143,8 +150,7 @@ a img {
   max-height: 50vh;
   object-fit: cover;
   display: inline-block;
-  border: .5em double rgba(255, 255, 255, .8);
-
+  border: 0.5em double rgba(255, 255, 255, 0.8);
 }
 .fullpopup {
   width: 100%;
@@ -216,16 +222,6 @@ input {
 }
 
 /* Specific styling to match the image's gray headers */
-
-table th:first-child {
-  width: 50%;
-}
-
-table th:not(:first-child) {
-  width: calc(
-    50% / 9
-  ); /* Distribute the remaining 50% among the other 9 columns */
-}
 
 tfoot td {
   background-color: grey;

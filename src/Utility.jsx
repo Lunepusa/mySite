@@ -299,86 +299,241 @@ export const useAnalytics = () => useContext(AnalyticsContext);
 
 import { useMemo } from "react";
 
-// Props interface for type safety
-interface LocalTimeConverterProps {
-  mstTime: string; // e.g., "8:30 PM", "20:30", "8pm", etc.
-  date?: string; // e.g., "2025-08-04", "August 4, 2025", "Aug 4 2025", etc.
-  format?: "time" | "date" | "datetime"; // Format preset
+// Helper function to determine if a date is in DST (MDT) for Mountain Time
+function isDST(date) {
+  var year = date.getFullYear();
+  var dstStart = new Date(year, 2, 14 - (new Date(year, 2, 1).getDay() || 7));
+  var dstEnd = new Date(year, 10, 7 - (new Date(year, 10, 1).getDay() || 7));
+  return date >= dstStart && date < dstEnd;
 }
 
-// Helper function to determine if a date is in DST (MDT) for Mountain Time
-const isDST = (date: Date): boolean => {
-  const year = date.getFullYear();
-  // Approximate DST: 2nd Sunday in March to 1st Sunday in November
-  const dstStart = new Date(year, 2, 14 - (new Date(year, 2, 1).getDay() || 7));
-  const dstEnd = new Date(year, 10, 7 - (new Date(year, 10, 1).getDay() || 7));
-  return date >= dstStart && date < dstEnd;
-};
-
-// Predefined format options for output
-const formatOptionsMap: Record<string, Intl.DateTimeFormatOptions> = {
-  time: {
-    hour: "2-digit", // e.g., "08"
-    minute: "2-digit", // e.g., "30"
-    hour12: true, // 12-hour format with AM/PM
-    timeZoneName: "short", // e.g., "PDT"
-  },
-  date: {
-    weekday: "short", // e.g., "Tue"
-    month: "short", // e.g., "Aug"
-    day: "2-digit", // e.g., "04"
-    year: "numeric", // e.g., "2025"
-  },
-  datetime: {
-    weekday: "short", // e.g., "Tue"
-    month: "short", // e.g., "Aug"
-    day: "2-digit", // e.g., "04"
-    year: "numeric", // e.g., "2025"
-    hour: "2-digit", // e.g., "08"
-    minute: "2-digit", // e.g., "30"
-    hour12: true, // 12-hour format with AM/PM
-    timeZoneName: "short", // e.g., "PDT"
-  },
-};
-
-export const LocalTimeConverter = ({
+// Helper function to convert MDT time to local time (utility function, not a hook)
+export function convertMdtToLocalTime(
   mstTime,
-  date = new Date().toISOString().split("T")[0], // Default to today (YYYY-MM-DD for DST check)
-  format = "datetime", // Default to datetime format
-}: LocalTimeConverterProps) => {
-  const localTime = useMemo(() => {
-    try {
-      // Parse the input date to determine DST
-      const inputDate = new Date(date);
-      if (isNaN(inputDate.getTime())) {
-        throw new Error("Invalid date");
-      }
-      // Use MDT during DST, MST otherwise
-      const timeZoneAbbr = isDST(inputDate) ? "MDT" : "MST";
-      // Combine time with date and timezone
-      const mstDateTimeStr = `${date} ${mstTime} ${timeZoneAbbr}`;
-      // Parse to Date object
-      const mstDate = new Date(mstDateTimeStr);
-      if (isNaN(mstDate.getTime())) {
-        throw new Error("Invalid time");
-      }
-      // Format to local timezone
-      const formatter = new Intl.DateTimeFormat("en-US", {
-        ...formatOptionsMap[format],
-        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      });
-      let result = formatter.format(mstDate);
-      // For datetime, insert a dash between date and time
-      if (format === "datetime") {
-        const [datePart, timePart] = result.split(", ");
-        result = `${datePart} - ${timePart}`;
-      }
-      return result;
-    } catch (error) {
-      console.error("Error converting time:", error);
-      return "Invalid time";
-    }
-  }, [mstTime, date, format]);
+  date = new Date().toISOString().split("T")[0],
+  format = "time"
+) {
+  var formatOptionsMap = {
+    time: {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+      timeZoneName: "short",
+    },
+    date: { weekday: "short", month: "short", day: "2-digit", year: "numeric" },
+    datetime: {
+      weekday: "short",
+      month: "short",
+      day: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+      timeZoneName: "short",
+    },
+  };
 
-  return <>{localTime}</>;
-};
+  try {
+    var inputDate = new Date(date);
+    if (isNaN(inputDate.getTime())) throw new Error("Invalid date");
+    var timeZoneAbbr = isDST(inputDate) ? "MDT" : "MST";
+    var mstDateTimeStr = `${date} ${mstTime} ${timeZoneAbbr}`;
+    var mstDate = new Date(mstDateTimeStr);
+    if (isNaN(mstDate.getTime())) throw new Error("Invalid time");
+    var formatter = new Intl.DateTimeFormat("en-US", {
+      ...formatOptionsMap[format],
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    });
+    var result = formatter.format(mstDate);
+    if (format === "datetime") {
+      var parts = result.split(", ");
+      result = `${parts[0]} - ${parts[1]}`;
+    }
+    return result;
+  } catch (error) {
+    console.error("Error converting time:", error);
+    return "Invalid time";
+  }
+}
+
+// Helper function to determine if a time is within a range
+function isWithinRange(time, startHour, endHour) {
+  var hour = time.getHours();
+  if (endHour < startHour) {
+    return (hour >= startHour && hour < 24) || (hour >= 0 && hour < endHour);
+  }
+  return hour >= startHour && hour < endHour;
+}
+
+// Convert time range from MDT to local time (utility function)
+function convertTimeRange(range, baseDate) {
+  var [startStr, endStr] = range
+    .split(" - ")
+    .map((s) => s.trim().toLowerCase());
+  var endBaseDate = baseDate;
+  var endHour = parseInt(endStr.split(/[\s:]+/)[0]);
+  var endMeridiem = endStr.split(/[\s:]+/).slice(-1)[0];
+  var isOvernight = endMeridiem === "am" && endHour >= 0 && endHour < 4;
+  if (isOvernight) {
+    endBaseDate = new Date(
+      new Date(baseDate).setDate(new Date(baseDate).getDate() + 1)
+    )
+      .toISOString()
+      .split("T")[0];
+  }
+
+  var startLocal = convertMdtToLocalTime(startStr, baseDate);
+  var endLocal = convertMdtToLocalTime(endStr, endBaseDate);
+  var startHour = parseInt(startLocal.split(":")[0]) || 0;
+  var endHour = parseInt(endLocal.split(":")[0]) || 0;
+  return [startHour, endHour];
+}
+
+export function LocalTimeSchedule({
+  schedules,
+  descriptions = {},
+  format = "time",
+}) {
+  const [schedule, setSchedule] = useState([]);
+
+  // Pre-compute range map at the top level
+  const rangeMap = useMemo(() => {
+    const map = {};
+    for (const [columnName, ranges] of Object.entries(schedules)) {
+      map[columnName] = ranges.map((range) =>
+        convertTimeRange(range, new Date().toISOString().split("T")[0])
+      );
+    }
+    return map;
+  }, [schedules]);
+
+  useEffect(() => {
+    const updateSchedule = () => {
+      const now = new Date();
+      // Set base time to 4:00 AM MDT, converted to local timezone
+      const baseTime = new Date(now);
+      // Adjust for MDT (UTC-6) to local (e.g., PDT UTC-7) if needed, but conversion handles this
+      const baseDate = baseTime.toISOString().split("T")[0];
+      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const timeFormatter = new Intl.DateTimeFormat("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+        timeZoneName: "short",
+        timeZone,
+      });
+      const dateFormatter = new Intl.DateTimeFormat("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "2-digit",
+        year: "numeric",
+        timeZone,
+      });
+
+      const hourlySchedule = Array.from({ length: 24 }, (_, i) => {
+        const scheduleTime = new Date(now);
+        scheduleTime.setHours(4 + i, 0, 0, 0);
+        const formattedTime = timeFormatter.format(scheduleTime);
+        const formattedDate = dateFormatter.format(scheduleTime);
+
+        const statuses = {};
+        for (const [columnName, ranges] of Object.entries(rangeMap)) {
+          statuses[columnName] = ranges.some(([start, end]) =>
+            isWithinRange(scheduleTime, start, end)
+          );
+        }
+
+        const isCurrent =
+          Math.abs(scheduleTime.getHours() - now.getHours()) < 1 &&
+          now.getMinutes() < 60;
+        return { time: formattedTime, statuses, isCurrent, formattedDate };
+      });
+
+      setSchedule(hourlySchedule);
+    };
+
+    updateSchedule();
+    const interval = setInterval(updateSchedule, 60000);
+    return () => clearInterval(interval);
+  }, [rangeMap, format]);
+
+  const scheduleDisplay = useMemo(() => {
+    const columnNames = Object.keys(schedules);
+    return (
+      <table
+        style={{
+          borderCollapse: "collapse",
+          width: "80%",
+          border: "1px solid #ccc",
+          height: "90vh",
+        }}
+      >
+        <colgroup>
+          <col style={{ width: "20%" }} />
+          <col style={{ width: "40%" }} />
+          <col style={{ width: "40%" }} />
+        </colgroup>
+        <thead>
+          <tr>
+            <th style={{ border: "1px solid #ccc" }}>Time</th>
+            {columnNames.map((name, index) => (
+              <th key={index} style={{ border: "1px solid #ccc" }}>
+                <div>{name}</div>
+                <div style={{ fontSize: "smaller", fontWeight: "normal" }}>
+                  {descriptions[name] || ""}
+                </div>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {schedule.map(
+            ({ time, statuses, isCurrent, formattedDate }, index) => {
+              const displayText =
+                format === "datetime"
+                  ? `${formattedDate} - ${time}`
+                  : format === "date"
+                  ? formattedDate
+                  : time;
+              return (
+                <tr key={index}>
+                  <td
+                    style={{
+                      border: "1px solid #ccc",
+                      backgroundColor: isCurrent ? "dimgrey" : "black",
+                      width: "20%",
+                      textAlign: "center",
+                    }}
+                  >
+                    {displayText}
+                  </td>
+                  {columnNames.map((columnName, colIndex) => {
+                    const isActive = statuses[columnName];
+                    const backgroundColor = isActive ? "grey" : "black";
+                    return (
+                      <td
+                        key={colIndex}
+                        style={{
+                          border: "1px solid #ccc",
+                          backgroundColor,
+                          color: isActive ? "#000" : "#666",
+                          width: "40%",
+                        }}
+                      ></td>
+                    );
+                  })}
+                </tr>
+              );
+            }
+          )}
+        </tbody>
+      </table>
+    );
+  }, [schedule, format, schedules]);
+
+  return (
+    <div>
+      <div>{scheduleDisplay}</div>
+    </div>
+  );
+}
