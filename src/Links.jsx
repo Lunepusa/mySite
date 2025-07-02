@@ -93,18 +93,18 @@ export function Preferredlinks() {
       </h1>
       <h1 style={{ display: "inline-block" }}> + </h1>
       <div id="preferredlinks">
+      <Link
+            name="Sheer"
+            desc="hard fetish friendly platform"
+            img={Sheer}
+            link="https://www.sheer.com/LunePusa"
+          />
         <Link
           name="Fansly"
           desc="4000+pics &500+vids for $5 a month"
           img={Fansly}
           link="https://fans.ly/r/Lunepusa"
         />
-        <Link
-            name="Sheer"
-            desc="hard fetish friendly platform"
-            img={Sheer}
-            link="https://www.sheer.com/LunePusa"
-          />
           <Link
             name="Manyvids"
             desc=""

@@ -3,26 +3,13 @@ import { createRoot } from "react-dom/client";
 import { reactDOM } from "react-dom";
 import "./styles.css";
 import Collapse from "./Utility";
+import{LocalTimeConverter} from "./Utility"
 
-export default function About() {
-  return (
-    <div style={{ textAlign: "center", width: "95%", margin: "auto" }}>
-      <h1>a bit about me!</h1>
-      <h4>
-        ~24 aromantic pansexual canadian
-        <br />
-        ~ Kink/fetish friendly(fav kinks and hard limits listed below) <br />
-        ~ Switch(Pleasure domme & Pet sub are my favorites)
-        <br />
-        ~ Dating and make content with LilytheElfGirl and Katya_Luv
-        <br />
-        Porn descriptions of me: girl next door, natural, and big boobs (10+
-        inch difference in bust to underbust), Hentai milf (I have the body of a
-        milf, closest I have to a kid is my cat)
-        <br />I am chronically inconsistent and go MIA often. It almost never
-        has anything to do with you, I am not quitting Sex work, and I am ok.
-      </h4>
-      <Collapse trigger={<h1>Loves and Limits ⏬</h1>}>
+
+export function LoveandLimits(){return
+
+  <div>
+    <Collapse trigger={<h1>Loves and Limits ⏬</h1>}>
         <h3 style={{ opacity: ".8" }}>
           These are not complete lists! if it isnt mentioned: ASK
         </h3>
@@ -100,32 +87,79 @@ export default function About() {
           </div>
         </Collapse>
       </Collapse>
-      <Collapse trigger={<h1>What is my CashApp? PayPal? Bank? Ect? ⏬</h1>}>
-        Cashapp, venmo, apple pay, and other simmilar platforms are not a thing
-        in Canada so I cannot use them.
-        <br />
-        Paypal is extremly anti sex work and will shut down my account if I used
-        it for this.
-        <br />
-        I cant deposit non canadian checks, but if you have a canadian bank then
-        you can use Etransfer so there is no reason for me to accept a check.
-        <br />
-        <h3>
-          IF YOU DONT HAVE ONE OF MY ALREADY LINKED METHODS THEN YOU CAN NOT PAY
-          ME{" "}
-        </h3>
-        <h6>
-          If you cant accept that, then I dont care to interact with someone who
-          has so little respect for me and what I say
-        </h6>
-        TLDR: I dont have one to give you
-      </Collapse>
-      <Collapse trigger={<h1>Do I need a cock to collab with? ⏬</h1>}>
+    </div>
+}
+export function Availability() {return(
+  <div><Collapse trigger={<h1>Availability ⏬</h1>}>
+    <h3 style={{ opacity: ".8" }}>
+          When I am more likely to be available. No guarentee I will be, and with sufficient planning I may be available at other times as well. </h3>
+       <h4> For casual limited media messaging or planning:</h4>
+          <LocalTimeConverter mstTime="10:00 am" format="time" />-<LocalTimeConverter mstTime="3:00 pm" format="time" /> and <LocalTimeConverter mstTime="8:00 pm" format="time" />-<LocalTimeConverter mstTime="11:00 pm" format="time" /> Every Day
+    <h4>  For my exclusive attention with a call, sexting, or custom creation</h4>
+          <LocalTimeConverter mstTime="10:00 pm" format="time" />-<LocalTimeConverter mstTime="1:00 am" format="time" /> Every Day
+   
+        </Collapse></div>
+)}
+
+export function Cashapp(){return(
+  <div><Collapse trigger={<h1>What is my CashApp? PayPal? Bank? Ect? ⏬</h1>}>
+  Cashapp, venmo, apple pay, and other simmilar platforms are not a thing
+  in Canada so I cannot use them.
+  <br />
+  Paypal is extremly anti sex work and will shut down my account if I used
+  it for this.
+  <br />
+  I cant deposit non canadian checks, but if you have a canadian bank then
+  you can use Etransfer so there is no reason for me to accept a check.
+  <br />
+  <h3>
+    IF YOU DONT HAVE ONE OF MY ALREADY LINKED METHODS THEN YOU CAN NOT PAY
+    ME{" "}
+  </h3>
+  <h6>
+    If you cant accept that, then I dont care to interact with someone who
+    has so little respect for me and what I say
+  </h6>
+  TLDR: I dont use anything not <a href="/#collapse-allpaymentmethods">already linked</a>
+</Collapse>
+    </div>)
+}
+export function Collab(){return(
+  <div>
+     <Collapse trigger={<h1>Do I need a cock to collab with? ⏬</h1>}>
         I am currently not interested in having non solo content on any of my
-        pages, however I would be open to collaborating on your accounts if you
-        pay for my escorting fees and follow my escorting rules.
+        pages, however below is what I require to guest star on your profiles.<br />
+        ~ You will be required to pay my <a href="/menu#collapse-calgarymeets">escorting rates</a>, however you will get full rights to the content we create together and get to monetize it however you want and keep all earnings.<br />
+        ~ Properly tag or credit me <br />
+        ~ You have to come to Calgary, AB Canada<br />
+        ~ Condoms are required for everything<br />
         <br />~ TLDR: No I dont.
       </Collapse>
+    </div>)
+}
+export default function About() {
+  return (
+    <div style={{ textAlign: "center", width: "95%", margin: "auto" }}>
+      <h1>A Bit About Me!</h1>
+      <h4>
+        ~25 aromantic pansexual canadian
+        <br />
+        ~ Kink/fetish friendly(fav kinks and hard limits listed below) <br />
+        ~ Switch(Pleasure domme & Pet sub are my favorites)
+        <br />
+        ~ Dating and make content with LilytheElfGirl and Katya_Luv
+        <br />
+       ~ Porn descriptions of me: girl next door, natural, and big boobs (10+
+        inch difference in bust to underbust), Hentai milf (I have the body of a
+        milf, but have no kids :p)
+        <br />~I am chronically inconsistent and go MIA often. It almost never
+        has anything to do with you, I am not quitting Sex work, and I am ok.
+      </h4>
+      <LoveandLimits />
+      <Availability />
+      <Cashapp />
+     <Collab />
     </div>
   );
 }
+
