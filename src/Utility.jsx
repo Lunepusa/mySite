@@ -318,7 +318,7 @@ export function convertMdtToLocalTime(
       hour: "2-digit",
       minute: "2-digit",
       hour12: false,
-      timeZoneName: "short",
+      timeZoneName: "shortGeneric",
     },
     date: { weekday: "short", month: "short", day: "2-digit", year: "numeric" },
     datetime: {
@@ -329,7 +329,7 @@ export function convertMdtToLocalTime(
       hour: "2-digit",
       minute: "2-digit",
       hour12: true,
-      timeZoneName: "short",
+      timeZoneName: "shortGeneric",
     },
   };
 
@@ -415,14 +415,14 @@ export function LocalTimeSchedule({
       // Adjust for MDT (UTC-6) to local (e.g., PDT UTC-7) if needed, but conversion handles this
       const baseDate = baseTime.toISOString().split("T")[0];
       const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      const timeFormatter = new Intl.DateTimeFormat("en-US", {
+      const timeFormatter = new Intl.DateTimeFormat("", {
         hour: "2-digit",
         minute: "2-digit",
         hour12: true,
-        timeZoneName: "short",
+        timeZoneName: "shortGeneric",
         timeZone,
       });
-      const dateFormatter = new Intl.DateTimeFormat("en-US", {
+      const dateFormatter = new Intl.DateTimeFormat("", {
         weekday: "short",
         month: "short",
         day: "2-digit",
