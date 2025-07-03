@@ -373,7 +373,7 @@ function convertTimeRange(range, baseDate) {
   var endBaseDate = baseDate;
   var endHour = parseInt(endStr.split(/[\s:]+/)[0]);
   var endMeridiem = endStr.split(/[\s:]+/).slice(-1)[0];
-  var isOvernight = endMeridiem === "am" && endHour >= 0 && endHour < 4;
+  var isOvernight = endMeridiem === "am" && endHour >= 0 && endHour < 7;
   if (isOvernight) {
     endBaseDate = new Date(
       new Date(baseDate).setDate(new Date(baseDate).getDate() + 1)
@@ -432,7 +432,7 @@ export function LocalTimeSchedule({
 
       const hourlySchedule = Array.from({ length: 24 }, (_, i) => {
         const scheduleTime = new Date(now);
-        scheduleTime.setHours(4 + i, 0, 0, 0);
+        scheduleTime.setHours(7 + i, 0, 0, 0);
         const formattedTime = timeFormatter.format(scheduleTime);
         const formattedDate = dateFormatter.format(scheduleTime);
 
