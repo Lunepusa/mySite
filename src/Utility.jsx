@@ -415,14 +415,14 @@ export function LocalTimeSchedule({
       // Adjust for MDT (UTC-6) to local (e.g., PDT UTC-7) if needed, but conversion handles this
       const baseDate = baseTime.toISOString().split("T")[0];
       const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      const timeFormatter = new Intl.DateTimeFormat("", {
+      const timeFormatter = new Intl.DateTimeFormat("en-US", {
         hour: "2-digit",
         minute: "2-digit",
         hour12: true,
         timeZoneName: "shortGeneric",
         timeZone,
       });
-      const dateFormatter = new Intl.DateTimeFormat("", {
+      const dateFormatter = new Intl.DateTimeFormat("en-US", {
         weekday: "short",
         month: "short",
         day: "2-digit",
