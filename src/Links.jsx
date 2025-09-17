@@ -121,7 +121,7 @@ export function Preferredlinks() {
           name="Tryst"
           desc="Coming to Calgary? lets play~"
           img={tryst}
-          link="https://t.ly/RcGCF"
+          link="https://tryst.link/escort/lunepusa"
         />
       </div>
     </div>
