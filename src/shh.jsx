@@ -17,6 +17,18 @@ export default function Shh() {
           tiktokdm me twittersd twittered
         </h3>
       </Collapse>
+       <h3>
+        <a href="https://script.google.com/macros/s/AKfycbxfrHQFpYWH9hlcgTA6lk4d92g87UBH3OJXgr-gVyE/dev">
+          {" "}
+          Google apps script HTML
+        </a>
+        <br />
+        <a href="https://script.google.com/home/projects/10w_oWlqqKqZarE0oUNs2viDGebkD4HRxlFvOc1GcsZb_k7YZLnr6fLdk/edit">
+          {" "}
+          Google apps script file
+        </a>
+      </h3>
     </div>
   );
 }
+
