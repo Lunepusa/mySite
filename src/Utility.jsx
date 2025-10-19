@@ -395,12 +395,12 @@ export function LocalTimeSchedule({
   format = "time",
 }) {
   const [schedule, setSchedule] = useState([]);
-
+const daysOfWeek = ["Sun", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat"];
   // Pre-compute range map for each day
   const rangeMap = useMemo(() => {
   const map = {};
   const baseDate = new Date();
-  const daysOfWeek = ["Sun", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat"];
+  
   
   for (const [dayName, ranges] of Object.entries(schedules)) {
     // Calculate the date for this day of the week
