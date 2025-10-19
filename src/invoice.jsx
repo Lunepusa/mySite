@@ -26,18 +26,7 @@ export default function Invoice() {
 
  // State for invoice description
   const [invoiceDescription, setInvoiceDescription] = useState("5m video call");
-  const presetOptions = [
-    "5m Video Call",
-    "Custom Photoset",
-    "Custom Video",
-    "Text Rating",
-    "Video Rating",
-    "15m Sexting Session",
-    "1 week Friend Experience",
-    "1 week GirlFriend Experience",
-    "1 week Premium GirlFriend Experience",
-    "other",
-  ];
+ const presetOptions = Object.keys(presetQuantities);
   const q15=[0,15,30,45,60,75,90,105,120]
   const q60=[190,240, 300, 360, 420, 480, 540, 600,660, 720, 780, 840, 900, 960, 1020, 1080, 1140, 1200]
   const q1=[0,1,2,3,4,5,6,7,8,9,10]
@@ -296,6 +285,8 @@ const presetQuantities = {
       setCondomQty(quantities.condomQty);
       setPantyhoseQty(quantities.pantyhoseQty);
       setCustomItemQty(quantities.customItemQty);
+      setCustomItemName(quantities.customItemName);
+      setCustomItemCost(quantities.customItemCost);
       setExclusiveQty(quantities.exclusiveQty);
       setRushQty(quantities.rushQty);
       setExtremeQty(quantities.extremeQty);
