@@ -394,10 +394,10 @@ const finalTotal = servicesAndSuppliesSubtotal + markupsSubtotal + discountsSubt
       {/* Combined Services and Consumables Table */}
       <table>
         <colgroup>
-          <col style={{ width: "40%" }} />
-          <col style={{ width: "calc(60% / 3)" }} />
-          <col style={{ width: "calc(60% / 3)" }} />
-          <col style={{ width: "calc(60% / 3)" }} />
+          <col style={{ width: "45%" }} />
+          <col style={{ width: "calc(55% / 3)" }} />
+          <col style={{ width: "calc(55% / 3)" }} />
+          <col style={{ width: "calc(55% / 3)" }} />
         </colgroup>
         <thead>
           <tr>
@@ -576,7 +576,7 @@ const finalTotal = servicesAndSuppliesSubtotal + markupsSubtotal + discountsSubt
               colSpan="4"
               style={{
                 color: "black",
-                fontSize: "1em",
+                fontSize: ".9em",
                 textAlign: "center",
                 border: "5px solid black",
               }}
@@ -748,7 +748,7 @@ const finalTotal = servicesAndSuppliesSubtotal + markupsSubtotal + discountsSubt
               colSpan="4"
               style={{
                 color: "black",
-                fontSize: "1em",
+                fontSize: ".9em",
                 textAlign: "center",
                 border: "5px solid black",
               }}
@@ -777,7 +777,7 @@ const finalTotal = servicesAndSuppliesSubtotal + markupsSubtotal + discountsSubt
               colSpan="4"
               style={{
                 color: "black",
-                fontSize: "1em",
+                fontSize: ".9em",
                 textAlign: "center",
                 fontWeight: "normal",
               }}

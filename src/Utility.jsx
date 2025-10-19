@@ -398,23 +398,23 @@ export function LocalTimeSchedule({
 
   // Pre-compute range map for each day
   const rangeMap = useMemo(() => {
-    const map = {};
-    const baseDate = new Date();
-    const daysOfWeek = ["Sun", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat"];
-    
-    for (const [dayName, ranges] of Object.entries(schedules)) {
-      // Calculate the date for this day of the week
-      const currentDay = baseDate.getDay();
-      const targetDay = daysOfWeek.indexOf(dayName);
-      const dayDiff = (targetDay - currentDay + 7) % 7;
-      const dayDate = new Date(baseDate);
-      dayDate.setDate(baseDate.getDate() + dayDiff);
-      const dateStr = dayDate.toISOString().split("T")[0];
+  const map = {};
+  const baseDate = new Date();
+  const daysOfWeek = ["Sun", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat"];
+  
+  for (const [dayName, ranges] of Object.entries(schedules)) {
+    // Calculate the date for this day of the week
+    const currentDay = baseDate.getDay();
+    const targetDay = daysOfWeek.indexOf(dayName);
+    const dayDiff = (targetDay - currentDay + 7) % 7;
+    const dayDate = new Date(baseDate);
+    dayDate.setDate(baseDate.getDate() + dayDiff);
+    const dateStr = dayDate.toISOString().split("T")[0];
 
-      map[dayName] = ranges.map((range) => convertTimeRange(range, dateStr));
-    }
-    return map;
-  }, [schedules]);
+    map[dayName] = ranges.map((range) => convertTimeRange(range, dateStr));
+  }
+  return map;
+}, [schedules]);
 
   useEffect(() => {
     const updateSchedule = () => {
@@ -455,7 +455,7 @@ export function LocalTimeSchedule({
 const scheduleDisplay = useMemo(() => {
   const columnNames = Object.keys(schedules);
   const now = new Date();
-  const currentDay = daysOfWeek[now.getDay()]; // e.g., "Sunday"
+  const currentDay = daysOfWeek[now.getDay()]; // Uses updated daysOfWeek
   const currentHour = now.getHours();
 
   return (
