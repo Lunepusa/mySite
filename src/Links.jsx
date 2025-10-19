@@ -95,7 +95,7 @@ export function Preferredlinks() {
       <div id="preferredlinks">
       <Link
             name="Sheer"
-            desc="hard fetish friendly platform"
+            desc="hard fetish friendly subscription platform. I am considering making this my main"
             img={Sheer}
             link="https://www.sheer.com/LunePusa"
           />
@@ -105,12 +105,6 @@ export function Preferredlinks() {
           img={Fansly}
           link="https://fans.ly/r/Lunepusa"
         />
-          <Link
-            name="Manyvids"
-            desc=""
-            img={Manyvids}
-            link="https://lunepusa.manyvids.com"
-          />
         <Link
           name="Throne"
           desc="Give me a gift"
@@ -189,6 +183,18 @@ export function Paymentlinks() {
                 Lunepusa@gmail.com
               </u>
             </h3>
+             <Link
+              name="Interac E-transfer"
+              desc="Canadian bank to bank transfer"
+              img={Interac}
+              link="https://www.interac.ca/en/consumers/products/interac-e-transfer/"
+            />
+            <Link
+              name="Amazon Giftcard"
+              desc="Canadian"
+              img={AmazonGC}
+              link="https://www.amazon.ca/Amazon-ca-Gift-Card-Birthday-Cupcakes/dp/B07TRWGYDH/ref=sr_1_1?hvadid=667066139172&hvdev=c&hvlocphy=9001320&hvnetw=g&hvqmt=e&hvrand=15786390872409873519&hvtargid=kwd-594341209899&hydadcr=23336_13656849&keywords=amazon.ca+gift+card&qid=1702489076&sr=8-1"
+            />           
             <Link
               name="Skip the Dishes"
               desc="food delivery"
@@ -201,18 +207,7 @@ export function Paymentlinks() {
               img={Steam}
               link="https://store.steampowered.com/digitalgiftcards/selectgiftcard"
             />
-            <Link
-              name="Interac E-transfer"
-              desc="Canadian bank to bank transfer"
-              img={Interac}
-              link="https://www.interac.ca/en/consumers/products/interac-e-transfer/"
-            />
-            <Link
-              name="Amazon Giftcard"
-              desc="Canadian"
-              img={AmazonGC}
-              link="https://www.amazon.ca/Amazon-ca-Gift-Card-Birthday-Cupcakes/dp/B07TRWGYDH/ref=sr_1_1?hvadid=667066139172&hvdev=c&hvlocphy=9001320&hvnetw=g&hvqmt=e&hvrand=15786390872409873519&hvtargid=kwd-594341209899&hydadcr=23336_13656849&keywords=amazon.ca+gift+card&qid=1702489076&sr=8-1"
-            />
+
           </div>
           <div style={{ border: "3px dotted white" }}>
             <h2> Wishlists</h2>
@@ -264,7 +259,7 @@ export function Otherlinks() {
       >
         <div id="otherlinks">
           <h2 style={{ opacity: 0.8 }}>
-            All other accounts I have, but cant guarentee I use in any capacity.
+            All other accounts I have, but can't guarentee I use in any capacity.
           </h2>
           <Link
             name="Chaturbate"
@@ -384,7 +379,7 @@ export function Sociallinks() {
             />
             <Link
               name="Telegram"
-              desc=""
+              desc="favorite"
               img={Telegram}
               link="https://t.me/lunepusa3"
             />
@@ -403,7 +398,7 @@ export function Sociallinks() {
             <Link name="SMS" desc="" img={Text} link="sms:+15878480806" />
             <Link
               name="Snapchat"
-              desc=""
+              desc="least favorite by far"
               img={Snapchat}
               link="https://www.snapchat.com/add/lunepusa?share_id=qeZVVUXrswY&locale=en-US-u-mu-celsius"
             />
@@ -451,7 +446,7 @@ export function Guestlinks() {
             />
             <Link
               name="Pornhub"
-              desc="4000+pics &500+vids for $5 a month"
+              desc=""
               img={Pornhub}
               link="https://www.pornhub.com/model/katyaluv27"
             />
@@ -467,7 +462,7 @@ export function Guestlinks() {
 
             <Link
               name="Lily's Pornhub"
-              desc="Give me a gift"
+              desc=""
               img={Pornhub}
               link="https://www.pornhub.com/model/lily-the-elf-girl"
             />

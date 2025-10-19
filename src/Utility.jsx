@@ -355,26 +355,32 @@ export function convertMdtToLocalTime(
     return "Invalid time";
   }
 }
-
+// In Utility.jsx, update the isWithinRange and convertTimeRange functions, and LocalTimeSchedule function
 // Helper function to determine if a time is within a range
-function isWithinRange(time, startHour, endHour) {
-  var hour = time.getHours();
-  if (endHour < startHour) {
-    return (hour >= startHour && hour < 24) || (hour >= 0 && hour < endHour);
+function isWithinRange(time, startHour, endHour, isOvernight) {
+  const hour = time.getHours();
+  if (isOvernight) {
+    // Handle overnight ranges (e.g., 6:00 PM - 2:00 AM next day)
+    return hour >= startHour || hour < endHour;
   }
+  // Normal range within same day
   return hour >= startHour && hour < endHour;
 }
 
-// Convert time range from MDT to local time (utility function)
+// Convert time range from MDT to local time
 function convertTimeRange(range, baseDate) {
-  var [startStr, endStr] = range
+  let [startStr, endStr] = range
     .split(" - ")
     .map((s) => s.trim().toLowerCase());
-  var endBaseDate = baseDate;
-  var endHour = parseInt(endStr.split(/[\s:]+/)[0]);
-  var endMeridiem = endStr.split(/[\s:]+/).slice(-1)[0];
-  var isOvernight = endMeridiem === "am" && endHour >= 0 && endHour < 7;
+  let endBaseDate = baseDate;
+  const startHour = parseInt(startStr.split(/[\s:]+/)[0]);
+  const startMeridiem = startStr.split(/[\s:]+/).slice(-1)[0];
+  const endHour = parseInt(endStr.split(/[\s:]+/)[0]);
+  const endMeridiem = endStr.split(/[\s:]+/).slice(-1)[0];
+  const isOvernight = endMeridiem === "am" && endHour < 7 && startMeridiem === "pm";
+
   if (isOvernight) {
+    // Adjust end date for overnight ranges
     endBaseDate = new Date(
       new Date(baseDate).setDate(new Date(baseDate).getDate() + 1)
     )
@@ -382,11 +388,11 @@ function convertTimeRange(range, baseDate) {
       .split("T")[0];
   }
 
-  var startLocal = convertMdtToLocalTime(startStr, baseDate);
-  var endLocal = convertMdtToLocalTime(endStr, endBaseDate);
-  var startHour = parseInt(startLocal.split(":")[0]) || 0;
-  var endHour = parseInt(endLocal.split(":")[0]) || 0;
-  return [startHour, endHour];
+  const startLocal = convertMdtToLocalTime(startStr, baseDate);
+  const endLocal = convertMdtToLocalTime(endStr, endBaseDate);
+  const startLocalHour = parseInt(startLocal.split(":")[0]) || 0;
+  const endLocalHour = parseInt(endLocal.split(":")[0]) || 0;
+  return [startLocalHour, endLocalHour, isOvernight];
 }
 
 export function LocalTimeSchedule({
@@ -395,26 +401,26 @@ export function LocalTimeSchedule({
   format = "time",
 }) {
   const [schedule, setSchedule] = useState([]);
-const daysOfWeek = ["Sun", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat"];
+  const daysOfWeek = ["Sun", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat"];
+
   // Pre-compute range map for each day
   const rangeMap = useMemo(() => {
-  const map = {};
-  const baseDate = new Date();
-  
-  
-  for (const [dayName, ranges] of Object.entries(schedules)) {
-    // Calculate the date for this day of the week
-    const currentDay = baseDate.getDay();
-    const targetDay = daysOfWeek.indexOf(dayName);
-    const dayDiff = (targetDay - currentDay + 7) % 7;
-    const dayDate = new Date(baseDate);
-    dayDate.setDate(baseDate.getDate() + dayDiff);
-    const dateStr = dayDate.toISOString().split("T")[0];
+    const map = {};
+    const baseDate = new Date();
+    
+    for (const [dayName, ranges] of Object.entries(schedules)) {
+      // Calculate the date for this day of the week
+      const currentDay = baseDate.getDay();
+      const targetDay = daysOfWeek.indexOf(dayName);
+      const dayDiff = (targetDay - currentDay + 7) % 7;
+      const dayDate = new Date(baseDate);
+      dayDate.setDate(baseDate.getDate() + dayDiff);
+      const dateStr = dayDate.toISOString().split("T")[0];
 
-    map[dayName] = ranges.map((range) => convertTimeRange(range, dateStr));
-  }
-  return map;
-}, [schedules]);
+      map[dayName] = ranges.map((range) => convertTimeRange(range, dateStr));
+    }
+    return map;
+  }, [schedules]);
 
   useEffect(() => {
     const updateSchedule = () => {
@@ -427,16 +433,19 @@ const daysOfWeek = ["Sun", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat"];
         timeZoneName: "shortGeneric",
         timeZone,
       });
+
       const hourlySchedule = Array.from({ length: 24 }, (_, i) => {
         const scheduleTime = new Date(now);
         scheduleTime.setHours(i, 0, 0, 0); // Start from 00:00
         const formattedTime = timeFormatter.format(scheduleTime);
+
         const statuses = {};
         for (const [dayName, ranges] of Object.entries(rangeMap)) {
-          statuses[dayName] = ranges.some(([start, end]) =>
-            isWithinRange(scheduleTime, start, end)
+          statuses[dayName] = ranges.some(([start, end, isOvernight]) =>
+            isWithinRange(scheduleTime, start, end, isOvernight)
           );
         }
+
         const isCurrent =
           Math.abs(scheduleTime.getHours() - now.getHours()) < 1 &&
           now.getMinutes() < 60;
@@ -451,92 +460,91 @@ const daysOfWeek = ["Sun", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat"];
     return () => clearInterval(interval);
   }, [rangeMap, format]);
 
-// In LocalTimeSchedule.jsx, update the scheduleDisplay useMemo block
-const scheduleDisplay = useMemo(() => {
-  const columnNames = Object.keys(schedules);
-  const now = new Date();
-  const currentDay = daysOfWeek[now.getDay()]; // Uses updated daysOfWeek
-  const currentHour = now.getHours();
+  const scheduleDisplay = useMemo(() => {
+    const columnNames = Object.keys(schedules);
+    const now = new Date();
+    const currentDay = daysOfWeek[now.getDay()];
+    const currentHour = now.getHours();
 
-  return (
-    <table
-      style={{
-        borderCollapse: "collapse",
-        width: "95%",
-        border: "1px solid #ccc",
-        height: "90vh",
-        fontSize: "small",
-      }}
-    >
-      <caption style={{ fontSize: "smaller", color: "#666", padding: "5px" }}>
-        Grey cells indicate available times
-      </caption>
-      <colgroup>
-        <col style={{ width: "12%" }} />
-        {columnNames.map((_, index) => (
-          <col key={index} style={{ width: `${88 / columnNames.length}%` }} />
-        ))}
-      </colgroup>
-      <thead>
-        <tr>
-          <th style={{ border: "1px solid #ccc" }}>Time</th>
-          {columnNames.map((name, index) => (
-            <th key={index} style={{ border: "1px solid #ccc" }}>
-              <div>{name}</div>
-              <div style={{ fontSize: "smaller", fontWeight: "normal" }}>
-                {descriptions[name] ? (
-                  <ul>
-                    {descriptions[name].split("\n").map((item, i) => (
-                      item.trim() && <li key={i}>{item.replace(/^- /, "")}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  ""
-                )}
-              </div>
-            </th>
+    return (
+      <table
+        style={{
+          borderCollapse: "collapse",
+          width: "95%",
+          border: "1px solid #ccc",
+          height: "90vh",
+          fontSize: "small",
+        }}
+      >
+        <caption style={{ fontSize: "smaller", color: "#666", padding: "5px" }}>
+          Grey cells indicate available times
+        </caption>
+        <colgroup>
+          <col style={{ width: "12%" }} />
+          {columnNames.map((_, index) => (
+            <col key={index} style={{ width: `${88 / columnNames.length}%` }} />
           ))}
-        </tr>
-      </thead>
-      <tbody>
-        {schedule.map(({ time, statuses, isCurrent }, index) => (
-          <tr key={index}>
-            <td
-              style={{
-                border: "1px solid #ccc",
-                backgroundColor: "black",
-                width: "12%",
-                textAlign: "center",
-              }}
-            >
-              {time}
-            </td>
-            {columnNames.map((columnName, colIndex) => {
-              const isActive = statuses[columnName];
-              const isCurrentCell =
-                isCurrent && columnName === currentDay;
-              const backgroundColor = isCurrentCell
-                ? "lightgrey" // Current day and time
-                : isActive
-                ? "grey" // Available times
-                : "black"; // Unavailable times
-              return (
-                <td
-                  key={colIndex}
-                  style={{
-                    border: isCurrentCell ? "3px dashed white" : "1px solid #ccc",
-                    backgroundColor,
-                    color: isActive || isCurrentCell ? "#000" : "#666",
-                  }}
-                ></td>
-              );
-            })}
+        </colgroup>
+        <thead>
+          <tr>
+            <th style={{ border: "1px solid #ccc" }}>Time</th>
+            {columnNames.map((name, index) => (
+              <th key={index} style={{ border: "1px solid #ccc" }}>
+                <div>{name}</div>
+                <div style={{ fontSize: "smaller", fontWeight: "normal" }}>
+                  {descriptions[name] ? (
+                    <ul>
+                      {descriptions[name].split("\n").map((item, i) => (
+                        item.trim() && <li key={i}>{item.replace(/^- /, "")}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    ""
+                  )}
+                </div>
+              </th>
+            ))}
           </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-}, [schedule, format, schedules]);
+        </thead>
+        <tbody>
+          {schedule.map(({ time, statuses, isCurrent }, index) => (
+            <tr key={index}>
+              <td
+                style={{
+                  border: "1px solid #ccc",
+                  backgroundColor: "black",
+                  width: "12%",
+                  textAlign: "center",
+                }}
+              >
+                {time}
+              </td>
+              {columnNames.map((columnName, colIndex) => {
+                const isActive = statuses[columnName];
+                const isCurrentCell =
+                  isCurrent && columnName === currentDay;
+                const backgroundColor = isCurrentCell
+                  ? "lightgrey" // Current day and time
+                  : isActive
+                  ? "grey" // Available times
+                  : "black"; // Unavailable times
+                return (
+                  <td
+                    key={colIndex}
+                    style={{
+                      border: isCurrentCell ? "3px dashed white" : "1px solid #ccc",
+                      backgroundColor,
+                      color: isActive || isCurrentCell ? "#000" : "#666",
+                    }}
+                  ></td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
+  }, [schedule, format, schedules]);
 
   return (
     <div>

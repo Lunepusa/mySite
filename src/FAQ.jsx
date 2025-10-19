@@ -100,18 +100,18 @@ export function Availability() {
           <br />
           Customs, Sexting, Calls, and Meets MUST be scheduled in advance
           <br />
-          Please tell me your timezone when scheduling. I am in mountain time.
+          Please tell me the timezone when scheduling. I am in mountain time.
         </h3>
 
         <LocalTimeSchedule
         schedules={{
-          Mon: ["6:00 PM - 11:59 PM"],
-          Tues: ["6:00 PM - 11:59 PM"],
-          Wed: ["6:00 PM - 11:59 PM"],
-          Thur: ["6:00 PM - 11:59 PM"],
+          Mon: ["6:00 PM - 11:00 PM"],
+          Tues: ["6:00 PM - 11:00 PM"],
+          Wed: ["6:00 PM - 11:00 PM"],
+          Thur: ["6:00 PM - 11:00 PM"],
           Fri: ["6:00 PM - 2:00 AM"],
           Sat: ["9:00 AM - 2:00 AM"],
-          Sun: ["9:00 AM - 11:59 PM"],
+          Sun: ["9:00 AM - 11:00 PM"],
         }}
         descriptions={{
           Mon: "",
@@ -150,8 +150,8 @@ export function Cashapp() {
           If you cant accept that, then I dont care to interact with someone who
           has so little respect for me and what I say
         </h6>
-        TLDR: I dont use anything not{" "}
-        <a href="/#collapse-allpaymentmethods">already linked</a>
+        TLDR: I dont use anything not
+        <a href="/#collapse-allpaymentmethods"> already linked</a>
       </Collapse>
     </div>
   );
@@ -162,8 +162,8 @@ export function Collab() {
       <Collapse trigger={<h1>Do I need a cock to collab with? ⏬</h1>}>
         I am currently not interested in having non solo content on any of my
         pages, however below is what I require to guest star on your profiles.
-        <br />~ You will be required to pay my{" "}
-        <a href="/menu#collapse-calgarymeets">escorting rates</a>, however you
+        <br />~ You will be required to pay my
+        <a href="/menu#collapse-calgarymeets"> escorting rates</a>, however you
         will get full rights to the content we create together and get to
         monetize it however you want and keep all earnings.
         <br />
