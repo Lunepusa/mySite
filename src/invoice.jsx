@@ -350,15 +350,15 @@ const markupsSubtotal =
   parseFloat(jerkTotal);
 
 // Calculate discounts (each starts from servicesAndSuppliesSubtotal)
-const bulkTotal = applyRecursivePercentage(servicesAndSuppliesSubtotal, 0.25, bulkQty);
-const easyTotal = applyRecursivePercentage(servicesAndSuppliesSubtotal, 0.25, easyQty);
-const otherTotal = applyRecursivePercentage(servicesAndSuppliesSubtotal, 0.25, otherQty);
+const bulkTotal = applyRecursivePercentage(servicesAndSuppliesSubtotal, -0.25, bulkQty);
+const easyTotal = applyRecursivePercentage(servicesAndSuppliesSubtotal, -0.25, easyQty);
+const otherTotal = applyRecursivePercentage(servicesAndSuppliesSubtotal, -0.25, otherQty);
 
 const discountsSubtotal =
   parseFloat(bulkTotal) + parseFloat(easyTotal) + parseFloat(otherTotal);
 
 // Final total
-const finalTotal = servicesAndSuppliesSubtotal + markupsSubtotal - discountsSubtotal;
+const finalTotal = servicesAndSuppliesSubtotal + markupsSubtotal + discountsSubtotal;
 
   return (
     <div className="invoice" style={{ border: "2px dashed white" }}>
