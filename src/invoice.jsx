@@ -2,35 +2,7 @@ import React, { useState } from "react"; // Removed unused StrictMode and useEff
 import "./styles.css";
 
 export default function Invoice() {
-  // Individual state for each service
-  const [discussionQty, setDiscussionQty] = useState(0);
-  const [setupCleanupQty, setSetupCleanupQty] = useState(45);
-  const [contentCreationQty, setContentCreationQty] = useState(5);
-  const [editingQty, setEditingQty] = useState(0);
-  // Individual state for each consumable
-  const [cumLubeQty, setCumLubeQty] = useState(0);
-  const [condomQty, setCondomQty] = useState(0);
-  const [pantyhoseQty, setPantyhoseQty] = useState(0);
-  const [customItemName, setCustomItemName] = useState("Custom Item");
-  const [customItemCost, setCustomItemCost] = useState(0);
-  const [customItemQty, setCustomItemQty] = useState(0);
 
-  // State for markups and discounts
-  const [exclusiveQty, setExclusiveQty] = useState(1);
-  const [rushQty, setRushQty] = useState(0);
-  const [extremeQty, setExtremeQty] = useState(1);
-  const [jerkQty, setjerkQty] = useState(0);
-  const [bulkQty, setBulkQty] = useState(0);
-  const [easyQty, setEasyQty] = useState(0);
-  const [otherQty, setOtherQty] = useState(0);
-
- // State for invoice description
-  const [invoiceDescription, setInvoiceDescription] = useState("5m video call");
- const presetOptions = Object.keys(presetQuantities);
-  const q15=[0,15,30,45,60,75,90,105,120]
-  const q60=[190,240, 300, 360, 420, 480, 540, 600,660, 720, 780, 840, 900, 960, 1020, 1080, 1140, 1200]
-  const q1=[0,1,2,3,4,5,6,7,8,9,10]
-  const q5=[15,20,25,30,35,40,45,50,55,60]
 
   // Preset configurations for quantities
 const presetQuantities = {
@@ -270,6 +242,35 @@ const presetQuantities = {
   },
 };
 
+    // Individual state for each service
+  const [discussionQty, setDiscussionQty] = useState(0);
+  const [setupCleanupQty, setSetupCleanupQty] = useState(45);
+  const [contentCreationQty, setContentCreationQty] = useState(5);
+  const [editingQty, setEditingQty] = useState(0);
+  // Individual state for each consumable
+  const [cumLubeQty, setCumLubeQty] = useState(0);
+  const [condomQty, setCondomQty] = useState(0);
+  const [pantyhoseQty, setPantyhoseQty] = useState(0);
+  const [customItemName, setCustomItemName] = useState("Custom Item");
+  const [customItemCost, setCustomItemCost] = useState(0);
+  const [customItemQty, setCustomItemQty] = useState(0);
+
+  // State for markups and discounts
+  const [exclusiveQty, setExclusiveQty] = useState(1);
+  const [rushQty, setRushQty] = useState(0);
+  const [extremeQty, setExtremeQty] = useState(1);
+  const [jerkQty, setjerkQty] = useState(0);
+  const [bulkQty, setBulkQty] = useState(0);
+  const [easyQty, setEasyQty] = useState(0);
+  const [otherQty, setOtherQty] = useState(0);
+
+ // State for invoice description
+  const [invoiceDescription, setInvoiceDescription] = useState("5m video call");
+ const presetOptions = Object.keys(presetQuantities);
+  const q15=[0,15,30,45,60,75,90,105,120]
+  const q60=[190,240, 300, 360, 420, 480, 540, 600,660, 720, 780, 840, 900, 960, 1020, 1080, 1140, 1200]
+  const q1=[0,1,2,3,4,5,6,7,8,9,10]
+  const q5=[15,20,25,30,35,40,45,50,55,60]
   // Function to apply preset quantities based on input value
   const applyPreset = (value) => {
     const matchedPreset = presetOptions.find((preset) =>
