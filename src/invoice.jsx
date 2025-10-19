@@ -24,7 +24,7 @@ const presetQuantities = {
     easyQty: 0,
     otherQty: 0,
   },
-      "Drive Access - yearly": {
+      "Drive Access - Yearly": {
     discussionQty: 0,
     setupCleanupQty: 0,
     contentCreationQty: 0,
@@ -42,7 +42,7 @@ const presetQuantities = {
     easyQty: .5,
     otherQty: 0,
   },
-      "Drive Access - lifetime": {
+      "Drive Access - Lifetime": {
     discussionQty: 0,
     setupCleanupQty: 0,
     contentCreationQty: 0,
@@ -53,7 +53,7 @@ const presetQuantities = {
     customItemQty: 60,
     customItemName: "1 Month Drive access", 
     customItemCost: 10,
-    exclusiveQty: ,
+    exclusiveQty: 0,
     rushQty: 0,
     extremeQty: 0,
     bulkQty: 5,
@@ -265,7 +265,7 @@ const presetQuantities = {
   const [otherQty, setOtherQty] = useState(0);
 
  // State for invoice description
-  const [invoiceDescription, setInvoiceDescription] = useState("5m video call");
+  const [invoiceDescription, setInvoiceDescription] = useState("5m Video call");
  const presetOptions = Object.keys(presetQuantities);
   const q15=[0,15,30,45,60,75,90,105,120];
   const q60=[190,240, 300, 360, 420, 480, 540, 600,660, 720, 780, 840, 900, 960, 1020, 1080, 1140, 1200];
