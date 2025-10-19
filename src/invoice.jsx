@@ -1,4 +1,4 @@
-import React, { useState } from "react"; // Removed unused StrictMode and useEffect
+import React, { useState, useEffect } from "react"; // Removed unused StrictMode and useEffect
 import "./styles.css";
 
 export default function Invoice() {
