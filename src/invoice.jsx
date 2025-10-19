@@ -44,168 +44,242 @@ export default function Invoice() {
   const q5=[15,20,25,30,35,40,45,50,55,60]
 
   // Preset configurations for quantities
-  const presetQuantities = {
-    "Custom Photoset": {
-      discussionQty: 15,
-      setupCleanupQty: 15,
-      contentCreationQty: 3,
-      editingQty: 0,
-      cumLubeQty: 0,
-      condomQty: 0,
-      pantyhoseQty: 0,
-      customItemQty: 0,
-      exclusiveQty: 0,
-      rushQty: 0,
-      extremeQty: 0,
-      bulkQty: 0,
-      easyQty: 0,
-      otherQty: 0,
-    },
-    "Custom Video": {
-      discussionQty: 15,
-      setupCleanupQty: 30,
-      contentCreationQty: 3,
-      editingQty: 0,
-      cumLubeQty: 0,
-      condomQty: 0,
-      pantyhoseQty: 0,
-      customItemQty: 0,
-      exclusiveQty: 0,
-      rushQty: 0,
-      extremeQty: 0,
-      bulkQty: 0,
-      easyQty: 0,
-      otherQty: 0,
-    },
-    "Text Rating": {
-      discussionQty: 30,
-      setupCleanupQty: 0,
-      contentCreationQty: 0,
-      editingQty: 0,
-      cumLubeQty: 0,
-      condomQty: 0,
-      pantyhoseQty: 0,
-      customItemQty: 0,
-      exclusiveQty: 0,
-      rushQty: 0,
-      extremeQty: 0,
-      bulkQty: 0,
-      easyQty: 0,
-      otherQty: 0,
-    },
-    "Video Rating": {
-      discussionQty: 0,
-      setupCleanupQty: 30,
-      contentCreationQty: 5,
-      editingQty: 0,
-      cumLubeQty: 2,
-      condomQty: 0,
-      pantyhoseQty: 0,
-      customItemQty: 0,
-      exclusiveQty: 1,
-      rushQty: 0,
-      extremeQty: 0,
-      bulkQty: 0,
-      easyQty: 1,
-      otherQty: 0,
-    },
-    "15m Sexting Session": {
-      discussionQty: 10,
-      setupCleanupQty: 30,
-      contentCreationQty: 5,
-      editingQty: 0,
-      cumLubeQty: 0,
-      condomQty: 0,
-      pantyhoseQty: 0,
-      customItemQty: 0,
-      exclusiveQty: 0,
-      rushQty: 0,
-      extremeQty: 0,
-      bulkQty: 0,
-      easyQty: 0,
-      otherQty: 0,
-    },
-      "5m Video Call": {
-      discussionQty: 0,
-      setupCleanupQty: 45,
-      contentCreationQty: 5,
-      editingQty: 0,
-      cumLubeQty: 0,
-      condomQty: 0,
-      pantyhoseQty: 0,
-      customItemQty: 0,
-      exclusiveQty: 1,
-      rushQty: 0,
-      extremeQty: 1,
-      bulkQty: 0,
-      easyQty: 0,
-      otherQty: 0,
-    },
-     "1 week Friend Experience": {
-      discussionQty: 300,
-      setupCleanupQty: 0,
-      contentCreationQty: 0,
-      editingQty: 0,
-      cumLubeQty: 0,
-      condomQty: 0,
-      pantyhoseQty: 0,
-      customItemQty: 0,
-      exclusiveQty: 0,
-      rushQty: 0,
-      extremeQty: 0,
-      bulkQty: 1,
-      easyQty: 1,
-      otherQty: 0,
-    },
-   "1 week GirlFriend Experience": {
-      discussionQty: 600,
-      setupCleanupQty: 0,
-      contentCreationQty: 10,
-      editingQty: 0,
-      cumLubeQty: 0,
-      condomQty: 0,
-      pantyhoseQty: 0,
-      customItemQty: 0,
-      exclusiveQty: 0,
-      rushQty: 0,
-      extremeQty: 0,
-      bulkQty: 1,
-      easyQty: 0,
-      otherQty: 0,
-    },
-    "1 week Premium GirlFriend Experience": {
-      discussionQty: 600,
-      setupCleanupQty: 60,
-      contentCreationQty: 180,
-      editingQty: 0,
-      cumLubeQty: 0,
-      condomQty: 0,
-      pantyhoseQty: 0,
-      customItemQty: 0,
-      exclusiveQty: 0,
-      rushQty: 0,
-      extremeQty: 0,
-      bulkQty: 1,
-      easyQty: 0,
-      otherQty: 0,
-    },
-    "other": {
-      discussionQty: 0,
-      setupCleanupQty: 0,
-      contentCreationQty: 0,
-      editingQty: 0,
-      cumLubeQty: 0,
-      condomQty: 0,
-      pantyhoseQty: 0,
-      customItemQty: 0,
-      exclusiveQty: 0,
-      rushQty: 0,
-      extremeQty: 0,
-      bulkQty: 0,
-      easyQty: 0,
-      otherQty: 0,
-    },
-  };
+const presetQuantities = {
+    "Drive Access - Monthly": {
+    discussionQty: 0,
+    setupCleanupQty: 0,
+    contentCreationQty: 0,
+    editingQty: 0,
+    cumLubeQty: 0,
+    condomQty: 0,
+    pantyhoseQty: 0,
+    customItemQty: 0,
+    customItemName: "1 Month Drive access", 
+    customItemCost: 10,
+    exclusiveQty: 1,
+    rushQty: 0,
+    extremeQty: 0,
+    bulkQty: 0,
+    easyQty: 0,
+    otherQty: 0,
+  },
+      "Drive Access - yearly": {
+    discussionQty: 0,
+    setupCleanupQty: 0,
+    contentCreationQty: 0,
+    editingQty: 0,
+    cumLubeQty: 0,
+    condomQty: 0,
+    pantyhoseQty: 0,
+    customItemQty: 0,
+    customItemName: "1 Month Drive access", 
+    customItemCost: 10,
+    exclusiveQty: 12,
+    rushQty: 0,
+    extremeQty: 0,
+    bulkQty: 1,
+    easyQty: .5,
+    otherQty: 0,
+  },
+      "Drive Access - lifetime": {
+    discussionQty: 0,
+    setupCleanupQty: 0,
+    contentCreationQty: 0,
+    editingQty: 0,
+    cumLubeQty: 0,
+    condomQty: 0,
+    pantyhoseQty: 0,
+    customItemQty: 0,
+    customItemName: "1 Month Drive access", 
+    customItemCost: 10,
+    exclusiveQty: 60,
+    rushQty: 0,
+    extremeQty: 0,
+    bulkQty: 5,
+    easyQty: 1,
+    otherQty: 0,
+  },
+  "Custom Photoset": {
+    discussionQty: 15,
+    setupCleanupQty: 15,
+    contentCreationQty: 3,
+    editingQty: 0,
+    cumLubeQty: 0,
+    condomQty: 0,
+    pantyhoseQty: 0,
+    customItemQty: 0,
+    customItemName: "Custom Item", 
+    customItemCost: 0,
+    exclusiveQty: 0,
+    rushQty: 0,
+    extremeQty: 0,
+    bulkQty: 0,
+    easyQty: 0,
+    otherQty: 0,
+  },
+  "Custom Video": {
+    discussionQty: 15,
+    setupCleanupQty: 30,
+    contentCreationQty: 3,
+    editingQty: 0,
+    cumLubeQty: 0,
+    condomQty: 0,
+    pantyhoseQty: 0,
+    customItemQty: 0,
+    customItemName: "Custom Item", 
+    customItemCost: 0,
+    exclusiveQty: 0,
+    rushQty: 0,
+    extremeQty: 0,
+    bulkQty: 0,
+    easyQty: 0,
+    otherQty: 0,
+  },
+  "Text Rating": {
+    discussionQty: 30,
+    setupCleanupQty: 0,
+    contentCreationQty: 0,
+    editingQty: 0,
+    cumLubeQty: 0,
+    condomQty: 0,
+    pantyhoseQty: 0,
+    customItemQty: 0,
+    customItemName: "Custom Item", 
+    customItemCost: 0,
+    exclusiveQty: 0,
+    rushQty: 0,
+    extremeQty: 0,
+    bulkQty: 0,
+    easyQty: 0,
+    otherQty: 0,
+  },
+  "Video Rating": {
+    discussionQty: 0,
+    setupCleanupQty: 30,
+    contentCreationQty: 5,
+    editingQty: 0,
+    cumLubeQty: 2,
+    condomQty: 0,
+    pantyhoseQty: 0,
+    customItemQty: 0,
+    customItemName: "Custom Item", 
+    customItemCost: 0,
+    exclusiveQty: 1,
+    rushQty: 0,
+    extremeQty: 0,
+    bulkQty: 0,
+    easyQty: 1,
+    otherQty: 0,
+  },
+  "15m Sexting Session": {
+    discussionQty: 10,
+    setupCleanupQty: 30,
+    contentCreationQty: 5,
+    editingQty: 0,
+    cumLubeQty: 0,
+    condomQty: 0,
+    pantyhoseQty: 0,
+    customItemQty: 0,
+    customItemName: "Custom Item", 
+    customItemCost: 0,
+    exclusiveQty: 0,
+    rushQty: 0,
+    extremeQty: 0,
+    bulkQty: 0,
+    easyQty: 0,
+    otherQty: 0,
+  },
+  "5m Video Call": {
+    discussionQty: 0,
+    setupCleanupQty: 45,
+    contentCreationQty: 5,
+    editingQty: 0,
+    cumLubeQty: 0,
+    condomQty: 0,
+    pantyhoseQty: 0,
+    customItemQty: 0,
+    customItemName: "Custom Item", 
+    customItemCost: 0,
+    exclusiveQty: 1,
+    rushQty: 0,
+    extremeQty: 1,
+    bulkQty: 0,
+    easyQty: 0,
+    otherQty: 0,
+  },
+  "1 week Friend Experience": {
+    discussionQty: 300,
+    setupCleanupQty: 0,
+    contentCreationQty: 0,
+    editingQty: 0,
+    cumLubeQty: 0,
+    condomQty: 0,
+    pantyhoseQty: 0,
+    customItemQty: 0,
+    customItemName: "Custom Item", 
+    customItemCost: 0,
+    exclusiveQty: 0,
+    rushQty: 0,
+    extremeQty: 0,
+    bulkQty: 1,
+    easyQty: 1,
+    otherQty: 0,
+  },
+  "1 week GirlFriend Experience": {
+    discussionQty: 600,
+    setupCleanupQty: 0,
+    contentCreationQty: 10,
+    editingQty: 0,
+    cumLubeQty: 0,
+    condomQty: 0,
+    pantyhoseQty: 0,
+    customItemQty: 0,
+    customItemName: "Custom Item", 
+    customItemCost: 0,
+    exclusiveQty: 0,
+    rushQty: 0,
+    extremeQty: 0,
+    bulkQty: 1,
+    easyQty: 0,
+    otherQty: 0,
+  },
+  "1 week Premium GirlFriend Experience": {
+    discussionQty: 600,
+    setupCleanupQty: 60,
+    contentCreationQty: 180,
+    editingQty: 0,
+    cumLubeQty: 0,
+    condomQty: 0,
+    pantyhoseQty: 0,
+    customItemQty: 0,
+    customItemName: "Custom Item", 
+    customItemCost: 0,
+    exclusiveQty: 0,
+    rushQty: 0,
+    extremeQty: 0,
+    bulkQty: 1,
+    easyQty: 0,
+    otherQty: 0,
+  },
+  "other": {
+    discussionQty: 0,
+    setupCleanupQty: 0,
+    contentCreationQty: 0,
+    editingQty: 0,
+    cumLubeQty: 0,
+    condomQty: 0,
+    pantyhoseQty: 0,
+    customItemQty: 0,
+    customItemName: "Custom Item", 
+    customItemCost: 0,
+    exclusiveQty: 0,
+    rushQty: 0,
+    extremeQty: 0,
+    bulkQty: 0,
+    easyQty: 0,
+    otherQty: 0,
+  },
+};
 
   // Function to apply preset quantities based on input value
   const applyPreset = (value) => {
@@ -251,25 +325,40 @@ export default function Invoice() {
     cumLubeTotal + condomTotal + pantyhoseTotal + customItemTotal;
   const servicesAndSuppliesSubtotal = servicesSubtotal + consumablesSubtotal;
 
-  const exclusiveTotal = (servicesAndSuppliesSubtotal * 0.5 * exclusiveQty).toFixed(2);
-  const rushTotal = (servicesAndSuppliesSubtotal * 0.5 * rushQty).toFixed(2);
-  const extremeTotal = (servicesAndSuppliesSubtotal * 0.5 * extremeQty).toFixed(2);
-  const jerkTotal = (servicesAndSuppliesSubtotal * 0.5 * jerkQty).toFixed(2);
-  const markupsSubtotal =
-    parseFloat(exclusiveTotal) +
-    parseFloat(rushTotal) +
-    parseFloat(extremeTotal) +
-    parseFloat(jerkTotal);
+// Helper function to apply recursive percentage for a given quantity
+const applyRecursivePercentage = (baseTotal, percentage, quantity) => {
+  let total = baseTotal;
+  let accumulatedAmount = 0;
+  for (let i = 0; i < quantity; i++) {
+    const amount = total * percentage;
+    accumulatedAmount += amount;
+    total += amount;
+  }
+  return accumulatedAmount.toFixed(2);
+};
 
-  const bulkTotal = (servicesAndSuppliesSubtotal * 0.25 * bulkQty).toFixed(2);
-  const easyTotal = (servicesAndSuppliesSubtotal * 0.25 * easyQty).toFixed(2);
-  const otherTotal = (servicesAndSuppliesSubtotal * 0.25 * otherQty).toFixed(2);
-  const discountsSubtotal =
-    parseFloat(bulkTotal) + parseFloat(easyTotal) + parseFloat(otherTotal);
-  const finalTotal =
-    servicesAndSuppliesSubtotal +
-    parseFloat(markupsSubtotal) -
-    parseFloat(discountsSubtotal);
+// Calculate markups (each starts from servicesAndSuppliesSubtotal)
+const exclusiveTotal = applyRecursivePercentage(servicesAndSuppliesSubtotal, 0.5, exclusiveQty);
+const rushTotal = applyRecursivePercentage(servicesAndSuppliesSubtotal, 0.5, rushQty);
+const extremeTotal = applyRecursivePercentage(servicesAndSuppliesSubtotal, 0.5, extremeQty);
+const jerkTotal = applyRecursivePercentage(servicesAndSuppliesSubtotal, 0.5, jerkQty);
+
+const markupsSubtotal =
+  parseFloat(exclusiveTotal) +
+  parseFloat(rushTotal) +
+  parseFloat(extremeTotal) +
+  parseFloat(jerkTotal);
+
+// Calculate discounts (each starts from servicesAndSuppliesSubtotal)
+const bulkTotal = applyRecursivePercentage(servicesAndSuppliesSubtotal, 0.25, bulkQty);
+const easyTotal = applyRecursivePercentage(servicesAndSuppliesSubtotal, 0.25, easyQty);
+const otherTotal = applyRecursivePercentage(servicesAndSuppliesSubtotal, 0.25, otherQty);
+
+const discountsSubtotal =
+  parseFloat(bulkTotal) + parseFloat(easyTotal) + parseFloat(otherTotal);
+
+// Final total
+const finalTotal = servicesAndSuppliesSubtotal + markupsSubtotal - discountsSubtotal;
 
   return (
     <div className="invoice" style={{ border: "2px dashed white" }}>
