@@ -396,13 +396,22 @@ export function LocalTimeSchedule({
 }) {
   const [schedule, setSchedule] = useState([]);
 
-  // Pre-compute range map at the top level
+  // Pre-compute range map for each day
   const rangeMap = useMemo(() => {
     const map = {};
-    for (const [columnName, ranges] of Object.entries(schedules)) {
-      map[columnName] = ranges.map((range) =>
-        convertTimeRange(range, new Date().toISOString().split("T")[0])
-      );
+    const baseDate = new Date();
+    const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    
+    for (const [dayName, ranges] of Object.entries(schedules)) {
+      // Calculate the date for this day of the week
+      const currentDay = baseDate.getDay();
+      const targetDay = daysOfWeek.indexOf(dayName);
+      const dayDiff = (targetDay - currentDay + 7) % 7;
+      const dayDate = new Date(baseDate);
+      dayDate.setDate(baseDate.getDate() + dayDiff);
+      const dateStr = dayDate.toISOString().split("T")[0];
+
+      map[dayName] = ranges.map((range) => convertTimeRange(range, dateStr));
     }
     return map;
   }, [schedules]);
@@ -410,10 +419,6 @@ export function LocalTimeSchedule({
   useEffect(() => {
     const updateSchedule = () => {
       const now = new Date();
-      // Set base time to 4:00 AM MDT, converted to local timezone
-      const baseTime = new Date(now);
-      // Adjust for MDT (UTC-6) to local (e.g., PDT UTC-7) if needed, but conversion handles this
-      const baseDate = baseTime.toISOString().split("T")[0];
       const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
       const timeFormatter = new Intl.DateTimeFormat("en-US", {
         hour: "2-digit",
@@ -422,31 +427,20 @@ export function LocalTimeSchedule({
         timeZoneName: "shortGeneric",
         timeZone,
       });
-      const dateFormatter = new Intl.DateTimeFormat("en-US", {
-        weekday: "short",
-        month: "short",
-        day: "2-digit",
-        year: "numeric",
-        timeZone,
-      });
-
       const hourlySchedule = Array.from({ length: 24 }, (_, i) => {
         const scheduleTime = new Date(now);
-        scheduleTime.setHours(7 + i, 0, 0, 0);
+        scheduleTime.setHours(i, 0, 0, 0); // Start from 00:00
         const formattedTime = timeFormatter.format(scheduleTime);
-        const formattedDate = dateFormatter.format(scheduleTime);
-
         const statuses = {};
-        for (const [columnName, ranges] of Object.entries(rangeMap)) {
-          statuses[columnName] = ranges.some(([start, end]) =>
+        for (const [dayName, ranges] of Object.entries(rangeMap)) {
+          statuses[dayName] = ranges.some(([start, end]) =>
             isWithinRange(scheduleTime, start, end)
           );
         }
-
         const isCurrent =
           Math.abs(scheduleTime.getHours() - now.getHours()) < 1 &&
           now.getMinutes() < 60;
-        return { time: formattedTime, statuses, isCurrent, formattedDate };
+        return { time: formattedTime, statuses, isCurrent };
       });
 
       setSchedule(hourlySchedule);
@@ -470,9 +464,10 @@ export function LocalTimeSchedule({
         }}
       >
         <colgroup>
-          <col style={{ width: "20%" }} />
-          <col style={{ width: "30%" }} />
-          <col style={{ width: "50%" }} />
+          <col style={{ width: "12%" }} />
+          {columnNames.map((_, index) => (
+            <col key={index} style={{ width: `${88 / columnNames.length}%` }} />
+          ))}
         </colgroup>
         <thead>
           <tr>
@@ -481,52 +476,49 @@ export function LocalTimeSchedule({
               <th key={index} style={{ border: "1px solid #ccc" }}>
                 <div>{name}</div>
                 <div style={{ fontSize: "smaller", fontWeight: "normal" }}>
-                  {descriptions[name] || ""}
+                  {descriptions[name] ? (
+                    <ul>
+                      {descriptions[name].split("\n").map((item, i) => (
+                        item.trim() && <li key={i}>{item.replace(/^- /, "")}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    ""
+                  )}
                 </div>
               </th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {schedule.map(
-            ({ time, statuses, isCurrent, formattedDate }, index) => {
-              const displayText =
-                format === "datetime"
-                  ? `${formattedDate} - ${time}`
-                  : format === "date"
-                  ? formattedDate
-                  : time;
-              return (
-                <tr key={index}>
+          {schedule.map(({ time, statuses, isCurrent }, index) => (
+            <tr key={index}>
+              <td
+                style={{
+                  border: "1px solid #ccc",
+                  backgroundColor: isCurrent ? "dimgrey" : "black",
+                  width: "12%",
+                  textAlign: "center",
+                }}
+              >
+                {time}
+              </td>
+              {columnNames.map((columnName, colIndex) => {
+                const isActive = statuses[columnName];
+                const backgroundColor = isActive ? "grey" : "black";
+                return (
                   <td
+                    key={colIndex}
                     style={{
                       border: "1px solid #ccc",
-                      backgroundColor: isCurrent ? "dimgrey" : "black",
-                      width: "20%",
-                      textAlign: "center",
+                      backgroundColor,
+                      color: isActive ? "#000" : "#666",
                     }}
-                  >
-                    {displayText}
-                  </td>
-                  {columnNames.map((columnName, colIndex) => {
-                    const isActive = statuses[columnName];
-                    const backgroundColor = isActive ? "grey" : "black";
-                    return (
-                      <td
-                        key={colIndex}
-                        style={{
-                          border: "1px solid #ccc",
-                          backgroundColor,
-                          color: isActive ? "#000" : "#666",
-                          width: "40%",
-                        }}
-                      ></td>
-                    );
-                  })}
-                </tr>
-              );
-            }
-          )}
+                  ></td>
+                );
+              })}
+            </tr>
+          ))}
         </tbody>
       </table>
     );

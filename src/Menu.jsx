@@ -4,8 +4,7 @@ import { reactDOM } from "react-dom";
 import "./styles.css";
 import Invoice from "./invoice";
 import Collapse from "./Utility";
-import Picdrive from "./Images/Preview/PicDrive.png";
-import Viddrive from "./Images/Preview/vidDrive.png";
+import DrivePosts from "./Images/Preview/DrivePosts.png";
 import headerimg from "./Images/Preview/headerimg.png";
 import fepreview from "./Images/Preview/FE.jpg";
 import pgfepreview from "./Images/Preview/PGFE.jpg";
@@ -78,15 +77,10 @@ export default function Menu() {
         </Collapse>
       </div>
       <div>
-        <Collapse trigger={<h3>🖼️6,400+ Pic drive ~ $100 🖼️⏬</h3>}>
-          Permanant access to a google drive that I update with all pictures I
-          take of myself.<br />
-          <img src={Picdrive} style={{ maxWidth: "100%",maxHeight: "60vh" }} />
-        </Collapse>
-        <Collapse trigger={<h3>📼700+ vid drive ~ $100 📼⏬</h3>}>
-          Permanant access to a google drive that I update with all videos I
-          take of myself.<br />
-          <img src={Viddrive} style={{ maxWidth: "100%", maxHeight:"60vh" }} />
+        <Collapse trigger={<h3>🗃️160+gb drive ~ $10/month 🗃️⏬</h3>}>
+          1 month of access to a <a href="https://drive.google.com/drive/folders/1U23lCgkRosUxkWq5qtfJ2_3KbdwExiti?usp=sharing">google drive</a> that I update with all of my solo content before I post it anywhere else.<br />
+          Yearly ($100) and lifetime ($300) also available.
+          <img src={DrivePosts} style={{ maxWidth: "100%",maxHeight: "60vh" }} />
         </Collapse>
         <Collapse trigger={<h3>📸Custom photoset~ $15+📸⏬</h3>}>
           <div>

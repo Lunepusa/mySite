@@ -96,26 +96,34 @@ export function Availability() {
     <div>
       <Collapse trigger={<h1>Availability ⏬</h1>}>
         <h3 style={{ opacity: ".8" }}>
-          When I am more likely to be available every day, however there is no
-          guarantee without discussion
+          When I tend to be available. no guarentee without discussion.
           <br />
-          I may be available at other times with sufficient notice
+          Customs, Sexting, Calls, and Meets MUST be scheduled in advance
           <br />
           Please tell me your timezone when scheduling. I am in mountain time.
         </h3>
 
         <LocalTimeSchedule
-          schedules={{
-            "Casual Availability": ["10:00 am - 4:00 pm", "8:00 pm - 12:00 am"],
-            "Dedicated Attention": ["10:00 pm - 2:00 am"],
-          }}
-          descriptions={{
-            "Casual Availability":
-              "For casual messaging, planning, and scheduling",
-            "Dedicated Attention":
-              "For having my dedicated attention on you for sexting, calls, or custom creation. Needs to be scheduled in advance",
-          }}
-        />
+        schedules={{
+          Monday: ["6:00 PM - 11:59 PM"],
+          Tuesday: ["6:00 PM - 11:59 PM"],
+          Wednesday: ["6:00 PM - 11:59 PM"],
+          Thursday: ["6:00 PM - 11:59 PM"],
+          Friday: ["6:00 PM - 2:00 AM"],
+          Saturday: ["9:00 AM - 2:00 AM"],
+          Sunday: ["9:00 AM - 11:59 PM"],
+        }}
+        descriptions={{
+          Monday: "",
+          Tuesday: "",
+          Wednesday: "",
+          Thursday: "",
+          Friday: "",
+          Saturday: "",
+          Sunday: "",
+        }}
+        format="time"
+      />
       </Collapse>
     </div>
   );

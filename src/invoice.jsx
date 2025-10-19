@@ -14,10 +14,10 @@ const presetQuantities = {
     cumLubeQty: 0,
     condomQty: 0,
     pantyhoseQty: 0,
-    customItemQty: 0,
+    customItemQty: 1,
     customItemName: "1 Month Drive access", 
     customItemCost: 10,
-    exclusiveQty: 1,
+    exclusiveQty: 0,
     rushQty: 0,
     extremeQty: 0,
     bulkQty: 0,
@@ -32,10 +32,10 @@ const presetQuantities = {
     cumLubeQty: 0,
     condomQty: 0,
     pantyhoseQty: 0,
-    customItemQty: 0,
+    customItemQty: 12,
     customItemName: "1 Month Drive access", 
     customItemCost: 10,
-    exclusiveQty: 12,
+    exclusiveQty: 0,
     rushQty: 0,
     extremeQty: 0,
     bulkQty: 1,
@@ -50,10 +50,10 @@ const presetQuantities = {
     cumLubeQty: 0,
     condomQty: 0,
     pantyhoseQty: 0,
-    customItemQty: 0,
+    customItemQty: 60,
     customItemName: "1 Month Drive access", 
     customItemCost: 10,
-    exclusiveQty: 60,
+    exclusiveQty: ,
     rushQty: 0,
     extremeQty: 0,
     bulkQty: 5,
@@ -267,10 +267,13 @@ const presetQuantities = {
  // State for invoice description
   const [invoiceDescription, setInvoiceDescription] = useState("5m video call");
  const presetOptions = Object.keys(presetQuantities);
-  const q15=[0,15,30,45,60,75,90,105,120]
-  const q60=[190,240, 300, 360, 420, 480, 540, 600,660, 720, 780, 840, 900, 960, 1020, 1080, 1140, 1200]
-  const q1=[0,1,2,3,4,5,6,7,8,9,10]
-  const q5=[15,20,25,30,35,40,45,50,55,60]
+  const q15=[0,15,30,45,60,75,90,105,120];
+  const q60=[190,240, 300, 360, 420, 480, 540, 600,660, 720, 780, 840, 900, 960, 1020, 1080, 1140, 1200];
+  const q1=[0,1,2,3,4,5,6,7,8,9,10];
+  const q5=[15,20,25,30,35,40,45,50,55,60];
+  useEffect(() => {
+  applyPreset(invoiceDescription);
+}, []); // Runs once on mount
   // Function to apply preset quantities based on input value
   const applyPreset = (value) => {
     const matchedPreset = presetOptions.find((preset) =>
@@ -372,7 +375,7 @@ const finalTotal = servicesAndSuppliesSubtotal + markupsSubtotal - discountsSubt
           onChange={(e) => applyPreset(e.target.value)}
           style={{
             display: "inline-block",
-            width: "25%",
+            width: "fit-content",
             color: "black",
           }}>
              {presetOptions.map((option) => (
