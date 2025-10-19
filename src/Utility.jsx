@@ -400,7 +400,7 @@ export function LocalTimeSchedule({
   const rangeMap = useMemo(() => {
     const map = {};
     const baseDate = new Date();
-    const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const daysOfWeek = ["Sun", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat"];
     
     for (const [dayName, ranges] of Object.entries(schedules)) {
       // Calculate the date for this day of the week
@@ -451,78 +451,92 @@ export function LocalTimeSchedule({
     return () => clearInterval(interval);
   }, [rangeMap, format]);
 
-  const scheduleDisplay = useMemo(() => {
-    const columnNames = Object.keys(schedules);
-    return (
-      <table
-        style={{
-          borderCollapse: "collapse",
-          width: "95%",
-          border: "1px solid #ccc",
-          height: "90vh",
-          fontSize: "small",
-        }}
-      >
-        <colgroup>
-          <col style={{ width: "12%" }} />
-          {columnNames.map((_, index) => (
-            <col key={index} style={{ width: `${88 / columnNames.length}%` }} />
+// In LocalTimeSchedule.jsx, update the scheduleDisplay useMemo block
+const scheduleDisplay = useMemo(() => {
+  const columnNames = Object.keys(schedules);
+  const now = new Date();
+  const currentDay = daysOfWeek[now.getDay()]; // e.g., "Sunday"
+  const currentHour = now.getHours();
+
+  return (
+    <table
+      style={{
+        borderCollapse: "collapse",
+        width: "95%",
+        border: "1px solid #ccc",
+        height: "90vh",
+        fontSize: "small",
+      }}
+    >
+      <caption style={{ fontSize: "smaller", color: "#666", padding: "5px" }}>
+        Grey cells indicate available times
+      </caption>
+      <colgroup>
+        <col style={{ width: "12%" }} />
+        {columnNames.map((_, index) => (
+          <col key={index} style={{ width: `${88 / columnNames.length}%` }} />
+        ))}
+      </colgroup>
+      <thead>
+        <tr>
+          <th style={{ border: "1px solid #ccc" }}>Time</th>
+          {columnNames.map((name, index) => (
+            <th key={index} style={{ border: "1px solid #ccc" }}>
+              <div>{name}</div>
+              <div style={{ fontSize: "smaller", fontWeight: "normal" }}>
+                {descriptions[name] ? (
+                  <ul>
+                    {descriptions[name].split("\n").map((item, i) => (
+                      item.trim() && <li key={i}>{item.replace(/^- /, "")}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  ""
+                )}
+              </div>
+            </th>
           ))}
-        </colgroup>
-        <thead>
-          <tr>
-            <th style={{ border: "1px solid #ccc" }}>Time</th>
-            {columnNames.map((name, index) => (
-              <th key={index} style={{ border: "1px solid #ccc" }}>
-                <div>{name}</div>
-                <div style={{ fontSize: "smaller", fontWeight: "normal" }}>
-                  {descriptions[name] ? (
-                    <ul>
-                      {descriptions[name].split("\n").map((item, i) => (
-                        item.trim() && <li key={i}>{item.replace(/^- /, "")}</li>
-                      ))}
-                    </ul>
-                  ) : (
-                    ""
-                  )}
-                </div>
-              </th>
-            ))}
+        </tr>
+      </thead>
+      <tbody>
+        {schedule.map(({ time, statuses, isCurrent }, index) => (
+          <tr key={index}>
+            <td
+              style={{
+                border: "1px solid #ccc",
+                backgroundColor: "black",
+                width: "12%",
+                textAlign: "center",
+              }}
+            >
+              {time}
+            </td>
+            {columnNames.map((columnName, colIndex) => {
+              const isActive = statuses[columnName];
+              const isCurrentCell =
+                isCurrent && columnName === currentDay;
+              const backgroundColor = isCurrentCell
+                ? "lightgrey" // Current day and time
+                : isActive
+                ? "grey" // Available times
+                : "black"; // Unavailable times
+              return (
+                <td
+                  key={colIndex}
+                  style={{
+                    border: isCurrentCell ? "3px dashed white" : "1px solid #ccc",
+                    backgroundColor,
+                    color: isActive || isCurrentCell ? "#000" : "#666",
+                  }}
+                ></td>
+              );
+            })}
           </tr>
-        </thead>
-        <tbody>
-          {schedule.map(({ time, statuses, isCurrent }, index) => (
-            <tr key={index}>
-              <td
-                style={{
-                  border: "1px solid #ccc",
-                  backgroundColor: isCurrent ? "dimgrey" : "black",
-                  width: "12%",
-                  textAlign: "center",
-                }}
-              >
-                {time}
-              </td>
-              {columnNames.map((columnName, colIndex) => {
-                const isActive = statuses[columnName];
-                const backgroundColor = isActive ? "grey" : "black";
-                return (
-                  <td
-                    key={colIndex}
-                    style={{
-                      border: "1px solid #ccc",
-                      backgroundColor,
-                      color: isActive ? "#000" : "#666",
-                    }}
-                  ></td>
-                );
-              })}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    );
-  }, [schedule, format, schedules]);
+        ))}
+      </tbody>
+    </table>
+  );
+}, [schedule, format, schedules]);
 
   return (
     <div>

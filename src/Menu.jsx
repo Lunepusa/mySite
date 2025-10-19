@@ -79,7 +79,7 @@ export default function Menu() {
       <div>
         <Collapse trigger={<h3>🗃️160+gb drive ~ $10/month 🗃️⏬</h3>}>
           1 month of access to a <a href="https://drive.google.com/drive/folders/1U23lCgkRosUxkWq5qtfJ2_3KbdwExiti?usp=sharing">google drive</a> that I update with all of my solo content before I post it anywhere else.<br />
-          Yearly ($100) and lifetime ($300) also available.
+          Yearly ($60) and lifetime ($205) also available.
           <img src={DrivePosts} style={{ maxWidth: "100%",maxHeight: "60vh" }} />
         </Collapse>
         <Collapse trigger={<h3>📸Custom photoset~ $15+📸⏬</h3>}>

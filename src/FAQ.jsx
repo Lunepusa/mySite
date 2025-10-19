@@ -105,22 +105,22 @@ export function Availability() {
 
         <LocalTimeSchedule
         schedules={{
-          Monday: ["6:00 PM - 11:59 PM"],
-          Tuesday: ["6:00 PM - 11:59 PM"],
-          Wednesday: ["6:00 PM - 11:59 PM"],
-          Thursday: ["6:00 PM - 11:59 PM"],
-          Friday: ["6:00 PM - 2:00 AM"],
-          Saturday: ["9:00 AM - 2:00 AM"],
-          Sunday: ["9:00 AM - 11:59 PM"],
+          Mon: ["6:00 PM - 11:59 PM"],
+          Tues: ["6:00 PM - 11:59 PM"],
+          Wed: ["6:00 PM - 11:59 PM"],
+          Thur: ["6:00 PM - 11:59 PM"],
+          Fri: ["6:00 PM - 2:00 AM"],
+          Sat: ["9:00 AM - 2:00 AM"],
+          Sun: ["9:00 AM - 11:59 PM"],
         }}
         descriptions={{
-          Monday: "",
-          Tuesday: "",
-          Wednesday: "",
-          Thursday: "",
-          Friday: "",
-          Saturday: "",
-          Sunday: "",
+          Mon: "",
+          Tues: "",
+          Wed: "",
+          Thur: "",
+          Fri: "",
+          Sat: "",
+          Sun: "",
         }}
         format="time"
       />

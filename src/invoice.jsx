@@ -39,7 +39,7 @@ const presetQuantities = {
     rushQty: 0,
     extremeQty: 0,
     bulkQty: 1,
-    easyQty: .5,
+    easyQty: 1,
     otherQty: 0,
   },
       "Drive Access - Lifetime": {
@@ -50,13 +50,13 @@ const presetQuantities = {
     cumLubeQty: 0,
     condomQty: 0,
     pantyhoseQty: 0,
-    customItemQty: 60,
+    customItemQty: 120,
     customItemName: "1 Month Drive access", 
     customItemCost: 10,
     exclusiveQty: 0,
     rushQty: 0,
     extremeQty: 0,
-    bulkQty: 5,
+    bulkQty: 3,
     easyQty: 1,
     otherQty: 0,
   },
@@ -394,10 +394,10 @@ const finalTotal = servicesAndSuppliesSubtotal + markupsSubtotal + discountsSubt
       {/* Combined Services and Consumables Table */}
       <table>
         <colgroup>
-          <col style={{ width: "50%" }} />
-          <col style={{ width: "calc(50% / 3)" }} />
-          <col style={{ width: "calc(50% / 3)" }} />
-          <col style={{ width: "calc(50% / 3)" }} />
+          <col style={{ width: "40%" }} />
+          <col style={{ width: "calc(60% / 3)" }} />
+          <col style={{ width: "calc(60% / 3)" }} />
+          <col style={{ width: "calc(60% / 3)" }} />
         </colgroup>
         <thead>
           <tr>
