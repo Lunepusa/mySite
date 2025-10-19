@@ -322,6 +322,11 @@ const presetQuantities = {
 
 // Helper function to apply recursive percentage for a given quantity
 const applyRecursivePercentage = (baseTotal, percentage, quantity) => {
+  // If quantity is fractional, treat it as a single proportional application
+  if (quantity % 1 !== 0) {
+    return (baseTotal * percentage * quantity).toFixed(2);
+  }
+  // For integer quantities, apply compounding as before
   let total = baseTotal;
   let accumulatedAmount = 0;
   for (let i = 0; i < quantity; i++) {
