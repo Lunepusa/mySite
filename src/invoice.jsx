@@ -251,19 +251,19 @@ export default function Invoice() {
     cumLubeTotal + condomTotal + pantyhoseTotal + customItemTotal;
   const servicesAndSuppliesSubtotal = servicesSubtotal + consumablesSubtotal;
 
-  const exclusiveTotal = (servicesSubtotal * 0.5 * exclusiveQty).toFixed(2);
-  const rushTotal = (servicesSubtotal * 0.5 * rushQty).toFixed(2);
-  const extremeTotal = (servicesSubtotal * 0.5 * extremeQty).toFixed(2);
-  const jerkTotal = (servicesSubtotal * 0.5 * jerkQty).toFixed(2);
+  const exclusiveTotal = (servicesAndSuppliesSubtotal * 0.5 * exclusiveQty).toFixed(2);
+  const rushTotal = (servicesAndSuppliesSubtotal * 0.5 * rushQty).toFixed(2);
+  const extremeTotal = (servicesAndSuppliesSubtotal * 0.5 * extremeQty).toFixed(2);
+  const jerkTotal = (servicesAndSuppliesSubtotal * 0.5 * jerkQty).toFixed(2);
   const markupsSubtotal =
     parseFloat(exclusiveTotal) +
     parseFloat(rushTotal) +
     parseFloat(extremeTotal) +
     parseFloat(jerkTotal);
 
-  const bulkTotal = (servicesSubtotal * 0.25 * bulkQty).toFixed(2);
-  const easyTotal = (servicesSubtotal * 0.25 * easyQty).toFixed(2);
-  const otherTotal = (servicesSubtotal * 0.25 * otherQty).toFixed(2);
+  const bulkTotal = (servicesAndSuppliesSubtotal * 0.25 * bulkQty).toFixed(2);
+  const easyTotal = (servicesAndSuppliesSubtotal * 0.25 * easyQty).toFixed(2);
+  const otherTotal = (servicesAndSuppliesSubtotal * 0.25 * otherQty).toFixed(2);
   const discountsSubtotal =
     parseFloat(bulkTotal) + parseFloat(easyTotal) + parseFloat(otherTotal);
   const finalTotal =
@@ -553,7 +553,7 @@ export default function Invoice() {
                 <a href="/about#collapse-lovesandlimits" target="_blank">
                   is something on my list of soft limits,
                 </a>
-                or otherwise is more difficult to resell such as name use.
+                or otherwise is more difficult to resell such as name use, or it is something I have already made recently.
               </div>
             </td>
             <td>50%</td>
