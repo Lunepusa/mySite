@@ -40,6 +40,7 @@ import Discord from "./Images/link/Discord.png";
 import Email from "./Images/link/email.png";
 import Hangout from "./Images/link/hangout.png";
 import Instagram from "./Images/link/Instagram.png";
+import YouPay from "./Images/link/YouPay.png";
 
 export function Link({ name, desc, img, link = "" }) {
   const location = useLocation();
@@ -216,6 +217,12 @@ export function Paymentlinks() {
               <i> No content/services till items physically arrive </i>{" "}
             </h3>
             <Link
+              name="YouPay"
+              desc="Give me a gift"
+              img={YouPay}
+              link="https://youpay.me/Lunepusa"
+            />
+            <Link
               name="Amazon Wishlist"
               desc="appreciated, but not considered payment"
               img={Amazon}
@@ -233,6 +240,7 @@ export function Paymentlinks() {
               img={Throne}
               link="https://fans.ly/r/Lunepusa"
             />
+            
           </div>
         </div>
       </Collapse>
