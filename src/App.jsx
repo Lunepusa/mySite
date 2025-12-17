@@ -86,7 +86,7 @@ export default function App() {
         <Route path="/mailing" element={<Mailing />} />
         <Route path="*" element={<h1>404 - Page not found</h1>} />
         <Route path="/shh" element={<Shh />} />
-      </Routes>
+      </Routes><br /><br />
       <MailingFooter />
     </div>
   );
