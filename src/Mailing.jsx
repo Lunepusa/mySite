@@ -123,7 +123,8 @@ export const MailingFooter = () => {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const GAS_URL = "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec";
+  const GAS_URL =
+    "https://script.google.com/macros/s/AKfycby1aNJczyoL_3LqUK7ey9TNaPAjMAjvGLM1A4kFcTOMC02RmvRGsnyy5FzuWV3a39l0/exec";
   const SECRET = "lunepusapillowtalkmailinglist";
 
   const handleSubscribe = async (e) => {
