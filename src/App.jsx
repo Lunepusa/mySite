@@ -3,6 +3,7 @@ import Links from "./Links.jsx";
 import Menu from "./Menu.jsx";
 import About from "./FAQ.jsx";
 import Shh from "./shh.jsx";
+import Mailing, { MailingFooter } from "./Mailing.jsx";
 import {
   useFirstVisit,
   ConfirmationBox,
@@ -82,9 +83,11 @@ export default function App() {
         <Route path="/menu" element={<Menu />} />
         <Route path="/about" element={<About />} />
         <Route path="/FAQ" element={<About />} />
+        <Route path="/mailing" element={<Mailing />} />
         <Route path="*" element={<h1>404 - Page not found</h1>} />
         <Route path="/shh" element={<Shh />} />
       </Routes>
+      <MailingFooter />
     </div>
   );
 }
