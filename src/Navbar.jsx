@@ -5,7 +5,7 @@ import "./styles.css";
 import { Link } from "react-router-dom";
 import headerimg from "./Images/Preview/headerimg.png";
 
-function navbar() {
+function Navbar() {
   return (
     <div
       style={{
@@ -54,7 +54,7 @@ function navbar() {
             textAlign: "left",
             fontSize: "2em",
             display: "inline-block",
-            backgroundColor: "rgba(0, 0, 0, 0.5)"
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
           }}
         >
           <Link to="/" style={{ textDecoration: "none" }}>
@@ -67,4 +67,4 @@ function navbar() {
     </div>
   );
 }
-export default navbar;
+export default Navbar;
