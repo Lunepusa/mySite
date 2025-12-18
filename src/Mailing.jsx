@@ -46,8 +46,8 @@ export default function Mailing() {
         setMessage(
           result.message ||
             (action === "subscribe"
-              ? "You subscribed! Check your email for confirmation."
-              : "You unsubscribed! Check your email for confirmation.")
+              ? "You joined! Check your email for confirmation."
+              : "You left my mailing list. Check your email for confirmation.")
         );
         setEmail(""); // Optional: clear form
       } else {
