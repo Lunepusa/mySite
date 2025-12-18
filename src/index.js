@@ -8,13 +8,11 @@ import App from "./App";
 
 const root = createRoot(document.getElementById("root"));
 root.render(
-  <StrictMode>
-    <BrowserRouter
-      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
-    >
-      <AnalyticsProvider>
-        <App /> <br /> <br />
-      </AnalyticsProvider>
-    </BrowserRouter>
-  </StrictMode>
+  <BrowserRouter
+    future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+  >
+    <AnalyticsProvider>
+      <App /> <br /> <br />
+    </AnalyticsProvider>
+  </BrowserRouter>
 );
