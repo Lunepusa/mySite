@@ -22,16 +22,37 @@ export default function Mailing() {
     try {
       const response = await fetch(GAS_URL, {
         method: "POST",
-        mode: "no-cors", // Optional but harmless here
         headers: {
-          "Content-Type": "text/plain;charset=utf-8", // Critical: avoids preflight
+          "Content-Type": "text/plain;charset=utf-8",
         },
-        body: JSON.stringify({ email, action, secret: SECRET }),
+        body: JSON.stringify({
+          email: email.trim(),
+          action: action, // 'subscribe' or 'unsubscribe'
+          secret: SECRET,
+        }),
       });
 
-      // Note: With text/plain + no-cors, you can't read the response body
-      // But success is assumed if no network error
-      setMessage("Submitted successfully!");
+      // Even with text/plain, try to read the JSON response
+      const text = await response.text();
+      let result;
+      try {
+        result = JSON.parse(text);
+      } catch {
+        // Fallback if parse fails
+        result = { status: "success", message: "Submitted successfully!" };
+      }
+
+      if (result.status === "success") {
+        setMessage(
+          result.message ||
+            (action === "subscribe"
+              ? "You subscribed! Check your email for confirmation."
+              : "You unsubscribed! Check your email for confirmation.")
+        );
+        setEmail(""); // Optional: clear form
+      } else {
+        setMessage("Error: " + (result.message || "Unknown error"));
+      }
     } catch (err) {
       setMessage("Network error — please try again.");
     } finally {
@@ -145,7 +166,7 @@ export const MailingFooter = () => {
         }),
       });
 
-      setMessage("You subscribed! Check your email for confirmation.");
+      setMessage("You joined! Check your email for confirmation.");
       setEmail("");
     } catch (err) {
       setMessage("Network error — please try again.");
