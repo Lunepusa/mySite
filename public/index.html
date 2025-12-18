@@ -21,6 +21,16 @@
         },
       });
     </script>
+    <!-- website redirect-->
+    <script>
+  if (window.location.hostname.endsWith('onrender.com')) {
+    const newUrl = 'https://lunepusa.pages.dev' + 
+      window.location.pathname + 
+      window.location.search + 
+      window.location.hash;
+    window.location.replace(newUrl);
+  }
+    </script>
     <!-- julee font function-->
  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
