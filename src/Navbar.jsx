@@ -1,6 +1,4 @@
-import React, { StrictMode, useState } from "react";
-import { createRoot } from "react-dom/client";
-import { reactDOM } from "react-dom";
+import React, { useState } from "react";
 import "./styles.css";
 import { Link } from "react-router-dom";
 import headerimg from "./Images/Preview/headerimg.png";

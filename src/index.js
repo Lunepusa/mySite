@@ -1,4 +1,4 @@
-import React, { StrictMode } from "react";
+import React from "react";
 import { createRoot } from "react-dom/client";
 import "./styles.css";
 import { BrowserRouter } from "react-router-dom";
@@ -8,9 +8,7 @@ import App from "./App";
 
 const root = createRoot(document.getElementById("root"));
 root.render(
-  <BrowserRouter
-    future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
-  >
+  <BrowserRouter>
     <AnalyticsProvider>
       <App /> <br /> <br />
     </AnalyticsProvider>

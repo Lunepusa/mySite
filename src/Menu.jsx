@@ -1,6 +1,4 @@
-import React, { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import { reactDOM } from "react-dom";
+import React from "react";
 import "./styles.css";
 import Invoice from "./invoice";
 import Collapse from "./Utility";
@@ -78,16 +76,22 @@ export default function Menu() {
       </div>
       <div>
         <Collapse trigger={<h3>🗃️160+gb drive ~ $10/month 🗃️⏬</h3>}>
-          1 month of access to a <a href="https://drive.google.com/drive/folders/1U23lCgkRosUxkWq5qtfJ2_3KbdwExiti?usp=sharing">google drive</a> that I update with all of my solo content before I post it anywhere else.<br />
+          1 month of access to a{" "}
+          <a href="https://drive.google.com/drive/folders/1U23lCgkRosUxkWq5qtfJ2_3KbdwExiti?usp=sharing">
+            google drive
+          </a>{" "}
+          that I update with all of my solo content before I post it anywhere
+          else.
+          <br />
           Yearly ($60) and lifetime ($205) also available.
-          <img src={DrivePosts} style={{ maxWidth: "100%",maxHeight: "60vh" }} />
+          <img
+            src={DrivePosts}
+            style={{ maxWidth: "100%", maxHeight: "60vh" }}
+          />
         </Collapse>
         <Collapse trigger={<h3>📸Custom photoset~ $15+📸⏬</h3>}>
           <div>
-            <img
-              src={custompicpreview}
-              class="previewimg"
-            />{" "}
+            <img src={custompicpreview} class="previewimg" />{" "}
             <p
               style={{
                 display: "inline-block",
@@ -116,71 +120,71 @@ export default function Menu() {
               reach out for a{" "}
               <a href="/menu#collapse-invoiceformformakingquotes">quote!</a>
             </p>
-            <img
-              src={customvidpreview}
-              class="previewimg"
-            />
+            <img src={customvidpreview} class="previewimg" />
           </div>
         </Collapse>
         <Collapse trigger={<h3>🍌 Text Rating ~ $5🍌⏬</h3>}>
           {" "}
-          <div><div>
-            <img
-              src={textratepreview}
-              class="previewimg"
-            />
+          <div>
+            <div>
+              <img src={textratepreview} class="previewimg" />
+              <p
+                style={{
+                  display: "inline-block",
+                  width: "70%",
+                }}
+              >
+                ~ Detailed paragraph rating where I talk about my thoughts on
+                your shape and size, what I think it would be fun to do with,
+                and a rating out of 10. <br />
+              </p>
+            </div>
             <p
               style={{
                 display: "inline-block",
-                width: "70%",
               }}
             >
-              ~ Detailed paragraph rating where I talk about my thoughts on your
-              shape and size, what I think it would be fun to do with, and a
-              rating out of 10. <br /></p></div><p style={{
-                display: "inline-block",
-              }}>
               ~ You can send any number of pictures and videos. Do not send
               until after I tell you to so I can get my first reaction.
               <br />~ Let me know if you want me to be more complimentary or
-              mean rather then purely honest.</p>
-          
+              mean rather then purely honest.
+            </p>
           </div>
         </Collapse>
         <Collapse trigger={<h3>🍆 Video Rating ~ $30🍆⏬</h3>}>
           {" "}
-          <div><div>
+          <div>
+            <div>
+              <p
+                style={{
+                  display: "inline-block",
+                  width: "70%",
+                }}
+              >
+                ~ Detailed 3+ minute video rating where I talk about my thoughts
+                on your shape and size, what I think it would be fun to do with,
+                and a rating out of 10. I can be wearing anything you want.
+                Including nothing.
+                <br />
+              </p>
+              <img src={vidratepreview} class="previewimg" />
+            </div>
             <p
               style={{
                 display: "inline-block",
-                width: "70%",
               }}
             >
-              ~ Detailed 3+ minute video rating where I talk about my thoughts
-              on your shape and size, what I think it would be fun to do with,
-              and a rating out of 10. I can be wearing anything you want.
-              Including nothing.
-              <br /></p><img
-              src={vidratepreview}
-             class="previewimg"
-
-            /></div><p style={{
-                display: "inline-block"}}>
               ~ You can send any number of pictures and videos. Do not send
               until after I tell you to so I can get my first reaction.
               <br />~ Let me know if you want me to be more complimentary or
-              mean rather then purely honest</p>
-            
+              mean rather then purely honest
+            </p>
           </div>
         </Collapse>
         <Collapse trigger={<h3>💌15m Sexting Session ~ $30+💌⏬</h3>}>
           {" "}
           <div>
-            <img
-              src={sextpreview}
-              class="previewimg"
-
-            />
+            <img src={sextpreview} class="previewimg" />
             <p
               style={{
                 display: "inline-block",
@@ -205,34 +209,27 @@ export default function Menu() {
               want. My camera and mic will be on
               <br />~ $25 for every additional 5 minutes
             </p>
-            <img
-              src={vidcallpreview}
-              class="previewimg"
-            />
+            <img src={vidcallpreview} class="previewimg" />
           </div>
         </Collapse>
-                <Collapse trigger={<h3>🗨️1 week Friend Experience ~ $25+🗨️ ⏬</h3>}>
+        <Collapse trigger={<h3>🗨️1 week Friend Experience ~ $25+🗨️ ⏬</h3>}>
           {" "}
           <div>
-            <img
-              src={fepreview}
-              class="previewimg"
-            />
+            <img src={fepreview} class="previewimg" />
             <p
               style={{
                 display: "inline-block",
                 width: "70%",
               }}
             >
-              ~ 1 week of extremely casual no media texting resonding when I have time <br /> online only
+              ~ 1 week of extremely casual no media texting resonding when I
+              have time <br /> online only
             </p>
-      
           </div>
         </Collapse>
         <Collapse trigger={<h3>💋1 week Girfriend Experience ~ $95+💋⏬</h3>}>
           {" "}
           <div>
-            
             <p
               style={{
                 display: "inline-block",
@@ -242,51 +239,46 @@ export default function Menu() {
               ~ 1 week of no media texting/sexting throughout the day, good
               morning and good night pics <br /> online only
             </p>
-            <img
-              src={gfepreview}
-              class="previewimg"
-            />
+            <img src={gfepreview} class="previewimg" />
           </div>
         </Collapse>
-        <Collapse trigger={<h3>💍1 week Premium Girlfriend Experience ~ $495+💍⏬</h3>}>
+        <Collapse
+          trigger={<h3>💍1 week Premium Girlfriend Experience ~ $495+💍⏬</h3>}
+        >
           {" "}
           <div>
-            <img
-              src={pgfepreview}
-              class="previewimg"
-            />
+            <img src={pgfepreview} class="previewimg" />
             <p
               style={{
                 display: "inline-block",
                 width: "70%",
               }}
             >
-              ~ 1 week of live media texting/sexting throughout the day, up to 2 hours of customs or calls throughout the week <br /> online only
+              ~ 1 week of live media texting/sexting throughout the day, up to 2
+              hours of customs or calls throughout the week <br /> online only
             </p>
-      
           </div>
         </Collapse>
         <div>
           <Collapse trigger={<h2> 🛏️Calgary meets🛏️⏬</h2>}>
             Full details listed{" "}
-            <a href="https://tryst.link/escort/lunepusa"> here</a><br /><div>
-             <h4>🏩1hr at my hotel room ~ $500🏩</h4>
-            Includes $200 deposit required minimum 3 days prior
-            <h4>🏠1hr at your place ~ $400🏠</h4>
-            Includes $100 deposit required minimum 12 hours prior
-            <h4>⏳Additional hour~ $200⏳</h4>
-            <Collapse trigger={<h3>Rules ⏬</h3>}>
-              ~ Condoms required for everything <br />
-              ~ no same day appointments <br />
-              ~ I cannot guarentee availability till deposit is paid. <br />
-              ~ markups and discounts above may apply
-              <br />~ No Fly Me to You. Calgary only.
-            </Collapse>
-            <img
-              src={meetpreview}
-              class="previewimg"
-            />
-          </div>
+            <a href="https://tryst.link/escort/lunepusa"> here</a>
+            <br />
+            <div>
+              <h4>🏩1hr at my hotel room ~ $500🏩</h4>
+              Includes $200 deposit required minimum 3 days prior
+              <h4>🏠1hr at your place ~ $400🏠</h4>
+              Includes $100 deposit required minimum 12 hours prior
+              <h4>⏳Additional hour~ $200⏳</h4>
+              <Collapse trigger={<h3>Rules ⏬</h3>}>
+                ~ Condoms required for everything <br />
+                ~ no same day appointments <br />
+                ~ I cannot guarentee availability till deposit is paid. <br />
+                ~ markups and discounts above may apply
+                <br />~ No Fly Me to You. Calgary only.
+              </Collapse>
+              <img src={meetpreview} class="previewimg" />
+            </div>
           </Collapse>
         </div>
       </div>

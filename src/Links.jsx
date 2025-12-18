@@ -1,6 +1,4 @@
-import React, { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import { reactDOM } from "react-dom";
+import React from "react";
 import "./styles.css";
 import { useLocation } from "react-router-dom";
 import { trackOnClick, useAnalytics, handlerightclick } from "./Utility";
@@ -94,12 +92,12 @@ export function Preferredlinks() {
       </h1>
       <h1 style={{ display: "inline-block" }}> + </h1>
       <div id="preferredlinks">
-      <Link
-            name="Sheer"
-            desc="hard fetish friendly subscription platform. I am considering making this my main"
-            img={Sheer}
-            link="https://www.sheer.com/LunePusa"
-          />
+        <Link
+          name="Sheer"
+          desc="hard fetish friendly subscription platform. I am considering making this my main"
+          img={Sheer}
+          link="https://www.sheer.com/LunePusa"
+        />
         <Link
           name="Fansly"
           desc="4000+pics &500+vids for $5 a month"
@@ -184,7 +182,7 @@ export function Paymentlinks() {
                 Lunepusa@gmail.com
               </u>
             </h3>
-             <Link
+            <Link
               name="Interac E-transfer"
               desc="Canadian bank to bank transfer"
               img={Interac}
@@ -195,7 +193,7 @@ export function Paymentlinks() {
               desc="Canadian"
               img={AmazonGC}
               link="https://www.amazon.ca/Amazon-ca-Gift-Card-Birthday-Cupcakes/dp/B07TRWGYDH/ref=sr_1_1?hvadid=667066139172&hvdev=c&hvlocphy=9001320&hvnetw=g&hvqmt=e&hvrand=15786390872409873519&hvtargid=kwd-594341209899&hydadcr=23336_13656849&keywords=amazon.ca+gift+card&qid=1702489076&sr=8-1"
-            />           
+            />
             <Link
               name="Skip the Dishes"
               desc="food delivery"
@@ -208,7 +206,6 @@ export function Paymentlinks() {
               img={Steam}
               link="https://store.steampowered.com/digitalgiftcards/selectgiftcard"
             />
-
           </div>
           <div style={{ border: "3px dotted white" }}>
             <h2> Wishlists</h2>
@@ -240,7 +237,6 @@ export function Paymentlinks() {
               img={Throne}
               link="https://fans.ly/r/Lunepusa"
             />
-            
           </div>
         </div>
       </Collapse>
@@ -267,7 +263,8 @@ export function Otherlinks() {
       >
         <div id="otherlinks">
           <h2 style={{ opacity: 0.8 }}>
-            All other accounts I have, but can't guarentee I use in any capacity.
+            All other accounts I have, but can't guarentee I use in any
+            capacity.
           </h2>
           <Link
             name="Chaturbate"

@@ -1,6 +1,4 @@
-import React, { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import { reactDOM } from "react-dom";
+import React from "react";
 import "./styles.css";
 import Collapse from "./Utility";
 
@@ -17,7 +15,7 @@ export default function Shh() {
           tiktokdm me twittersd twittered
         </h3>
       </Collapse>
-       <h3>
+      <h3>
         <a href="https://script.google.com/macros/s/AKfycby78mQotIfpl66GkOGw3DDwyTSba9PDPjc6NyhYXiUhyWPgzfkWd4OFVRh0S1KX6bDV/exec">
           {" "}
           Google apps script HTML
@@ -31,5 +29,3 @@ export default function Shh() {
     </div>
   );
 }
-
-
