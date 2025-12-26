@@ -1,0 +1,646 @@
+import React, { useState, useEffect } from "react";
+
+// Canonical tags (preferred terms)
+export const CANONICAL_TAGS = [
+  // Body Parts
+  "full_body",
+  "pussy",
+  "booty",
+  "asshole",
+  "tits",
+  "cleavage",
+  "tongue",
+  "feet",
+  "hips",
+  "belly",
+  "painted_nails",
+  "lipstick",
+  "bush",
+  "trimmed",
+  "shaved",
+  "face",
+  "eyes",
+  "arms",
+  "legs",
+  "hands",
+  "back",
+  "thighs",
+  "neck",
+  "shoulders",
+
+  // Clothing
+  "lingerie",
+  "maid",
+  "hucow",
+  "babydoll",
+  "2_piece_set",
+  "nylons",
+  "thigh_highs",
+  "fishnets",
+  "heels",
+  "gloves",
+  "robe",
+  "office",
+  "sundress",
+  "mini_skirt",
+  "body_jewelry",
+  "nude",
+  "corset",
+  "garter",
+  "bodysuit",
+  "swimsuit",
+  "latex",
+  "leather",
+  "uniform",
+  "cosplay outfit",
+
+  // Toys
+  "toys",
+  "dildo",
+  "vibrator",
+  "realistic_dildo",
+  "squirting_dildo",
+  "lovense",
+  "nipple_clamps",
+  "suction_toy",
+  "bullet_vibrator",
+  "egg_vibrator",
+  "butt plug",
+  "anal beads",
+  "cock ring",
+  "fleshlight",
+  "strap-on",
+  "sybian",
+  "hitachi wand",
+  "prostate massager",
+
+  // Positions
+  "riding",
+  "doggy_style",
+  "missionary",
+  "mating_press",
+  "standing",
+  "kneeling",
+  "seated_lean",
+  "double_penetration_ass_and_pussy",
+  "double_penetration_2_in_one",
+  "spitroast",
+  "69",
+  "reverse cowgirl",
+
+  // Actions
+  "vaginal_penetration",
+  "anal_penetration",
+  "masturbation",
+  "tit_job",
+  "shimmy",
+  "twerk",
+  "dance",
+  "blowjob",
+  "orgasm",
+  "ramble",
+  "pole_dance",
+  "bondage",
+  "rope",
+  "cuffs",
+  "chains",
+  "gag",
+  "blindfold",
+  "piss",
+  "piss_drinking",
+  "dirty talk",
+  "spanking",
+  "fingering",
+  "handjob",
+  "footjob",
+  "rimming",
+  "creampie",
+  "cumshot",
+  "squirting",
+  "edging",
+  "tease",
+  "striptease",
+  "humiliation",
+  "degradation",
+  "cuckold",
+  "femdom",
+  "bdsm",
+
+  // Taboo
+  "taboo",
+  "scat",
+  "fart",
+  "cnc",
+  "dubcon",
+  "race_play",
+  "bnwo",
+  "age play",
+  "blackmail fetish",
+  "blood",
+  "breathplay",
+  "hypno",
+  "somno",
+  "monster_dildo",
+  "knotted_dildo",
+  "tentacle",
+  "werewolf",
+
+  // Participants
+  "lunepusa_f",
+  "katya_luv_tf",
+  "lilytheelf_tf",
+  "solo",
+  "threesome",
+  "duo",
+  "group",
+  "orgy",
+  "gangbang",
+  "lesbian",
+  "gay",
+  "straight",
+  "bisexual",
+  "trans",
+  "cis",
+
+  // Roleplay
+  "roleplay",
+  "mommy",
+  "nurse",
+  "nun",
+  "slave",
+  "pet",
+  "master",
+  "werewolf",
+  "cosplay",
+  "teacher",
+  "student",
+  "police",
+  "prisoner",
+  "vampire",
+  "succubus",
+  "femdom",
+  "maledom",
+  "switch",
+];
+
+// Synonym mapping: synonym → canonical tag
+const SYNONYM_MAP = {
+  // Body Parts
+  "whole body": "full_body",
+  "entire body": "full_body",
+  vagina: "pussy",
+  cunt: "pussy",
+  vulva: "pussy",
+  labia: "pussy",
+  clit: "pussy",
+  ass: "booty",
+  butt: "booty",
+  rear: "booty",
+  bottom: "booty",
+  cheeks: "booty",
+  anus: "asshole",
+  anal: "asshole",
+  butthole: "asshole",
+  breasts: "tits",
+  boobs: "tits",
+  chest: "tits",
+  titties: "tits",
+  bosom: "cleavage",
+  "cleavage line": "cleavage",
+  mouth: "tongue",
+  oral: "tongue",
+  "tongue out": "tongue",
+  soles: "feet",
+  toes: "feet",
+  foot: "feet",
+  pelvis: "hips",
+  waist: "hips",
+  thighs: "hips",
+  stomach: "belly",
+  abdomen: "belly",
+  navel: "belly",
+  manicure: "painted_nails",
+  "nail polish": "painted_nails",
+  fingernails: "painted_nails",
+  pedicure: "painted_nails",
+  "lip makeup": "lipstick",
+  lips: "lipstick",
+  "red lip": "lipstick",
+  "unshaved pussy": "bush",
+
+  // Clothing
+  undergarments: "lingerie",
+  intimates: "lingerie",
+  "maid outfit": "maid",
+  "french maid": "maid",
+  "servant uniform": "maid",
+  "cow print": "hucow",
+  "cow bikini": "hucow",
+  "cow costume": "hucow",
+  nightgown: "babydoll",
+  "sheer dress": "babydoll",
+  "baby doll dress": "babydoll",
+  bikini: "2_piece_set",
+  "two piece": "2_piece_set",
+  "bra and panties": "2_piece_set",
+  pantyhose: "nylons",
+  stockings: "nylons",
+  hosiery: "nylons",
+  "thigh high stockings": "thigh_highs",
+  "knee highs": "thigh_highs",
+  overknee: "thigh_highs",
+  "fishnet stockings": "fishnets",
+  "net stockings": "fishnets",
+  mesh: "fishnets",
+  "high heels": "heels",
+  stiletto: "heels",
+  pumps: "heels",
+  "long gloves": "gloves",
+  "opera gloves": "gloves",
+  "fingerless gloves": "gloves",
+  bathrobe: "robe",
+  "silk robe": "robe",
+  "business suit": "office",
+  "office lady": "office",
+  "secretary outfit": "office",
+  "summer dress": "sundress",
+  "floral dress": "sundress",
+  "light dress": "sundress",
+  "short skirt": "mini_skirt",
+  "micro skirt": "mini_skirt",
+  "pleated skirt": "mini_skirt",
+  piercing: "body_jewelry",
+  "nipple piercing": "body_jewelry",
+  "belly ring": "body_jewelry",
+  "body chains": "body_jewelry",
+
+  // Toys
+  "sex toy": "toys",
+  "adult toy": "toys",
+  phallus: "dildo",
+  dong: "dildo",
+  "fake penis": "dildo",
+  vibe: "vibrator",
+  "buzz toy": "vibrator",
+  massager: "vibrator",
+  "realistic penis": "realistic_dildo",
+  "ejaculating dildo": "squirting_dildo",
+  "cum dildo": "squirting_dildo",
+  "squirting toy": "squirting_dildo",
+  lush: "lovense",
+  "remote vibe": "lovense",
+  "nipple clamp": "nipple_clamps",
+  "tit clamp": "nipple_clamps",
+  "suction vibrator": "suction_toy",
+  "clit sucker": "suction_toy",
+  "nipple sucker": "suction_toy",
+  "bullet vibe": "bullet_vibrator",
+  "small vibrator": "bullet_vibrator",
+  "pocket rocket": "bullet_vibrator",
+  "egg vibe": "egg_vibrator",
+  "insertable vibe": "egg_vibrator",
+  "g-spot egg": "egg_vibrator",
+
+  // Positions
+  cowgirl: "riding",
+  "reverse cowgirl": "riding",
+  "on top": "riding",
+  doggy: "doggy_style",
+  "from behind": "doggy_style",
+  "bent over": "doggy_style",
+  "missionary position": "missionary",
+  "face to face": "missionary",
+  "pressed missionary": "mating_press",
+  "standing sex": "standing",
+  upright: "standing",
+  "on knees": "kneeling",
+  "leaning against wall": "seated_lean",
+  "wall sit": "seated_lean",
+  dp: "double_penetration_ass_and_pussy",
+  "double penetration": "double_penetration_ass_and_pussy",
+  "vaginal and anal": "double_penetration_ass_and_pussy",
+  "double vaginal": "double_penetration_2_in_one",
+  "double anal": "double_penetration_2_in_one",
+  "two in one": "double_penetration_2_in_one",
+  "spitroast position": "spitroast",
+  "threeway spitroast": "spitroast",
+
+  // Actions
+  "vaginal sex": "vaginal_penetration",
+  "pussy penetration": "vaginal_penetration",
+  "insertion vaginal": "vaginal_penetration",
+  "anal sex": "anal_penetration",
+  "ass penetration": "anal_penetration",
+  backdoor: "anal_penetration",
+  "solo masturbation": "masturbation",
+  "self pleasure": "masturbation",
+  "jerking off": "masturbation",
+  titfuck: "tit_job",
+  boobjob: "tit_job",
+  "tit bounce": "shimmy",
+  "boob shake": "shimmy",
+  twerking: "twerk",
+  "booty shake": "twerk",
+  "ass dance": "twerk",
+  dancing: "dance",
+  "strip dance": "dance",
+  "pole dance": "dance",
+  "oral sex": "blowjob",
+  bj: "blowjob",
+  fellatio: "blowjob",
+  cumming: "orgasm",
+  climax: "orgasm",
+  orgasming: "orgasm",
+  talking: "ramble",
+  rambling: "ramble",
+  "stripper pole": "pole_dance",
+  "bondage play": "bondage",
+  "tied up": "bondage",
+  restrained: "bondage",
+  shibari: "rope",
+  "rope bondage": "rope",
+  handcuffs: "cuffs",
+  "wrist cuffs": "cuffs",
+  "ankle cuffs": "cuffs",
+  blindfolded: "blindfold",
+  "eyes covered": "blindfold",
+  pissing: "piss",
+  watersports: "piss",
+  "golden shower": "piss",
+  "piss drink": "piss_drinking",
+  "urine drink": "piss_drinking",
+  "piss swallow": "piss_drinking",
+  spank: "spanking",
+  paddling: "spanking",
+  impact: "spanking",
+
+  // Taboo
+  "taboo play": "taboo",
+  forbidden: "taboo",
+  "incest roleplay": "taboo",
+  "scat play": "scat",
+  feces: "scat",
+  poop: "scat",
+  farting: "fart",
+  "gas play": "fart",
+  eproctophilia: "fart",
+  "consensual non-consent": "cnc",
+  "rape play": "cnc",
+  forced: "cnc",
+  "dubious consent": "dubcon",
+  "dubcon play": "dubcon",
+  reluctant: "dubcon",
+  raceplay: "race_play",
+  "racial roleplay": "race_play",
+  "black new world order": "bnwo",
+  "bnwo play": "bnwo",
+  "racial supremacy": "bnwo",
+  hypnosis: "hypno",
+  "mind control": "hypno",
+  trance: "hypno",
+  somnophilia: "somno",
+  "sleep play": "somno",
+  unconscious: "somno",
+  "fantasy dildo": "monster_dildo",
+  "dragon dildo": "monster_dildo",
+  "alien dildo": "monster_dildo",
+  "knot dildo": "knotted_dildo",
+  "werewolf dildo": "knotted_dildo",
+  "tentacle toy": "tentacle",
+  "hentai toy": "tentacle",
+  "octopus dildo": "tentacle",
+
+  // Participants
+  lunepusa: "lunepusa_f",
+  "katya luv": "katya_luv_tf",
+  katya: "katya_luv_tf",
+  "lily the elf": "lilytheelf_tf",
+  lily: "lilytheelf_tf",
+  single: "solo",
+  alone: "solo",
+  "3way": "threesome",
+  couple: "duo",
+  "2person": "duo",
+
+  // Roleplay
+  rp: "roleplay",
+  "role playing": "roleplay",
+  "fantasy play": "roleplay",
+  "mommy dom": "mommy",
+  "mother roleplay": "mommy",
+  maternal: "mommy",
+  "nurse outfit": "nurse",
+  "medical roleplay": "nurse",
+  "nun costume": "nun",
+  "religious roleplay": "nun",
+  "slave play": "slave",
+  submissive: "slave",
+  servant: "slave",
+  petplay: "pet",
+  kitty: "pet",
+  puppy: "pet",
+  "master dom": "master",
+  dominant: "master",
+  owner: "master",
+  "costume play": "cosplay",
+  "character cosplay": "cosplay",
+};
+
+// Reverse map for fast lookup (lowercase → canonical)
+const LOWERCASE_MAP = {};
+Object.keys(SYNONYM_MAP).forEach((syn) => {
+  LOWERCASE_MAP[syn.toLowerCase()] = SYNONYM_MAP[syn];
+});
+CANONICAL_TAGS.forEach((tag) => {
+  LOWERCASE_MAP[tag.toLowerCase()] = tag;
+});
+
+/**
+ * Search tags by synonym or partial match
+ * @param {string} query
+ * @returns {string[]} matching canonical tags
+ */
+/**
+ * Search tags by synonym or partial match on canonical tags
+ * Returns canonical tags only
+ */
+/**
+ * Search tags by synonym or partial match on canonical tags or synonyms
+ * Returns canonical tags only
+ */
+export const searchTags = (query) => {
+  if (!query) return [];
+  const lower = query.toLowerCase().trim();
+
+  const results = new Set();
+
+  // 1. Exact synonym match → add canonical
+  if (LOWERCASE_MAP[lower]) {
+    results.add(LOWERCASE_MAP[lower]);
+  }
+
+  // 2. Partial match on canonical tags
+  CANONICAL_TAGS.forEach((tag) => {
+    if (tag.toLowerCase().includes(lower)) {
+      results.add(tag);
+    }
+  });
+
+  // 3. Partial match on synonyms → add their canonical
+  Object.keys(SYNONYM_MAP).forEach((syn) => {
+    if (syn.toLowerCase().includes(lower)) {
+      results.add(SYNONYM_MAP[syn]);
+    }
+  });
+
+  return Array.from(results).sort((a, b) => {
+    const aLower = a.toLowerCase();
+    const bLower = b.toLowerCase();
+
+    // Prioritize exact synonym match
+    if (LOWERCASE_MAP[lower] === a) return -1;
+    if (LOWERCASE_MAP[lower] === b) return 1;
+
+    // Prioritize starts-with
+    if (aLower.startsWith(lower) && !bLower.startsWith(lower)) return -1;
+    if (!aLower.startsWith(lower) && bLower.startsWith(lower)) return 1;
+
+    return 0;
+  });
+};
+/**
+ * Normalize array of tags (convert synonyms to canonical, dedupe)
+ * @param {string[]} tags
+ * @returns {string[]}
+ */
+export const normalizeTags = (tags) => {
+  if (!Array.isArray(tags)) return [];
+  const set = new Set();
+  tags.forEach((t) => {
+    const lower = t.toLowerCase().trim();
+    const canonical = LOWERCASE_MAP[lower];
+    if (canonical) set.add(canonical);
+  });
+  return Array.from(set);
+};
+
+/**
+ * Get all canonical tags
+ * @returns {string[]}
+ */
+export const getAllTags = () => CANONICAL_TAGS;
+
+// src/components/TagSelect.jsx
+export const TagSelect = ({ selected = [], onChange }) => {
+  const [inputValue, setInputValue] = useState("");
+  const [filteredTags, setFilteredTags] = useState(getAllTags());
+
+  useEffect(() => {
+    if (inputValue.trim()) {
+      const lower = inputValue.toLowerCase().trim();
+      setFilteredTags(
+        getAllTags().filter(
+          (tag) => tag.toLowerCase().includes(lower) && !selected.includes(tag)
+        )
+      );
+    } else {
+      setFilteredTags(getAllTags().filter((tag) => !selected.includes(tag)));
+    }
+  }, [inputValue, selected]);
+
+  const addTag = (tag) => {
+    if (!selected.includes(tag)) {
+      onChange([...selected, tag]);
+    }
+    setInputValue("");
+  };
+
+  const removeTag = (tag) => {
+    onChange(selected.filter((t) => t !== tag));
+  };
+
+  return (
+    <div style={{ margin: "10px 0", fontSize: "0.9em" }}>
+      {/* Selected tags */}
+      <div style={{ marginBottom: "8px", minHeight: "28px" }}>
+        {selected.map((tag) => (
+          <span
+            key={tag}
+            style={{
+              display: "inline-block",
+              background: "#333",
+              color: "#fff",
+              padding: "4px 10px",
+              margin: "2px 4px 2px 0",
+              borderRadius: "16px",
+              fontSize: "0.9em",
+            }}
+          >
+            {tag}
+            <span
+              style={{
+                marginLeft: "8px",
+                cursor: "pointer",
+                fontWeight: "bold",
+              }}
+              onClick={() => removeTag(tag)}
+            >
+              ×
+            </span>
+          </span>
+        ))}
+      </div>
+
+      {/* Input */}
+      <input
+        type="text"
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && filteredTags.length > 0) {
+            e.preventDefault();
+            addTag(filteredTags[0]);
+          }
+        }}
+        placeholder="Type to search tags..."
+        style={{
+          width: "100%",
+          padding: "8px",
+          background: "#222",
+          border: "1px solid #444",
+          color: "#fff",
+          borderRadius: "4px",
+        }}
+      />
+
+      {/* Dropdown */}
+      {filteredTags.length > 0 && (
+        <div
+          style={{
+            maxHeight: "180px",
+            overflowY: "auto",
+            background: "#222",
+            border: "1px solid #444",
+            borderTop: "none",
+            borderRadius: "0 0 4px 4px",
+          }}
+        >
+          {filteredTags.map((tag) => (
+            <div
+              key={tag}
+              style={{
+                padding: "8px 12px",
+                cursor: "pointer",
+                borderBottom: "1px solid #333",
+              }}
+              onMouseDown={(e) => e.preventDefault()} // Prevent input blur
+              onClick={() => addTag(tag)}
+            >
+              {tag}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};

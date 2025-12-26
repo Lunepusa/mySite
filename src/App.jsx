@@ -14,6 +14,9 @@ import {
 } from "./Utility.jsx";
 import { Routes, Route, useLocation } from "react-router-dom";
 import React, { useEffect } from "react";
+import Auth from "./Auth.jsx";
+import { useAuth } from "./Auth.jsx";
+import Lounge from "./Lounge.jsx";
 
 export default function App() {
   const location = useLocation();
@@ -77,16 +80,21 @@ export default function App() {
         onDecline={handleDecline}
       />
       <Navbar />
-      <Routes>
-        <Route path="/" element={<Links />} />
-        <Route path="/links" element={<Links />} />
-        <Route path="/menu" element={<Menu />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/FAQ" element={<About />} />
-        <Route path="/mailing" element={<Mailing />} />
-        <Route path="*" element={<h1>404 - Page not found</h1>} />
-        <Route path="/shh" element={<Shh />} />
-      </Routes><br /><br />
+      <Auth>
+        <Routes>
+          <Route path="/" element={<Links />} />
+          <Route path="/links" element={<Links />} />
+          <Route path="/menu" element={<Menu />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/FAQ" element={<About />} />
+          <Route path="/mailing" element={<Mailing />} />
+          <Route path="/Lounge" element={<Lounge />} />
+          <Route path="*" element={<h1>404 - Page not found</h1>} />
+          <Route path="/shh" element={<Shh />} />
+        </Routes>
+      </Auth>
+      <br />
+      <br />
       <MailingFooter />
     </div>
   );

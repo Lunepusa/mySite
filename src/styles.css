@@ -20,7 +20,9 @@ html {
   margin: 0px;
   padding: 0px;
 }
-
+::placeholder {
+  color: rgb(42, 42, 42);
+}
 h5,
 h6 {
   font-weight: normal;
@@ -226,4 +228,8 @@ input {
 tfoot td {
   background-color: grey;
   font-weight: bold;
+}
+.blurred {
+  filter: blur(40px);
+  transition: filter 0.3s ease;
 }
