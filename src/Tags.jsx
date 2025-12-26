@@ -1,3 +1,5 @@
+// ./Tags.jsx
+
 import React, { useState, useEffect } from "react";
 
 // Canonical tags (preferred terms)
@@ -123,8 +125,10 @@ export const CANONICAL_TAGS = [
   "humiliation",
   "degradation",
   "cuckold",
-  "femdom",
   "bdsm",
+  "femdom",
+  "maledom",
+  "switch",
 
   // Taboo
   "taboo",
@@ -170,7 +174,6 @@ export const CANONICAL_TAGS = [
   "slave",
   "pet",
   "master",
-  "werewolf",
   "cosplay",
   "teacher",
   "student",
@@ -178,9 +181,6 @@ export const CANONICAL_TAGS = [
   "prisoner",
   "vampire",
   "succubus",
-  "femdom",
-  "maledom",
-  "switch",
 ];
 
 // Synonym mapping: synonym → canonical tag
@@ -446,7 +446,7 @@ const SYNONYM_MAP = {
   "character cosplay": "cosplay",
 };
 
-// Reverse map for fast lookup (lowercase → canonical)
+// Lowercase map for fast lookup
 const LOWERCASE_MAP = {};
 Object.keys(SYNONYM_MAP).forEach((syn) => {
   LOWERCASE_MAP[syn.toLowerCase()] = SYNONYM_MAP[syn];
@@ -457,16 +457,6 @@ CANONICAL_TAGS.forEach((tag) => {
 
 /**
  * Search tags by synonym or partial match
- * @param {string} query
- * @returns {string[]} matching canonical tags
- */
-/**
- * Search tags by synonym or partial match on canonical tags
- * Returns canonical tags only
- */
-/**
- * Search tags by synonym or partial match on canonical tags or synonyms
- * Returns canonical tags only
  */
 export const searchTags = (query) => {
   if (!query) return [];
@@ -474,19 +464,19 @@ export const searchTags = (query) => {
 
   const results = new Set();
 
-  // 1. Exact synonym match → add canonical
+  // Exact synonym
   if (LOWERCASE_MAP[lower]) {
     results.add(LOWERCASE_MAP[lower]);
   }
 
-  // 2. Partial match on canonical tags
+  // Partial on canonical
   CANONICAL_TAGS.forEach((tag) => {
     if (tag.toLowerCase().includes(lower)) {
       results.add(tag);
     }
   });
 
-  // 3. Partial match on synonyms → add their canonical
+  // Partial on synonyms
   Object.keys(SYNONYM_MAP).forEach((syn) => {
     if (syn.toLowerCase().includes(lower)) {
       results.add(SYNONYM_MAP[syn]);
@@ -497,21 +487,18 @@ export const searchTags = (query) => {
     const aLower = a.toLowerCase();
     const bLower = b.toLowerCase();
 
-    // Prioritize exact synonym match
     if (LOWERCASE_MAP[lower] === a) return -1;
     if (LOWERCASE_MAP[lower] === b) return 1;
 
-    // Prioritize starts-with
     if (aLower.startsWith(lower) && !bLower.startsWith(lower)) return -1;
     if (!aLower.startsWith(lower) && bLower.startsWith(lower)) return 1;
 
-    return 0;
+    return aLower.localeCompare(bLower);
   });
 };
+
 /**
- * Normalize array of tags (convert synonyms to canonical, dedupe)
- * @param {string[]} tags
- * @returns {string[]}
+ * Normalize tags (synonyms → canonical, dedupe)
  */
 export const normalizeTags = (tags) => {
   if (!Array.isArray(tags)) return [];
@@ -526,23 +513,18 @@ export const normalizeTags = (tags) => {
 
 /**
  * Get all canonical tags
- * @returns {string[]}
  */
 export const getAllTags = () => CANONICAL_TAGS;
 
-// src/components/TagSelect.jsx
+// TagSelect component
 export const TagSelect = ({ selected = [], onChange }) => {
   const [inputValue, setInputValue] = useState("");
   const [filteredTags, setFilteredTags] = useState(getAllTags());
 
   useEffect(() => {
     if (inputValue.trim()) {
-      const lower = inputValue.toLowerCase().trim();
-      setFilteredTags(
-        getAllTags().filter(
-          (tag) => tag.toLowerCase().includes(lower) && !selected.includes(tag)
-        )
-      );
+      const results = searchTags(inputValue);
+      setFilteredTags(results.filter((tag) => !selected.includes(tag)));
     } else {
       setFilteredTags(getAllTags().filter((tag) => !selected.includes(tag)));
     }
@@ -561,7 +543,6 @@ export const TagSelect = ({ selected = [], onChange }) => {
 
   return (
     <div style={{ margin: "10px 0", fontSize: "0.9em" }}>
-      {/* Selected tags */}
       <div style={{ marginBottom: "8px", minHeight: "28px" }}>
         {selected.map((tag) => (
           <span
@@ -573,7 +554,6 @@ export const TagSelect = ({ selected = [], onChange }) => {
               padding: "4px 10px",
               margin: "2px 4px 2px 0",
               borderRadius: "16px",
-              fontSize: "0.9em",
             }}
           >
             {tag}
@@ -591,7 +571,6 @@ export const TagSelect = ({ selected = [], onChange }) => {
         ))}
       </div>
 
-      {/* Input */}
       <input
         type="text"
         value={inputValue}
@@ -613,7 +592,6 @@ export const TagSelect = ({ selected = [], onChange }) => {
         }}
       />
 
-      {/* Dropdown */}
       {filteredTags.length > 0 && (
         <div
           style={{
@@ -631,9 +609,10 @@ export const TagSelect = ({ selected = [], onChange }) => {
               style={{
                 padding: "8px 12px",
                 cursor: "pointer",
-                borderBottom: "1px solid #333",
+                background: "#333",
+                borderBottom: "1px solid #444",
               }}
-              onMouseDown={(e) => e.preventDefault()} // Prevent input blur
+              onMouseDown={(e) => e.preventDefault()}
               onClick={() => addTag(tag)}
             >
               {tag}

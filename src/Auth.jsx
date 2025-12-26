@@ -81,8 +81,8 @@ const Auth = ({ children }) => {
 
     if (res.ok) {
       return true;
+      window.location.reload();
     }
-    window.location.reload();
     return false;
   };
 

@@ -16,6 +16,7 @@ const Gallery = () => {
 
   const [tempCaption, setTempCaption] = useState("");
   const [tempTags, setTempTags] = useState([]);
+  const [originalTags, setOriginalTags] = useState([]); // For diff calculation
 
   const R2_PUBLIC_URL = "https://pub-737d16f465e74a25bb9b4613475ea7ef.r2.dev";
   const LIMIT = 20;
@@ -44,13 +45,43 @@ const Gallery = () => {
       .catch(() => setLoading(false));
   };
 
-  // Group by date
+  // Safe tag parsing — MOVED UP HERE
+  const getTagsArray = (tagString) => {
+    if (!tagString || typeof tagString !== "string") return [];
+    return tagString
+      .split(",")
+      .map((t) => t.trim())
+      .filter((t) => t);
+  };
+
+  // Group by date with common tags calculation — NOW AFTER getTagsArray
   const groups = {};
   media.forEach((item) => {
     const date = item.date || "Unknown";
-    if (!groups[date]) groups[date] = [];
-    groups[date].push(item);
+    if (!groups[date]) {
+      groups[date] = { items: [], commonTags: null };
+    }
+    groups[date].items.push(item);
   });
+
+  // Compute intersection of tags for each group
+  Object.keys(groups).forEach((date) => {
+    const items = groups[date].items;
+    if (items.length === 0) {
+      groups[date].commonTags = [];
+      return;
+    }
+
+    let common = new Set(getTagsArray(items[0]?.tags || ""));
+
+    for (let i = 1; i < items.length; i++) {
+      const itemTags = new Set(getTagsArray(items[i]?.tags || ""));
+      common = new Set([...common].filter((tag) => itemTags.has(tag)));
+    }
+
+    groups[date].commonTags = [...common];
+  });
+
   const sortedDates = Object.keys(groups).sort((a, b) => b.localeCompare(a));
 
   const isSubscriber = user?.is_subscriber || user?.is_admin;
@@ -88,38 +119,52 @@ const Gallery = () => {
 
   const saveEdit = async () => {
     const body = {};
-    if (editingGroupCaption) body.caption = tempCaption;
-    if (editingGroupTags || editingItem) body.tags = tempTags;
 
-    const key = editingGroupCaption || editingGroupTags || editingItem;
+    if (editingGroupCaption) {
+      body.caption = tempCaption;
+      body.groupKey = editingGroupCaption; // date string for caption group update
+    }
 
-    await fetch("https://api.lunepusa.workers.dev/update-media", {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ key, ...body }),
-    });
+    if (editingGroupTags || editingItem) {
+      const added = tempTags.filter((tag) => !originalTags.includes(tag));
+      const removed = originalTags.filter((tag) => !tempTags.includes(tag));
 
-    // Refresh
-    setMedia([]);
-    setOffset(0);
-    setHasMore(true);
-    loadMedia();
+      if (editingGroupTags) {
+        body.addedTags = added.length ? added : undefined;
+        body.removedTags = removed.length ? removed : undefined;
+        body.groupKey = editingGroupTags; // date string
+      } else if (editingItem) {
+        body.addedTags = added.length ? added : undefined;
+        body.removedTags = removed.length ? removed : undefined;
+        body.key = editingItem; // full object_key for individual
+      }
+    }
 
-    setEditingGroupCaption(null);
-    setEditingGroupTags(null);
-    setEditingItem(null);
-    setTempCaption("");
-    setTempTags([]);
-  };
+    try {
+      const res = await fetch("https://api.lunepusa.workers.dev/update-media", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
 
-  // Safe tag parsing
-  const getTagsArray = (tagString) => {
-    if (!tagString || typeof tagString !== "string") return [];
-    return tagString
-      .split(",")
-      .map((t) => t.trim())
-      .filter((t) => t);
+      if (!res.ok) throw new Error("Save failed");
+
+      // Reload fresh data
+      setOffset(0);
+      setHasMore(true);
+
+      // Close editing
+      setEditingGroupCaption(null);
+      setEditingGroupTags(null);
+      setEditingItem(null);
+      setTempCaption("");
+      setTempTags([]);
+      setOriginalTags([]);
+    } catch (err) {
+      console.error(err);
+      alert("Save failed");
+    }
   };
 
   return (
@@ -214,11 +259,10 @@ const Gallery = () => {
       )}
 
       {sortedDates.map((date) => {
-        const items = groups[date];
+        const { items, commonTags } = groups[date];
         const videoCount = items.filter((i) => i.isVideo).length;
         const photoCount = items.length - videoCount;
         const caption = items[0]?.caption || "";
-        const groupTags = getTagsArray(items[0]?.tags);
 
         return (
           <div
@@ -268,7 +312,8 @@ const Gallery = () => {
                   }}
                   onClick={() => {
                     setEditingGroupTags(date);
-                    setTempTags(groupTags);
+                    setTempTags(commonTags);
+                    setOriginalTags([...commonTags]);
                   }}
                 >
                   ✏️ Group Tags
@@ -280,7 +325,13 @@ const Gallery = () => {
               <div style={{ textAlign: "center", marginBottom: "10px" }}>
                 <TagSelect selected={tempTags} onChange={setTempTags} />
                 <button onClick={saveEdit}>Save Group Tags</button>
-                <button onClick={() => setEditingGroupTags(null)}>
+                <button
+                  onClick={() => {
+                    setEditingGroupTags(null);
+                    setTempTags([]);
+                    setOriginalTags([]);
+                  }}
+                >
                   Cancel
                 </button>
               </div>
@@ -359,7 +410,13 @@ const Gallery = () => {
                             onChange={setTempTags}
                           />
                           <button onClick={saveEdit}>Save</button>
-                          <button onClick={() => setEditingItem(null)}>
+                          <button
+                            onClick={() => {
+                              setEditingItem(null);
+                              setTempTags([]);
+                              setOriginalTags([]);
+                            }}
+                          >
                             Cancel
                           </button>
                         </div>
@@ -378,6 +435,7 @@ const Gallery = () => {
                                 e.stopPropagation();
                                 setEditingItem(item.key);
                                 setTempTags(itemTags);
+                                setOriginalTags([...itemTags]);
                               }}
                             >
                               ✏️
