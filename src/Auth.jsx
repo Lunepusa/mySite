@@ -4,103 +4,122 @@ const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);
 
-// Small reusable login/logout bar
-export const AuthBar = () => {
-  const { user, login, logout } = useAuth();
+// Reusable Login/Signup component
+export const Login = () => {
+  const { user, loadUser } = useAuth(); // Now loadUser exists
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isSignup, setIsSignup] = useState(false);
   const [error, setError] = useState("");
 
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    const success = await login(username, password);
-    if (!success) setError("Invalid credentials");
+
+    const lowerUsername = username.toLowerCase().trim(); // Force lowercase
+
+    const res = await fetch("https://api.lunepusa.workers.dev/login", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ 
+        username: lowerUsername, 
+        password, 
+        mode: isSignup ? "signup" : "login" 
+      }),
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      await loadUser(); // Refresh user state
+    } else {
+      setError(data.error || "Failed");
+    }
   };
 
-  if (!user) {
+  if (user) {
     return (
-      <div style={{ textAlign: "center", padding: "5px" }}>
-        <form onSubmit={handleLogin} style={{ display: "inline-block" }}>
-          <input
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-            style={{ padding: "3px", marginRight: "3px" }}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            style={{ padding: "3px", marginRight: "3px" }}
-          />
-          <button type="submit" style={{}}>
-            Log In
-          </button>
-        </form>
-        {error && <p style={{ color: "red", marginTop: "8px" }}>{error}</p>}
+      <div>
+        Logged in as {user.username}
+        <button onClick={async () => {
+          await fetch("https://api.lunepusa.workers.dev/logout", { 
+            method: "POST", 
+            credentials: "include" 
+          });
+          await loadUser();
+        }}>
+          Log Out
+        </button>
       </div>
     );
   }
 
   return (
-    <div style={{ textAlign: "center" }}>
-      <span style={{}}>Logged in as {user.username}</span>
-      <button onClick={logout}>Log Out</button>
-    </div>
+    <form onSubmit={handleSubmit}>
+      <h2>{isSignup ? "Sign Up" : "Log In"}</h2>
+      <input
+        type="text"
+        placeholder="Username"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        required
+      />
+      <input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+      />
+      <button type="submit">{isSignup ? "Sign Up" : "Log In"}</button>
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      <p>
+        <button type="button" onClick={() => setIsSignup(!isSignup)}>
+          {isSignup ? "Already have an account? Log In" : "No account? Sign Up"}
+        </button>
+      </p>
+    </form>
   );
 };
 
-const Auth = ({ children }) => {
+// Auth Provider
+const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const WORKER_URL = "https://api.lunepusa.workers.dev";
 
+  const loadUser = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${WORKER_URL}/me`, { credentials: "include" });
+      const data = await res.json();
+      setUser(data.user || null);
+    } catch (err) {
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    fetch(`${WORKER_URL}/me`, { credentials: "include" })
-      .then((res) => res.json())
-      .then((data) => {
-        setUser(data.user || null);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+    loadUser();
   }, []);
 
-  const login = async (username, password) => {
-    const res = await fetch(`${WORKER_URL}/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ username, password }),
-    });
-
-    if (res.ok) {
-      return true;
-      window.location.reload();
-    }
-    return false;
+  const value = {
+    user,
+    loading,
+    loadUser,
   };
 
-  const logout = async () => {
-    await fetch(`${WORKER_URL}/logout`, {
-      method: "POST",
-      credentials: "include",
-    });
-    window.location.reload();
-  };
-
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <p>Loading auth...</p>;
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export default Auth;
+export default AuthProvider;

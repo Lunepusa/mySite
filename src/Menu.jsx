@@ -84,6 +84,10 @@ export default function Menu() {
           else.
           <br />
           Yearly ($60) and lifetime ($205) also available.
+          <br />{" "}
+          <h3>
+            will soon be replaced with <a href="/Lounge">the Lounge</a>
+          </h3>
           <img
             src={DrivePosts}
             style={{ maxWidth: "100%", maxHeight: "60vh" }}

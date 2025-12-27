@@ -16,7 +16,7 @@ const Gallery = () => {
 
   const [tempCaption, setTempCaption] = useState("");
   const [tempTags, setTempTags] = useState([]);
-  const [originalTags, setOriginalTags] = useState([]); // For diff calculation
+  const [originalTags, setOriginalTags] = useState([]);
 
   const R2_PUBLIC_URL = "https://pub-737d16f465e74a25bb9b4613475ea7ef.r2.dev";
   const LIMIT = 20;
@@ -45,40 +45,38 @@ const Gallery = () => {
       .catch(() => setLoading(false));
   };
 
-  // Safe tag parsing — MOVED UP HERE
-  const getTagsArray = (tagString) => {
-    if (!tagString || typeof tagString !== "string") return [];
-    return tagString
-      .split(",")
-      .map((t) => t.trim())
-      .filter((t) => t);
+  // Safe tag parsing
+  const getTagsArray = (tagInput) => {
+    if (!tagInput) return [];
+    if (Array.isArray(tagInput)) return tagInput;
+    if (typeof tagInput === "string") {
+      return tagInput
+        .split(",")
+        .map((t) => t.trim())
+        .filter((t) => t.length > 0);
+    }
+    return [];
   };
 
-  // Group by date with common tags calculation — NOW AFTER getTagsArray
+  // Group by date and compute common tags
   const groups = {};
   media.forEach((item) => {
     const date = item.date || "Unknown";
     if (!groups[date]) {
-      groups[date] = { items: [], commonTags: null };
+      groups[date] = { items: [], commonTags: [] };
     }
     groups[date].items.push(item);
   });
 
-  // Compute intersection of tags for each group
   Object.keys(groups).forEach((date) => {
     const items = groups[date].items;
-    if (items.length === 0) {
-      groups[date].commonTags = [];
-      return;
-    }
+    if (items.length === 0) return;
 
-    let common = new Set(getTagsArray(items[0]?.tags || ""));
-
+    let common = new Set(getTagsArray(items[0].tags));
     for (let i = 1; i < items.length; i++) {
-      const itemTags = new Set(getTagsArray(items[i]?.tags || ""));
+      const itemTags = new Set(getTagsArray(items[i].tags));
       common = new Set([...common].filter((tag) => itemTags.has(tag)));
     }
-
     groups[date].commonTags = [...common];
   });
 
@@ -87,6 +85,8 @@ const Gallery = () => {
   const isSubscriber = user?.is_subscriber || user?.is_admin;
   const isLoggedIn = !!user;
   const isAdmin = user?.is_admin;
+
+  const firstDate = sortedDates[0];
 
   if (loading && media.length === 0)
     return (
@@ -122,7 +122,7 @@ const Gallery = () => {
 
     if (editingGroupCaption) {
       body.caption = tempCaption;
-      body.groupKey = editingGroupCaption; // date string for caption group update
+      body.groupKey = editingGroupCaption;
     }
 
     if (editingGroupTags || editingItem) {
@@ -132,11 +132,11 @@ const Gallery = () => {
       if (editingGroupTags) {
         body.addedTags = added.length ? added : undefined;
         body.removedTags = removed.length ? removed : undefined;
-        body.groupKey = editingGroupTags; // date string
+        body.groupKey = editingGroupTags;
       } else if (editingItem) {
         body.addedTags = added.length ? added : undefined;
         body.removedTags = removed.length ? removed : undefined;
-        body.key = editingItem; // full object_key for individual
+        body.key = editingItem;
       }
     }
 
@@ -150,11 +150,12 @@ const Gallery = () => {
 
       if (!res.ok) throw new Error("Save failed");
 
-      // Reload fresh data
+      // Full reload for fresh data
+      setMedia([]);
       setOffset(0);
       setHasMore(true);
+      loadMedia();
 
-      // Close editing
       setEditingGroupCaption(null);
       setEditingGroupTags(null);
       setEditingItem(null);
@@ -170,6 +171,13 @@ const Gallery = () => {
   return (
     <div style={{ padding: "20px", maxWidth: "1400px", margin: "0 auto" }}>
       <h1 style={{ textAlign: "center", marginBottom: "5px" }}>Gallery</h1>
+      <h3>
+        {!isLoggedIn
+          ? "Log in to see more previews, Subscribe to see all media"
+          : !isSubscriber || !isAdmin
+          ? "Subscribe to see all media"
+          : ""}
+      </h3>
 
       {/* Full-screen modal */}
       {fullscreenItem && (
@@ -188,7 +196,6 @@ const Gallery = () => {
           }}
           onClick={closeFullscreen}
         >
-          {/* Prev/Next arrows */}
           {media.findIndex((m) => m.key === fullscreenItem.key) > 0 && (
             <div
               style={{
@@ -220,7 +227,7 @@ const Gallery = () => {
                 style={{
                   maxWidth: "100%",
                   maxHeight: "100vh",
-                  filter: !isSubscriber ? "blur(40px)" : "none",
+                  filter: !isSubscriber || !isAdmin ? "blur(10px)" : "none",
                 }}
               />
             ) : (
@@ -231,7 +238,7 @@ const Gallery = () => {
                   maxWidth: "100%",
                   maxHeight: "100vh",
                   objectFit: "contain",
-                  filter: !isSubscriber ? "blur(40px)" : "none",
+                  filter: !isSubscriber || !isAdmin ? "blur(10px)" : "none",
                 }}
               />
             )}
@@ -264,6 +271,9 @@ const Gallery = () => {
         const photoCount = items.length - videoCount;
         const caption = items[0]?.caption || "";
 
+        const isFirstGroup = date === firstDate;
+        const blurred = !isSubscriber && !isFirstGroup;
+
         return (
           <div
             key={date}
@@ -286,7 +296,7 @@ const Gallery = () => {
               ) : (
                 <>
                   {caption && `${caption} — `}
-                  {isAdmin && (
+                  {!!isAdmin && (
                     <span
                       style={{ cursor: "pointer", fontSize: "0.8em" }}
                       onClick={() => {
@@ -302,8 +312,10 @@ const Gallery = () => {
             </h2>
 
             <h4 style={{ textAlign: "center" }}>
-              {date} — v{videoCount} p{photoCount}
-              {isAdmin && (
+              {date}
+              {videoCount > 0 && ` — v${videoCount}`}
+              {photoCount > 0 && ` p${photoCount}`}
+              {!!isAdmin && (
                 <span
                   style={{
                     cursor: "pointer",
@@ -339,15 +351,6 @@ const Gallery = () => {
 
             <div style={{ textAlign: "center" }}>
               {items.map((item) => {
-                let blurred = false;
-                if (!isSubscriber) {
-                  if (!isLoggedIn) {
-                    blurred = true;
-                  } else {
-                    blurred = item.globalIndex > 0;
-                  }
-                }
-
                 const itemTags = getTagsArray(item.tags);
 
                 return (
@@ -378,14 +381,20 @@ const Gallery = () => {
                       {item.isVideo ? (
                         <video
                           src={`${R2_PUBLIC_URL}/${item.key}`}
-                          controls={!blurred}
-                          muted={blurred}
+                          controls={!isAdmin || !isSubscriber}
+                          muted={!isAdmin || !isSubscriber}
                           loop
                           style={{
                             maxHeight: "100%",
                             width: "auto",
                             objectFit: "contain",
-                            filter: blurred ? "blur(40px)" : "none",
+                            filter: !isLoggedIn
+                              ? "blur(10px)"
+                              : isAdmin || isSubscriber
+                              ? "none"
+                              : !isFirstGroup && isLoggedIn
+                              ? "blur(7px)"
+                              : "blur(3px)",
                           }}
                         />
                       ) : (
@@ -396,7 +405,13 @@ const Gallery = () => {
                             maxHeight: "100%",
                             width: "auto",
                             objectFit: "contain",
-                            filter: blurred ? "blur(40px)" : "none",
+                            filter: !isLoggedIn
+                              ? "blur(10px)"
+                              : isAdmin || isSubscriber
+                              ? "none"
+                              : !isFirstGroup && isLoggedIn
+                              ? "blur(7px)"
+                              : "blur(3px)",
                           }}
                         />
                       )}
@@ -427,8 +442,9 @@ const Gallery = () => {
                             color: "#ccc",
                           }}
                         >
-                          Tags: {itemTags.join(", ")}
-                          {isAdmin && (
+                          Tags:{" "}
+                          {itemTags.length > 0 ? itemTags.join(", ") : "none"}
+                          {!!isAdmin && (
                             <span
                               style={{ cursor: "pointer", marginLeft: "5px" }}
                               onClick={(e) => {

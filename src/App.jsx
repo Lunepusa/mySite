@@ -3,6 +3,7 @@ import Links from "./Links.jsx";
 import Menu from "./Menu.jsx";
 import About from "./FAQ.jsx";
 import Shh from "./shh.jsx";
+import WIP from "./WIP.jsx";
 import Mailing, { MailingFooter } from "./Mailing.jsx";
 import {
   useFirstVisit,
@@ -15,7 +16,7 @@ import {
 import { Routes, Route, useLocation } from "react-router-dom";
 import React, { useEffect } from "react";
 import Auth from "./Auth.jsx";
-import { useAuth } from "./Auth.jsx";
+import AuthProvider from "./Auth.jsx";
 import Lounge from "./Lounge.jsx";
 
 export default function App() {
@@ -80,7 +81,7 @@ export default function App() {
         onDecline={handleDecline}
       />
       <Navbar />
-      <Auth>
+      <AuthProvider>
         <Routes>
           <Route path="/" element={<Links />} />
           <Route path="/links" element={<Links />} />
@@ -89,13 +90,22 @@ export default function App() {
           <Route path="/FAQ" element={<About />} />
           <Route path="/mailing" element={<Mailing />} />
           <Route path="/Lounge" element={<Lounge />} />
+          <Route path="/WIP" element={<WIP />} />
           <Route path="*" element={<h1>404 - Page not found</h1>} />
           <Route path="/shh" element={<Shh />} />
         </Routes>
-      </Auth>
+      </AuthProvider>
       <br />
       <br />
-      <MailingFooter />
+      <div>
+        <MailingFooter />
+        <div style={{ textAlign: "center", fontSize: ".8em" }}>
+          {" "}
+          this page is and always will be a work in progress. If you would like
+          to see what I have not implemented, but want to try to add you can do
+          so <a href="/WIP">here </a>
+        </div>
+      </div>
     </div>
   );
 }

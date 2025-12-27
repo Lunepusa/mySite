@@ -1,5 +1,5 @@
 import React from "react";
-import Auth, { useAuth, AuthBar } from "./Auth"; // Adjust path if needed
+import Auth, { useAuth, Login } from "./Auth"; // Adjust path if needed
 import Collapse from "./Utility";
 import Upload from "./Upload";
 import Gallery from "./Gallery";
@@ -14,12 +14,12 @@ const Lounge = () => {
       {!user ? (
         <div style={{ fontSize: "1.3em", textAlign: "center" }}>
           This is a private area. Log in below to enter.
-          <AuthBar />
+          <Login />
         </div>
       ) : (
         <div style={{ fontSize: "1em", textAlign: "center" }}>
           Welcome back, {user.username}! Enjoy the exclusive content.
-          <AuthBar />
+          <Login />
         </div>
       )}
       {/* Upload section only for admin */}
