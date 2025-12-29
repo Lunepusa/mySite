@@ -18,6 +18,8 @@ const Gallery = () => {
   const [tempTags, setTempTags] = useState([]);
   const [originalTags, setOriginalTags] = useState([]);
 
+  const [searchQuery, setSearchQuery] = useState("");
+
   const R2_PUBLIC_URL = "https://pub-737d16f465e74a25bb9b4613475ea7ef.r2.dev";
   const LIMIT = 20;
 
@@ -30,7 +32,7 @@ const Gallery = () => {
     setLoading(true);
 
     fetch(
-      `https://api.lunepusa.workers.dev/media?offset=${offset}&limit=${LIMIT}`,
+      `https://api.lunepusa.pages.dev/media?offset=${offset}&limit=${LIMIT}`,
       {
         credentials: "include",
       }
@@ -45,7 +47,6 @@ const Gallery = () => {
       .catch(() => setLoading(false));
   };
 
-  // Safe tag parsing
   const getTagsArray = (tagInput) => {
     if (!tagInput) return [];
     if (Array.isArray(tagInput)) return tagInput;
@@ -58,7 +59,7 @@ const Gallery = () => {
     return [];
   };
 
-  // Group by date and compute common tags + total video duration
+  // Group by date
   const groups = {};
   media.forEach((item) => {
     const date = item.date || "Unknown";
@@ -116,6 +117,7 @@ const Gallery = () => {
       }
     }
   };
+
   const saveEdit = async () => {
     const body = {};
 
@@ -129,8 +131,6 @@ const Gallery = () => {
 
     let added = [];
     let removed = [];
-    console.log("Sending update body:", JSON.stringify(body, null, 2));
-    console.log("cleanGroupKey:", cleanGroupKey);
 
     if (editingGroupTags || editingItem) {
       added = tempTags.filter((tag) => !originalTags.includes(tag));
@@ -156,9 +156,7 @@ const Gallery = () => {
     }
 
     try {
-      console.log("Sending update body:", JSON.stringify(body, null, 2));
-      console.log("cleanGroupKey:", cleanGroupKey);
-      const res = await fetch("https://api.lunepusa.workers.dev/update-media", {
+      const res = await fetch("https://api.lunepusa.pages.dev/update-media", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -203,7 +201,6 @@ const Gallery = () => {
         });
       });
 
-      // Close editing
       setEditingGroupCaption(null);
       setEditingGroupTags(null);
       setEditingItem(null);
@@ -212,16 +209,65 @@ const Gallery = () => {
       setOriginalTags([]);
     } catch (err) {
       console.error("Save error:", err);
-      alert("Save failed ~ changes not applied: " + err.message);
+      alert("Save failed — changes not applied: " + err.message);
     }
   };
-  // Format seconds to "3m 45s"
+
   const formatDuration = (seconds) => {
     if (!seconds || seconds === 0) return "";
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return ` ~ total video: ${mins}m ${secs.toString().padStart(2, "0")}s`;
+    return ` — total video: ${mins}m ${secs.toString().padStart(2, "0")}s`;
   };
+
+  // Advanced search filter
+  const filteredDates = sortedDates.filter((date) => {
+    if (!searchQuery.trim()) return true;
+
+    const group = groups[date];
+    const allItemTags = group.items.flatMap((item) =>
+      getTagsArray(item.tags).map((t) => t.toLowerCase())
+    );
+
+    const terms = searchQuery
+      .toLowerCase()
+      .split(/\s+/)
+      .filter((t) => t);
+
+    let andTags = [];
+    let orTags = [];
+    let excludeTags = [];
+
+    terms.forEach((term) => {
+      if (term.startsWith("-")) {
+        excludeTags.push(term.slice(1));
+      } else if (term.includes("&")) {
+        andTags.push(...term.split("&"));
+      } else {
+        orTags.push(term);
+      }
+    });
+
+    // Exclude
+    if (excludeTags.some((tag) => allItemTags.some((t) => t.includes(tag)))) {
+      return false;
+    }
+
+    // AND
+    if (andTags.length > 0) {
+      const hasAllAnd = andTags.every((tag) =>
+        allItemTags.some((t) => t.includes(tag))
+      );
+      if (!hasAllAnd) return false;
+    }
+
+    // OR
+    if (orTags.length > 0) {
+      return orTags.some((tag) => allItemTags.some((t) => t.includes(tag)));
+    }
+
+    return true;
+  });
 
   return (
     <div style={{ padding: "20px", maxWidth: "1400px", margin: "0 auto" }}>
@@ -234,7 +280,32 @@ const Gallery = () => {
           : ""}
       </h3>
 
-      {/* Full-screen modal ~ no duration overlay */}
+      {/* Search bar */}
+      <div style={{ textAlign: "center", marginBottom: "2px" }}>
+        <input
+          type="text"
+          placeholder="Search tags (space=OR, &=AND, -exclude)"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          style={{
+            padding: "3px",
+            width: "100%",
+            fontSize: ".7em",
+            borderRadius: "8px",
+            border: "1px solid #ccc",
+          }}
+        />
+        {searchQuery && (
+          <button
+            onClick={() => setSearchQuery("")}
+            style={{ textAlign: "center", padding: "2px" }}
+          >
+            Clear
+          </button>
+        )}
+      </div>
+
+      {/* Full-screen modal */}
       {fullscreenItem && (
         <div
           style={{
@@ -322,7 +393,8 @@ const Gallery = () => {
         </div>
       )}
 
-      {sortedDates.map((date) => {
+      {/* Filtered groups */}
+      {filteredDates.map((date) => {
         const { items, commonTags, totalVideoSeconds = 0 } = groups[date];
         const videoCount = items.filter((i) => i.isVideo).length;
         const photoCount = items.length - videoCount;
@@ -352,7 +424,7 @@ const Gallery = () => {
                 </div>
               ) : (
                 <>
-                  {caption && `${caption}`}
+                  {caption && `${caption} — `}
                   {!!isAdmin && (
                     <span
                       style={{ cursor: "pointer", fontSize: "0.8em" }}
@@ -370,7 +442,7 @@ const Gallery = () => {
 
             <h4 style={{ textAlign: "center" }}>
               {date}
-              {videoCount > 0 && ` ~ v${videoCount}`}
+              {videoCount > 0 && ` — v${videoCount}`}
               {photoCount > 0 && ` p${photoCount}`}
               {totalVideoSeconds > 0 && formatDuration(totalVideoSeconds)}
               {!!isAdmin && (
@@ -448,7 +520,7 @@ const Gallery = () => {
                               const dur = Math.round(e.target.duration);
                               if (!isNaN(dur)) {
                                 groups[date].totalVideoSeconds += dur;
-                                setMedia([...media]); // Re-render to update header
+                                setMedia([...media]);
                               }
                             }}
                             style={{
@@ -464,7 +536,6 @@ const Gallery = () => {
                                 : "blur(3px)",
                             }}
                           />
-                          {/* Subtle play icon overlay */}
                           <div
                             style={{
                               position: "absolute",
@@ -557,7 +628,20 @@ const Gallery = () => {
         );
       })}
 
-      {hasMore && (
+      {searchQuery && filteredDates.length === 0 && (
+        <p
+          style={{
+            textAlign: "center",
+            marginTop: "40px",
+            color: "#aaa",
+            fontSize: "1.2em",
+          }}
+        >
+          No results for: "{searchQuery}"
+        </p>
+      )}
+
+      {!searchQuery && hasMore && (
         <button
           onClick={loadMedia}
           disabled={loading}

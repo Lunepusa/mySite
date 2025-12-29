@@ -29,7 +29,7 @@ const Upload = () => {
       type: f.type || "application/octet-stream",
     }));
 
-    const res = await fetch("https://api.lunepusa.workers.dev/presign", {
+    const res = await fetch("https://api.lunepusa.pages.dev/presign", {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -63,7 +63,7 @@ const Upload = () => {
         xhr.onload = async () => {
           if (xhr.status === 200) {
             // Notify Worker, send initialTag
-            await fetch("https://api.lunepusa.workers.dev/upload-complete", {
+            await fetch("https://api.lunepusa.pages.dev/upload-complete", {
               method: "POST",
               credentials: "include",
               headers: { "Content-Type": "application/json" },

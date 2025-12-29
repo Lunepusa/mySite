@@ -18,14 +18,14 @@ export const Login = () => {
 
     const lowerUsername = username.toLowerCase().trim(); // Force lowercase
 
-    const res = await fetch("https://api.lunepusa.workers.dev/login", {
+    const res = await fetch("https://api.lunepusa.pages.dev/login", {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ 
-        username: lowerUsername, 
-        password, 
-        mode: isSignup ? "signup" : "login" 
+      body: JSON.stringify({
+        username: lowerUsername,
+        password,
+        mode: isSignup ? "signup" : "login",
       }),
     });
 
@@ -42,13 +42,15 @@ export const Login = () => {
     return (
       <div>
         Logged in as {user.username}
-        <button onClick={async () => {
-          await fetch("https://api.lunepusa.workers.dev/logout", { 
-            method: "POST", 
-            credentials: "include" 
-          });
-          await loadUser();
-        }}>
+        <button
+          onClick={async () => {
+            await fetch("https://api.lunepusa.pages.dev/logout", {
+              method: "POST",
+              credentials: "include",
+            });
+            await loadUser();
+          }}
+        >
           Log Out
         </button>
       </div>
@@ -88,7 +90,7 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const WORKER_URL = "https://api.lunepusa.workers.dev";
+  const WORKER_URL = "https://api.lunepusa.pages.dev";
 
   const loadUser = async () => {
     setLoading(true);
@@ -115,11 +117,7 @@ const AuthProvider = ({ children }) => {
 
   if (loading) return <p>Loading auth...</p>;
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export default AuthProvider;
