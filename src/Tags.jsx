@@ -88,7 +88,8 @@ export const CANONICAL_TAGS = [
   "double_penetration_2_in_one",
   "spitroast",
   "69",
-  "reverse cowgirl",
+  "from_below",
+  "close_up",
 
   // Actions
   "vaginal_penetration",
@@ -316,6 +317,7 @@ const SYNONYM_MAP = {
   "on knees": "kneeling",
   "leaning against wall": "seated_lean",
   "wall sit": "seated_lean",
+  upskirt: "from_below",
   dp: "double_penetration_ass_and_pussy",
   "double penetration": "double_penetration_ass_and_pussy",
   "vaginal and anal": "double_penetration_ass_and_pussy",
