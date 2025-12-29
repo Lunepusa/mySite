@@ -1,146 +1,129 @@
 import React, { useState } from "react";
-import { useDropzone } from "react-dropzone";
+import { useAuth } from "./Auth";
+import { searchTags } from "./Tags"; // Import from Tags.jsx
 
 const Upload = () => {
+  const { user } = useAuth();
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
-  const [status, setStatus] = useState("");
+  const [progress, setProgress] = useState({});
 
-  const onDrop = (acceptedFiles) => {
-    setFiles((prev) => [...prev, ...acceptedFiles]);
-  };
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    noClick: false,
-  });
-
-  const handleFolderSelect = (e) => {
-    if (e.target.files.length > 0) {
-      const newFiles = Array.from(e.target.files);
-      setFiles((prev) => [...prev, ...newFiles]);
-    }
-  };
-
-  const getFolderNames = (allFiles) => {
-    const names = new Set();
-    allFiles.forEach((file) => {
-      let path = file.webkitRelativePath || file.name;
-      path = path.replace(/\\/g, '/');
-      const parts = path.split('/');
-      if (parts.length > 1) {
-        names.add(parts[0]);
-      }
-    });
-    return Array.from(names);
+  const handleFileChange = (e) => {
+    setFiles(Array.from(e.target.files));
   };
 
   const handleUpload = async () => {
-    if (files.length === 0) {
-      setStatus("No files selected");
+    if (files.length === 0) return;
+
+    setUploading(true);
+    setProgress({});
+
+    // Derive canonical tag from username
+    const usernameLower = user?.username?.toLowerCase() || "lunepusa";
+    const matchedTags = searchTags(usernameLower);
+    const initialTag = matchedTags.length > 0 ? matchedTags[0] : usernameLower;
+
+    // Step 1: Get presigned URLs
+    const fileInfo = files.map((f) => ({
+      name: f.name,
+      type: f.type || "application/octet-stream",
+    }));
+
+    const res = await fetch("https://api.lunepusa.workers.dev/presign", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ files: fileInfo }),
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      alert("Failed to get upload URLs: " + err);
+      setUploading(false);
       return;
     }
 
-    setUploading(true);
-    setStatus("Uploading... (this may take a while)");
+    const { presigned } = await res.json();
 
-    const formData = new FormData();
-    files.forEach((file) => formData.append("files", file));
+    // Step 2: Upload each file directly
+    const uploadPromises = presigned.map(async (item, i) => {
+      const file = files[i];
+
+      const xhr = new XMLHttpRequest();
+      xhr.open("PUT", item.presignedUrl);
+
+      return new Promise((resolve, reject) => {
+        xhr.upload.onprogress = (e) => {
+          if (e.lengthComputable) {
+            const percent = Math.round((e.loaded / e.total) * 100);
+            setProgress((prev) => ({ ...prev, [file.name]: percent }));
+          }
+        };
+
+        xhr.onload = async () => {
+          if (xhr.status === 200) {
+            // Notify Worker, send initialTag
+            await fetch("https://api.lunepusa.workers.dev/upload-complete", {
+              method: "POST",
+              credentials: "include",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                objectKey: item.objectKey,
+                fileType: file.type,
+                initialTag,
+              }),
+            });
+            resolve();
+          } else {
+            reject(new Error(`Upload failed: ${xhr.status}`));
+          }
+        };
+
+        xhr.onerror = () => reject(new Error("Network error"));
+        xhr.send(file);
+      });
+    });
 
     try {
-      const res = await fetch("https://api.lunepusa.workers.dev/upload-batch", {
-        method: "POST",
-        credentials: "include",
-        body: formData,
-      });
-
-      let result = {};
-      try {
-        result = await res.json();
-      } catch (e) {
-        result = { successCount: files.length, errors: [] };
-      }
-
-      if (res.ok || result.successCount > 0) {
-        setStatus(`Upload complete! ${result.successCount || files.length} files uploaded.`);
-      } else {
-        setStatus(`Upload failed: ${res.status} ${JSON.stringify(result)}`);
-      }
+      await Promise.all(uploadPromises);
+      alert("All files uploaded!");
+      setFiles([]);
+      setProgress({});
     } catch (err) {
-      setStatus(`Network error: ${err.message}`);
+      alert("One or more uploads failed: " + err.message);
+    } finally {
+      setUploading(false);
     }
-
-    setFiles([]);
-    setUploading(false);
   };
 
   return (
-    <div style={{ maxWidth: "900px", margin: "40px auto", padding: "20px" }}>
-      <h3>Upload Media</h3>
-
-      <div
-        {...getRootProps()}
-        style={{
-          border: "3px dashed #ff69b4",
-          borderRadius: "12px",
-          padding: "40px",
-          textAlign: "center",
-          backgroundColor: isDragActive ? "#222" : "#111",
-          marginBottom: "30px",
-          cursor: "pointer",
-        }}
-      >
-        <input {...getInputProps()} />
-        <p style={{ fontSize: "1.2em" }}>
-          {isDragActive ? "Drop files here..." : "Drag & drop files here"}
-        </p>
-        <p>or</p>
-        <label style={{ cursor: "pointer" }}>
-          <input
-            type="file"
-            webkitdirectory="true"
-            multiple
-            onChange={handleFolderSelect}
-            style={{ display: "none" }}
-          />
-          <button type="button" style={{ padding: "10px 20px" }}>
-            Select Folder
-          </button>
-        </label>
-      </div>
-
-      {files.length > 0 && (
-        <div style={{ marginBottom: "30px" }}>
-          <p>
-            <strong>{files.length} files selected</strong>
-          </p>
-          <p>
-            Folders: <strong>{getFolderNames(files).join(", ") || "Individual Files"}</strong>
-          </p>
-        </div>
-      )}
-
+    <div style={{ padding: "20px", textAlign: "center" }}>
+      <h2>Upload New Content</h2>
+      <input
+        type="file"
+        multiple
+        onChange={handleFileChange}
+        disabled={uploading}
+        style={{ marginBottom: "10px" }}
+      />
+      <br />
       <button
         onClick={handleUpload}
         disabled={uploading || files.length === 0}
-        style={{ padding: "14px 28px", fontSize: "1.2em" }}
+        style={{ padding: "10px 20px", fontSize: "1em" }}
       >
-        {uploading ? "Uploading..." : "Upload All"}
+        {uploading ? "Uploading..." : "Start Upload"}
       </button>
 
-      {status && (
-        <pre
-          style={{
-            marginTop: "30px",
-            padding: "20px",
-            background: "#000",
-            borderRadius: "8px",
-            whiteSpace: "pre-wrap",
-            color: status.includes("complete") ? "#0f0" : status.includes("failed") || status.includes("error") ? "#f00" : "#ff0",
-          }}
-        >
-          {status}
-        </pre>
+      {uploading && files.length > 0 && (
+        <div style={{ marginTop: "20px" }}>
+          <h3>Progress:</h3>
+          {files.map((file) => (
+            <div key={file.name}>
+              {file.name}: {progress[file.name] || 0}%
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
