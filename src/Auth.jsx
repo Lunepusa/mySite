@@ -1,5 +1,27 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
+// src/api.js
+export const apiFetch = async (endpoint, options = {}) => {
+  const token = localStorage.getItem("token");
+
+  const headers = {
+    "Content-Type": "application/json",
+    ...options.headers,
+  };
+
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  const url = `https://api.lunepusa.workers.dev${endpoint}`;
+
+  return fetch(url, {
+    ...options,
+    headers,
+    credentials: "include", // keep if you still need cookies for anything
+  });
+};
+
 const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);
@@ -18,9 +40,8 @@ export const Login = () => {
 
     const lowerUsername = username.toLowerCase().trim(); // Force lowercase
 
-    const res = await fetch("https://api.lunepusa.pages.dev/login", {
+    const res = await apiFetch("/login", {
       method: "POST",
-      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         username: lowerUsername,
@@ -32,6 +53,7 @@ export const Login = () => {
     const data = await res.json();
 
     if (data.success) {
+      localStorage.setItem("token", data.token);
       await loadUser(); // Refresh user state
     } else {
       setError(data.error || "Failed");
@@ -44,10 +66,10 @@ export const Login = () => {
         Logged in as {user.username}
         <button
           onClick={async () => {
-            await fetch("https://api.lunepusa.pages.dev/logout", {
+            await apiFetch("/logout", {
               method: "POST",
-              credentials: "include",
             });
+            localStorage.removeItem("token");
             await loadUser();
           }}
         >
@@ -90,12 +112,12 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const WORKER_URL = "https://api.lunepusa.pages.dev";
+  const WORKER_URL = "https://api.lunepusa.workers.dev";
 
   const loadUser = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${WORKER_URL}/me`, { credentials: "include" });
+      const res = await await apiFetch("/me");
       const data = await res.json();
       setUser(data.user || null);
     } catch (err) {

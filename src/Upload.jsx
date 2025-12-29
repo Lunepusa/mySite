@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useAuth } from "./Auth";
+import { useAuth, apiFetch } from "./Auth";
 import { searchTags } from "./Tags"; // Import from Tags.jsx
 
 const Upload = () => {
@@ -29,9 +29,8 @@ const Upload = () => {
       type: f.type || "application/octet-stream",
     }));
 
-    const res = await fetch("https://api.lunepusa.pages.dev/presign", {
+    const res = await apiFetch("/presign", {
       method: "POST",
-      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ files: fileInfo }),
     });
@@ -63,9 +62,8 @@ const Upload = () => {
         xhr.onload = async () => {
           if (xhr.status === 200) {
             // Notify Worker, send initialTag
-            await fetch("https://api.lunepusa.pages.dev/upload-complete", {
+            await apiFetch("/upload-complete", {
               method: "POST",
-              credentials: "include",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 objectKey: item.objectKey,

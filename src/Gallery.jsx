@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useAuth } from "./Auth";
+import { useAuth, apiFetch } from "./Auth";
 import { TagSelect } from "./Tags";
 
 const Gallery = () => {
@@ -31,12 +31,7 @@ const Gallery = () => {
     if (loading || !hasMore) return;
     setLoading(true);
 
-    fetch(
-      `https://api.lunepusa.pages.dev/media?offset=${offset}&limit=${LIMIT}`,
-      {
-        credentials: "include",
-      }
-    )
+    apiFetch(`/media?offset=${offset}&limit=${LIMIT}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.media.length < LIMIT) setHasMore(false);
@@ -156,9 +151,8 @@ const Gallery = () => {
     }
 
     try {
-      const res = await fetch("https://api.lunepusa.pages.dev/update-media", {
+      const res = await apiFetch("/update-media", {
         method: "POST",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
