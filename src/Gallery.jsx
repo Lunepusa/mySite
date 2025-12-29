@@ -116,23 +116,31 @@ const Gallery = () => {
       }
     }
   };
-
   const saveEdit = async () => {
     const body = {};
 
+    let cleanGroupKey = null;
+
     if (editingGroupCaption) {
+      cleanGroupKey = editingGroupCaption.toString().replace(".0", "");
       body.caption = tempCaption;
-      body.groupKey = editingGroupCaption;
+      body.groupKey = cleanGroupKey;
     }
 
+    let added = [];
+    let removed = [];
+    console.log("Sending update body:", JSON.stringify(body, null, 2));
+    console.log("cleanGroupKey:", cleanGroupKey);
+
     if (editingGroupTags || editingItem) {
-      const added = tempTags.filter((tag) => !originalTags.includes(tag));
-      const removed = originalTags.filter((tag) => !tempTags.includes(tag));
+      added = tempTags.filter((tag) => !originalTags.includes(tag));
+      removed = originalTags.filter((tag) => !tempTags.includes(tag));
 
       if (editingGroupTags) {
+        cleanGroupKey = editingGroupTags.toString().replace(".0", "");
         body.addedTags = added.length ? added : undefined;
         body.removedTags = removed.length ? removed : undefined;
-        body.groupKey = editingGroupTags;
+        body.groupKey = cleanGroupKey;
       } else if (editingItem) {
         body.addedTags = added.length ? added : undefined;
         body.removedTags = removed.length ? removed : undefined;
@@ -140,7 +148,16 @@ const Gallery = () => {
       }
     }
 
+    if (Object.keys(body).length === 0) {
+      setEditingGroupCaption(null);
+      setEditingGroupTags(null);
+      setEditingItem(null);
+      return;
+    }
+
     try {
+      console.log("Sending update body:", JSON.stringify(body, null, 2));
+      console.log("cleanGroupKey:", cleanGroupKey);
       const res = await fetch("https://api.lunepusa.workers.dev/update-media", {
         method: "POST",
         credentials: "include",
@@ -148,13 +165,45 @@ const Gallery = () => {
         body: JSON.stringify(body),
       });
 
-      if (!res.ok) throw new Error("Save failed");
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(`Save failed: ${res.status} ${errText}`);
+      }
 
-      setMedia([]);
-      setOffset(0);
-      setHasMore(true);
-      loadMedia();
+      // Optimistic local update
+      setMedia((prev) => {
+        return prev.map((item) => {
+          let updated = { ...item };
 
+          if (
+            cleanGroupKey &&
+            item.date.toString().replace(".0", "") === cleanGroupKey
+          ) {
+            if (body.caption !== undefined) {
+              updated.caption = tempCaption;
+            }
+            if (body.addedTags || body.removedTags) {
+              let currentTags = getTagsArray(item.tags);
+              const set = new Set(currentTags);
+              removed.forEach((t) => set.delete(t));
+              added.forEach((t) => set.add(t));
+              updated.tags = [...set].join(", ");
+            }
+          }
+
+          if (editingItem && item.key === editingItem) {
+            let currentTags = getTagsArray(item.tags);
+            const set = new Set(currentTags);
+            removed.forEach((t) => set.delete(t));
+            added.forEach((t) => set.add(t));
+            updated.tags = [...set].join(", ");
+          }
+
+          return updated;
+        });
+      });
+
+      // Close editing
       setEditingGroupCaption(null);
       setEditingGroupTags(null);
       setEditingItem(null);
@@ -162,17 +211,16 @@ const Gallery = () => {
       setTempTags([]);
       setOriginalTags([]);
     } catch (err) {
-      console.error(err);
-      alert("Save failed");
+      console.error("Save error:", err);
+      alert("Save failed ~ changes not applied: " + err.message);
     }
   };
-
   // Format seconds to "3m 45s"
   const formatDuration = (seconds) => {
     if (!seconds || seconds === 0) return "";
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return ` — total video: ${mins}m ${secs.toString().padStart(2, "0")}s`;
+    return ` ~ total video: ${mins}m ${secs.toString().padStart(2, "0")}s`;
   };
 
   return (
@@ -186,7 +234,7 @@ const Gallery = () => {
           : ""}
       </h3>
 
-      {/* Full-screen modal — no duration overlay */}
+      {/* Full-screen modal ~ no duration overlay */}
       {fullscreenItem && (
         <div
           style={{
@@ -304,7 +352,7 @@ const Gallery = () => {
                 </div>
               ) : (
                 <>
-                  {caption && `${caption} — `}
+                  {caption && `${caption}`}
                   {!!isAdmin && (
                     <span
                       style={{ cursor: "pointer", fontSize: "0.8em" }}
@@ -322,7 +370,7 @@ const Gallery = () => {
 
             <h4 style={{ textAlign: "center" }}>
               {date}
-              {videoCount > 0 && ` — v${videoCount}`}
+              {videoCount > 0 && ` ~ v${videoCount}`}
               {photoCount > 0 && ` p${photoCount}`}
               {totalVideoSeconds > 0 && formatDuration(totalVideoSeconds)}
               {!!isAdmin && (
@@ -433,7 +481,9 @@ const Gallery = () => {
                               pointerEvents: "none",
                             }}
                           >
-                            <span style={{ color: "#fff", fontSize: "32px" }}>▶</span>
+                            <span style={{ color: "#fff", fontSize: "32px" }}>
+                              ▶
+                            </span>
                           </div>
                         </>
                       ) : (
