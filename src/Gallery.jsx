@@ -434,7 +434,13 @@ const Gallery = () => {
               )}
             </h2>
 
-            <h4 style={{ textAlign: "center" }}>
+            <h4
+              style={{
+                textAlign: "center",
+                fontSize: ".8em",
+                verticalAlign: "middle",
+              }}
+            >
               {date}
               {videoCount > 0 && ` — v${videoCount}`}
               {photoCount > 0 && ` p${photoCount}`}
@@ -443,8 +449,9 @@ const Gallery = () => {
                 <span
                   style={{
                     cursor: "pointer",
-                    marginLeft: "10px",
-                    fontSize: "0.8em",
+                    fontSize: "0.9em",
+                    verticalAlign: "middle",
+                    marginLeft: "2px",
                   }}
                   onClick={() => {
                     setEditingGroupTags(date);
@@ -452,7 +459,7 @@ const Gallery = () => {
                     setOriginalTags([...commonTags]);
                   }}
                 >
-                  ✏️ Group Tags
+                  {commonTags.length > 0 ? commonTags.join(", ") : "none"}✏️
                 </span>
               )}
             </h4>
@@ -494,7 +501,7 @@ const Gallery = () => {
                   >
                     <div
                       style={{
-                        height: "clamp(100px, 40vh, 500px)",
+                        height: "clamp(50px, 30vh, 500px)",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -538,8 +545,9 @@ const Gallery = () => {
                               transform: "translate(-50%, -50%)",
                               background: "rgba(0,0,0,0.5)",
                               borderRadius: "50%",
-                              width: "60px",
-                              height: "60px",
+                              width: "30%",
+                              height: "auto",
+                              aspectRatio: "1/1",
                               display: "flex",
                               alignItems: "center",
                               justifyContent: "center",
@@ -592,7 +600,7 @@ const Gallery = () => {
                       ) : (
                         <p
                           style={{
-                            fontSize: "0.9em",
+                            fontSize: "0.8em",
                             color: "#ccc",
                           }}
                         >
@@ -600,7 +608,7 @@ const Gallery = () => {
                           {itemTags.length > 0 ? itemTags.join(", ") : "none"}
                           {!!isAdmin && (
                             <span
-                              style={{ cursor: "pointer", marginLeft: "5px" }}
+                              style={{ cursor: "pointer" }}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setEditingItem(item.key);
