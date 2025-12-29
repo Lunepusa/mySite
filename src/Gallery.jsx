@@ -438,7 +438,7 @@ const Gallery = () => {
               style={{
                 textAlign: "center",
                 fontSize: ".8em",
-                verticalAlign: "middle",
+                verticalAlign: "baseline",
               }}
             >
               {date}
@@ -450,7 +450,7 @@ const Gallery = () => {
                   style={{
                     cursor: "pointer",
                     fontSize: "0.9em",
-                    verticalAlign: "middle",
+                    verticalAlign: "baseline",
                     marginLeft: "2px",
                   }}
                   onClick={() => {
@@ -459,7 +459,7 @@ const Gallery = () => {
                     setOriginalTags([...commonTags]);
                   }}
                 >
-                  {commonTags.length > 0 ? commonTags.join(", ") : "none"}✏️
+                  ~ {commonTags.length > 0 ? commonTags.join(", ") : "none"}✏️
                 </span>
               )}
             </h4>
