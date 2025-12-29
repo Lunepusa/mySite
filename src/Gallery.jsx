@@ -21,7 +21,7 @@ const Gallery = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const R2_PUBLIC_URL = "https://pub-737d16f465e74a25bb9b4613475ea7ef.r2.dev";
-  const LIMIT = 20;
+  const LIMIT = 40;
 
   useEffect(() => {
     loadMedia();
@@ -489,10 +489,12 @@ const Gallery = () => {
                     key={item.key}
                     style={{
                       display: "inline-block",
+                      height: "auto",
                       verticalAlign: "top",
-                      width: "auto",
-                      maxWidth: "100%",
-                      margin: "0 5px 10px 5px",
+                      minWidth: "50px",
+                      width: "100px",
+                      maxWidth: "23vw",
+                      margin: "0 3px 5px 3px",
                       cursor: "pointer",
                       position: "relative",
                     }}
@@ -501,14 +503,16 @@ const Gallery = () => {
                   >
                     <div
                       style={{
-                        height: "clamp(50px, 30vh, 500px)",
-                        display: "flex",
+                        width: "95%",
+                        height: "auto",
+                        display: "inline-block",
                         alignItems: "center",
                         justifyContent: "center",
                         background: "#000",
                         borderRadius: "12px",
                         overflow: "hidden",
                         position: "relative",
+                        border: "1px white solid",
                       }}
                     >
                       {item.isVideo ? (
@@ -525,8 +529,8 @@ const Gallery = () => {
                               }
                             }}
                             style={{
-                              maxHeight: "100%",
-                              width: "auto",
+                              maxHeight: "auto",
+                              width: "100%",
                               objectFit: "contain",
                               filter: !isLoggedIn
                                 ? "blur(10px)"
@@ -564,8 +568,8 @@ const Gallery = () => {
                           src={`${R2_PUBLIC_URL}/${item.key}`}
                           alt={caption}
                           style={{
-                            maxHeight: "100%",
-                            width: "auto",
+                            maxHeight: "auto",
+                            width: "100%",
                             objectFit: "contain",
                             filter: !isLoggedIn
                               ? "blur(10px)"
@@ -600,7 +604,7 @@ const Gallery = () => {
                       ) : (
                         <p
                           style={{
-                            fontSize: "0.8em",
+                            fontSize: "0.5em",
                             color: "#ccc",
                           }}
                         >
