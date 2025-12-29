@@ -58,12 +58,12 @@ const Gallery = () => {
     return [];
   };
 
-  // Group by date and compute common tags
+  // Group by date and compute common tags + total video duration
   const groups = {};
   media.forEach((item) => {
     const date = item.date || "Unknown";
     if (!groups[date]) {
-      groups[date] = { items: [], commonTags: [] };
+      groups[date] = { items: [], commonTags: [], totalVideoSeconds: 0 };
     }
     groups[date].items.push(item);
   });
@@ -150,7 +150,6 @@ const Gallery = () => {
 
       if (!res.ok) throw new Error("Save failed");
 
-      // Full reload for fresh data
       setMedia([]);
       setOffset(0);
       setHasMore(true);
@@ -168,6 +167,14 @@ const Gallery = () => {
     }
   };
 
+  // Format seconds to "3m 45s"
+  const formatDuration = (seconds) => {
+    if (!seconds || seconds === 0) return "";
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return ` — total video: ${mins}m ${secs.toString().padStart(2, "0")}s`;
+  };
+
   return (
     <div style={{ padding: "20px", maxWidth: "1400px", margin: "0 auto" }}>
       <h1 style={{ textAlign: "center", marginBottom: "5px" }}>Gallery</h1>
@@ -179,7 +186,7 @@ const Gallery = () => {
           : ""}
       </h3>
 
-      {/* Full-screen modal */}
+      {/* Full-screen modal — no duration overlay */}
       {fullscreenItem && (
         <div
           style={{
@@ -224,6 +231,8 @@ const Gallery = () => {
                 controls
                 autoPlay
                 loop
+                controlsList="nodownload"
+                onContextMenu={(e) => e.preventDefault()}
                 style={{
                   maxWidth: "100%",
                   maxHeight: "100vh",
@@ -266,7 +275,7 @@ const Gallery = () => {
       )}
 
       {sortedDates.map((date) => {
-        const { items, commonTags } = groups[date];
+        const { items, commonTags, totalVideoSeconds = 0 } = groups[date];
         const videoCount = items.filter((i) => i.isVideo).length;
         const photoCount = items.length - videoCount;
         const caption = items[0]?.caption || "";
@@ -315,6 +324,7 @@ const Gallery = () => {
               {date}
               {videoCount > 0 && ` — v${videoCount}`}
               {photoCount > 0 && ` p${photoCount}`}
+              {totalVideoSeconds > 0 && formatDuration(totalVideoSeconds)}
               {!!isAdmin && (
                 <span
                   style={{
@@ -363,6 +373,7 @@ const Gallery = () => {
                       maxWidth: "100%",
                       margin: "0 5px 10px 5px",
                       cursor: "pointer",
+                      position: "relative",
                     }}
                     onClick={() => openFullscreen(item)}
                     onContextMenu={(e) => e.preventDefault()}
@@ -376,27 +387,55 @@ const Gallery = () => {
                         background: "#000",
                         borderRadius: "12px",
                         overflow: "hidden",
+                        position: "relative",
                       }}
                     >
                       {item.isVideo ? (
-                        <video
-                          src={`${R2_PUBLIC_URL}/${item.key}`}
-                          controls={!isAdmin || !isSubscriber}
-                          muted={!isAdmin || !isSubscriber}
-                          loop
-                          style={{
-                            maxHeight: "100%",
-                            width: "auto",
-                            objectFit: "contain",
-                            filter: !isLoggedIn
-                              ? "blur(10px)"
-                              : isAdmin || isSubscriber
-                              ? "none"
-                              : !isFirstGroup && isLoggedIn
-                              ? "blur(7px)"
-                              : "blur(3px)",
-                          }}
-                        />
+                        <>
+                          <video
+                            src={`${R2_PUBLIC_URL}/${item.key}`}
+                            muted
+                            loop
+                            onLoadedMetadata={(e) => {
+                              const dur = Math.round(e.target.duration);
+                              if (!isNaN(dur)) {
+                                groups[date].totalVideoSeconds += dur;
+                                setMedia([...media]); // Re-render to update header
+                              }
+                            }}
+                            style={{
+                              maxHeight: "100%",
+                              width: "auto",
+                              objectFit: "contain",
+                              filter: !isLoggedIn
+                                ? "blur(10px)"
+                                : isAdmin || isSubscriber
+                                ? "none"
+                                : !isFirstGroup && isLoggedIn
+                                ? "blur(7px)"
+                                : "blur(3px)",
+                            }}
+                          />
+                          {/* Subtle play icon overlay */}
+                          <div
+                            style={{
+                              position: "absolute",
+                              top: "50%",
+                              left: "50%",
+                              transform: "translate(-50%, -50%)",
+                              background: "rgba(0,0,0,0.5)",
+                              borderRadius: "50%",
+                              width: "60px",
+                              height: "60px",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              pointerEvents: "none",
+                            }}
+                          >
+                            <span style={{ color: "#fff", fontSize: "32px" }}>▶</span>
+                          </div>
+                        </>
                       ) : (
                         <img
                           src={`${R2_PUBLIC_URL}/${item.key}`}
