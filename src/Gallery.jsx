@@ -347,8 +347,8 @@ const Gallery = () => {
                 controlsList="nodownload"
                 onContextMenu={(e) => e.preventDefault()}
                 style={{
-                  maxWidth: "100%",
-                  maxHeight: "100vh",
+                  maxWidth: "auto",
+                  maxHeight: "90vh",
                   filter: !isSubscriber || !isAdmin ? "blur(10px)" : "none",
                 }}
               />
@@ -357,8 +357,8 @@ const Gallery = () => {
                 src={`${R2_PUBLIC_URL}/${fullscreenItem.key}`}
                 alt=""
                 style={{
-                  maxWidth: "100%",
-                  maxHeight: "100vh",
+                  maxWidth: "auto",
+                  maxHeight: "90vh",
                   objectFit: "contain",
                   filter: !isSubscriber || !isAdmin ? "blur(10px)" : "none",
                 }}
