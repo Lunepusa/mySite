@@ -438,7 +438,7 @@ const triggerSearch = () => {
     return ` — total video: ${mins}m ${secs.toString().padStart(2, "0")}s`;
   };
 
-  return (
+return (
     <>
       {/* Sticky search header */}
       <div
@@ -495,7 +495,7 @@ const triggerSearch = () => {
                 setMedia([]);
                 setOffset(0);
                 setHasMore(true);
-                loadMoreGroups(0,"",true);
+                loadMoreGroups(0, "", true);
               }}
               style={{ marginLeft: "2px", padding: "1px 3px" }}
             >
@@ -511,28 +511,78 @@ const triggerSearch = () => {
         )}
       </div>
 
-           
-      )}
-
-      {/* Gallery content */}
-      <div style={{ padding: "20px", maxWidth: "1400px", margin: "0 auto" }}>
-        {/* Full-screen modal */}
-        {fullscreenItem && (
+      {/* Main gallery wrapper — wraps multi-select and content */}
+      <div>
+        {/* Admin Multi-Select Toggle */}
+        {!!isAdmin && (
           <div
             style={{
               position: "fixed",
-              top: 0,
-              left: 0,
-              width: "100vw",
-              height: "100vh",
-              background: "rgba(0,0,0,0.95)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              zIndex: 1000,
+              bottom: "20px",
+              right: "20px",
+              background: "#333",
+              padding: "10px",
+              borderRadius: "8px",
+              zIndex: 100,
+              boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
+              color: "#fff",
             }}
-            onClick={closeFullscreen}
           >
+            <label>
+              <input
+                type="checkbox"
+                checked={multiSelectMode}
+                onChange={(e) => {
+                  setMultiSelectMode(e.target.checked);
+                  if (!e.target.checked) setSelectedItems(new Set());
+                }}
+              />
+              Multi-select ({selectedItems.size} selected)
+            </label>
+
+            {multiSelectMode && selectedItems.size > 0 && (
+              <div style={{ marginTop: "10px" }}>
+                <TagSelect selected={multiEditTags} onChange={setMultiEditTags} />
+                <div style={{ marginTop: "5px" }}>
+                  <input
+                    type="date"
+                    value={multiEditDate}
+                    onChange={(e) => setMultiEditDate(e.target.value)}
+                  />
+                  <input
+                    type="time"
+                    value={multiEditTime}
+                    onChange={(e) => setMultiEditTime(e.target.value)}
+                    style={{ marginLeft: "5px" }}
+                  />
+                </div>
+                <button onClick={saveMultiEdit} style={{ marginTop: "5px", display: "block" }}>
+                  Apply to Selected
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Gallery content */}
+        <div style={{ padding: "20px", maxWidth: "1400px", margin: "0 auto" }}>
+          {/* Full-screen modal */}
+          {fullscreenItem && (
+            <div
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100vw",
+                height: "100vh",
+                background: "rgba(0,0,0,0.95)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                zIndex: 1000,
+              }}
+              onClick={closeFullscreen}
+            >
             {media.findIndex((m) => m.key === fullscreenItem.key) > 0 && (
               <div
                 style={{
@@ -603,55 +653,7 @@ const triggerSearch = () => {
             )}
           </div>
         )}
- {/* Admin Multi-Select Toggle */}
-      {!!isAdmin && (
-        <div
-          style={{
-            position: "fixed",
-            bottom: "20px",
-            right: "20px",
-            background: "#333",
-            padding: "10px",
-            borderRadius: "8px",
-            zIndex: 100,
-            boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
-            color: "#fff",
-          }}
-        >
-          <label>
-            <input
-              type="checkbox"
-              checked={multiSelectMode}
-              onChange={(e) => {
-                setMultiSelectMode(e.target.checked);
-                if (!e.target.checked) setSelectedItems(new Set());
-              }}
-            />
-            Multi-select ({selectedItems.size} selected)
-          </label>
 
-          {multiSelectMode && selectedItems.size > 0 && (
-            <div style={{ marginTop: "10px" }}>
-              <TagSelect selected={multiEditTags} onChange={setMultiEditTags} />
-              <div style={{ marginTop: "5px" }}>
-                <input
-                  type="date"
-                  value={multiEditDate}
-                  onChange={(e) => setMultiEditDate(e.target.value)}
-                />
-                <input
-                  type="time"
-                  value={multiEditTime}
-                  onChange={(e) => setMultiEditTime(e.target.value)}
-                  style={{ marginLeft: "5px" }}
-                />
-              </div>
-              <button onClick={saveMultiEdit} style={{ marginTop: "5px", display: "block" }}>
-                Apply to Selected
-              </button>
-            </div>
-          )}
-        </div>
         {/* Groups */}
         {sortedDates.map((date) => {
           const { items, commonTags, totalVideoSeconds = 0 } = groups[date];
