@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth, apiFetch } from "./Auth";
 import { TagSelect, searchTags } from "./Tags";
 
-const Gallery = () => {
+export default const Gallery = () => {
   const { user } = useAuth();
   const [media, setMedia] = useState([]);
   const [offset, setOffset] = useState(0);
@@ -42,8 +42,7 @@ const Gallery = () => {
   };
 
   // Normalize search using searchTags — top result per term
-  // User types: space = OR, + = AND, - = exclude
-  // Updated normalizeSearchInput — + for AND, ~ for OR in URL
+
 
 
 const normalizeSearchInput = (input) => {
@@ -51,9 +50,6 @@ const normalizeSearchInput = (input) => {
 
   // Allow user to type & or + for AND — convert & to +
   input = input.replace(/&/g, '+');
-
-
-
 
 
   // Split on spaces for OR groups
