@@ -26,7 +26,7 @@ const Gallery = () => {
   const ITEMS_PER_BATCH = 100;
 
   useEffect(() => {
-    loadMoreGroups(0, "");
+    loadMoreGroups();
   }, []);
 
   const getTagsArray = (tagInput) => {
@@ -42,29 +42,44 @@ const Gallery = () => {
   };
 
   // Normalize search using searchTags — top result per term
+  // User types: space = OR, + = AND, - = exclude
   const normalizeSearchInput = (input) => {
     if (!input.trim()) return "";
-    const terms = input.trim().split(/\s+/);
-    console.log(terms);
-    const normalizedTerms = terms.map((term) => {
-      let clean = term;
+
+    const rawTerms = input.trim().split(/\s+/);
+    console.log('Raw terms (space split):', rawTerms);
+
+    const normalizedTerms = rawTerms.map((term) => {
       let isExclude = false;
-      if (term.startsWith("-")) {
+      if (term.startsWith('-')) {
         isExclude = true;
-        clean = term.slice(1);
+        term = term.slice(1);
       }
 
-      const matches = searchTags(clean);
-      const topMatch = matches[0] || clean;
-      console.log(topMatch);
-
-      return isExclude ? `-${topMatch}` : topMatch;
+      // Handle AND with +
+      if (term.includes('+')) {
+        const subTerms = term.split('+');
+        const normalizedSub = subTerms.map(sub => {
+          const cleanSub = sub.trim();
+          const matches = searchTags(cleanSub);
+          return matches[0] || cleanSub;
+        });
+        const normalized = normalizedSub.join('+');
+        return isExclude ? `-${normalized}` : normalized;
+      } else {
+        const matches = searchTags(term);
+        const topMatch = matches[0] || term;
+        return isExclude ? `-${topMatch}` : topMatch;
+      }
     });
-    return normalizedTerms.join(" ");
+
+    const finalQuery = normalizedTerms.join(" ");
+    console.log('Final query sent:', finalQuery);
+    return finalQuery;
   };
 
-  // Load more media
-  const loadMoreGroups = async (currentOffset = offset, queryToUse = activeSearchQuery) => {
+  // Load more media — accept currentOffset and queryToUse
+ const loadMoreGroups = async (currentOffset = offset, queryToUse = activeSearchQuery) => {
     if (loading || !hasMore) return;
     setLoading(true);
 
@@ -78,6 +93,7 @@ const Gallery = () => {
         params.append("q", queryToUse);
       }
       console.log(`/media?${params.toString()}`);
+
       const res = await apiFetch(`/media?${params.toString()}`);
       const data = await res.json();
 
@@ -89,7 +105,7 @@ const Gallery = () => {
 
       const newMedia = data.media;
       setMedia((prev) => [...prev, ...newMedia]);
-      setOffset((prev) => prev + newMedia.length);
+      setOffset(currentOffset + newMedia.length);
 
       if (data.media.length < ITEMS_PER_BATCH) {
         setHasMore(false);
@@ -106,10 +122,10 @@ const Gallery = () => {
     const normalized = normalizeSearchInput(searchInput);
     setActiveSearchQuery(normalized);
     setDisplayedQuery(normalized || "(no terms)");
-    setMedia([]); // Clear all loaded media
-    setOffset(0); // Critical: reset offset
+    setMedia([]);
+    setOffset(0);
     setHasMore(true);
-    loadMoreGroups(0, normalized); // Load from beginning
+    loadMoreGroups(0, normalized);
   };
 
   // Group by date
@@ -147,13 +163,31 @@ const Gallery = () => {
       <p style={{ textAlign: "center", padding: "60px" }}>Loading gallery...</p>
     );
 
-  if (media.length === 0) {
+  if (media.length === 0)
     return (
-      <p style={{ textAlign: "center" }}>
-        {activeSearchQuery ? `No results for: "${displayedQuery}"` : "No media yet."}
-      </p>
+      <div style={{ textAlign: "center", padding: "60px" }}>
+        {activeSearchQuery ? (
+          <>
+            <p>No results for: "{displayedQuery}"</p>
+            <button
+              onClick={() => {
+                setSearchInput("");
+                setActiveSearchQuery("");
+                setDisplayedQuery("");
+                setMedia([]);
+                setOffset(0);
+                setHasMore(true);
+                loadMoreGroups(0);
+              }}
+            >
+              Clear search
+            </button>
+          </>
+        ) : (
+          "No media yet."
+        )}
+      </div>
     );
-  }
 
   const openFullscreen = (item) => setFullscreenItem(item);
   const closeFullscreen = () => setFullscreenItem(null);
@@ -333,7 +367,7 @@ const Gallery = () => {
                 setMedia([]);
                 setOffset(0);
                 setHasMore(true);
-                loadMoreGroups(0, ""); // Force reload with no query
+                loadMoreGroups(0);
               }}
               style={{ marginLeft: "10px", padding: "8px 16px" }}
             >
@@ -447,7 +481,6 @@ const Gallery = () => {
           const caption = items[0]?.caption || "";
 
           const isFirstGroup = date === firstDate;
-          const blurred = !isSubscriber && !isFirstGroup;
 
           return (
             <div
