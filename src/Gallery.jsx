@@ -22,6 +22,10 @@ import { TagSelect, searchTags } from "./Tags";
   const [activeSearchQuery, setActiveSearchQuery] = useState("");
   const [displayedQuery, setDisplayedQuery] = useState("");
 
+  const [editingDateItem, setEditingDateItem] = useState(null);
+  const [tempNewDate, setTempNewDate] = useState("");
+  const [tempNewTime, setTempNewTime] = useState("");
+
   const R2_PUBLIC_URL = "https://pub-737d16f465e74a25bb9b4613475ea7ef.r2.dev";
   const ITEMS_PER_BATCH = 100;
 
@@ -314,6 +318,41 @@ const triggerSearch = () => {
     }
   };
 
+  const saveDateEdit = async () => {
+  if (!editingDateItem || !tempNewDate || !tempNewTime) return;
+
+  const body = {
+    key: editingDateItem,
+    newDate: tempNewDate.replace(/-/g, ""), // YYYY-MM-DD → YYYYMMDD
+    newTime: tempNewTime.replace(/:/g, ""), // HH:MM:SS → HHMMSS
+  };
+
+  try {
+    const res = await apiFetch("/update-date", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(`Date update failed: ${res.status} ${errText}`);
+    }
+
+    // Reload gallery to reflect new path and sorting
+    setMedia([]);
+    setOffset(0);
+    setHasMore(true);
+    loadMoreGroups(0, activeSearchQuery);
+
+    setEditingDateItem(null);
+    setTempNewDate("");
+    setTempNewTime("");
+  } catch (err) {
+    console.error("Date edit error:", err);
+    alert("Failed to update date/time: " + err.message);
+  }
+};
   const formatDuration = (seconds) => {
     if (!seconds || seconds === 0) return "";
     const mins = Math.floor(seconds / 60);
@@ -720,6 +759,56 @@ const triggerSearch = () => {
                               </span>
                             )}
                           </p>
+                          {!!isAdmin && (
+  <p style={{ fontSize: "0.5em", color: "#ccc" }}>
+    Date: {item.key.split("/")[2].split("_")[0]} Time: {item.key.split("_")[1]}
+    {editingDateItem === item.key ? (
+      <>
+        <br />
+        <input
+          type="date"
+          value={tempNewDate}
+          onChange={(e) => setTempNewDate(e.target.value)}
+          style={{ fontSize: "0.8em" }}
+        />
+        <input
+          type="time"
+          value={tempNewTime}
+          onChange={(e) => setTempNewTime(e.target.value)}
+          style={{ fontSize: "0.8em", marginLeft: "5px" }}
+        />
+        <button onClick={saveDateEdit} style={{ fontSize: "0.7em" }}>
+          Save
+        </button>
+        <button
+          onClick={() => {
+            setEditingDateItem(null);
+            setTempNewDate("");
+            setTempNewTime("");
+          }}
+          style={{ fontSize: "0.7em" }}
+        >
+          Cancel
+        </button>
+      </>
+    ) : (
+      <span
+        style={{ cursor: "pointer", marginLeft: "10px" }}
+        onClick={(e) => {
+          e.stopPropagation();
+          const filename = item.key.split("/").pop();
+          const datePart = filename.split("_")[0];
+          const timePart = filename.split("_")[1];
+          setEditingDateItem(item.key);
+          setTempNewDate(`${datePart.slice(0,4)}-${datePart.slice(4,6)}-${datePart.slice(6)}`);
+          setTempNewTime(`${timePart.slice(0,2)}:${timePart.slice(2,4)}:${timePart.slice(4,6)}`);
+        }}
+      >
+        📅
+      </span>
+    )}
+  </p>
+)}
                         )}
                       </div>
                     </div>
