@@ -440,18 +440,7 @@ const triggerSearch = () => {
 
 return (
   <>
-    {/* Sticky search header */}
-    <div
-      style={{
-        padding: "10px",
-        textAlign: "center",
-        background: "#111",
-        position: "sticky",
-        top: 0,
-        zIndex: 10,
-      }}
-    >
-      <h1 style={{ marginBottom: "5px" }}>Gallery</h1>
+  <h1 style={{ marginBottom: "5px" }}>Gallery</h1>
       <h3 style={{ margin: "5px 0" }}>
         {!isLoggedIn
           ? "Log in to see more previews, Subscribe to see all media"
@@ -459,8 +448,65 @@ return (
           ? "Subscribe to see all media"
           : ""}
       </h3>
+    {/* Sticky search header */}
+    <div
+      style={{
+        padding: "2px",
+        textAlign: "center",
+        background: "#111",
+        position: "sticky",
+        top: 0,
+        zIndex: 10,
+      }}
+    >
+      {/* Admin Multi-Select Toggle */}
+      {!!isAdmin && (
+        <div
+          style={{
+            position: "inline-block",
+            background: "#333",
+            padding: "10px",
+            borderRadius: "2px",
+            boxShadow: "0 2px 5px rgba(0,0,0,0.5)",
+            color: "#fff",
+          }}
+        >
+          <label>
+            <input
+              type="checkbox"
+              checked={multiSelectMode}
+              onChange={(e) => {
+                setMultiSelectMode(e.target.checked);
+                if (!e.target.checked) setSelectedItems(new Set());
+              }}
+            />
+            Multi-select ({selectedItems.size} selected)
+          </label>
 
-      <div style={{ margin: "10px 0" }}>
+          {multiSelectMode && selectedItems.size > 0 && (
+            <div style={{ marginTop: "2px" }}>
+              <TagSelect selected={multiEditTags} onChange={setMultiEditTags} />
+              <div style={{ marginTop: "1px" }}>
+                <input
+                  type="date"
+                  value={multiEditDate}
+                  onChange={(e) => setMultiEditDate(e.target.value)}
+                />
+                <input
+                  type="time"
+                  value={multiEditTime}
+                  onChange={(e) => setMultiEditTime(e.target.value)}
+                  style={{ marginLeft: "1px" }}
+                />
+              </div>
+              <button onClick={saveMultiEdit} style={{ marginTop: "1px", display: "block" }}>
+                Apply to Selected
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+      <div style={{ margin: "2px 0" }}>
         <input
           type="text"
           placeholder="Search tags, caption, date, video/photo (space=OR, +=AND, -exclude)"
@@ -473,16 +519,17 @@ return (
           }}
           style={{
             padding: "8px",
-            width: "15%",
+            width: "60%",
             maxWidth: "100%",
             fontSize: "1em",
             borderRadius: "8px",
             border: "1px solid #ccc",
+            display: "inline-block",
           }}
         />
         <button
           onClick={triggerSearch}
-          style={{ marginLeft: "2px", padding: "1px 3px" }}
+          style={{ marginLeft: "2px", padding: "1px 3px", display:"inline-block",}}
         >
           Search
         </button>
@@ -505,7 +552,7 @@ return (
       </div>
 
       {activeSearchQuery && (
-        <p style={{ margin: "10px 0", color: "#aaa", fontStyle: "italic" }}>
+        <p style={{ margin: "2px 0", color: "#aaa", fontStyle: "italic" }}>
           Searching for: <strong>"{displayedQuery}"</strong>
         </p>
       )}
@@ -513,56 +560,7 @@ return (
 
     {/* Main wrapper for multi-select panel and gallery content */}
     <div>
-      {/* Admin Multi-Select Toggle */}
-      {!!isAdmin && (
-        <div
-          style={{
-            position: "fixed",
-            bottom: "20px",
-            right: "20px",
-            background: "#333",
-            padding: "10px",
-            borderRadius: "8px",
-            zIndex: 100,
-            boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
-            color: "#fff",
-          }}
-        >
-          <label>
-            <input
-              type="checkbox"
-              checked={multiSelectMode}
-              onChange={(e) => {
-                setMultiSelectMode(e.target.checked);
-                if (!e.target.checked) setSelectedItems(new Set());
-              }}
-            />
-            Multi-select ({selectedItems.size} selected)
-          </label>
-
-          {multiSelectMode && selectedItems.size > 0 && (
-            <div style={{ marginTop: "10px" }}>
-              <TagSelect selected={multiEditTags} onChange={setMultiEditTags} />
-              <div style={{ marginTop: "5px" }}>
-                <input
-                  type="date"
-                  value={multiEditDate}
-                  onChange={(e) => setMultiEditDate(e.target.value)}
-                />
-                <input
-                  type="time"
-                  value={multiEditTime}
-                  onChange={(e) => setMultiEditTime(e.target.value)}
-                  style={{ marginLeft: "5px" }}
-                />
-              </div>
-              <button onClick={saveMultiEdit} style={{ marginTop: "5px", display: "block" }}>
-                Apply to Selected
-              </button>
-            </div>
-          )}
-        </div>
-      )}
+      
 
       {/* Gallery content */}
       <div style={{ padding: "20px", maxWidth: "1400px", margin: "0 auto" }}>
@@ -731,7 +729,7 @@ return (
               </h4>
 
               {editingGroupTags === date && (
-                <div style={{ textAlign: "center", marginBottom: "10px" }}>
+                <div style={{ textAlign: "center", marginBottom: "2px" }}>
                   <TagSelect selected={tempTags} onChange={setTempTags} />
                   <button onClick={saveEdit}>Save Group Tags</button>
                   <button
@@ -957,7 +955,7 @@ return (
                                     </>
                                   ) : (
                                     <span
-                                      style={{ cursor: "pointer", marginLeft: "10px" }}
+                                      style={{ cursor: "pointer", marginLeft: "2px" }}
                                       onClick={(e) => {
                                         e.stopPropagation();
                                         const filename = item.key.split("/").pop();
@@ -994,8 +992,8 @@ return (
             disabled={loading}
             style={{
               display: "block",
-              margin: "40px auto",
-              padding: "12px 24px",
+              margin: "5px auto",
+              padding: "2px 4px",
               fontSize: "1.1em",
             }}
           >
