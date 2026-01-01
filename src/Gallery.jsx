@@ -537,6 +537,7 @@ const triggerSearch = () => {
               key={date}
               style={{ marginBottom: "5px", border: "2px dashed white" }}
             >
+              
               <h2 style={{ textAlign: "center" }}>
                 {editingGroupCaption === date ? (
                   <div>
@@ -615,7 +616,110 @@ const triggerSearch = () => {
                 </div>
               )}
 
-                                    <div style={{ textAlign: "center" }}>
+              <div style={{ textAlign: "center" }}>
+                {items.map((item) => {
+                  const itemTags = getTagsArray(item.tags);
+
+                  return (
+                    <div
+                      key={item.key}
+                      style={{
+                        display: "inline-block",
+                        height: "auto",
+                        verticalAlign: "top",
+                        minWidth: "50px",
+                        width: "100px",
+                        maxWidth: "23vw",
+                        margin: "0 3px 5px 3px",
+                        cursor: "pointer",
+                        position: "relative",
+                      }}
+                      onClick={() => openFullscreen(item)}
+                      onContextMenu={(e) => e.preventDefault()}
+                    >
+                      <div
+                        style={{
+                          width: "95%",
+                          height: "auto",
+                          display: "inline-block",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          background: "#000",
+                          borderRadius: "12px",
+                          overflow: "hidden",
+                          position: "relative",
+                          border: "1px white solid",
+                        }}
+                      >
+                        {item.isVideo ? (
+                          <>
+                            <video
+                              src={`${R2_PUBLIC_URL}/${item.key}`}
+                              muted
+                              loop
+                              onLoadedMetadata={(e) => {
+                                const dur = Math.round(e.target.duration);
+                                if (!isNaN(dur)) {
+                                  groups[date].totalVideoSeconds += dur;
+                                  setMedia([...media]);
+                                }
+                              }}
+                              style={{
+                                maxHeight: "auto",
+                                width: "100%",
+                                objectFit: "contain",
+                                filter: !isLoggedIn
+                                  ? "blur(10px)"
+                                  : isAdmin || isSubscriber
+                                  ? "none"
+                                  : !isFirstGroup && isLoggedIn
+                                  ? "blur(7px)"
+                                  : "blur(3px)",
+                              }}
+                            />
+                            <div
+                              style={{
+                                position: "absolute",
+                                top: "50%",
+                                left: "50%",
+                                transform: "translate(-50%, -50%)",
+                                background: "rgba(0,0,0,0.5)",
+                                borderRadius: "50%",
+                                width: "30%",
+                                height: "auto",
+                                aspectRatio: "1/1",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                pointerEvents: "none",
+                              }}
+                            >
+                              <span style={{ color: "#fff", fontSize: "32px" }}>
+                                ▶
+                              </span>
+                            </div>
+                          </>
+                        ) : (
+                          <img
+                            src={`${R2_PUBLIC_URL}/${item.key}`}
+                            alt={caption}
+                            style={{
+                              maxHeight: "auto",
+                              width: "100%",
+                              objectFit: "contain",
+                              filter: !isLoggedIn
+                                ? "blur(10px)"
+                                : isAdmin || isSubscriber
+                                ? "none"
+                                : !isFirstGroup && isLoggedIn
+                                ? "blur(7px)"
+                                : "blur(3px)",
+                            }}
+                          />
+                        )}
+                      </div>
+
+                                                         <div style={{ textAlign: "center" }}>
                         {editingItem === item.key ? (
                           <div onClick={(e) => e.stopPropagation()}>
                             <TagSelect
@@ -749,4 +853,5 @@ const triggerSearch = () => {
     </>
   );
 };
+
 export default Gallery;
