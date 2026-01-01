@@ -43,40 +43,48 @@ const Gallery = () => {
 
   // Normalize search using searchTags — top result per term
   // User types: space = OR, + = AND, - = exclude
-  const normalizeSearchInput = (input) => {
-    if (!input.trim()) return "";
+  // Updated normalizeSearchInput — + for AND, ~ for OR in URL
 
-    const rawTerms = input.trim().split(/\s+/);
-    console.log('Raw terms (space split):', rawTerms);
 
-    const normalizedTerms = rawTerms.map((term) => {
-      let isExclude = false;
-      if (term.startsWith('-')) {
-        isExclude = true;
-        term = term.slice(1);
-      }
+const normalizeSearchInput = (input) => {
+  if (!input.trim()) return "";
 
-      // Handle AND with +
-      if (term.includes('+')) {
-        const subTerms = term.split('+');
-        const normalizedSub = subTerms.map(sub => {
-          const cleanSub = sub.trim();
-          const matches = searchTags(cleanSub);
-          return matches[0] || cleanSub;
-        });
-        const normalized = normalizedSub.join('+');
-        return isExclude ? `-${normalized}` : normalized;
-      } else {
-        const matches = searchTags(term);
-        const topMatch = matches[0] || term;
-        return isExclude ? `-${topMatch}` : topMatch;
-      }
+  // Allow user to type & or + for AND — convert & to +
+  input = input.replace(/&/g, '+');
+
+
+
+
+
+  // Split on spaces for OR groups
+  const orGroups = input.trim().split(/\s+/);
+  console.log('OR groups (space split):', orGroups);
+
+  const normalizedOrGroups = orGroups.map((group) => {
+    let isExclude = false;
+    if (group.startsWith('-')) {
+      isExclude = true;
+      group = group.slice(1);
+    }
+
+    // Split on + for AND within group
+    const andTerms = group.split('+');
+    const normalizedAnd = andTerms.map(term => {
+      const clean = term.trim();
+      const matches = searchTags(clean);
+      return matches[0] || clean;
     });
 
-    const finalQuery = normalizedTerms.join(" ");
-    console.log('Final query sent:', finalQuery);
-    return finalQuery;
-  };
+    const normalizedGroup = normalizedAnd.join('+');
+
+    return isExclude ? `-${normalizedGroup}` : normalizedGroup;
+  });
+
+  // Join OR groups with ~
+  const finalQuery = normalizedOrGroups.join('~');
+  console.log('Final query sent to backend:', finalQuery);
+  return finalQuery;
+};
 
   // Load more media — accept currentOffset and queryToUse
  const loadMoreGroups = async (currentOffset = offset, queryToUse = activeSearchQuery) => {
@@ -126,6 +134,7 @@ const Gallery = () => {
     setOffset(0);
     setHasMore(true);
     loadMoreGroups(0, normalized);
+    
   };
 
   // Group by date
@@ -737,5 +746,3 @@ const Gallery = () => {
     </>
   );
 };
-
-export default Gallery;
