@@ -615,110 +615,7 @@ const triggerSearch = () => {
                 </div>
               )}
 
-              <div style={{ textAlign: "center" }}>
-                {items.map((item) => {
-                  const itemTags = getTagsArray(item.tags);
-
-                  return (
-                    <div
-                      key={item.key}
-                      style={{
-                        display: "inline-block",
-                        height: "auto",
-                        verticalAlign: "top",
-                        minWidth: "50px",
-                        width: "100px",
-                        maxWidth: "23vw",
-                        margin: "0 3px 5px 3px",
-                        cursor: "pointer",
-                        position: "relative",
-                      }}
-                      onClick={() => openFullscreen(item)}
-                      onContextMenu={(e) => e.preventDefault()}
-                    >
-                      <div
-                        style={{
-                          width: "95%",
-                          height: "auto",
-                          display: "inline-block",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          background: "#000",
-                          borderRadius: "12px",
-                          overflow: "hidden",
-                          position: "relative",
-                          border: "1px white solid",
-                        }}
-                      >
-                        {item.isVideo ? (
-                          <>
-                            <video
-                              src={`${R2_PUBLIC_URL}/${item.key}`}
-                              muted
-                              loop
-                              onLoadedMetadata={(e) => {
-                                const dur = Math.round(e.target.duration);
-                                if (!isNaN(dur)) {
-                                  groups[date].totalVideoSeconds += dur;
-                                  setMedia([...media]);
-                                }
-                              }}
-                              style={{
-                                maxHeight: "auto",
-                                width: "100%",
-                                objectFit: "contain",
-                                filter: !isLoggedIn
-                                  ? "blur(10px)"
-                                  : isAdmin || isSubscriber
-                                  ? "none"
-                                  : !isFirstGroup && isLoggedIn
-                                  ? "blur(7px)"
-                                  : "blur(3px)",
-                              }}
-                            />
-                            <div
-                              style={{
-                                position: "absolute",
-                                top: "50%",
-                                left: "50%",
-                                transform: "translate(-50%, -50%)",
-                                background: "rgba(0,0,0,0.5)",
-                                borderRadius: "50%",
-                                width: "30%",
-                                height: "auto",
-                                aspectRatio: "1/1",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                pointerEvents: "none",
-                              }}
-                            >
-                              <span style={{ color: "#fff", fontSize: "32px" }}>
-                                ▶
-                              </span>
-                            </div>
-                          </>
-                        ) : (
-                          <img
-                            src={`${R2_PUBLIC_URL}/${item.key}`}
-                            alt={caption}
-                            style={{
-                              maxHeight: "auto",
-                              width: "100%",
-                              objectFit: "contain",
-                              filter: !isLoggedIn
-                                ? "blur(10px)"
-                                : isAdmin || isSubscriber
-                                ? "none"
-                                : !isFirstGroup && isLoggedIn
-                                ? "blur(7px)"
-                                : "blur(3px)",
-                            }}
-                          />
-                        )}
-                      </div>
-
-                      <div style={{ textAlign: "center" }}>
+                                    <div style={{ textAlign: "center" }}>
                         {editingItem === item.key ? (
                           <div onClick={(e) => e.stopPropagation()}>
                             <TagSelect
@@ -737,78 +634,93 @@ const triggerSearch = () => {
                             </button>
                           </div>
                         ) : (
-                          <p
-                            style={{
-                              fontSize: "0.5em",
-                              color: "#ccc",
-                            }}
-                          >
-                            Tags:{" "}
-                            {itemTags.length > 0 ? itemTags.join(", ") : "none"}
+                          <>
+                            <p
+                              style={{
+                                fontSize: "0.5em",
+                                color: "#ccc",
+                                margin: "2px 0",
+                              }}
+                            >
+                              Tags:{" "}
+                              {itemTags.length > 0 ? itemTags.join(", ") : "none"}
+                              {!!isAdmin && (
+                                <span
+                                  style={{ cursor: "pointer" }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setEditingItem(item.key);
+                                    setTempTags(itemTags);
+                                    setOriginalTags([...itemTags]);
+                                  }}
+                                >
+                                  ✏️
+                                </span>
+                              )}
+                            </p>
+
                             {!!isAdmin && (
-                              <span
-                                style={{ cursor: "pointer" }}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setEditingItem(item.key);
-                                  setTempTags(itemTags);
-                                  setOriginalTags([...itemTags]);
+                              <p
+                                style={{
+                                  fontSize: "0.5em",
+                                  color: "#ccc",
+                                  margin: "2px 0",
                                 }}
                               >
-                                ✏️
-                              </span>
+                                Date: {item.key.split("/")[2]?.split("_")[0] || "Unknown"}{" "}
+                                Time: {item.key.split("_")[1]?.split(".")[0] || "Unknown"}
+                                {editingDateItem === item.key ? (
+                                  <>
+                                    <br />
+                                    <input
+                                      type="date"
+                                      value={tempNewDate}
+                                      onChange={(e) => setTempNewDate(e.target.value)}
+                                      style={{ fontSize: "0.8em" }}
+                                    />
+                                    <input
+                                      type="time"
+                                      value={tempNewTime}
+                                      onChange={(e) => setTempNewTime(e.target.value)}
+                                      style={{ fontSize: "0.8em", marginLeft: "5px" }}
+                                    />
+                                    <button onClick={saveDateEdit} style={{ fontSize: "0.7em" }}>
+                                      Save
+                                    </button>
+                                    <button
+                                      onClick={() => {
+                                        setEditingDateItem(null);
+                                        setTempNewDate("");
+                                        setTempNewTime("");
+                                      }}
+                                      style={{ fontSize: "0.7em" }}
+                                    >
+                                      Cancel
+                                    </button>
+                                  </>
+                                ) : (
+                                  <span
+                                    style={{ cursor: "pointer", marginLeft: "10px" }}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      const filename = item.key.split("/").pop();
+                                      const datePart = filename.split("_")[0];
+                                      const timePart = filename.split("_")[1]?.split(".")[0];
+                                      setEditingDateItem(item.key);
+                                      setTempNewDate(
+                                        `${datePart.slice(0, 4)}-${datePart.slice(4, 6)}-${datePart.slice(6)}`
+                                      );
+                                      setTempNewTime(
+                                        `${timePart.slice(0, 2)}:${timePart.slice(2, 4)}:${timePart.slice(4)}`
+                                      );
+                                    }}
+                                  >
+                                    📅
+                                  </span>
+                                )}
+                              </p>
                             )}
-                          </p>
-                          {!!isAdmin && (
-  <p style={{ fontSize: "0.5em", color: "#ccc" }}>
-    Date: {item.key.split("/")[2].split("_")[0]} Time: {item.key.split("_")[1]}
-    {editingDateItem === item.key ? (
-      <>
-        <br />
-        <input
-          type="date"
-          value={tempNewDate}
-          onChange={(e) => setTempNewDate(e.target.value)}
-          style={{ fontSize: "0.8em" }}
-        />
-        <input
-          type="time"
-          value={tempNewTime}
-          onChange={(e) => setTempNewTime(e.target.value)}
-          style={{ fontSize: "0.8em", marginLeft: "5px" }}
-        />
-        <button onClick={saveDateEdit} style={{ fontSize: "0.7em" }}>
-          Save
-        </button>
-        <button
-          onClick={() => {
-            setEditingDateItem(null);
-            setTempNewDate("");
-            setTempNewTime("");
-          }}
-          style={{ fontSize: "0.7em" }}
-        >
-          Cancel
-        </button>
-      </>
-    ) : (
-      <span
-        style={{ cursor: "pointer", marginLeft: "10px" }}
-        onClick={(e) => {
-          e.stopPropagation();
-          const filename = item.key.split("/").pop();
-          const datePart = filename.split("_")[0];
-          const timePart = filename.split("_")[1];
-          setEditingDateItem(item.key);
-          setTempNewDate(`${datePart.slice(0,4)}-${datePart.slice(4,6)}-${datePart.slice(6)}`);
-          setTempNewTime(`${timePart.slice(0,2)}:${timePart.slice(2,4)}:${timePart.slice(4,6)}`);
-        }}
-      >
-        📅
-      </span>
-    )}
-  </p>
-)}
+                          </>
                         )}
                       </div>
                     </div>
