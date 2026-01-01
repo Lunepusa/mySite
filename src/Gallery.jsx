@@ -22,6 +22,13 @@ import { TagSelect, searchTags } from "./Tags";
   const [activeSearchQuery, setActiveSearchQuery] = useState("");
   const [displayedQuery, setDisplayedQuery] = useState("");
 
+    // Multi-select mode
+  const [multiSelectMode, setMultiSelectMode] = useState(false);
+  const [selectedItems, setSelectedItems] = useState(new Set());
+  const [multiEditTags, setMultiEditTags] = useState([]);
+  const [multiEditDate, setMultiEditDate] = useState("");
+  const [multiEditTime, setMultiEditTime] = useState("");
+
   const [editingDateItem, setEditingDateItem] = useState(null);
   const [tempNewDate, setTempNewDate] = useState("");
   const [tempNewTime, setTempNewTime] = useState("");
@@ -274,6 +281,7 @@ const triggerSearch = () => {
         throw new Error(`Save failed: ${res.status} ${errText}`);
       }
 
+      // Optimistic update — NO RELOAD
       setMedia((prev) => {
         return prev.map((item) => {
           let updated = { ...item };
@@ -318,41 +326,111 @@ const triggerSearch = () => {
     }
   };
 
-  const saveDateEdit = async () => {
-  if (!editingDateItem || !tempNewDate || !tempNewTime) return;
+    const saveDateEdit = async () => {
+    if (!editingDateItem || !tempNewDate || !tempNewTime) return;
 
-  const body = {
-    key: editingDateItem,
-    newDate: tempNewDate.replace(/-/g, ""), // YYYY-MM-DD → YYYYMMDD
-    newTime: tempNewTime.replace(/:/g, "") + "000" // pad to 9 digits if needed
+    const body = {
+      key: editingDateItem,
+      newDate: tempNewDate.replace(/-/g, ""),
+      newTime: tempNewTime.replace(/:/g, "") + "000",
+    };
+
+    try {
+      const res = await apiFetch("/update-date", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(`Date update failed: ${res.status} ${errText}`);
+      }
+
+      // Optimistic update — update key and date locally, NO RELOAD
+      setMedia((prev) =>
+        prev.map((item) => {
+          if (item.key === editingDateItem) {
+            const oldFilename = item.key.split("/").pop();
+            const suffix = oldFilename.split("_").slice(2).join("_");
+            const newFilename = `${body.newDate}_${body.newTime}_${suffix}`;
+            const newKey = `media/${body.newDate}/${newFilename}`;
+            return {
+              ...item,
+              key: newKey,
+              date: body.newDate,
+            };
+          }
+          return item;
+        })
+      );
+
+      setEditingDateItem(null);
+      setTempNewDate("");
+      setTempNewTime("");
+    } catch (err) {
+      console.error("Date edit error:", err);
+      alert("Failed to update date/time: " + err.message);
+    }
   };
+  // Multi-select save
+  const saveMultiEdit = async () => {
+    if (selectedItems.size === 0) return;
 
-  try {
-    const res = await apiFetch("/update-date", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
+    const keys = Array.from(selectedItems);
 
-    if (!res.ok) {
-      const errText = await res.text();
-      throw new Error(`Date update failed: ${res.status} ${errText}`);
+    const body = { keys };
+
+    if (multiEditTags.length > 0) {
+      body.addedTags = multiEditTags;
     }
 
-    // Reload gallery to reflect new path and sorting
-    setMedia([]);
-    setOffset(0);
-    setHasMore(true);
-    loadMoreGroups(0, activeSearchQuery);
+    if (multiEditDate && multiEditTime) {
+      body.newDate = multiEditDate.replace(/-/g, "");
+      body.newTime = multiEditTime.replace(/:/g, "") + "000";
+    }
 
-    setEditingDateItem(null);
-    setTempNewDate("");
-    setTempNewTime("");
-  } catch (err) {
-    console.error("Date edit error:", err);
-    alert("Failed to update date/time: " + err.message);
-  }
-};
+    try {
+      const res = await apiFetch("/bulk-update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) throw new Error("Bulk update failed");
+
+      // Optimistic update
+      setMedia((prev) =>
+        prev.map((item) => {
+          if (keys.includes(item.key)) {
+            let updated = { ...item };
+
+            if (body.addedTags) {
+              const current = getTagsArray(item.tags);
+              updated.tags = [...new Set([...current, ...body.addedTags])].join(", ");
+            }
+
+            if (body.newDate && body.newTime) {
+              const suffix = item.key.split("/").pop().split("_").slice(2).join("_");
+              updated.key = `media/${body.newDate}/${body.newDate}_${body.newTime}_${suffix}`;
+              updated.date = body.newDate;
+            }
+
+            return updated;
+          }
+          return item;
+        })
+      );
+
+      setSelectedItems(new Set());
+      setMultiEditTags([]);
+      setMultiEditDate("");
+      setMultiEditTime("");
+    } catch (err) {
+      alert("Bulk update failed: " + err.message);
+    }
+  };
+
   const formatDuration = (seconds) => {
     if (!seconds || seconds === 0) return "";
     const mins = Math.floor(seconds / 60);
@@ -365,7 +443,7 @@ const triggerSearch = () => {
       {/* Sticky search header */}
       <div
         style={{
-          padding: "20px",
+          padding: "10px",
           textAlign: "center",
           background: "#111",
           position: "sticky",
@@ -395,8 +473,8 @@ const triggerSearch = () => {
             }}
             style={{
               padding: "8px",
-              width: "60%",
-              maxWidth: "500px",
+              width: "15%",
+              maxWidth: "100%",
               fontSize: "1em",
               borderRadius: "8px",
               border: "1px solid #ccc",
@@ -404,7 +482,7 @@ const triggerSearch = () => {
           />
           <button
             onClick={triggerSearch}
-            style={{ marginLeft: "10px", padding: "8px 16px" }}
+            style={{ marginLeft: "2px", padding: "1px 3px" }}
           >
             Search
           </button>
@@ -419,7 +497,7 @@ const triggerSearch = () => {
                 setHasMore(true);
                 loadMoreGroups(0,"",true);
               }}
-              style={{ marginLeft: "10px", padding: "8px 16px" }}
+              style={{ marginLeft: "2px", padding: "1px 3px" }}
             >
               Clear
             </button>
@@ -432,6 +510,57 @@ const triggerSearch = () => {
           </p>
         )}
       </div>
+
+            {/* Admin Multi-Select Toggle */}
+      {!!isAdmin && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: "20px",
+            right: "20px",
+            background: "#333",
+            padding: "10px",
+            borderRadius: "8px",
+            zIndex: 100,
+            boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
+            color: "#fff",
+          }}
+        >
+          <label>
+            <input
+              type="checkbox"
+              checked={multiSelectMode}
+              onChange={(e) => {
+                setMultiSelectMode(e.target.checked);
+                if (!e.target.checked) setSelectedItems(new Set());
+              }}
+            />
+            Multi-select ({selectedItems.size} selected)
+          </label>
+
+          {multiSelectMode && selectedItems.size > 0 && (
+            <div style={{ marginTop: "10px" }}>
+              <TagSelect selected={multiEditTags} onChange={setMultiEditTags} />
+              <div style={{ marginTop: "5px" }}>
+                <input
+                  type="date"
+                  value={multiEditDate}
+                  onChange={(e) => setMultiEditDate(e.target.value)}
+                />
+                <input
+                  type="time"
+                  value={multiEditTime}
+                  onChange={(e) => setMultiEditTime(e.target.value)}
+                  style={{ marginLeft: "5px" }}
+                />
+              </div>
+              <button onClick={saveMultiEdit} style={{ marginTop: "5px", display: "block" }}>
+                Apply to Selected
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Gallery content */}
       <div style={{ padding: "20px", maxWidth: "1400px", margin: "0 auto" }}>
@@ -632,7 +761,7 @@ const triggerSearch = () => {
                   const itemTags = getTagsArray(item.tags);
 
                   return (
-                    <div
+                                        <div
                       key={item.key}
                       style={{
                         display: "inline-block",
@@ -644,22 +773,21 @@ const triggerSearch = () => {
                         margin: "0 3px 5px 3px",
                         cursor: "pointer",
                         position: "relative",
+                        border: multiSelectMode && selectedItems.has(item.key) ? "3px solid yellow" : "none",
+                      }}
+                      onClick={(e) => {
+                        if (multiSelectMode) {
+                          e.stopPropagation();
+                          setSelectedItems((prev) => {
+                            const next = new Set(prev);
+                            if (next.has(item.key)) next.delete(item.key);
+                            else next.add(item.key);
+                            return next;
+                          });
+                        }
                       }}
                       
                     >
-                      <div
-                        style={{
-                          width: "95%",
-                          height: "auto",
-                          display: "inline-block",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          background: "#000",
-                          borderRadius: "12px",
-                          overflow: "hidden",
-                          position: "relative",
-                          border: "1px white solid",
-                        }}
                       >
                         {item.isVideo ? (
                           <>
