@@ -704,8 +704,7 @@ const triggerSearch = () => {
                                 justifyContent: "center",
                                 pointerEvents: "none",
                               }}
-                              onClick={() => openFullscreen(item)}
-                      onContextMenu={(e) => e.preventDefault()}
+                              
                             >
                               <span style={{ color: "#fff", fontSize: "32px" }}>
                                 ▶
@@ -728,6 +727,8 @@ const triggerSearch = () => {
                                 ? "blur(7px)"
                                 : "blur(3px)",
                             }}
+                            onClick={() => openFullscreen(item)}
+                      onContextMenu={(e) => e.preventDefault()}
                           />
                         )}
                       </div>
