@@ -83,8 +83,12 @@ const normalizeSearchInput = (input) => {
 };
 
   // Load more media — accept currentOffset and queryToUse
-const loadMoreGroups = async (currentOffset = offset, queryToUse = activeSearchQuery) => {
-  if (loading || !hasMore) return;
+const loadMoreGroups = async (currentOffset = offset, queryToUse = activeSearchQuery, ignoreChecks = false) => {
+  
+   if (!ignoreChecks) {
+    if (loading || !hasMore) return;
+  }
+  
   setLoading(true);
 
   try {
@@ -104,16 +108,19 @@ const loadMoreGroups = async (currentOffset = offset, queryToUse = activeSearchQ
     if (data.media.length === 0) {
       setHasMore(false);
       setLoading(false);
+      // If we are clearing a search or starting a new one, 
+      // we need to make sure the media is empty
+      if (currentOffset === 0) setMedia([]); 
       return;
     }
 
     const newMedia = data.media;
-    setMedia((prev) => [...prev, ...newMedia]);
+    
+    setMedia((prev) => (currentOffset === 0 ? newMedia : [...prev, ...newMedia]));
     setOffset(currentOffset + newMedia.length);
 
-    if (data.media.length < ITEMS_PER_BATCH) {
-      setHasMore(false);
-    }
+    setHasMore(data.media.length === ITEMS_PER_BATCH);
+
   } catch (err) {
     console.error("Load error:", err);
   } finally {
@@ -130,7 +137,7 @@ const triggerSearch = () => {
   setMedia([]);
   setOffset(0);
   setHasMore(true);
-  loadMoreGroups(0, normalized); // Force offset 0 and new query
+  loadMoreGroups(0, normalized, true); // Force offset 0 and new query
 };
   // Group by date
   const groups = {};
@@ -181,7 +188,7 @@ const triggerSearch = () => {
       setMedia([]);
       setOffset(0);
       setHasMore(true);
-      loadMoreGroups(0, ""); // Force reload with no query
+      loadMoreGroups(0, "",true); // Force reload with no query
               }}
             >
               Clear search
@@ -371,7 +378,7 @@ const triggerSearch = () => {
                 setMedia([]);
                 setOffset(0);
                 setHasMore(true);
-                loadMoreGroups(0);
+                loadMoreGroups(0,"",true);
               }}
               style={{ marginLeft: "10px", padding: "8px 16px" }}
             >
