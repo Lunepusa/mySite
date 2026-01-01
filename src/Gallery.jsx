@@ -83,56 +83,55 @@ const normalizeSearchInput = (input) => {
 };
 
   // Load more media — accept currentOffset and queryToUse
- const loadMoreGroups = async (currentOffset = offset, queryToUse = activeSearchQuery) => {
-    if (loading || !hasMore) return;
-    setLoading(true);
+const loadMoreGroups = async (currentOffset = offset, queryToUse = activeSearchQuery) => {
+  if (loading || !hasMore) return;
+  setLoading(true);
 
-    try {
-      const params = new URLSearchParams({
-        offset: currentOffset.toString(),
-        limit: ITEMS_PER_BATCH.toString(),
-      });
+  try {
+    const params = new URLSearchParams({
+      offset: currentOffset.toString(),
+      limit: ITEMS_PER_BATCH.toString(),
+    });
 
-      if (queryToUse.trim()) {
-        params.append("q", queryToUse);
-      }
-      console.log(`/media?${params.toString()}`);
-
-      const res = await apiFetch(`/media?${params.toString()}`);
-      const data = await res.json();
-
-      if (data.media.length === 0) {
-        setHasMore(false);
-        setLoading(false);
-        return;
-      }
-
-      const newMedia = data.media;
-      setMedia((prev) => [...prev, ...newMedia]);
-      setOffset(currentOffset + newMedia.length);
-
-      if (data.media.length < ITEMS_PER_BATCH) {
-        setHasMore(false);
-      }
-    } catch (err) {
-      console.error("Load error:", err);
-    } finally {
-      setLoading(false);
+    if (queryToUse.trim()) {
+      params.append("q", queryToUse);
     }
-  };
+    console.log(`/media?${params.toString()}`);
 
-  // Trigger search
-  const triggerSearch = () => {
-    const normalized = normalizeSearchInput(searchInput);
-    setActiveSearchQuery(normalized);
-    setDisplayedQuery(normalized || "(no terms)");
-    setMedia([]);
-    setOffset(0);
-    setHasMore(true);
-    loadMoreGroups(0, normalized);
-    
-  };
+    const res = await apiFetch(`/media?${params.toString()}`);
+    const data = await res.json();
 
+    if (data.media.length === 0) {
+      setHasMore(false);
+      setLoading(false);
+      return;
+    }
+
+    const newMedia = data.media;
+    setMedia((prev) => [...prev, ...newMedia]);
+    setOffset(currentOffset + newMedia.length);
+
+    if (data.media.length < ITEMS_PER_BATCH) {
+      setHasMore(false);
+    }
+  } catch (err) {
+    console.error("Load error:", err);
+  } finally {
+    setLoading(false);
+  }
+};
+
+  // Updated triggerSearch — force offset 0
+
+const triggerSearch = () => {
+  const normalized = normalizeSearchInput(searchInput);
+  setActiveSearchQuery(normalized);
+  setDisplayedQuery(normalized || "(no terms)");
+  setMedia([]);
+  setOffset(0);
+  setHasMore(true);
+  loadMoreGroups(0, normalized); // Force offset 0 and new query
+};
   // Group by date
   const groups = {};
   media.forEach((item) => {
@@ -176,13 +175,13 @@ const normalizeSearchInput = (input) => {
             <p>No results for: "{displayedQuery}"</p>
             <button
               onClick={() => {
-                setSearchInput("");
-                setActiveSearchQuery("");
-                setDisplayedQuery("");
-                setMedia([]);
-                setOffset(0);
-                setHasMore(true);
-                loadMoreGroups(0);
+      setSearchInput("");
+      setActiveSearchQuery("");
+      setDisplayedQuery("");
+      setMedia([]);
+      setOffset(0);
+      setHasMore(true);
+      loadMoreGroups(0, ""); // Force reload with no query
               }}
             >
               Clear search
