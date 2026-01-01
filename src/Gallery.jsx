@@ -324,7 +324,7 @@ const triggerSearch = () => {
   const body = {
     key: editingDateItem,
     newDate: tempNewDate.replace(/-/g, ""), // YYYY-MM-DD → YYYYMMDD
-    newTime: tempNewTime.replace(/:/g, ""), // HH:MM:SS → HHMMSS
+    newTime: tempNewTime.replace(/:/g, "") + "000" // pad to 9 digits if needed
   };
 
   try {
@@ -617,7 +617,18 @@ const triggerSearch = () => {
               )}
 
               <div style={{ textAlign: "center" }}>
-                {items.map((item) => {
+                {items
+  .slice() // don't mutate original
+  .sort((a, b) => {
+    // Sort by filename time (HHMMSSmmm)
+    const getTime = (key) => {
+      const filename = key.split("/").pop();
+      const timePart = filename.split("_")[1]?.split(".")[0] || "000000000";
+      return timePart;
+    };
+    return getTime(a.key).localeCompare(getTime(b.key));
+  })
+  .map((item) => {
                   const itemTags = getTagsArray(item.tags);
 
                   return (
@@ -634,8 +645,7 @@ const triggerSearch = () => {
                         cursor: "pointer",
                         position: "relative",
                       }}
-                      onClick={() => openFullscreen(item)}
-                      onContextMenu={(e) => e.preventDefault()}
+                      
                     >
                       <div
                         style={{
@@ -675,7 +685,8 @@ const triggerSearch = () => {
                                   : !isFirstGroup && isLoggedIn
                                   ? "blur(7px)"
                                   : "blur(3px)",
-                              }}
+                              }} onClick={() => openFullscreen(item)}
+                      onContextMenu={(e) => e.preventDefault()}
                             />
                             <div
                               style={{
@@ -693,6 +704,8 @@ const triggerSearch = () => {
                                 justifyContent: "center",
                                 pointerEvents: "none",
                               }}
+                              onClick={() => openFullscreen(item)}
+                      onContextMenu={(e) => e.preventDefault()}
                             >
                               <span style={{ color: "#fff", fontSize: "32px" }}>
                                 ▶
@@ -814,9 +827,10 @@ const triggerSearch = () => {
                                       setTempNewDate(
                                         `${datePart.slice(0, 4)}-${datePart.slice(4, 6)}-${datePart.slice(6)}`
                                       );
-                                      setTempNewTime(
-                                        `${timePart.slice(0, 2)}:${timePart.slice(2, 4)}:${timePart.slice(4)}`
-                                      );
+                                      const timePart = filename.split("_")[1]?.split(".")[0]; // "223746123"
+setTempNewTime(
+  `${timePart.slice(0, 2)}:${timePart.slice(2, 4)}:${timePart.slice(4, 6)}`
+);
                                     }}
                                   >
                                     📅
