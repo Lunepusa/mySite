@@ -439,150 +439,150 @@ const triggerSearch = () => {
   };
 
 return (
-    <>
-      {/* Sticky search header */}
-      <div
-        style={{
-          padding: "10px",
-          textAlign: "center",
-          background: "#111",
-          position: "sticky",
-          top: 0,
-          zIndex: 10,
-        }}
-      >
-        <h1 style={{ marginBottom: "5px" }}>Gallery</h1>
-        <h3 style={{ margin: "5px 0" }}>
-          {!isLoggedIn
-            ? "Log in to see more previews, Subscribe to see all media"
-            : !isSubscriber || !isAdmin
-            ? "Subscribe to see all media"
-            : ""}
-        </h3>
+  <>
+    {/* Sticky search header */}
+    <div
+      style={{
+        padding: "10px",
+        textAlign: "center",
+        background: "#111",
+        position: "sticky",
+        top: 0,
+        zIndex: 10,
+      }}
+    >
+      <h1 style={{ marginBottom: "5px" }}>Gallery</h1>
+      <h3 style={{ margin: "5px 0" }}>
+        {!isLoggedIn
+          ? "Log in to see more previews, Subscribe to see all media"
+          : !isSubscriber || !isAdmin
+          ? "Subscribe to see all media"
+          : ""}
+      </h3>
 
-        <div style={{ margin: "10px 0" }}>
-          <input
-            type="text"
-            placeholder="Search tags, caption, date, video/photo (space=OR, +=AND, -exclude)"
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                triggerSearch();
-              }
-            }}
-            style={{
-              padding: "8px",
-              width: "15%",
-              maxWidth: "100%",
-              fontSize: "1em",
-              borderRadius: "8px",
-              border: "1px solid #ccc",
-            }}
-          />
+      <div style={{ margin: "10px 0" }}>
+        <input
+          type="text"
+          placeholder="Search tags, caption, date, video/photo (space=OR, +=AND, -exclude)"
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              triggerSearch();
+            }
+          }}
+          style={{
+            padding: "8px",
+            width: "15%",
+            maxWidth: "100%",
+            fontSize: "1em",
+            borderRadius: "8px",
+            border: "1px solid #ccc",
+          }}
+        />
+        <button
+          onClick={triggerSearch}
+          style={{ marginLeft: "2px", padding: "1px 3px" }}
+        >
+          Search
+        </button>
+        {activeSearchQuery && (
           <button
-            onClick={triggerSearch}
+            onClick={() => {
+              setSearchInput("");
+              setActiveSearchQuery("");
+              setDisplayedQuery("");
+              setMedia([]);
+              setOffset(0);
+              setHasMore(true);
+              loadMoreGroups(0, "", true);
+            }}
             style={{ marginLeft: "2px", padding: "1px 3px" }}
           >
-            Search
+            Clear
           </button>
-          {activeSearchQuery && (
-            <button
-              onClick={() => {
-                setSearchInput("");
-                setActiveSearchQuery("");
-                setDisplayedQuery("");
-                setMedia([]);
-                setOffset(0);
-                setHasMore(true);
-                loadMoreGroups(0, "", true);
-              }}
-              style={{ marginLeft: "2px", padding: "1px 3px" }}
-            >
-              Clear
-            </button>
-          )}
-        </div>
-
-        {activeSearchQuery && (
-          <p style={{ margin: "10px 0", color: "#aaa", fontStyle: "italic" }}>
-            Searching for: <strong>"{displayedQuery}"</strong>
-          </p>
         )}
       </div>
 
-      {/* Main gallery wrapper — wraps multi-select and content */}
-      <div>
-        {/* Admin Multi-Select Toggle */}
-        {!!isAdmin && (
+      {activeSearchQuery && (
+        <p style={{ margin: "10px 0", color: "#aaa", fontStyle: "italic" }}>
+          Searching for: <strong>"{displayedQuery}"</strong>
+        </p>
+      )}
+    </div>
+
+    {/* Main wrapper for multi-select panel and gallery content */}
+    <div>
+      {/* Admin Multi-Select Toggle */}
+      {!!isAdmin && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: "20px",
+            right: "20px",
+            background: "#333",
+            padding: "10px",
+            borderRadius: "8px",
+            zIndex: 100,
+            boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
+            color: "#fff",
+          }}
+        >
+          <label>
+            <input
+              type="checkbox"
+              checked={multiSelectMode}
+              onChange={(e) => {
+                setMultiSelectMode(e.target.checked);
+                if (!e.target.checked) setSelectedItems(new Set());
+              }}
+            />
+            Multi-select ({selectedItems.size} selected)
+          </label>
+
+          {multiSelectMode && selectedItems.size > 0 && (
+            <div style={{ marginTop: "10px" }}>
+              <TagSelect selected={multiEditTags} onChange={setMultiEditTags} />
+              <div style={{ marginTop: "5px" }}>
+                <input
+                  type="date"
+                  value={multiEditDate}
+                  onChange={(e) => setMultiEditDate(e.target.value)}
+                />
+                <input
+                  type="time"
+                  value={multiEditTime}
+                  onChange={(e) => setMultiEditTime(e.target.value)}
+                  style={{ marginLeft: "5px" }}
+                />
+              </div>
+              <button onClick={saveMultiEdit} style={{ marginTop: "5px", display: "block" }}>
+                Apply to Selected
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Gallery content */}
+      <div style={{ padding: "20px", maxWidth: "1400px", margin: "0 auto" }}>
+        {/* Full-screen modal */}
+        {fullscreenItem && (
           <div
             style={{
               position: "fixed",
-              bottom: "20px",
-              right: "20px",
-              background: "#333",
-              padding: "10px",
-              borderRadius: "8px",
-              zIndex: 100,
-              boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
-              color: "#fff",
+              top: 0,
+              left: 0,
+              width: "100vw",
+              height: "100vh",
+              background: "rgba(0,0,0,0.95)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 1000,
             }}
+            onClick={closeFullscreen}
           >
-            <label>
-              <input
-                type="checkbox"
-                checked={multiSelectMode}
-                onChange={(e) => {
-                  setMultiSelectMode(e.target.checked);
-                  if (!e.target.checked) setSelectedItems(new Set());
-                }}
-              />
-              Multi-select ({selectedItems.size} selected)
-            </label>
-
-            {multiSelectMode && selectedItems.size > 0 && (
-              <div style={{ marginTop: "10px" }}>
-                <TagSelect selected={multiEditTags} onChange={setMultiEditTags} />
-                <div style={{ marginTop: "5px" }}>
-                  <input
-                    type="date"
-                    value={multiEditDate}
-                    onChange={(e) => setMultiEditDate(e.target.value)}
-                  />
-                  <input
-                    type="time"
-                    value={multiEditTime}
-                    onChange={(e) => setMultiEditTime(e.target.value)}
-                    style={{ marginLeft: "5px" }}
-                  />
-                </div>
-                <button onClick={saveMultiEdit} style={{ marginTop: "5px", display: "block" }}>
-                  Apply to Selected
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Gallery content */}
-        <div style={{ padding: "20px", maxWidth: "1400px", margin: "0 auto" }}>
-          {/* Full-screen modal */}
-          {fullscreenItem && (
-            <div
-              style={{
-                position: "fixed",
-                top: 0,
-                left: 0,
-                width: "100vw",
-                height: "100vh",
-                background: "rgba(0,0,0,0.95)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                zIndex: 1000,
-              }}
-              onClick={closeFullscreen}
-            >
             {media.findIndex((m) => m.key === fullscreenItem.key) > 0 && (
               <div
                 style={{
@@ -668,7 +668,6 @@ return (
               key={date}
               style={{ marginBottom: "5px", border: "2px dashed white" }}
             >
-              
               <h2 style={{ textAlign: "center" }}>
                 {editingGroupCaption === date ? (
                   <div>
@@ -749,61 +748,114 @@ return (
 
               <div style={{ textAlign: "center" }}>
                 {items
-  .slice() // don't mutate original
-  .sort((a, b) => {
-    // Sort by filename time (HHMMSSmmm)
-    const getTime = (key) => {
-      const filename = key.split("/").pop();
-      const timePart = filename.split("_")[1]?.split(".")[0] || "000000000";
-      return timePart;
-    };
-    return getTime(a.key).localeCompare(getTime(b.key));
-  })
-  .map((item) => {
-                  const itemTags = getTagsArray(item.tags);
+                  .slice()
+                  .sort((a, b) => {
+                    const getTime = (key) => {
+                      const filename = key.split("/").pop();
+                      const timePart = filename.split("_")[1]?.split(".")[0] || "000000000";
+                      return timePart;
+                    };
+                    return getTime(a.key).localeCompare(getTime(b.key));
+                  })
+                  .map((item) => {
+                    const itemTags = getTagsArray(item.tags);
 
-                  return (
-                                        <div
-                      key={item.key}
-                      style={{
-                        display: "inline-block",
-                        height: "auto",
-                        verticalAlign: "top",
-                        minWidth: "50px",
-                        width: "100px",
-                        maxWidth: "23vw",
-                        margin: "0 3px 5px 3px",
-                        cursor: "pointer",
-                        position: "relative",
-                        border: multiSelectMode && selectedItems.has(item.key) ? "3px solid yellow" : "none",
-                      }}
-                      onClick={(e) => {
-                        if (multiSelectMode) {
-                          e.stopPropagation();
-                          setSelectedItems((prev) => {
-                            const next = new Set(prev);
-                            if (next.has(item.key)) next.delete(item.key);
-                            else next.add(item.key);
-                            return next;
-                          });
-                        }
-                      }}
-                      
-                    >
+                    return (
+                      <div
+                        key={item.key}
+                        style={{
+                          display: "inline-block",
+                          height: "auto",
+                          verticalAlign: "top",
+                          minWidth: "50px",
+                          width: "100px",
+                          maxWidth: "23vw",
+                          margin: "0 3px 5px 3px",
+                          cursor: "pointer",
+                          position: "relative",
+                          border: multiSelectMode && selectedItems.has(item.key) ? "3px solid yellow" : "none",
+                        }}
+                        onClick={(e) => {
+                          if (multiSelectMode) {
+                            e.stopPropagation();
+                            setSelectedItems((prev) => {
+                              const next = new Set(prev);
+                              if (next.has(item.key)) next.delete(item.key);
+                              else next.add(item.key);
+                              return next;
+                            });
+                          } else {
+                            openFullscreen(item);
+                          }
+                        }}
+                        onContextMenu={(e) => e.preventDefault()}
                       >
-                        {item.isVideo ? (
-                          <>
-                            <video
+                        <div
+                          style={{
+                            width: "95%",
+                            height: "auto",
+                            display: "inline-block",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            background: "#000",
+                            borderRadius: "12px",
+                            overflow: "hidden",
+                            position: "relative",
+                            border: "1px white solid",
+                          }}
+                        >
+                          {item.isVideo ? (
+                            <>
+                              <video
+                                src={`${R2_PUBLIC_URL}/${item.key}`}
+                                muted
+                                loop
+                                onLoadedMetadata={(e) => {
+                                  const dur = Math.round(e.target.duration);
+                                  if (!isNaN(dur)) {
+                                    groups[date].totalVideoSeconds += dur;
+                                    setMedia([...media]);
+                                  }
+                                }}
+                                style={{
+                                  maxHeight: "auto",
+                                  width: "100%",
+                                  objectFit: "contain",
+                                  filter: !isLoggedIn
+                                    ? "blur(10px)"
+                                    : isAdmin || isSubscriber
+                                    ? "none"
+                                    : !isFirstGroup && isLoggedIn
+                                    ? "blur(7px)"
+                                    : "blur(3px)",
+                                }}
+                              />
+                              <div
+                                style={{
+                                  position: "absolute",
+                                  top: "50%",
+                                  left: "50%",
+                                  transform: "translate(-50%, -50%)",
+                                  background: "rgba(0,0,0,0.5)",
+                                  borderRadius: "50%",
+                                  width: "30%",
+                                  height: "auto",
+                                  aspectRatio: "1/1",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  pointerEvents: "none",
+                                }}
+                              >
+                                <span style={{ color: "#fff", fontSize: "32px" }}>
+                                  ▶
+                                </span>
+                              </div>
+                            </>
+                          ) : (
+                            <img
                               src={`${R2_PUBLIC_URL}/${item.key}`}
-                              muted
-                              loop
-                              onLoadedMetadata={(e) => {
-                                const dur = Math.round(e.target.duration);
-                                if (!isNaN(dur)) {
-                                  groups[date].totalVideoSeconds += dur;
-                                  setMedia([...media]);
-                                }
-                              }}
+                              alt={caption}
                               style={{
                                 maxHeight: "auto",
                                 width: "100%",
@@ -815,99 +867,31 @@ return (
                                   : !isFirstGroup && isLoggedIn
                                   ? "blur(7px)"
                                   : "blur(3px)",
-                              }} onClick={() => openFullscreen(item)}
-                      onContextMenu={(e) => e.preventDefault()}
-                            />
-                            <div
-                              style={{
-                                position: "absolute",
-                                top: "50%",
-                                left: "50%",
-                                transform: "translate(-50%, -50%)",
-                                background: "rgba(0,0,0,0.5)",
-                                borderRadius: "50%",
-                                width: "30%",
-                                height: "auto",
-                                aspectRatio: "1/1",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                pointerEvents: "none",
                               }}
-                              
-                            >
-                              <span style={{ color: "#fff", fontSize: "32px" }}>
-                                ▶
-                              </span>
+                            />
+                          )}
+                        </div>
+
+                        <div style={{ textAlign: "center" }}>
+                          {editingItem === item.key ? (
+                            <div onClick={(e) => e.stopPropagation()}>
+                              <TagSelect
+                                selected={tempTags}
+                                onChange={setTempTags}
+                              />
+                              <button onClick={saveEdit}>Save</button>
+                              <button
+                                onClick={() => {
+                                  setEditingItem(null);
+                                  setTempTags([]);
+                                  setOriginalTags([]);
+                                }}
+                              >
+                                Cancel
+                              </button>
                             </div>
-                          </>
-                        ) : (
-                          <img
-                            src={`${R2_PUBLIC_URL}/${item.key}`}
-                            alt={caption}
-                            style={{
-                              maxHeight: "auto",
-                              width: "100%",
-                              objectFit: "contain",
-                              filter: !isLoggedIn
-                                ? "blur(10px)"
-                                : isAdmin || isSubscriber
-                                ? "none"
-                                : !isFirstGroup && isLoggedIn
-                                ? "blur(7px)"
-                                : "blur(3px)",
-                            }}
-                            onClick={() => openFullscreen(item)}
-                      onContextMenu={(e) => e.preventDefault()}
-                          />
-                        )}
-                      </div>
-
-                                                         <div style={{ textAlign: "center" }}>
-                        {editingItem === item.key ? (
-                          <div onClick={(e) => e.stopPropagation()}>
-                            <TagSelect
-                              selected={tempTags}
-                              onChange={setTempTags}
-                            />
-                            <button onClick={saveEdit}>Save</button>
-                            <button
-                              onClick={() => {
-                                setEditingItem(null);
-                                setTempTags([]);
-                                setOriginalTags([]);
-                              }}
-                            >
-                              Cancel
-                            </button>
-                          </div>
-                        ) : (
-                          <>
-                            <p
-                              style={{
-                                fontSize: "0.5em",
-                                color: "#ccc",
-                                margin: "2px 0",
-                              }}
-                            >
-                              Tags:{" "}
-                              {itemTags.length > 0 ? itemTags.join(", ") : "none"}
-                              {!!isAdmin && (
-                                <span
-                                  style={{ cursor: "pointer" }}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setEditingItem(item.key);
-                                    setTempTags(itemTags);
-                                    setOriginalTags([...itemTags]);
-                                  }}
-                                >
-                                  ✏️
-                                </span>
-                              )}
-                            </p>
-
-                            {!!isAdmin && (
+                          ) : (
+                            <>
                               <p
                                 style={{
                                   fontSize: "0.5em",
@@ -915,65 +899,90 @@ return (
                                   margin: "2px 0",
                                 }}
                               >
-                                Date: {item.key.split("/")[2]?.split("_")[0] || "Unknown"}{" "}
-                                Time: {item.key.split("_")[1]?.split(".")[0] || "Unknown"}
-                                {editingDateItem === item.key ? (
-                                  <>
-                                    <br />
-                                    <input
-                                      type="date"
-                                      value={tempNewDate}
-                                      onChange={(e) => setTempNewDate(e.target.value)}
-                                      style={{ fontSize: "0.8em" }}
-                                    />
-                                    <input
-                                      type="time"
-                                      value={tempNewTime}
-                                      onChange={(e) => setTempNewTime(e.target.value)}
-                                      style={{ fontSize: "0.8em", marginLeft: "5px" }}
-                                    />
-                                    <button onClick={saveDateEdit} style={{ fontSize: "0.7em" }}>
-                                      Save
-                                    </button>
-                                    <button
-                                      onClick={() => {
-                                        setEditingDateItem(null);
-                                        setTempNewDate("");
-                                        setTempNewTime("");
-                                      }}
-                                      style={{ fontSize: "0.7em" }}
-                                    >
-                                      Cancel
-                                    </button>
-                                  </>
-                                ) : (
+                                Tags:{" "}
+                                {itemTags.length > 0 ? itemTags.join(", ") : "none"}
+                                {!!isAdmin && (
                                   <span
-                                    style={{ cursor: "pointer", marginLeft: "10px" }}
+                                    style={{ cursor: "pointer" }}
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      const filename = item.key.split("/").pop();
-                                      const datePart = filename.split("_")[0];
-                                      const timePart = filename.split("_")[1]?.split(".")[0];
-                                      setEditingDateItem(item.key);
-                                      setTempNewDate(
-                                        `${datePart.slice(0, 4)}-${datePart.slice(4, 6)}-${datePart.slice(6)}`
-                                      );
-                                    setTempNewTime(
-  `${timePart.slice(0, 2)}:${timePart.slice(2, 4)}:${timePart.slice(4, 6)}`
-);
+                                      setEditingItem(item.key);
+                                      setTempTags(itemTags);
+                                      setOriginalTags([...itemTags]);
                                     }}
                                   >
-                                    📅
+                                    ✏️
                                   </span>
                                 )}
                               </p>
-                            )}
-                          </>
-                        )}
+
+                              {!!isAdmin && (
+                                <p
+                                  style={{
+                                    fontSize: "0.5em",
+                                    color: "#ccc",
+                                    margin: "2px 0",
+                                  }}
+                                >
+                                  Date: {item.key.split("/")[2]?.split("_")[0] || "Unknown"}{" "}
+                                  Time: {item.key.split("_")[1]?.split(".")[0] || "Unknown"}
+                                  {editingDateItem === item.key ? (
+                                    <>
+                                      <br />
+                                      <input
+                                        type="date"
+                                        value={tempNewDate}
+                                        onChange={(e) => setTempNewDate(e.target.value)}
+                                        style={{ fontSize: "0.8em" }}
+                                      />
+                                      <input
+                                        type="time"
+                                        value={tempNewTime}
+                                        onChange={(e) => setTempNewTime(e.target.value)}
+                                        style={{ fontSize: "0.8em", marginLeft: "5px" }}
+                                      />
+                                      <button onClick={saveDateEdit} style={{ fontSize: "0.7em" }}>
+                                        Save
+                                      </button>
+                                      <button
+                                        onClick={() => {
+                                          setEditingDateItem(null);
+                                          setTempNewDate("");
+                                          setTempNewTime("");
+                                        }}
+                                        style={{ fontSize: "0.7em" }}
+                                      >
+                                        Cancel
+                                      </button>
+                                    </>
+                                  ) : (
+                                    <span
+                                      style={{ cursor: "pointer", marginLeft: "10px" }}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        const filename = item.key.split("/").pop();
+                                        const datePart = filename.split("_")[0];
+                                        const timePart = filename.split("_")[1]?.split(".")[0];
+                                        setEditingDateItem(item.key);
+                                        setTempNewDate(
+                                          `${datePart.slice(0, 4)}-${datePart.slice(4, 6)}-${datePart.slice(6)}`
+                                        );
+                                        setTempNewTime(
+                                          `${timePart.slice(0, 2)}:${timePart.slice(2, 4)}:${timePart.slice(4, 6)}`
+                                        );
+                                      }}
+                                    >
+                                      📅
+                                    </span>
+                                  )}
+                                </p>
+                              )}
+                            </>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
               </div>
             </div>
           );
@@ -994,8 +1003,9 @@ return (
           </button>
         )}
       </div>
-    </>
-  );
+    </div>
+  </>
+);
 };
 
 export default Gallery;
