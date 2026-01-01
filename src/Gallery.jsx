@@ -182,12 +182,12 @@ const triggerSearch = () => {
 
   if (loading && media.length === 0)
     return (
-      <p style={{ textAlign: "center", padding: "60px" }}>Loading gallery...</p>
+      <p style={{ textAlign: "center", padding: "6px" }}>Loading gallery...</p>
     );
 
   if (media.length === 0)
     return (
-      <div style={{ textAlign: "center", padding: "60px" }}>
+      <div style={{ textAlign: "center", padding: "6px" }}>
         {activeSearchQuery ? (
           <>
             <p>No results for: "{displayedQuery}"</p>
@@ -440,18 +440,10 @@ const triggerSearch = () => {
 
 return (
   <>
-  <h1 style={{ marginBottom: "5px" }}>Gallery</h1>
-      <h3 style={{ margin: "5px 0" }}>
-        {!isLoggedIn
-          ? "Log in to see more previews, Subscribe to see all media"
-          : !isSubscriber || !isAdmin
-          ? "Subscribe to see all media"
-          : ""}
-      </h3>
     {/* Sticky search header */}
     <div
       style={{
-        padding: "2px",
+        padding: "5px",
         textAlign: "center",
         background: "#111",
         position: "sticky",
@@ -459,15 +451,80 @@ return (
         zIndex: 10,
       }}
     >
+      <h1 style={{ marginBottom: "1px" }}>Gallery</h1>
+      <h3 style={{ margin: "1px 0" }}>
+        {!isLoggedIn
+          ? "Log in to see more previews, Subscribe to see all media"
+          : !isSubscriber || !isAdmin
+          ? "Subscribe to see all media"
+          : ""}
+      </h3>
+
+      <div style={{ margin: "5px 0" }}>
+        <input
+          type="text"
+          placeholder="Search tags, caption, date, video/photo (space=OR, +=AND, -exclude)"
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              triggerSearch();
+            }
+          }}
+          style={{
+            padding: "8px",
+            width: "15%",
+            maxWidth: "100%",
+            fontSize: "1em",
+            borderRadius: "8px",
+            border: "1px solid #ccc",
+          }}
+        />
+        <button
+          onClick={triggerSearch}
+          style={{ marginLeft: "2px", padding: "1px 3px" }}
+        >
+          Search
+        </button>
+        {activeSearchQuery && (
+          <button
+            onClick={() => {
+              setSearchInput("");
+              setActiveSearchQuery("");
+              setDisplayedQuery("");
+              setMedia([]);
+              setOffset(0);
+              setHasMore(true);
+              loadMoreGroups(0, "", true);
+            }}
+            style={{ marginLeft: "2px", padding: "1px 3px" }}
+          >
+            Clear
+          </button>
+        )}
+      </div>
+
+      {activeSearchQuery && (
+        <p style={{ margin: "5px 0", color: "#aaa", fontStyle: "italic" }}>
+          Searching for: <strong>"{displayedQuery}"</strong>
+        </p>
+      )}
+    </div>
+
+    {/* Main wrapper for multi-select panel and gallery content */}
+    <div>
       {/* Admin Multi-Select Toggle */}
       {!!isAdmin && (
         <div
           style={{
-            position: "inline-block",
+            position: "fixed",
+            bottom: "5px",
+            right: "5px",
             background: "#333",
-            padding: "10px",
-            borderRadius: "2px",
-            boxShadow: "0 2px 5px rgba(0,0,0,0.5)",
+            padding: "1px",
+            borderRadius: "1px",
+            zIndex: 100,
+            boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
             color: "#fff",
           }}
         >
@@ -496,74 +553,19 @@ return (
                   type="time"
                   value={multiEditTime}
                   onChange={(e) => setMultiEditTime(e.target.value)}
-                  style={{ marginLeft: "1px" }}
+                  style={{ marginLeft: "5px" }}
                 />
               </div>
-              <button onClick={saveMultiEdit} style={{ marginTop: "1px", display: "block" }}>
+              <button onClick={saveMultiEdit} style={{ marginTop: "5px", display: "block" }}>
                 Apply to Selected
               </button>
             </div>
           )}
         </div>
       )}
-      <div style={{ margin: "2px 0" }}>
-        <input
-          type="text"
-          placeholder="Search tags, caption, date, video/photo (space=OR, +=AND, -exclude)"
-          value={searchInput}
-          onChange={(e) => setSearchInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              triggerSearch();
-            }
-          }}
-          style={{
-            padding: "8px",
-            width: "60%",
-            maxWidth: "100%",
-            fontSize: "1em",
-            borderRadius: "8px",
-            border: "1px solid #ccc",
-            display: "inline-block",
-          }}
-        />
-        <button
-          onClick={triggerSearch}
-          style={{ marginLeft: "2px", padding: "1px 3px", display:"inline-block",}}
-        >
-          Search
-        </button>
-        {activeSearchQuery && (
-          <button
-            onClick={() => {
-              setSearchInput("");
-              setActiveSearchQuery("");
-              setDisplayedQuery("");
-              setMedia([]);
-              setOffset(0);
-              setHasMore(true);
-              loadMoreGroups(0, "", true);
-            }}
-            style={{ marginLeft: "2px", padding: "1px 3px" }}
-          >
-            Clear
-          </button>
-        )}
-      </div>
-
-      {activeSearchQuery && (
-        <p style={{ margin: "2px 0", color: "#aaa", fontStyle: "italic" }}>
-          Searching for: <strong>"{displayedQuery}"</strong>
-        </p>
-      )}
-    </div>
-
-    {/* Main wrapper for multi-select panel and gallery content */}
-    <div>
-      
 
       {/* Gallery content */}
-      <div style={{ padding: "20px", maxWidth: "1400px", margin: "0 auto" }}>
+      <div style={{ padding: "2px", maxWidth: "90%", margin: "0 auto" }}>
         {/* Full-screen modal */}
         {fullscreenItem && (
           <div
@@ -585,8 +587,8 @@ return (
               <div
                 style={{
                   position: "absolute",
-                  left: "20px",
-                  fontSize: "60px",
+                  left: "2px",
+                  fontSize: "10px",
                   color: "#fff",
                   cursor: "pointer",
                 }}
@@ -636,8 +638,8 @@ return (
               <div
                 style={{
                   position: "absolute",
-                  right: "20px",
-                  fontSize: "60px",
+                  right: "10px",
+                  fontSize: "10px",
                   color: "#fff",
                   cursor: "pointer",
                 }}
@@ -729,7 +731,7 @@ return (
               </h4>
 
               {editingGroupTags === date && (
-                <div style={{ textAlign: "center", marginBottom: "2px" }}>
+                <div style={{ textAlign: "center", marginBottom: "10px" }}>
                   <TagSelect selected={tempTags} onChange={setTempTags} />
                   <button onClick={saveEdit}>Save Group Tags</button>
                   <button
@@ -955,7 +957,7 @@ return (
                                     </>
                                   ) : (
                                     <span
-                                      style={{ cursor: "pointer", marginLeft: "2px" }}
+                                      style={{ cursor: "pointer", marginLeft: "10px" }}
                                       onClick={(e) => {
                                         e.stopPropagation();
                                         const filename = item.key.split("/").pop();
@@ -992,8 +994,8 @@ return (
             disabled={loading}
             style={{
               display: "block",
-              margin: "5px auto",
-              padding: "2px 4px",
+              margin: "10px auto",
+              padding: "2px 5px",
               fontSize: "1.1em",
             }}
           >
