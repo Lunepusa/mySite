@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth, apiFetch } from "./Auth";
 import { TagSelect, searchTags } from "./Tags";
 
-export default const Gallery = () => {
+ const Gallery = () => {
   const { user } = useAuth();
   const [media, setMedia] = useState([]);
   const [offset, setOffset] = useState(0);
@@ -742,3 +742,4 @@ const normalizeSearchInput = (input) => {
     </>
   );
 };
+export default Gallery;
