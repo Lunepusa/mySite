@@ -588,7 +588,7 @@ return (
                 style={{
                   position: "absolute",
                   left: "2px",
-                  fontSize: "10px",
+                  fontSize: "60px",
                   color: "#fff",
                   cursor: "pointer",
                 }}
@@ -639,7 +639,7 @@ return (
                 style={{
                   position: "absolute",
                   right: "10px",
-                  fontSize: "10px",
+                  fontSize: "600px",
                   color: "#fff",
                   cursor: "pointer",
                 }}
