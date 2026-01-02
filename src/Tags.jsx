@@ -182,6 +182,8 @@ export const CANONICAL_TAGS = [
   "prisoner",
   "vampire",
   "succubus",
+
+  "delete",
 ];
 
 // Synonym mapping: synonym → canonical tag
