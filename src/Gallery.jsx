@@ -473,7 +473,7 @@ return (
           }}
           style={{
             padding: "8px",
-            width: "15%",
+            width: "80%",
             maxWidth: "100%",
             fontSize: "1em",
             borderRadius: "8px",
@@ -588,7 +588,7 @@ return (
                 style={{
                   position: "absolute",
                   left: "2px",
-                  fontSize: "60px",
+                  fontSize: "3em",
                   color: "#fff",
                   cursor: "pointer",
                 }}
@@ -639,7 +639,7 @@ return (
                 style={{
                   position: "absolute",
                   right: "10px",
-                  fontSize: "600px",
+                  fontSize: "3em",
                   color: "#fff",
                   cursor: "pointer",
                 }}
