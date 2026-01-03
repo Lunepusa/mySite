@@ -585,9 +585,9 @@ return (
           ><div
                 style={{
                   position: "absolute",
-                  right: "10px",
-                  top: "10px",
-                  fontSize: "10px",
+                  right: "2%",
+                  top: "2%",
+                  fontSize: "3em",
                   color: "#fff",
                   cursor: "pointer",
                 }}
@@ -601,7 +601,7 @@ return (
               <div
                 style={{
                   position: "absolute",
-                  left: "2px",
+                  left: "2%",
                   fontSize: "3em",
                   color: "#fff",
                   cursor: "pointer",
@@ -659,7 +659,7 @@ return (
               <div
                 style={{
                   position: "absolute",
-                  right: "10px",
+                  right: "2%",
                   fontSize: "3em",
                   color: "#fff",
                   cursor: "pointer",
