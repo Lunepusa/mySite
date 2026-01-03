@@ -18,7 +18,7 @@ import React, { useEffect } from "react";
 import Auth from "./Auth.jsx";
 import AuthProvider from "./Auth.jsx";
 import Lounge from "./Lounge.jsx";
-import Profile from ".Profile.jsx";
+import Profile from "./Profile.jsx";
 
 export default function App() {
   const location = useLocation();
