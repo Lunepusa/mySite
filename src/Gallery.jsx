@@ -582,7 +582,21 @@ return (
               zIndex: 1000,
             }}
             onClick={closeFullscreen}
-          >
+          ><div
+                style={{
+                  position: "absolute",
+                  right: "10px",
+                  top: "10px"
+                  fontSize: "10px",
+                  color: "#fff",
+                  cursor: "pointer",
+                }}
+                onClick={(e) => {
+                  closeFullscreen;
+                }}
+              >
+                x
+              </div>
             {media.findIndex((m) => m.key === fullscreenItem.key) > 0 && (
               <div
                 style={{
@@ -614,8 +628,12 @@ return (
                   controlsList="nodownload"
                   onContextMenu={(e) => e.preventDefault()}
                   style={{
-                    maxWidth: "auto",
+                    maxWidth: "100%",
                     maxHeight: "90vh",
+                    width: "auto",
+                    height: "auto",
+                    objectFit: "contain",
+                    background: "#000",
                     filter: !isSubscriber || !isAdmin ? "blur(10px)" : "none",
                   }}
                 />
@@ -624,9 +642,12 @@ return (
                   src={`${R2_PUBLIC_URL}/${fullscreenItem.key}`}
                   alt=""
                   style={{
-                    maxWidth: "auto",
+                    maxWidth: "100%",
                     maxHeight: "90vh",
+                    width: "auto",
+                    height: "auto",
                     objectFit: "contain",
+                    background: "#000",
                     filter: !isSubscriber || !isAdmin ? "blur(10px)" : "none",
                   }}
                 />
@@ -651,6 +672,7 @@ return (
                 ›
               </div>
             )}
+
           </div>
         )}
 
@@ -711,40 +733,10 @@ return (
                 {videoCount > 0 && ` — v${videoCount}`}
                 {photoCount > 0 && ` p${photoCount}`}
                 {totalVideoSeconds > 0 && formatDuration(totalVideoSeconds)}
-                {!!isAdmin && (
-                  <span
-                    style={{
-                      cursor: "pointer",
-                      fontSize: "0.9em",
-                      verticalAlign: "baseline",
-                      marginLeft: "2px",
-                    }}
-                    onClick={() => {
-                      setEditingGroupTags(date);
-                      setTempTags(commonTags);
-                      setOriginalTags([...commonTags]);
-                    }}
-                  >
-                    ~ {commonTags.length > 0 ? commonTags.join(", ") : "none"}✏️
-                  </span>
-                )}
+
               </h4>
 
-              {editingGroupTags === date && (
-                <div style={{ textAlign: "center", marginBottom: "10px" }}>
-                  <TagSelect selected={tempTags} onChange={setTempTags} />
-                  <button onClick={saveEdit}>Save Group Tags</button>
-                  <button
-                    onClick={() => {
-                      setEditingGroupTags(null);
-                      setTempTags([]);
-                      setOriginalTags([]);
-                    }}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              )}
+            
 
               <div style={{ textAlign: "center" }}>
                 {items
@@ -901,19 +893,7 @@ return (
                               >
                                 Tags:{" "}
                                 {itemTags.length > 0 ? itemTags.join(", ") : "none"}
-                                {!!isAdmin && (
-                                  <span
-                                    style={{ cursor: "pointer" }}
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setEditingItem(item.key);
-                                      setTempTags(itemTags);
-                                      setOriginalTags([...itemTags]);
-                                    }}
-                                  >
-                                    ✏️
-                                  </span>
-                                )}
+                                
                               </p>
 
                               {!!isAdmin && (
@@ -924,57 +904,7 @@ return (
                                     margin: "2px 0",
                                   }}
                                 >
-                                  Date: {item.key.split("/")[2]?.split("_")[0] || "Unknown"}{" "}
                                   Time: {item.key.split("_")[1]?.split(".")[0] || "Unknown"}
-                                  {editingDateItem === item.key ? (
-                                    <>
-                                      <br />
-                                      <input
-                                        type="date"
-                                        value={tempNewDate}
-                                        onChange={(e) => setTempNewDate(e.target.value)}
-                                        style={{ fontSize: "0.8em" }}
-                                      />
-                                      <input
-                                        type="time"
-                                        value={tempNewTime}
-                                        onChange={(e) => setTempNewTime(e.target.value)}
-                                        style={{ fontSize: "0.8em", marginLeft: "5px" }}
-                                      />
-                                      <button onClick={saveDateEdit} style={{ fontSize: "0.7em" }}>
-                                        Save
-                                      </button>
-                                      <button
-                                        onClick={() => {
-                                          setEditingDateItem(null);
-                                          setTempNewDate("");
-                                          setTempNewTime("");
-                                        }}
-                                        style={{ fontSize: "0.7em" }}
-                                      >
-                                        Cancel
-                                      </button>
-                                    </>
-                                  ) : (
-                                    <span
-                                      style={{ cursor: "pointer", marginLeft: "10px" }}
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        const filename = item.key.split("/").pop();
-                                        const datePart = filename.split("_")[0];
-                                        const timePart = filename.split("_")[1]?.split(".")[0];
-                                        setEditingDateItem(item.key);
-                                        setTempNewDate(
-                                          `${datePart.slice(0, 4)}-${datePart.slice(4, 6)}-${datePart.slice(6)}`
-                                        );
-                                        setTempNewTime(
-                                          `${timePart.slice(0, 2)}:${timePart.slice(2, 4)}:${timePart.slice(4, 6)}`
-                                        );
-                                      }}
-                                    >
-                                      📅
-                                    </span>
-                                  )}
                                 </p>
                               )}
                             </>
