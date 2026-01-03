@@ -130,8 +130,8 @@ const AuthProvider = ({ children }) => {
   // Derived auth states — now available everywhere
   const isLoggedIn = !!user;
   const isAdmin = user?.is_admin || false;
-  const user.is_subscriber = user.subscription_expires > Math.floor(Date.now() / 1000);
-
+  const isSubscriber = user?.subscription_expires > Math.floor(Date.now() / 1000) || isAdmin;
+  
   const value = {
     user,
     loading,

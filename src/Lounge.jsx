@@ -5,29 +5,30 @@ import Upload from "./Upload";
 import Gallery from "./Gallery";
 
 const Lounge = () => {
-  const { user } = useAuth();
+    const { isSubscriber, isLoggedIn, isAdmin, user } = useAuth();
 
   return (
-    <div style={{ textAlign: "center" }}>
-      this is area is a work in progress where eventually it should be where you
-      can view all of my content. <br />
-      {!user ? (
-        <div style={{ fontSize: "1.3em", textAlign: "center" }}>
-          This is a private area. Log in below and subscribe to remove the blurring.
-          <h5> subscription is currently a manual process. please reach out to Lune for more datails.</h5>
-          <Login />
-        </div>
-      ) : (!is_subscriber ?(
-                <div style={{ fontSize: "1em", textAlign: "center" }}>
-          Welcome back, <a href="/Profile">{user.username}!</a>please subscribe to remove the blurring.
-          <h5> subscription is currently a manual process. please reach out to Lune for more datails.</h5>
-          <Login /> 
-        </div>:
-        <div style={{ fontSize: "1em", textAlign: "center", }}>
-          Welcome back, <a href="/Profile">{user.username}!</a> Enjoy the exclusive content.
-          <Login /> 
-        </div>
-      ))}
+  <div style={{ textAlign: "center" }}>
+    this is area is a work in progress where eventually it should be where you
+    can view all of my content. <br />
+    {!user ? (
+      <div style={{ fontSize: "1.3em", textAlign: "center" }}>
+        This is a private area. Log in below and subscribe to remove the blurring.
+        <h5>subscription is currently a manual process. please reach out to Lune for more details.</h5>
+        <Login />
+      </div>
+    ) : !isSubscriber ? (
+      <div style={{ fontSize: "1em", textAlign: "center" }}>
+        Welcome back, <a href="/Profile">{user.username}!</a> Please subscribe to remove the blurring.
+        <h5>subscription is currently a manual process. please reach out to Lune for more details.</h5>
+        <Login />
+      </div>
+    ) : (
+      <div style={{ fontSize: "1em", textAlign: "center" }}>
+        Welcome back, <a href="/Profile">{user.username}!</a> Enjoy the exclusive content.
+        <Login />
+      </div>
+    )}
       {/* Upload section only for admin */}
       {user?.is_admin && (
         <div style={{}}>
