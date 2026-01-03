@@ -61,17 +61,17 @@ const Profile = () => {
     : "Never";
 
   return (
-    <div style={{ padding: "40px", maxWidth: "600px", margin: "0 auto" }}>
+    <div style={{ padding: "2%", maxWidth: "90VW", margin: "0 auto" }}>
       <h1 style={{ textAlign: "center" }}>Profile</h1>
 
-      <div style={{ marginBottom: "30px", padding: "20px", background: "#222", borderRadius: "8px" }}>
+      <div style={{ marginBottom: "1%", padding: "2%", background: "#222", borderRadius: "1px" }}>
         <h2>User Information</h2>
         <p><strong>Email:</strong> {user.email}</p>
         <p><strong>Subscription:</strong> {subscriptionText}</p>
         <p><strong>Expires:</strong> {expiration}</p>
       </div>
 
-      <div style={{ padding: "20px", background: "#222", borderRadius: "8px" }}>
+      <div style={{ padding: "2%", background: "#222", borderRadius: "1px" }}>
         <h2>Change Password</h2>
         {message && <p style={{ color: "lightgreen" }}>{message}</p>}
         {error && <p style={{ color: "red" }}>{error}</p>}
@@ -90,8 +90,8 @@ const Profile = () => {
             />
           </div>
 
-          <div style={{ marginBottom: "15px" }}>
-            <label style={{ display: "block", marginBottom: "5px" }}>
+          <div style={{ marginBottom: "1%" }}>
+            <label style={{ display: "block", marginBottom: "1%" }}>
               New Password
             </label>
             <input
@@ -99,12 +99,12 @@ const Profile = () => {
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               required
-              style={{ width: "100%", padding: "8px", borderRadius: "4px" }}
+              style={{ width: "100%", padding: "2px", borderRadius: "1px" }}
             />
           </div>
 
-          <div style={{ marginBottom: "15px" }}>
-            <label style={{ display: "block", marginBottom: "5px" }}>
+          <div style={{ marginBottom: "1%" }}>
+            <label style={{ display: "block", marginBottom: "1%" }}>
               Confirm New Password
             </label>
             <input
@@ -112,18 +112,18 @@ const Profile = () => {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
-              style={{ width: "100%", padding: "8px", borderRadius: "4px" }}
+              style={{ width: "100%", padding: "2px", borderRadius: "1px" }}
             />
           </div>
 
           <button
             type="submit"
             style={{
-              padding: "10px 20px",
+              padding: "2px 4px",
               background: "#0066cc",
               color: "white",
               border: "none",
-              borderRadius: "4px",
+              borderRadius: "1px",
               cursor: "pointer",
             }}
           >

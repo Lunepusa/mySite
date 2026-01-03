@@ -18,6 +18,7 @@ import React, { useEffect } from "react";
 import Auth from "./Auth.jsx";
 import AuthProvider from "./Auth.jsx";
 import Lounge from "./Lounge.jsx";
+import Profile from ".Profile.jsx";
 
 export default function App() {
   const location = useLocation();
@@ -91,6 +92,7 @@ export default function App() {
           <Route path="/mailing" element={<Mailing />} />
           <Route path="/Lounge" element={<Lounge />} />
           <Route path="/WIP" element={<WIP />} />
+          <Route path="/Profile" element={<Profile />} />
           <Route path="*" element={<h1>404 - Page not found</h1>} />
           <Route path="/shh" element={<Shh />} />
         </Routes>
