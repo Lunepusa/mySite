@@ -22,7 +22,6 @@ import Lounge from "./Lounge.jsx";
 import Profile from "./Profile.jsx";
 
 export default function App() {
-  const { isSubscriber, isLoggedIn, isAdmin, user } = useAuth();
   const location = useLocation();
   const { setAnalyticsData } = useAnalytics();
   const { analyticsData } = useAnalytics();

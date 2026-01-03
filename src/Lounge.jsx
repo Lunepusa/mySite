@@ -23,7 +23,7 @@ const Lounge = () => {
           <h5> subscription is currently a manual process. please reach out to Lune for more datails.</h5>
           <Login /> 
         </div>:
-        <div style={{ fontSize: "1em", textAlign: "center" }}>
+        <div style={{ fontSize: "1em", textAlign: "center", }}>
           Welcome back, <a href="/Profile">{user.username}!</a> Enjoy the exclusive content.
           <Login /> 
         </div>
