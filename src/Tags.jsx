@@ -183,7 +183,10 @@ export const CANONICAL_TAGS = [
   "vampire",
   "succubus",
 
+  //other
   "delete",
+  "picture",
+  "video",
 ];
 
 // Synonym mapping: synonym → canonical tag
@@ -463,6 +466,12 @@ const SYNONYM_MAP = {
   owner: "master",
   "costume play": "cosplay",
   "character cosplay": "cosplay",
+
+  //other
+ nopost: "delete",
+ remove: "delete",
+ photo: "picture",
+ clip: "video",
 };
 
 // Lowercase map for fast lookup
