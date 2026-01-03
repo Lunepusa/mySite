@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { useAuth, apiFetch } from "./Auth";
+import Collapse from "./Utility";
 
 const Profile = () => {
-  const { user } = useAuth();
-
+   const { isSubscriber, isLoggedIn, isAdmin } = useAuth();
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -20,8 +20,8 @@ const Profile = () => {
       return;
     }
 
-    if (newPassword.length < 8) {
-      setError("New password must be at least 8 characters");
+    if (newPassword.length < 6) {
+      setError("New password must be at least 6 characters");
       return;
     }
 
@@ -63,22 +63,27 @@ const Profile = () => {
   return (
     <div style={{ padding: "2%", maxWidth: "90VW", margin: "0 auto" }}>
       <h1 style={{ textAlign: "center" }}>Profile</h1>
-
+{!user ? (
+        <div style={{ fontSize: "1.3em", textAlign: "center" }}>
+          This is a private area. Log in below to enter.
+          <Login />
+        </div>
+      ) : (
       <div style={{ marginBottom: "1%", padding: "2%", background: "#222", borderRadius: "1px" }}>
         <h2>User Information</h2>
-        <p><strong>Email:</strong> {user.email}</p>
+        <p><strong>userame:</strong> {user.username}</p>
         <p><strong>Subscription:</strong> {subscriptionText}</p>
         <p><strong>Expires:</strong> {expiration}</p>
       </div>
 
       <div style={{ padding: "2%", background: "#222", borderRadius: "1px" }}>
-        <h2>Change Password</h2>
+       <Collapse trigger={ <h2>Change Password</h2>}>
         {message && <p style={{ color: "lightgreen" }}>{message}</p>}
         {error && <p style={{ color: "red" }}>{error}</p>}
 
         <form onSubmit={handlePasswordChange}>
-          <div style={{ marginBottom: "15px" }}>
-            <label style={{ display: "block", marginBottom: "5px" }}>
+          <div style={{ }}>
+            <label style={{ display: "block",}}>
               Current Password
             </label>
             <input
@@ -86,12 +91,12 @@ const Profile = () => {
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
               required
-              style={{ width: "100%", padding: "8px", borderRadius: "4px" }}
+              style={{ width: "100%", padding: "2px", borderRadius: "1px" }}
             />
           </div>
 
-          <div style={{ marginBottom: "1%" }}>
-            <label style={{ display: "block", marginBottom: "1%" }}>
+          <div style={{}}>
+            <label style={{ display: "block" }}>
               New Password
             </label>
             <input
@@ -103,8 +108,8 @@ const Profile = () => {
             />
           </div>
 
-          <div style={{ marginBottom: "1%" }}>
-            <label style={{ display: "block", marginBottom: "1%" }}>
+          <div style={{}}>
+            <label style={{ display: "block" }}>
               Confirm New Password
             </label>
             <input
@@ -129,8 +134,8 @@ const Profile = () => {
           >
             Change Password
           </button>
-        </form>
-      </div>
+        </form></Collapse>
+      </div>)}
     </div>
   );
 };

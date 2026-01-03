@@ -13,6 +13,9 @@
 .seo-hidden {
   display: none !important;
 }
+strong {
+  vertical-align: baseline;
+}
 html {
   background-color: black;
   width: 100%;

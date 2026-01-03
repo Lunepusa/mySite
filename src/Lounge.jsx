@@ -16,12 +16,17 @@ const Lounge = () => {
           This is a private area. Log in below to enter.
           <Login />
         </div>
-      ) : (
+      ) : (!is_subscriber ?(
+                <div style={{ fontSize: "1em", textAlign: "center" }}>
+          Welcome back, <a href="/Profile">{user.username}!</a> feel free to scroll through the blurred previews, or subscribe to view everything unblurred.
+          <h5> subscription is currently a manual process. please reach out to Lune for more datails.</h5>
+          <Login /> 
+        </div>:
         <div style={{ fontSize: "1em", textAlign: "center" }}>
-          Welcome back, {user.username}! Enjoy the exclusive content.
-          <Login />
+          Welcome back, <a href="/Profile">{user.username}!</a> Enjoy the exclusive content.
+          <Login /> 
         </div>
-      )}
+      ))}
       {/* Upload section only for admin */}
       {user?.is_admin && (
         <div style={{}}>

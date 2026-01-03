@@ -18,7 +18,7 @@ export const apiFetch = async (endpoint, options = {}) => {
   return fetch(url, {
     ...options,
     headers,
-    credentials: "include", // keep if you still need cookies for anything
+    credentials: "include",
   });
 };
 
@@ -28,7 +28,7 @@ export const useAuth = () => useContext(AuthContext);
 
 // Reusable Login/Signup component
 export const Login = () => {
-  const { user, loadUser } = useAuth(); // Now loadUser exists
+  const { user, loadUser } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isSignup, setIsSignup] = useState(false);
@@ -38,7 +38,7 @@ export const Login = () => {
     e.preventDefault();
     setError("");
 
-    const lowerUsername = username.toLowerCase().trim(); // Force lowercase
+    const lowerUsername = username.toLowerCase().trim();
 
     const res = await apiFetch("/login", {
       method: "POST",
@@ -54,7 +54,7 @@ export const Login = () => {
 
     if (data.success) {
       localStorage.setItem("token", data.token);
-      await loadUser(); // Refresh user state
+      await loadUser();
     } else {
       setError(data.error || "Failed");
     }
@@ -66,9 +66,7 @@ export const Login = () => {
         Logged in as {user.username}
         <button
           onClick={async () => {
-            await apiFetch("/logout", {
-              method: "POST",
-            });
+            await apiFetch("/logout", { method: "POST" });
             localStorage.removeItem("token");
             await loadUser();
           }}
@@ -112,12 +110,10 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const WORKER_URL = "https://api.lunepusa.workers.dev";
-
   const loadUser = async () => {
     setLoading(true);
     try {
-      const res = await await apiFetch("/me");
+      const res = await apiFetch("/me");
       const data = await res.json();
       setUser(data.user || null);
     } catch (err) {
@@ -131,10 +127,18 @@ const AuthProvider = ({ children }) => {
     loadUser();
   }, []);
 
+  // Derived auth states — now available everywhere
+  const isLoggedIn = !!user;
+  const isAdmin = user?.is_admin || false;
+  const user.is_subscriber = user.subscription_expires > Math.floor(Date.now() / 1000);
+
   const value = {
     user,
     loading,
     loadUser,
+    isLoggedIn,
+    isAdmin,
+    isSubscriber,
   };
 
   if (loading) return <p>Loading auth...</p>;

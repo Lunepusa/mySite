@@ -3,7 +3,7 @@ import { useAuth, apiFetch } from "./Auth";
 import { TagSelect, searchTags } from "./Tags";
 
  const Gallery = () => {
-  const { user } = useAuth();
+  const { isSubscriber, isLoggedIn, isAdmin } = useAuth();
   const [media, setMedia] = useState([]);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
@@ -173,11 +173,6 @@ const triggerSearch = () => {
   });
 
   const sortedDates = Object.keys(groups).sort((a, b) => b.localeCompare(a));
-
-  const isSubscriber = user?.is_subscriber || user?.is_admin;
-  const isLoggedIn = !!user;
-  const isAdmin = user?.is_admin;
-
   const firstDate = sortedDates[0];
 
   if (loading && media.length === 0)
