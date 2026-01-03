@@ -602,7 +602,7 @@ return (
                 style={{
                   position: "absolute",
                   left: "2%",
-                  fontSize: "3em",
+                  fontSize: "5em",
                   color: "#fff",
                   cursor: "pointer",
                 }}
@@ -611,7 +611,7 @@ return (
                   goPrev();
                 }}
               >
-                ‹
+                ‹-
               </div>
             )}
 
@@ -660,7 +660,7 @@ return (
                 style={{
                   position: "absolute",
                   right: "2%",
-                  fontSize: "3em",
+                  fontSize: "5em",
                   color: "#fff",
                   cursor: "pointer",
                 }}
@@ -669,7 +669,7 @@ return (
                   goNext();
                 }}
               >
-                ›
+                -›
               </div>
             )}
 
