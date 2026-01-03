@@ -3,7 +3,7 @@ import { useAuth, apiFetch } from "./Auth";
 import { TagSelect, searchTags } from "./Tags";
 
  const Gallery = () => {
-  const { isSubscriber, isLoggedIn, isAdmin } = useAuth();
+  const { isSubscriber, isLoggedIn, isAdmin, user } = useAuth();
   const [media, setMedia] = useState([]);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
@@ -447,13 +447,6 @@ return (
       }}
     >
       <h1 style={{ marginBottom: "1px" }}>Gallery</h1>
-      <h3 style={{ margin: "1px 0" }}>
-        {!isLoggedIn
-          ? "Log in to see more previews, Subscribe to see all media"
-          : !isSubscriber || !isAdmin
-          ? "Subscribe to see all media"
-          : ""}
-      </h3>
 
       <div style={{ margin: "5px 0" }}>
         <input

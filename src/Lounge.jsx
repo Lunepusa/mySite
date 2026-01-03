@@ -13,12 +13,13 @@ const Lounge = () => {
       can view all of my content. <br />
       {!user ? (
         <div style={{ fontSize: "1.3em", textAlign: "center" }}>
-          This is a private area. Log in below to enter.
+          This is a private area. Log in below and subscribe to remove the blurring.
+          <h5> subscription is currently a manual process. please reach out to Lune for more datails.</h5>
           <Login />
         </div>
       ) : (!is_subscriber ?(
                 <div style={{ fontSize: "1em", textAlign: "center" }}>
-          Welcome back, <a href="/Profile">{user.username}!</a> feel free to scroll through the blurred previews, or subscribe to view everything unblurred.
+          Welcome back, <a href="/Profile">{user.username}!</a>please subscribe to remove the blurring.
           <h5> subscription is currently a manual process. please reach out to Lune for more datails.</h5>
           <Login /> 
         </div>:
