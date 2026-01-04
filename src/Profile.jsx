@@ -9,6 +9,8 @@ const Profile = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+    const [allUsers, setAllUsers] = useState([]);
+  const [usersLoading, setUsersLoading] = useState(true);
 
   const handlePasswordChange = async (e) => {
     e.preventDefault();
@@ -59,6 +61,41 @@ const Profile = () => {
   const expiration = user.subscription_expires
     ? new Date(user.subscription_expires * 1000).toLocaleDateString()
     : "Never";
+  useEffect(() => {
+    if (user?.username === "lunepusa") {
+      const fetchUsers = async () => {
+        setUsersLoading(true);
+        try {
+          const res = await apiFetch("/admin-users");
+          if (!res.ok) throw new Error("Failed");
+          const data = await res.json();
+          setAllUsers(data.users);
+        } catch (err) {
+          setError("Failed to load users");
+        } finally {
+          setUsersLoading(false);
+        }
+      };
+      fetchUsers();
+    }
+  }, [user]);
+
+    const updateUser = async (userId, updates) => {
+    try {
+      const res = await apiFetch("/admin-update-user", {
+        method: "POST",
+        body: JSON.stringify({ userId, ...updates }),
+      });
+      if (!res.ok) throw new Error("Update failed");
+
+      // Optimistic update
+      setAllUsers(prev => prev.map(u => 
+        u.id === userId ? { ...u, ...updates } : u
+      ));
+    } catch (err) {
+      setError("Failed to update user");
+    }
+  };
 
     return (
     <div style={{ padding: "2%", maxWidth: "90vw", margin: "0 auto" }}>
@@ -71,6 +108,7 @@ const Profile = () => {
             <p><strong>Username:</strong> {user.username}</p>
             <p><strong>Subscription:</strong> {subscriptionText}</p>
             <p><strong>Expires:</strong> {expiration}</p>
+            <login ?>
           </div>
 
           <div style={{ padding: "2%", background: "#222", borderRadius: "1px" }}>
@@ -134,6 +172,57 @@ const Profile = () => {
         </form>
             </Collapse>
           </div>
+
+      {user?.username === "lunepusa" && (
+        <div style={{ padding: "2%", background: "#222", borderRadius: "1px", marginTop: "20px" }}>
+          <Collapse trigger={<h2>User Management (Admin Only)</h2>}>
+            {usersLoading ? (
+              <p>Loading users...</p>
+            ) : (
+              <div>
+                {allUsers.map(u => {
+                  const isAdminUser = u.is_admin;
+                  const expiryDate = u.subscription_expires > 0
+                    ? new Date(u.subscription_expires * 1000).toISOString().slice(0, 10)
+                    : "";
+
+                  return (
+                    <div key={u.id} style={{ padding: "10px", borderBottom: "1px solid #444", marginBottom: "10px" }}>
+                      <strong>{u.username}</strong> (ID: {u.id})
+                      <div style={{ marginTop: "5px" }}>
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={isAdminUser}
+                            onChange={(e) => updateUser(u.id, { is_admin: e.target.checked })}
+                          />
+                          Admin
+                        </label>
+                      </div>
+                      <div style={{ marginTop: "5px" }}>
+                        <label>
+                          Subscription Expiry:
+                          <input
+                            type="date"
+                            value={expiryDate}
+                            onChange={(e) => {
+                              const date = e.target.value;
+                              const timestamp = date ? Math.floor(new Date(date).getTime() / 1000) : 0;
+                              updateUser(u.id, { subscription_expires: timestamp });
+                            }}
+                          />
+                        </label>
+                        {u.subscription_expires > Math.floor(Date.now() / 1000) && " (Active)"}
+                        {u.subscription_expires === 0 && " (Never)"}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </Collapse>
+        </div>
+      )}
         </>
       ) : (
         <div style={{ fontSize: "1.3em", textAlign: "center" }}>
