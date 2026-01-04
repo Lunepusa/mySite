@@ -491,7 +491,7 @@ return (
       <div style={{ margin: "5px 0" }}>
         <input
           type="text"
-          placeholder="Search tags, caption, date, video/photo (space=OR, +=AND, -exclude)"
+          placeholder="Search, Ex. tits+ass, tits -ass, tits ass,   space=OR, +=AND, -exclude)"
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
           onKeyDown={(e) => {
@@ -529,6 +529,7 @@ return (
           >
             Clear
           </button>
+          <h4> like a particular tag, or want to hide anything with a particular tag you can add them to your <a href="/Profile#collapse-favoritemutedtags">favorites or mute lists!</a> </h4>
         )}
       </div>
 

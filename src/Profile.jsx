@@ -133,7 +133,7 @@ const Profile = () => {
   };
 
     return (
-    <div style={{ padding: "2%", maxWidth: "90vw", margin: "0 auto" }}>
+    <div style={{ padding: "2%", MinWidth: "200px", width: "40VW", margin: "0 auto", display: "inline-block", }}>
       <h1 style={{ textAlign: "center" }}>Profile</h1>
 
       {user ? (
@@ -146,7 +146,7 @@ const Profile = () => {
             <login />
           </div>
 
-          <div style={{ padding: "2%", background: "#222", borderRadius: "1px" }}>
+          <div style={{ padding: "2%", MinWidth: "200px", width: "40VW", margin: "0 auto", display: "inline-block" }}>
             <Collapse trigger={<h2>Change Password</h2>}>
               {message && <p style={{ color: "lightgreen" }}>{message}</p>}
               {error && <p style={{ color: "red" }}>{error}</p>}
@@ -210,6 +210,7 @@ const Profile = () => {
       {/* Favorite & Muted Tags */}
       <div style={{ marginTop: "1%" }}>
         <Collapse trigger={<h2>Favorite & Muted Tags</h2>}>
+        <h4>Tags here are NOT all present in any of my content. in fact quite a few are not and likely will never be. But I wanted everything listed just in case. I am pretty kinky so who knows. add anything you dont want to see to the muted tag. Favorite tags are currently just a way for you to easily search your favorite tags. and maybe help tell me what people want to see</h4>
           {/* Favorite Tags */}
           <div style={{ marginBottom: "1%" }}>
             <h3 style={{ margin: "0.5% 0" }}>Favorite Tags</h3>
