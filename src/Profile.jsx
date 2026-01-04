@@ -79,8 +79,59 @@ const Profile = () => {
               {error && <p style={{ color: "red" }}>{error}</p>}
 
               <form onSubmit={handlePasswordChange}>
-                {/* ... form fields unchanged ... */}
-              </form>
+          <div style={{ }}>
+            <label style={{ display: "block",}}>
+              Current Password
+            </label>
+            <input
+              type="password"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              required
+              style={{ width: "100%", padding: "2px", borderRadius: "1px" }}
+            />
+          </div>
+
+          <div style={{}}>
+            <label style={{ display: "block" }}>
+              New Password
+            </label>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              required
+              style={{ width: "100%", padding: "2px", borderRadius: "1px" }}
+            />
+          </div>
+
+          <div style={{}}>
+            <label style={{ display: "block" }}>
+              Confirm New Password
+            </label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              style={{ width: "100%", padding: "2px", borderRadius: "1px" }}
+            />
+          </div>
+
+          <button
+            type="submit"
+            style={{
+              padding: "2px 4px",
+              background: "#0066cc",
+              color: "white",
+              border: "none",
+              borderRadius: "1px",
+              cursor: "pointer",
+            }}
+          >
+            Change Password
+          </button>
+        </form>
             </Collapse>
           </div>
         </>
