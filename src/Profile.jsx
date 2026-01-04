@@ -108,7 +108,7 @@ const Profile = () => {
             <p><strong>Username:</strong> {user.username}</p>
             <p><strong>Subscription:</strong> {subscriptionText}</p>
             <p><strong>Expires:</strong> {expiration}</p>
-            <login ?>
+            <login />
           </div>
 
           <div style={{ padding: "2%", background: "#222", borderRadius: "1px" }}>
