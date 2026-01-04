@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth, apiFetch } from "./Auth";
 import Collapse from "./Utility";
+import { TagSelect, searchTags } from "./Tags";
 
 const Profile = () => {
    const { isSubscriber, isLoggedIn, isAdmin, user } = useAuth();
