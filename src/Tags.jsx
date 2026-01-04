@@ -693,7 +693,7 @@ export const getTagsArray = (tagInput) => {
   return [];
 };
 
-// Reusable read-only tag list with clickable links to /gallery#tag
+// Reusable read-only tag list with clickable links to /lounge#tag
 export const ClickableTags = ({ tags = "", emptyText = "None set" }) => {
 const tagArray = getTagsArray(tags);
 
@@ -711,7 +711,7 @@ const tagArray = getTagsArray(tags);
           {tagArray.map((tag, i) => (
             <React.Fragment key={tag}>
               <a
-                href={`/gallery#${encodeURIComponent(tag)}`}
+                href={`/lounge#${encodeURIComponent(tag)}`}
                 style={{
                   color: "#0066cc",
                   textDecoration: "none",
@@ -719,7 +719,7 @@ const tagArray = getTagsArray(tags);
                 }}
                 onClick={(e) => {
                   e.preventDefault();
-                  window.location.href = `/gallery#${encodeURIComponent(tag)}`;
+                  window.location.href = `/lounge#${encodeURIComponent(tag)}`;
                 }}
               >
                 {tag}
