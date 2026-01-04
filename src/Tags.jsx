@@ -544,35 +544,52 @@ export const normalizeTags = (tags) => {
  */
 export const getAllTags = () => CANONICAL_TAGS;
 
-// TagSelect component
-export const TagSelect = ({ selected = [], onChange }) => {
+// TagSelect component — editable with Save button
+export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add tags..." }) => {
+  const [localTags, setLocalTags] = useState(initialTags.split(",").map(t => t.trim()).filter(t => t));
   const [inputValue, setInputValue] = useState("");
-  const [filteredTags, setFilteredTags] = useState(getAllTags());
+  const [filteredSuggestions, setFilteredSuggestions] = useState([]);
 
   useEffect(() => {
     if (inputValue.trim()) {
       const results = searchTags(inputValue);
-      setFilteredTags(results.filter((tag) => !selected.includes(tag)));
+      setFilteredSuggestions(results.filter(tag => !localTags.includes(tag)));
     } else {
-      setFilteredTags(getAllTags().filter((tag) => !selected.includes(tag)));
+      setFilteredSuggestions([]);
     }
-  }, [inputValue, selected]);
+  }, [inputValue, localTags]);
 
   const addTag = (tag) => {
-    if (!selected.includes(tag)) {
-      onChange([...selected, tag]);
+    tag = tag.trim();
+    if (tag && !localTags.includes(tag)) {
+      setLocalTags([...localTags, tag]);
     }
     setInputValue("");
   };
 
-  const removeTag = (tag) => {
-    onChange(selected.filter((t) => t !== tag));
+  const removeTag = (tagToRemove) => {
+    setLocalTags(localTags.filter(t => t !== tagToRemove));
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && inputValue.trim()) {
+      e.preventDefault();
+      addTag(inputValue.trim());
+    } else if (e.key === "Enter" && filteredSuggestions.length > 0) {
+      e.preventDefault();
+      addTag(filteredSuggestions[0]);
+    }
+  };
+
+  const handleSave = () => {
+    onSave(localTags.join(","));
   };
 
   return (
-    <div style={{ margin: "10px 0", fontSize: "0.9em" }}>
-      <div style={{ marginBottom: "8px", minHeight: "28px" }}>
-        {selected.map((tag) => (
+    <div style={{ margin: "10px 0" }}>
+      {/* Current tags */}
+      <div style={{ minHeight: "32px", marginBottom: "8px" }}>
+        {localTags.map((tag) => (
           <span
             key={tag}
             style={{
@@ -599,17 +616,13 @@ export const TagSelect = ({ selected = [], onChange }) => {
         ))}
       </div>
 
+      {/* Input */}
       <input
         type="text"
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" && filteredTags.length > 0) {
-            e.preventDefault();
-            addTag(filteredTags[0]);
-          }
-        }}
-        placeholder="Type to search tags..."
+        onKeyDown={handleKeyDown}
+        placeholder={placeholder}
         style={{
           width: "100%",
           padding: "8px",
@@ -620,10 +633,11 @@ export const TagSelect = ({ selected = [], onChange }) => {
         }}
       />
 
-      {filteredTags.length > 0 && (
+      {/* Suggestions */}
+      {filteredSuggestions.length > 0 && (
         <div
           style={{
-            maxHeight: "180px",
+            maxHeight: "150px",
             overflowY: "auto",
             background: "#222",
             border: "1px solid #444",
@@ -631,14 +645,13 @@ export const TagSelect = ({ selected = [], onChange }) => {
             borderRadius: "0 0 4px 4px",
           }}
         >
-          {filteredTags.map((tag) => (
+          {filteredSuggestions.map((tag) => (
             <div
               key={tag}
               style={{
                 padding: "8px 12px",
                 cursor: "pointer",
                 background: "#333",
-                borderBottom: "1px solid #444",
               }}
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => addTag(tag)}
@@ -648,6 +661,22 @@ export const TagSelect = ({ selected = [], onChange }) => {
           ))}
         </div>
       )}
+
+      {/* Save button */}
+      <button
+        onClick={handleSave}
+        style={{
+          marginTop: "10px",
+          padding: "8px 16px",
+          background: "#0066cc",
+          color: "white",
+          border: "none",
+          borderRadius: "4px",
+          cursor: "pointer",
+        }}
+      >
+        Save Changes
+      </button>
     </div>
   );
 };

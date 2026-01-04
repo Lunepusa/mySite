@@ -10,8 +10,10 @@ const Profile = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-    const [allUsers, setAllUsers] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
   const [usersLoading, setUsersLoading] = useState(true);
+  const [editingFavorites, setEditingFavorites] = useState(false);
+  const [editingMuted, setEditingMuted] = useState(false);
 
   const handlePasswordChange = async (e) => {
     e.preventDefault();
@@ -206,29 +208,101 @@ const Profile = () => {
             </Collapse>
           </div>
 
-                {/* Favorite & Muted Tags */}
+        {/* Favorite & Muted Tags */}
       <div style={{ marginTop: "1%" }}>
         <Collapse trigger={<h2>Favorite & Muted Tags</h2>}>
+          {/* Favorite Tags */}
           <div style={{ marginBottom: "1%" }}>
-            <h3>Favorite Tags</h3>
-            <TagSelect
-              selected={getTagsArray(user.favorite_tags)}
-              onChange={(tags) => {
-                const tagsString = tags.join(",");
-                updateTagPrefs({ favorite_tags: tagsString });
-              }}
-            />
+            <h3 style={{ margin: "0.5% 0" }}>Favorite Tags</h3>
+            {editingFavorites ? (
+              <>
+                <TagSelect
+                  initialTags={user.favorite_tags || ""}
+                  onSave={(tagsString) => {
+                    updateTagPrefs({ favorite_tags: tagsString });
+                    setEditingFavorites(false);
+                  }}
+                  placeholder="Add favorite tag..."
+                />
+                <button
+                  onClick={() => setEditingFavorites(false)}
+                  style={{
+                    marginTop: "0.5%",
+                    padding: "0.5% 1%",
+                    background: "#444",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "2px",
+                  }}
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <div style={{ margin: "0.5% 0" }}>
+                <span style={{ color: user.favorite_tags ? "#fff" : "#666" }}>
+                  {user.favorite_tags || "None set"}
+                </span>
+                <span
+                  style={{
+                    marginLeft: "1%",
+                    cursor: "pointer",
+                    color: "#0066cc",
+                    fontSize: "0.9em",
+                  }}
+                  onClick={() => setEditingFavorites(true)}
+                >
+                  ✏️ Edit
+                </span>
+              </div>
+            )}
           </div>
 
+          {/* Muted Tags */}
           <div>
-            <h3>Muted Tags</h3>
-            <TagSelect
-              selected={getTagsArray(user.muted_tags)}
-              onChange={(tags) => {
-                const tagsString = tags.join(",");
-                updateTagPrefs({ muted_tags: tagsString });
-              }}
-            />
+            <h3 style={{ margin: "0.5% 0" }}>Muted Tags</h3>
+            {editingMuted ? (
+              <>
+                <TagSelect
+                  initialTags={user.muted_tags || ""}
+                  onSave={(tagsString) => {
+                    updateTagPrefs({ muted_tags: tagsString });
+                    setEditingMuted(false);
+                  }}
+                  placeholder="Add muted tag..."
+                />
+                <button
+                  onClick={() => setEditingMuted(false)}
+                  style={{
+                    marginTop: "0.5%",
+                    padding: "0.5% 1%",
+                    background: "#444",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "2px",
+                  }}
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <div style={{ margin: "0.5% 0" }}>
+                <span style={{ color: user.muted_tags ? "#fff" : "#666" }}>
+                  {user.muted_tags || "None set"}
+                </span>
+                <span
+                  style={{
+                    marginLeft: "1%",
+                    cursor: "pointer",
+                    color: "#0066cc",
+                    fontSize: "0.9em",
+                  }}
+                  onClick={() => setEditingMuted(true)}
+                >
+                  ✏️ Edit
+                </span>
+              </div>
+            )}
           </div>
         </Collapse>
       </div>
