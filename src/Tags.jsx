@@ -714,6 +714,7 @@ const tagArray = getTagsArray(tags);
                 }}
                 onClick={(e) => {
                   e.preventDefault();
+                  e.stopPropagation();  // ← ADD THIS
                   window.location.href = `/lounge#${encodeURIComponent(tag)}`;
                 }}
               >

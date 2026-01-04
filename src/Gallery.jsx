@@ -36,6 +36,29 @@ import { TagSelect, searchTags, ClickableTags } from "./Tags";
   const R2_PUBLIC_URL = "https://pub-737d16f465e74a25bb9b4613475ea7ef.r2.dev";
   const ITEMS_PER_BATCH = 100;
 
+useEffect(() => {
+  const handleHashChange = () => {
+    const hash = window.location.hash.slice(1);
+    if (hash) {
+      const query = decodeURIComponent(hash);
+      setSearchInput(query);
+      triggerSearch();
+    } else {
+      // Optional: clear search if hash removed
+      setSearchInput("");
+      triggerSearch();
+    }
+  };
+
+  // Run on mount
+  handleHashChange();
+
+  // Run on hash change
+  window.addEventListener("hashchange", handleHashChange);
+
+  return () => window.removeEventListener("hashchange", handleHashChange);
+}, []); // Empty dep array — only setup once
+
   useEffect(() => {
     loadMoreGroups();
   }, []);
