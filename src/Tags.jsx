@@ -694,7 +694,7 @@ export const getTagsArray = (tagInput) => {
 };
 
 // Reusable read-only tag list with clickable links to /gallery#tag
-export const clickableTags = ({ tags = "", emptyText = "None set" }) => {
+export const ClickableTags = ({ tags = "", emptyText = "None set" }) => {
 const tagArray = getTagsArray(tags);
 
   return (

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuth, apiFetch } from "./Auth";
-import { TagSelect, searchTags, clickableTags } from "./Tags";
+import { TagSelect, searchTags, ClickableTags } from "./Tags";
 
  const Gallery = () => {
   const { isSubscriber, isLoggedIn, isAdmin, user } = useAuth();
@@ -897,7 +897,7 @@ return (
                                 }}
                               >
                                 Tags:{" "}
-                                <clickableTags tags={itemTags} />
+                                <ClickableTags tags={itemTags} />
                                 
                                 
                               </p>

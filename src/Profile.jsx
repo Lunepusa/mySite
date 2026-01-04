@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth, apiFetch } from "./Auth";
 import Collapse from "./Utility";
-import { TagSelect, searchTags, getTagsArray, clickableTags } from "./Tags";
+import { TagSelect, searchTags, getTagsArray, ClickableTags } from "./Tags";
 
 const Profile = () => {
    const { isSubscriber, isLoggedIn, isAdmin, user } = useAuth();
@@ -239,7 +239,7 @@ const Profile = () => {
               </>
             ) : (
              <div style={{ margin: "0.5% 0" }}>
-                <clickableTags tags={user.favorite_tags} emptyText="None set" />
+                <ClickableTags tags={user.favorite_tags} emptyText="None set" />
                 <span
                   style={{
                     marginLeft: "1%",
@@ -284,7 +284,7 @@ const Profile = () => {
               </>
             ) : (
               <div style={{ margin: "0.5% 0" }}>
-                <clickableTags tags={user.muted_tags} emptyText="None set" />
+                <ClickableTags tags={user.muted_tags} emptyText="None set" />
                 <span
                   style={{
                     marginLeft: "1%",
