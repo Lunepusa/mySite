@@ -695,33 +695,40 @@ export const getTagsArray = (tagInput) => {
 
 // Reusable read-only tag list with clickable links to /gallery#tag
 export const clickableTags = ({ tags = "", emptyText = "None set" }) => {
-  const tagArray = getTagsArray(tags);
-
-  if (tagArray.length === 0) {
-    return <span style={{ color: "#666" }}>{emptyText}</span>;
-  }
+const tagArray = getTagsArray(tags);
 
   return (
-    <>
-      {tagArray.map((tag, i) => (
-        <React.Fragment key={tag}>
-          <a
-            href={`/gallery#${encodeURIComponent(tag)}`}
-            style={{
-              color: "#0066cc",
-              textDecoration: "none",
-              marginRight: "0.5%",
-            }}
-            onClick={(e) => {
-              e.preventDefault();
-              window.location.href = `/gallery#${encodeURIComponent(tag)}`;
-            }}
-          >
-            {tag}
-          </a>
-          {i < tagArray.length - 1 && <span style={{ color: "#666" }}>, </span>}
-        </React.Fragment>
-      ))}
-    </>
+    <div style={{ margin: "0.5% 0" }}>
+      {/* Debug line — shows raw input and parsed array */}
+      <p style={{ color: "#888", fontSize: "0.7em", margin: "0 0 0.5% 0" }}>
+        Debug: Raw = "{tags || '(empty)'}" | Parsed = [{tagArray.join(", ") || "none"}]
+      </p>
+
+      {tagArray.length === 0 ? (
+        <span style={{ color: "#666" }}>{emptyText}</span>
+      ) : (
+        <>
+          {tagArray.map((tag, i) => (
+            <React.Fragment key={tag}>
+              <a
+                href={`/gallery#${encodeURIComponent(tag)}`}
+                style={{
+                  color: "#0066cc",
+                  textDecoration: "none",
+                  marginRight: "0.5%",
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.location.href = `/gallery#${encodeURIComponent(tag)}`;
+                }}
+              >
+                {tag}
+              </a>
+              {i < tagArray.length - 1 && <span style={{ color: "#666" }}>, </span>}
+            </React.Fragment>
+          ))}
+        </>
+      )}
+    </div>
   );
 };

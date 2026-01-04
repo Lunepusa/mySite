@@ -207,10 +207,6 @@ const Profile = () => {
         </form>
             </Collapse>
           </div>
-
-        {/* Favorite & Muted Tags */}
-      <div style={{ marginTop: "1%" }}>
-        <Collapse trigger={<h2>Favorite & Muted Tags</h2>}>
       {/* Favorite & Muted Tags */}
       <div style={{ marginTop: "1%" }}>
         <Collapse trigger={<h2>Favorite & Muted Tags</h2>}>
@@ -302,8 +298,6 @@ const Profile = () => {
                 </span>
               </div>
             )}
-          </div>
-        </Collapse>
       </div>
         </Collapse>
       </div>
