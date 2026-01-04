@@ -692,3 +692,36 @@ export const getTagsArray = (tagInput) => {
   }
   return [];
 };
+
+// Reusable read-only tag list with clickable links to /gallery#tag
+export const clickableTags = ({ tags = "", emptyText = "None set" }) => {
+  const tagArray = getTagsArray(tags);
+
+  if (tagArray.length === 0) {
+    return <span style={{ color: "#666" }}>{emptyText}</span>;
+  }
+
+  return (
+    <>
+      {tagArray.map((tag, i) => (
+        <React.Fragment key={tag}>
+          <a
+            href={`/gallery#${encodeURIComponent(tag)}`}
+            style={{
+              color: "#0066cc",
+              textDecoration: "none",
+              marginRight: "0.5%",
+            }}
+            onClick={(e) => {
+              e.preventDefault();
+              window.location.href = `/gallery#${encodeURIComponent(tag)}`;
+            }}
+          >
+            {tag}
+          </a>
+          {i < tagArray.length - 1 && <span style={{ color: "#666" }}>, </span>}
+        </React.Fragment>
+      ))}
+    </>
+  );
+};

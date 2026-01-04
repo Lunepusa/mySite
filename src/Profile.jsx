@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth, apiFetch } from "./Auth";
 import Collapse from "./Utility";
-import { TagSelect, searchTags, getTagsArray } from "./Tags";
+import { TagSelect, searchTags, getTagsArray, clickableTags } from "./Tags";
 
 const Profile = () => {
    const { isSubscriber, isLoggedIn, isAdmin, user } = useAuth();
@@ -211,6 +211,9 @@ const Profile = () => {
         {/* Favorite & Muted Tags */}
       <div style={{ marginTop: "1%" }}>
         <Collapse trigger={<h2>Favorite & Muted Tags</h2>}>
+      {/* Favorite & Muted Tags */}
+      <div style={{ marginTop: "1%" }}>
+        <Collapse trigger={<h2>Favorite & Muted Tags</h2>}>
           {/* Favorite Tags */}
           <div style={{ marginBottom: "1%" }}>
             <h3 style={{ margin: "0.5% 0" }}>Favorite Tags</h3>
@@ -239,10 +242,8 @@ const Profile = () => {
                 </button>
               </>
             ) : (
-              <div style={{ margin: "0.5% 0" }}>
-                <span style={{ color: user.favorite_tags ? "#fff" : "#666" }}>
-                  {user.favorite_tags || "None set"}
-                </span>
+             <div style={{ margin: "0.5% 0" }}>
+                <clickableTags tags={user.favorite_tags} emptyText="None set" />
                 <span
                   style={{
                     marginLeft: "1%",
@@ -287,9 +288,7 @@ const Profile = () => {
               </>
             ) : (
               <div style={{ margin: "0.5% 0" }}>
-                <span style={{ color: user.muted_tags ? "#fff" : "#666" }}>
-                  {user.muted_tags || "None set"}
-                </span>
+                <clickableTags tags={user.muted_tags} emptyText="None set" />
                 <span
                   style={{
                     marginLeft: "1%",
@@ -304,6 +303,8 @@ const Profile = () => {
               </div>
             )}
           </div>
+        </Collapse>
+      </div>
         </Collapse>
       </div>
 

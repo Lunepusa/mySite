@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuth, apiFetch } from "./Auth";
-import { TagSelect, searchTags } from "./Tags";
+import { TagSelect, searchTags, clickableTags } from "./Tags";
 
  const Gallery = () => {
   const { isSubscriber, isLoggedIn, isAdmin, user } = useAuth();
@@ -38,6 +38,15 @@ import { TagSelect, searchTags } from "./Tags";
 
   useEffect(() => {
     loadMoreGroups();
+  }, []);
+
+    useEffect(() => {
+    const hash = window.location.hash.slice(1); // remove #
+    if (hash) {
+      const decoded = decodeURIComponent(hash);
+      setSearchInput(decoded);
+      triggerSearch(); // or directly setActiveSearchQuery(decoded) and load
+    }
   }, []);
 
   const getTagsArray = (tagInput) => {
@@ -148,7 +157,14 @@ const triggerSearch = () => {
   setMedia([]);
   setOffset(0);
   setHasMore(true);
-  loadMoreGroups(0, normalized, true); // Force offset 0 and new query
+  loadMoreGroups(0, normalized, true);
+
+  // Update URL hash
+  if (normalized) {
+    window.history.pushState(null, "", `#${encodeURIComponent(normalized)}`);
+  } else {
+    window.history.pushState(null, "", window.location.pathname);
+  }
 };
   // Group by date
   const groups = {};
@@ -195,6 +211,7 @@ const triggerSearch = () => {
       setOffset(0);
       setHasMore(true);
       loadMoreGroups(0, "",true); // Force reload with no query
+      window.history.pushState(null, "", window.location.pathname);
               }}
             >
               Clear search
@@ -880,7 +897,8 @@ return (
                                 }}
                               >
                                 Tags:{" "}
-                                {itemTags.length > 0 ? itemTags.join(", ") : "none"}
+                                <clickableTags tags={itemTags} />
+                                
                                 
                               </p>
 
