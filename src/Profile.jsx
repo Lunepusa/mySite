@@ -61,6 +61,38 @@ const Profile = () => {
   const expiration = user.subscription_expires
     ? new Date(user.subscription_expires * 1000).toLocaleDateString()
     : "Never";
+
+      const [tagPrefs, setTagPrefs] = useState({
+    favorite_tags: "",
+    muted_tags: "",
+  });
+
+  useEffect(() => {
+    if (user) {
+      setTagPrefs({
+        favorite_tags: user.favorite_tags || "",
+        muted_tags: user.muted_tags || "",
+      });
+    }
+  }, [user]);
+
+  const updateTagPrefs = async (updates) => {
+    try {
+      const res = await apiFetch("/tag-prefs", {
+        method: "POST",
+        body: JSON.stringify(updates),
+      });
+      if (!res.ok) throw new Error("Failed");
+
+      // Optimistic update
+      setTagPrefs(prev => ({ ...prev, ...updates }));
+      // Also update main user if needed
+      loadUser?.(); // if you have it
+    } catch (err) {
+      setError("Failed to save tag preferences");
+    }
+  };
+
   useEffect(() => {
     if (user?.username === "lunepusa") {
       const fetchUsers = async () => {
@@ -173,19 +205,45 @@ const Profile = () => {
             </Collapse>
           </div>
 
+                {/* Favorite & Muted Tags */}
+      <div style={{ marginTop: "1%" }}>
+        <Collapse trigger={<h2>Favorite & Muted Tags</h2>}>
+          <div style={{ marginBottom: "1%" }}>
+            <h3>Favorite Tags</h3>
+            <TagSelect
+              selected={getTagsArray(user.favorite_tags)}
+              onChange={(tags) => {
+                const tagsString = tags.join(",");
+                updateTagPrefs({ favorite_tags: tagsString });
+              }}
+            />
+          </div>
+
+          <div>
+            <h3>Muted Tags</h3>
+            <TagSelect
+              selected={getTagsArray(user.muted_tags)}
+              onChange={(tags) => {
+                const tagsString = tags.join(",");
+                updateTagPrefs({ muted_tags: tagsString });
+              }}
+            />
+          </div>
+        </Collapse>
+      </div>
+
             {user?.username === "lunepusa" && (
         <div style={{ marginTop: "1%" }}>
           <Collapse trigger={<h2>User Management (Admin Only)</h2>}>
             {usersLoading ? (
               <p>Loading users...</p>
             ) : (
-              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                          <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
                   <tr style={{ borderBottom: "1px solid #444" }}>
-                    <th style={{ textAlign: "left", padding: "0.5% 1%" }}>Username</th>
-                    <th style={{ textAlign: "center", padding: "0.5% 1%" }}>Admin</th>
-                    <th style={{ textAlign: "center", padding: "0.5% 1%" }}>Subscription Expiry</th>
-                    <th style={{ textAlign: "center", padding: "0.5% 1%" }}>Status</th>
+                    <th style={{ textAlign: "left", padding: "0.5% 0" }}>Username</th>
+                    <th style={{ textAlign: "center", padding: "0.5% 0" }}>Admin</th>
+                    <th style={{ textAlign: "left", padding: "0.5% 0" }}>Subscription Expiry</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -197,17 +255,17 @@ const Profile = () => {
 
                     return (
                       <tr key={u.id} style={{ borderBottom: "1px solid #333" }}>
-                        <td style={{ padding: "0.5% 1%" }}>
+                        <td style={{ padding: "0.5% 0" }}>
                           <strong>{u.username}</strong> (ID: {u.id})
                         </td>
-                        <td style={{ textAlign: "center", padding: "0.5% 1%" }}>
+                        <td style={{ textAlign: "center", padding: "0.5% 0" }}>
                           <input
                             type="checkbox"
                             checked={!!u.is_admin}
                             onChange={(e) => updateUser(u.id, { is_admin: e.target.checked })}
                           />
                         </td>
-                        <td style={{ padding: "0.5% 1%" }}>
+                        <td style={{ padding: "0.5% 0" }}>
                           <input
                             type="date"
                             value={expiryDate}
@@ -216,11 +274,14 @@ const Profile = () => {
                               const timestamp = date ? Math.floor(new Date(date + "T00:00:00").getTime() / 1000) : 0;
                               updateUser(u.id, { subscription_expires: timestamp });
                             }}
-                            style={{ width: "100%", padding: "0.5%", border: "1px solid #555", background: "#111", color: "#fff" }}
+                            style={{
+                              width: "100%",
+                              padding: "0.5%",
+                              border: "1px solid #555",
+                              background: "#111",
+                              color: isActive ? "lightgreen" : "#ccc",
+                            }}
                           />
-                        </td>
-                        <td style={{ textAlign: "center", padding: "0.5% 1%", color: isActive ? "lightgreen" : "#ccc" }}>
-                          {isActive ? "Active" : u.subscription_expires === 0 ? "Never" : "Expired"}
                         </td>
                       </tr>
                     );
