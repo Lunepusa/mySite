@@ -173,52 +173,60 @@ const Profile = () => {
             </Collapse>
           </div>
 
-      {user?.username === "lunepusa" && (
-        <div style={{ padding: "2%", background: "#222", borderRadius: "1px", marginTop: "20px" }}>
+            {user?.username === "lunepusa" && (
+        <div style={{ marginTop: "1%" }}>
           <Collapse trigger={<h2>User Management (Admin Only)</h2>}>
             {usersLoading ? (
               <p>Loading users...</p>
             ) : (
-              <div>
-                {allUsers.map(u => {
-                  const isAdminUser = u.is_admin;
-                  const expiryDate = u.subscription_expires > 0
-                    ? new Date(u.subscription_expires * 1000).toISOString().slice(0, 10)
-                    : "";
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead>
+                  <tr style={{ borderBottom: "1px solid #444" }}>
+                    <th style={{ textAlign: "left", padding: "0.5% 1%" }}>Username</th>
+                    <th style={{ textAlign: "center", padding: "0.5% 1%" }}>Admin</th>
+                    <th style={{ textAlign: "center", padding: "0.5% 1%" }}>Subscription Expiry</th>
+                    <th style={{ textAlign: "center", padding: "0.5% 1%" }}>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {allUsers.map(u => {
+                    const isActive = u.subscription_expires > Math.floor(Date.now() / 1000);
+                    const expiryDate = u.subscription_expires > 0
+                      ? new Date(u.subscription_expires * 1000).toISOString().slice(0, 10)
+                      : "";
 
-                  return (
-                    <div key={u.id} style={{ padding: "10px", borderBottom: "1px solid #444", marginBottom: "10px" }}>
-                      <strong>{u.username}</strong> (ID: {u.id})
-                      <div style={{ marginTop: "5px" }}>
-                        <label>
+                    return (
+                      <tr key={u.id} style={{ borderBottom: "1px solid #333" }}>
+                        <td style={{ padding: "0.5% 1%" }}>
+                          <strong>{u.username}</strong> (ID: {u.id})
+                        </td>
+                        <td style={{ textAlign: "center", padding: "0.5% 1%" }}>
                           <input
                             type="checkbox"
-                            checked={isAdminUser}
+                            checked={!!u.is_admin}
                             onChange={(e) => updateUser(u.id, { is_admin: e.target.checked })}
                           />
-                          Admin
-                        </label>
-                      </div>
-                      <div style={{ marginTop: "5px" }}>
-                        <label>
-                          Subscription Expiry:
+                        </td>
+                        <td style={{ padding: "0.5% 1%" }}>
                           <input
                             type="date"
                             value={expiryDate}
                             onChange={(e) => {
                               const date = e.target.value;
-                              const timestamp = date ? Math.floor(new Date(date).getTime() / 1000) : 0;
+                              const timestamp = date ? Math.floor(new Date(date + "T00:00:00").getTime() / 1000) : 0;
                               updateUser(u.id, { subscription_expires: timestamp });
                             }}
+                            style={{ width: "100%", padding: "0.5%", border: "1px solid #555", background: "#111", color: "#fff" }}
                           />
-                        </label>
-                        {u.subscription_expires > Math.floor(Date.now() / 1000) && " (Active)"}
-                        {u.subscription_expires === 0 && " (Never)"}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+                        </td>
+                        <td style={{ textAlign: "center", padding: "0.5% 1%", color: isActive ? "lightgreen" : "#ccc" }}>
+                          {isActive ? "Active" : u.subscription_expires === 0 ? "Never" : "Expired"}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             )}
           </Collapse>
         </div>
