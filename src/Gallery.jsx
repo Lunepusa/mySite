@@ -529,7 +529,7 @@ return (
           >
             Clear
           </button>
-          <h4> like a particular tag, or want to hide anything with a particular tag you can add them to your <a href="/Profile#collapse-favoritemutedtags">favorites or mute lists!</a> </h4>
+          <p style={fontSize:".5em"}> like a particular tag, or want to hide anything with a particular tag you can add them to your <a href="/Profile#collapse-favoritemutedtags">favorites or mute lists!</a> </p>
         )}
       </div>
 
@@ -920,10 +920,14 @@ return (
                                   margin: "2px 0",
                                 }}
                               >
-                                Tags:{" "}
-                                <ClickableTags tags={itemTags} />
-                                
-                                
+                                Tags:{" "}Tags:{" "}
+                                {multiSelectMode ? (
+                                  // Plain text in multi-select mode — allows selection
+                                  itemTags.length > 0 ? itemTags.join(", ") : "none"
+                                ) : (
+                                  // Clickable tags in normal mode
+                                  <ClickableTags tags={item.tags} />
+                                )}
                               </p>
 
                               {!!isAdmin && (
