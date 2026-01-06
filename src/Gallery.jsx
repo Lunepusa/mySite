@@ -514,22 +514,28 @@ return (
         >
           Search
         </button>
-        {activeSearchQuery && (
-          <button
-            onClick={() => {
-              setSearchInput("");
-              setActiveSearchQuery("");
-              setDisplayedQuery("");
-              setMedia([]);
-              setOffset(0);
-              setHasMore(true);
-              loadMoreGroups(0, "", true);
-            }}
-            style={{ marginLeft: "2px", padding: "1px 3px" }}
-          >
-            Clear
-          </button>
-          <p style={{fontSize:".5em"}}> like a particular tag, or want to hide anything with a particular tag you can add them to your <a href="/Profile#collapse-favoritemutedtags">favorites or mute lists!</a> </p>
+       {activeSearchQuery && (
+          <>
+            <button
+              onClick={() => {
+                setSearchInput("");
+                setActiveSearchQuery("");
+                setDisplayedQuery("");
+                setMedia([]);
+                setOffset(0);
+                setHasMore(true);
+                loadMoreGroups(0, "", true);
+                window.history.pushState(null, "", window.location.pathname);
+              }}
+              style={{ marginLeft: "2px", padding: "1px 3px" }}
+            >
+              Clear
+            </button>
+            <p style={{ fontSize: ".5em", margin: "5px 0" }}>
+              Like a particular tag, or want to hide anything with a particular tag? You can add them to your{" "}
+              <a href="/Profile#collapse-favoritemutedtags">favorites or mute lists!</a>
+            </p>
+          </>
         )}
       </div>
 
