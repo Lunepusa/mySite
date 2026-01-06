@@ -529,7 +529,7 @@ return (
           >
             Clear
           </button>
-          <p style={fontSize:".5em"}> like a particular tag, or want to hide anything with a particular tag you can add them to your <a href="/Profile#collapse-favoritemutedtags">favorites or mute lists!</a> </p>
+          <p style={{fontSize:".5em"}}> like a particular tag, or want to hide anything with a particular tag you can add them to your <a href="/Profile#collapse-favoritemutedtags">favorites or mute lists!</a> </p>
         )}
       </div>
 
