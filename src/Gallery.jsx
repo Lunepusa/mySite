@@ -576,26 +576,32 @@ return (
           </label>
 
           {multiSelectMode && selectedItems.size > 0 && (
-            <div style={{ marginTop: "2px" }}>
-              <TagSelect selected={multiEditTags} onChange={setMultiEditTags} />
-              <div style={{ marginTop: "1px" }}>
-                <input
-                  type="date"
-                  value={multiEditDate}
-                  onChange={(e) => setMultiEditDate(e.target.value)}
-                />
-                <input
-                  type="time"
-                  value={multiEditTime}
-                  onChange={(e) => setMultiEditTime(e.target.value)}
-                  style={{ marginLeft: "5px" }}
-                />
-              </div>
-              <button onClick={saveMultiEdit} style={{ marginTop: "5px", display: "block" }}>
-                Apply to Selected
-              </button>
-            </div>
-          )}
+  <div style={{ marginTop: "2px" }}>
+    <TagSelect
+      initialTags={multiEditTags.join(",")}
+      onSave={(tagsString) => {
+        setMultiEditTags(tagsString.split(",").map(t => t.trim()).filter(t => t));
+      }}
+      placeholder="Add tags to selected..."
+    />
+    <div style={{ marginTop: "1px" }}>
+      <input
+        type="date"
+        value={multiEditDate}
+        onChange={(e) => setMultiEditDate(e.target.value)}
+      />
+      <input
+        type="time"
+        value={multiEditTime}
+        onChange={(e) => setMultiEditTime(e.target.value)}
+        style={{ marginLeft: "5px" }}
+      />
+    </div>
+    <button onClick={saveMultiEdit} style={{ marginTop: "5px", display: "block" }}>
+      Apply to Selected
+    </button>
+  </div>
+)}
         </div>
       )}
 
@@ -926,7 +932,7 @@ return (
                                   margin: "2px 0",
                                 }}
                               >
-                                Tags:{" "}Tags:{" "}
+                                Tags:{" "}
                                 {multiSelectMode ? (
                                   // Plain text in multi-select mode — allows selection
                                   itemTags.length > 0 ? itemTags.join(", ") : "none"
