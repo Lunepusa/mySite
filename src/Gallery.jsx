@@ -189,6 +189,25 @@ const triggerSearch = () => {
     window.history.pushState(null, "", window.location.pathname);
   }
 };
+const multiCommonTags = useMemo(() => {
+  if (selectedItems.size === 0) return [];
+
+  const keys = Array.from(selectedItems);
+  const firstItem = media.find(m => m.key === keys[0]);
+  if (!firstItem) return [];
+
+  let common = getTagsArray(firstItem.tags);
+
+  for (const key of keys.slice(1)) {
+    const item = media.find(m => m.key === key);
+    if (!item) continue;
+    const itemTags = getTagsArray(item.tags);
+    common = common.filter(t => itemTags.includes(t));
+  }
+
+  return common;
+}, [selectedItems, media]);
+
   // Group by date
   const groups = {};
   media.forEach((item) => {
@@ -409,21 +428,20 @@ const triggerSearch = () => {
     }
   };
   // Multi-select save
-  const saveMultiEdit = async () => {
-    if (selectedItems.size === 0) return;
+const saveMultiEdit = async (added = multiEditTags.filter(t => !commonTags.includes(t)), removed = commonTags.filter(t => !multiEditTags.includes(t))) => {
+  if (selectedItems.size === 0) return;
 
-    const keys = Array.from(selectedItems);
+  const keys = Array.from(selectedItems);
 
-    const body = { keys };
+  const body = { keys };
 
-    if (multiEditTags.length > 0) {
-      body.addedTags = multiEditTags;
-    }
+  if (added.length > 0) body.addedTags = added;
+  if (removed.length > 0) body.removedTags = removed;
 
-    if (multiEditDate && multiEditTime) {
-      body.newDate = multiEditDate.replace(/-/g, "");
-      body.newTime = multiEditTime.replace(/:/g, "") + "000";
-    }
+  if (multiEditDate && multiEditTime) {
+    body.newDate = multiEditDate.replace(/-/g, "");
+    body.newTime = multiEditTime.replace(/:/g, "") + "000";
+  }
 
     try {
       const res = await apiFetch("/bulk-update", {
@@ -575,31 +593,86 @@ return (
             Multi-select ({selectedItems.size} selected)
           </label>
 
-          {multiSelectMode && selectedItems.size > 0 && (
+{multiSelectMode && selectedItems.size > 0 && (
   <div style={{ marginTop: "2px" }}>
     <TagSelect
-      initialTags={multiEditTags.join(",")}
+      initialTags={multiCommonTags.join(",")}
       onSave={(tagsString) => {
-        setMultiEditTags(tagsString.split(",").map(t => t.trim()).filter(t => t));
+        const newTags = getTagsArray(tagsString);
+        const added = newTags.filter(t => !multiCommonTags.includes(t));
+        const removed = multiCommonTags.filter(t => !newTags.includes(t));
+
+        if (added.length > 0 || removed.length > 0) {
+          const keys = Array.from(selectedItems);
+          const body = { keys };
+          if (added.length > 0) body.addedTags = added;
+          if (removed.length > 0) body.removedTags = removed;
+
+          apiFetch("/bulk-update", {
+            method: "POST",
+            body: JSON.stringify(body),
+          }).then(res => {
+            if (res.ok) {
+              // Optimistic update
+              setMedia(prev => prev.map(item => {
+                if (keys.includes(item.key)) {
+                  let current = getTagsArray(item.tags);
+                  current = current.filter(t => !removed.includes(t));
+                  current = [...new Set([...current, ...added])];
+                  return { ...item, tags: current.join(", ") };
+                }
+                return item;
+              }));
+            }
+          });
+        }
       }}
-      placeholder="Add tags to selected..."
+      placeholder="Edit tags (common shown)..."
     />
     <div style={{ marginTop: "1px" }}>
-      <input
-        type="date"
-        value={multiEditDate}
-        onChange={(e) => setMultiEditDate(e.target.value)}
-      />
-      <input
-        type="time"
-        value={multiEditTime}
-        onChange={(e) => setMultiEditTime(e.target.value)}
-        style={{ marginLeft: "5px" }}
-      />
+      <input type="date" value={multiEditDate} onChange={(e) => setMultiEditDate(e.target.value)} />
+      <input type="time" value={multiEditTime} onChange={(e) => setMultiEditTime(e.target.value)} style={{ marginLeft: "5px" }} />
+      <button
+        onClick={() => {
+          if (multiEditDate && multiEditTime) {
+            const keys = Array.from(selectedItems);
+            const body = {
+              keys,
+              newDate: multiEditDate.replace(/-/g, ""),
+              newTime: multiEditTime.replace(/:/g, "") + "000",
+            };
+
+            apiFetch("/bulk-update", {
+              method: "POST",
+              body: JSON.stringify(body),
+            }).then(res => {
+              if (res.ok) {
+                setMedia(prev => prev.map(item => {
+                  if (keys.includes(item.key)) {
+                    const suffix = item.key.split("/").pop().split("_").slice(2).join("_");
+                    const newKey = `media/${body.newDate}/${body.newDate}_${body.newTime}_${suffix}`;
+                    return { ...item, key: newKey, date: body.newDate };
+                  }
+                  return item;
+                }));
+                setMultiEditDate("");
+                setMultiEditTime("");
+              }
+            });
+          }
+        }}
+        style={{
+          marginLeft: "5px",
+          padding: "0.5% 1%",
+          background: "#0066cc",
+          color: "white",
+          border: "none",
+          borderRadius: "2px",
+        }}
+      >
+        Save Date & Time
+      </button>
     </div>
-    <button onClick={saveMultiEdit} style={{ marginTop: "5px", display: "block" }}>
-      Apply to Selected
-    </button>
   </div>
 )}
         </div>

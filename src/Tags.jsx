@@ -675,7 +675,7 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
           cursor: "pointer",
         }}
       >
-        Save Changes
+        Save tags
       </button>
     </div>
   );
