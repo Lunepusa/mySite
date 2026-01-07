@@ -666,8 +666,7 @@ return (
       placeholder="Edit tags (common shown)..."
     />
         </div>
-      )}
-
+      )}</div>)}
       {/* Gallery content */}
       <div style={{ padding: "2px", maxWidth: "90%", margin: "0 auto" }}>
         {/* Full-screen modal */}
