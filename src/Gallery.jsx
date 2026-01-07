@@ -228,7 +228,7 @@ const multiCommonTags = useMemo(() => {
   media.forEach((item) => {
     const date = item.date || "Unknown";
     if (!groups[date]) {
-      groups[date] = { items: [], commonTags: [], totalVideoSeconds: 0 };
+      groups[date] = { items: [], commonTags: [] };
     }
     groups[date].items.push(item);
   });
@@ -517,12 +517,7 @@ const saveMultiEdit = async (added = multiEditTags.filter(t => !commonTags.inclu
     }
   };
 
-  const formatDuration = (seconds) => {
-    if (!seconds || seconds === 0) return "";
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return ` — total video: ${mins}m ${secs.toString().padStart(2, "0")}s`;
-  };
+
 
 return (
   <>
@@ -781,7 +776,7 @@ return (
 
         {/* Groups */}
         {sortedDates.map((date) => {
-          const { items, commonTags, totalVideoSeconds = 0 } = groups[date];
+          const { items, commonTags} = groups[date];
           const videoCount = items.filter((i) => i.isVideo).length;
           const photoCount = items.length - videoCount;
           const caption = items[0]?.caption || "";
@@ -835,7 +830,7 @@ return (
                 {date}
                 {videoCount > 0 && ` — v${videoCount}`}
                 {photoCount > 0 && ` p${photoCount}`}
-                {totalVideoSeconds > 0 && formatDuration(totalVideoSeconds)}
+               
 
               </h4>
 
@@ -905,13 +900,6 @@ return (
                                 src={`${R2_PUBLIC_URL}/${item.key}`}
                                 muted
                                 loop
-                                onLoadedMetadata={(e) => {
-                                  const dur = Math.round(e.target.duration);
-                                  if (!isNaN(dur)) {
-                                    groups[date].totalVideoSeconds += dur;
-                                    setMedia([...media]);
-                                  }
-                                }}
                                 style={{
                                   maxHeight: "auto",
                                   width: "100%",
