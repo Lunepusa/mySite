@@ -301,6 +301,7 @@ const multiCommonTags = useMemo(() => {
     }
   };
 
+  
   const saveEdit = async () => {
     const body = {};
 
@@ -394,6 +395,23 @@ const multiCommonTags = useMemo(() => {
       alert("Save failed — changes not applied: " + err.message);
     }
   };
+const multiCurrentDate = useMemo(() => {
+  if (selectedItems.size === 0) return "";
+  const keys = Array.from(selectedItems);
+  const first = media.find(m => m.key === keys[0]);
+  if (!first || !first.date) return "";
+  return first.date.toString().padStart(8, "0"); // e.g., "20260106"
+}, [selectedItems, media]);
+
+const multiCurrentTime = useMemo(() => {
+  if (selectedItems.size === 0) return "";
+  const keys = Array.from(selectedItems);
+  const first = media.find(m => m.key === keys[0]);
+  if (!first || !first.key) return "";
+  const filename = first.key.split("/").pop();
+  const timePart = filename.split("_")[1]?.slice(0, 6) || "000000";
+  return `${timePart.slice(0,2)}:${timePart.slice(2,4)}:${timePart.slice(4,6)}`;
+}, [selectedItems, media]);
 
     const saveDateEdit = async () => {
     if (!editingDateItem || !tempNewDate || !tempNewTime) return;
@@ -647,52 +665,6 @@ return (
       }}
       placeholder="Edit tags (common shown)..."
     />
-    <div style={{ marginTop: "1px" }}>
-      <input type="date" value={multiEditDate} onChange={(e) => setMultiEditDate(e.target.value)} />
-      <input type="time" value={multiEditTime} onChange={(e) => setMultiEditTime(e.target.value)} style={{ marginLeft: "5px" }} />
-      <button
-        onClick={() => {
-          if (multiEditDate && multiEditTime) {
-            const keys = Array.from(selectedItems);
-            const body = {
-              keys,
-              newDate: multiEditDate.replace(/-/g, ""),
-              newTime: multiEditTime.replace(/:/g, "") + "000",
-            };
-
-            apiFetch("/bulk-update", {
-              method: "POST",
-              body: JSON.stringify(body),
-            }).then(res => {
-              if (res.ok) {
-                setMedia(prev => prev.map(item => {
-                  if (keys.includes(item.key)) {
-                    const suffix = item.key.split("/").pop().split("_").slice(2).join("_");
-                    const newKey = `media/${body.newDate}/${body.newDate}_${body.newTime}_${suffix}`;
-                    return { ...item, key: newKey, date: body.newDate };
-                  }
-                  return item;
-                }));
-                setMultiEditDate("");
-                setMultiEditTime("");
-              }
-            });
-          }
-        }}
-        style={{
-          marginLeft: "5px",
-          padding: "0.5% 1%",
-          background: "#0066cc",
-          color: "white",
-          border: "none",
-          borderRadius: "2px",
-        }}
-      >
-        Save Date & Time
-      </button>
-    </div>
-  </div>
-)}
         </div>
       )}
 
