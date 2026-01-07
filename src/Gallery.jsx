@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useAuth, apiFetch } from "./Auth";
 import { TagSelect, searchTags, ClickableTags } from "./Tags";
 
- const Gallery = () => {
+const Gallery = () => {
   const { isSubscriber, isLoggedIn, isAdmin, user } = useAuth();
   const [media, setMedia] = useState([]);
   const [offset, setOffset] = useState(0);
@@ -24,54 +24,49 @@ import { TagSelect, searchTags, ClickableTags } from "./Tags";
   const [activeSearchQuery, setActiveSearchQuery] = useState("");
   const [displayedQuery, setDisplayedQuery] = useState("");
 
-    // Multi-select mode
+  // Multi-select mode
   const [multiSelectMode, setMultiSelectMode] = useState(false);
   const [selectedItems, setSelectedItems] = useState(new Set());
-  const [multiEditTags, setMultiEditTags] = useState([]);
-  const [multiEditDate, setMultiEditDate] = useState("");
-  const [multiEditTime, setMultiEditTime] = useState("");
-
-  const [editingDateItem, setEditingDateItem] = useState(null);
-  const [tempNewDate, setTempNewDate] = useState("");
-  const [tempNewTime, setTempNewTime] = useState("");
 
   const R2_PUBLIC_URL = "https://pub-737d16f465e74a25bb9b4613475ea7ef.r2.dev";
   const ITEMS_PER_BATCH = 100;
 
-useEffect(() => {
-  const handleHashChange = () => {
-    const hash = window.location.hash.slice(1);
-    if (hash) {
-      const query = decodeURIComponent(hash);
-      setSearchInput(query);
-      triggerSearch();
-    } else {
-      // Optional: clear search if hash removed
-      setSearchInput("");
-      triggerSearch();
-    }
-  };
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.slice(1);
+      if (hash) {
+        const query = decodeURIComponent(hash);
+        setSearchInput(query);
+        triggerSearch();
+      } else {
+        setSearchInput("");
+        triggerSearch();
+      }
+    };
 
-  // Run on mount
-  handleHashChange();
+    handleHashChange();
+    window.addEventListener("hashchange", handleHashChange);
 
-  // Run on hash change
-  window.addEventListener("hashchange", handleHashChange);
-
-  return () => window.removeEventListener("hashchange", handleHashChange);
-}, []); // Empty dep array — only setup once
+    return () => window.removeEventListener("hashchange", handleHashChange);
+  }, []);
 
   useEffect(() => {
     loadMoreGroups();
   }, []);
 
-    useEffect(() => {
-    const hash = window.location.hash.slice(1); // remove #
-    if (hash) {
-      const decoded = decodeURIComponent(hash);
-      setSearchInput(decoded);
-      triggerSearch(); // or directly setActiveSearchQuery(decoded) and load
-    }
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await apiFetch("/gallery-stats");
+        if (res.ok) {
+          const data = await res.json();
+          setStats(data);
+        }
+      } catch (err) {
+        // silent
+      }
+    };
+    fetchStats();
   }, []);
 
   const getTagsArray = (tagInput) => {
@@ -86,142 +81,108 @@ useEffect(() => {
     return [];
   };
 
-  // Normalize search using searchTags — top result per term
+  const normalizeSearchInput = (input) => {
+    if (!input.trim()) return "";
 
-useEffect(() => {
-  const fetchStats = async () => {
-    try {
-      const res = await apiFetch("/gallery-stats");
-      if (res.ok) {
-        const data = await res.json();
-        setStats(data);
+    input = input.replace(/&/g, '+');
+
+    const orGroups = input.trim().split(/\s+/);
+
+    const normalizedOrGroups = orGroups.map((group) => {
+      let isExclude = false;
+      if (group.startsWith('-')) {
+        isExclude = true;
+        group = group.slice(1);
       }
+
+      const andTerms = group.split('+');
+      const normalizedAnd = andTerms.map(term => {
+        const clean = term.trim();
+        const matches = searchTags(clean);
+        return matches[0] || clean;
+      });
+
+      const normalizedGroup = normalizedAnd.join('+');
+
+      return isExclude ? `-${normalizedGroup}` : normalizedGroup;
+    });
+
+    return normalizedOrGroups.join('~');
+  };
+
+  const loadMoreGroups = async (currentOffset = offset, queryToUse = activeSearchQuery, ignoreChecks = false) => {
+    if (!ignoreChecks) {
+      if (loading || !hasMore) return;
+    }
+
+    setLoading(true);
+
+    try {
+      const params = new URLSearchParams({
+        offset: currentOffset.toString(),
+        limit: ITEMS_PER_BATCH.toString(),
+      });
+
+      if (queryToUse.trim()) {
+        params.append("q", queryToUse);
+      }
+
+      const res = await apiFetch(`/media?${params.toString()}`);
+      const data = await res.json();
+
+      if (data.media.length === 0) {
+        setHasMore(false);
+        setLoading(false);
+        if (currentOffset === 0) setMedia([]);
+        return;
+      }
+
+      const newMedia = data.media;
+
+      setMedia((prev) => (currentOffset === 0 ? newMedia : [...prev, ...newMedia]));
+      setOffset(currentOffset + newMedia.length);
+      setHasMore(data.media.length === ITEMS_PER_BATCH);
     } catch (err) {
-      // silent fail — stats optional
+      console.error("Load error:", err);
+    } finally {
+      setLoading(false);
     }
   };
-  fetchStats();
-}, []);
 
-const normalizeSearchInput = (input) => {
-  if (!input.trim()) return "";
+  const triggerSearch = () => {
+    const normalized = normalizeSearchInput(searchInput);
+    setActiveSearchQuery(normalized);
+    setDisplayedQuery(normalized || "(no terms)");
+    setMedia([]);
+    setOffset(0);
+    setHasMore(true);
+    loadMoreGroups(0, normalized, true);
 
-  // Allow user to type & or + for AND — convert & to +
-  input = input.replace(/&/g, '+');
+    if (normalized) {
+      window.history.pushState(null, "", `#${encodeURIComponent(normalized)}`);
+    } else {
+      window.history.pushState(null, "", window.location.pathname);
+    }
+  };
 
+  const multiCommonTags = useMemo(() => {
+    if (selectedItems.size === 0) return [];
 
-  // Split on spaces for OR groups
-  const orGroups = input.trim().split(/\s+/);
-  console.log('OR groups (space split):', orGroups);
+    const keys = Array.from(selectedItems);
+    const firstItem = media.find(m => m.key === keys[0]);
+    if (!firstItem) return [];
 
-  const normalizedOrGroups = orGroups.map((group) => {
-    let isExclude = false;
-    if (group.startsWith('-')) {
-      isExclude = true;
-      group = group.slice(1);
+    let common = getTagsArray(firstItem.tags);
+
+    for (const key of keys.slice(1)) {
+      const item = media.find(m => m.key === key);
+      if (!item) continue;
+      const itemTags = getTagsArray(item.tags);
+      common = common.filter(t => itemTags.includes(t));
     }
 
-    // Split on + for AND within group
-    const andTerms = group.split('+');
-    const normalizedAnd = andTerms.map(term => {
-      const clean = term.trim();
-      const matches = searchTags(clean);
-      return matches[0] || clean;
-    });
-
-    const normalizedGroup = normalizedAnd.join('+');
-
-    return isExclude ? `-${normalizedGroup}` : normalizedGroup;
-  });
-
-  // Join OR groups with ~
-  const finalQuery = normalizedOrGroups.join('~');
-  console.log('Final query sent to backend:', finalQuery);
-  return finalQuery;
-};
-
-  // Load more media — accept currentOffset and queryToUse
-const loadMoreGroups = async (currentOffset = offset, queryToUse = activeSearchQuery, ignoreChecks = false) => {
-  
-   if (!ignoreChecks) {
-    if (loading || !hasMore) return;
-  }
-  
-  setLoading(true);
-
-  try {
-    const params = new URLSearchParams({
-      offset: currentOffset.toString(),
-      limit: ITEMS_PER_BATCH.toString(),
-    });
-
-    if (queryToUse.trim()) {
-      params.append("q", queryToUse);
-    }
-    console.log(`/media?${params.toString()}`);
-
-    const res = await apiFetch(`/media?${params.toString()}`);
-    const data = await res.json();
-
-    if (data.media.length === 0) {
-      setHasMore(false);
-      setLoading(false);
-      // If we are clearing a search or starting a new one, 
-      // we need to make sure the media is empty
-      if (currentOffset === 0) setMedia([]); 
-      return;
-    }
-
-    const newMedia = data.media;
-    
-    setMedia((prev) => (currentOffset === 0 ? newMedia : [...prev, ...newMedia]));
-    setOffset(currentOffset + newMedia.length);
-
-    setHasMore(data.media.length === ITEMS_PER_BATCH);
-
-  } catch (err) {
-    console.error("Load error:", err);
-  } finally {
-    setLoading(false);
-  }
-};
-
-  // Updated triggerSearch — force offset 0
-
-const triggerSearch = () => {
-  const normalized = normalizeSearchInput(searchInput);
-  setActiveSearchQuery(normalized);
-  setDisplayedQuery(normalized || "(no terms)");
-  setMedia([]);
-  setOffset(0);
-  setHasMore(true);
-  loadMoreGroups(0, normalized, true);
-
-  // Update URL hash
-  if (normalized) {
-    window.history.pushState(null, "", `#${encodeURIComponent(normalized)}`);
-  } else {
-    window.history.pushState(null, "", window.location.pathname);
-  }
-};
-const multiCommonTags = useMemo(() => {
-  if (selectedItems.size === 0) return [];
-
-  const keys = Array.from(selectedItems);
-  const firstItem = media.find(m => m.key === keys[0]);
-  if (!firstItem) return [];
-
-  let common = getTagsArray(firstItem.tags);
-
-  for (const key of keys.slice(1)) {
-    const item = media.find(m => m.key === key);
-    if (!item) continue;
-    const itemTags = getTagsArray(item.tags);
-    common = common.filter(t => itemTags.includes(t));
-  }
-
-  return common;
-}, [selectedItems, media]);
+    return common;
+  }, [selectedItems, media]);
 
   // Group by date
   const groups = {};
@@ -249,9 +210,7 @@ const multiCommonTags = useMemo(() => {
   const firstDate = sortedDates[0];
 
   if (loading && media.length === 0)
-    return (
-      <p style={{ textAlign: "center", padding: "6px" }}>Loading gallery...</p>
-    );
+    return <p style={{ textAlign: "center", padding: "6px" }}>Loading gallery...</p>;
 
   if (media.length === 0)
     return (
@@ -261,14 +220,14 @@ const multiCommonTags = useMemo(() => {
             <p>No results for: "{displayedQuery}"</p>
             <button
               onClick={() => {
-      setSearchInput("");
-      setActiveSearchQuery("");
-      setDisplayedQuery("");
-      setMedia([]);
-      setOffset(0);
-      setHasMore(true);
-      loadMoreGroups(0, "",true); // Force reload with no query
-      window.history.pushState(null, "", window.location.pathname);
+                setSearchInput("");
+                setActiveSearchQuery("");
+                setDisplayedQuery("");
+                setMedia([]);
+                setOffset(0);
+                setHasMore(true);
+                loadMoreGroups(0, "", true);
+                window.history.pushState(null, "", window.location.pathname);
               }}
             >
               Clear search
@@ -301,7 +260,6 @@ const multiCommonTags = useMemo(() => {
     }
   };
 
-  
   const saveEdit = async () => {
     const body = {};
 
@@ -351,7 +309,6 @@ const multiCommonTags = useMemo(() => {
         throw new Error(`Save failed: ${res.status} ${errText}`);
       }
 
-      // Optimistic update — NO RELOAD
       setMedia((prev) => {
         return prev.map((item) => {
           let updated = { ...item };
@@ -395,292 +352,172 @@ const multiCommonTags = useMemo(() => {
       alert("Save failed — changes not applied: " + err.message);
     }
   };
-const multiCurrentDate = useMemo(() => {
-  if (selectedItems.size === 0) return "";
-  const keys = Array.from(selectedItems);
-  const first = media.find(m => m.key === keys[0]);
-  if (!first || !first.date) return "";
-  return first.date.toString().padStart(8, "0"); // e.g., "20260106"
-}, [selectedItems, media]);
 
-const multiCurrentTime = useMemo(() => {
-  if (selectedItems.size === 0) return "";
-  const keys = Array.from(selectedItems);
-  const first = media.find(m => m.key === keys[0]);
-  if (!first || !first.key) return "";
-  const filename = first.key.split("/").pop();
-  const timePart = filename.split("_")[1]?.slice(0, 6) || "000000";
-  return `${timePart.slice(0,2)}:${timePart.slice(2,4)}:${timePart.slice(4,6)}`;
-}, [selectedItems, media]);
+  return (
+    <>
+      {/* Sticky search header */}
+      <div
+        style={{
+          padding: "5px",
+          textAlign: "center",
+          background: "#111",
+          position: "sticky",
+          top: 0,
+          zIndex: 10,
+        }}
+      >
+        <h1 style={{ marginBottom: "1px" }}>Gallery</h1>
+        <h2 style={{ color: "#aaa" }}>
+          Total: {stats.photos} photos • {stats.videos} videos
+        </h2>
 
-    const saveDateEdit = async () => {
-    if (!editingDateItem || !tempNewDate || !tempNewTime) return;
+        <div style={{ margin: "5px 0" }}>
+          <input
+            type="text"
+            placeholder="Search, Ex. tits+ass, tits -ass, tits ass,   space=OR, +=AND, -exclude)"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                triggerSearch();
+              }
+            }}
+            style={{
+              padding: "8px",
+              width: "80%",
+              maxWidth: "100%",
+              fontSize: "1em",
+              borderRadius: "8px",
+              border: "1px solid #ccc",
+            }}
+          />
+          <button
+            onClick={triggerSearch}
+            style={{ marginLeft: "2px", padding: "1px 3px" }}
+          >
+            Search
+          </button>
+          {activeSearchQuery && (
+            <>
+              <button
+                onClick={() => {
+                  setSearchInput("");
+                  setActiveSearchQuery("");
+                  setDisplayedQuery("");
+                  setMedia([]);
+                  setOffset(0);
+                  setHasMore(true);
+                  loadMoreGroups(0, "", true);
+                  window.history.pushState(null, "", window.location.pathname);
+                }}
+                style={{ marginLeft: "2px", padding: "1px 3px" }}
+              >
+                Clear
+              </button>
+              <p style={{ fontSize: ".8em", margin: "5px 0" }}>
+                Like a particular tag, or want to hide anything with a particular tag? You can add them to your{" "}
+                <a href="/Profile#collapse-favoritemutedtags">favorites or mute lists!</a>
+              </p>
+            </>
+          )}
+        </div>
 
-    const body = {
-      key: editingDateItem,
-      newDate: tempNewDate.replace(/-/g, ""),
-      newTime: tempNewTime.replace(/:/g, "") + "000",
-    };
-
-    try {
-      const res = await apiFetch("/update-date", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-
-      if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(`Date update failed: ${res.status} ${errText}`);
-      }
-
-      // Optimistic update — update key and date locally, NO RELOAD
-      setMedia((prev) =>
-        prev.map((item) => {
-          if (item.key === editingDateItem) {
-            const oldFilename = item.key.split("/").pop();
-            const suffix = oldFilename.split("_").slice(2).join("_");
-            const newFilename = `${body.newDate}_${body.newTime}_${suffix}`;
-            const newKey = `media/${body.newDate}/${newFilename}`;
-            return {
-              ...item,
-              key: newKey,
-              date: body.newDate,
-            };
-          }
-          return item;
-        })
-      );
-
-      setEditingDateItem(null);
-      setTempNewDate("");
-      setTempNewTime("");
-    } catch (err) {
-      console.error("Date edit error:", err);
-      alert("Failed to update date/time: " + err.message);
-    }
-  };
-  // Multi-select save
-const saveMultiEdit = async (added = multiEditTags.filter(t => !commonTags.includes(t)), removed = commonTags.filter(t => !multiEditTags.includes(t))) => {
-  if (selectedItems.size === 0) return;
-
-  const keys = Array.from(selectedItems);
-
-  const body = { keys };
-
-  if (added.length > 0) body.addedTags = added;
-  if (removed.length > 0) body.removedTags = removed;
-
-  if (multiEditDate && multiEditTime) {
-    body.newDate = multiEditDate.replace(/-/g, "");
-    body.newTime = multiEditTime.replace(/:/g, "") + "000";
-  }
-
-    try {
-      const res = await apiFetch("/bulk-update", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-
-      if (!res.ok) throw new Error("Bulk update failed");
-
-      // Optimistic update
-      setMedia((prev) =>
-        prev.map((item) => {
-          if (keys.includes(item.key)) {
-            let updated = { ...item };
-
-            if (body.addedTags) {
-              const current = getTagsArray(item.tags);
-              updated.tags = [...new Set([...current, ...body.addedTags])].join(", ");
-            }
-
-            if (body.newDate && body.newTime) {
-              const suffix = item.key.split("/").pop().split("_").slice(2).join("_");
-              updated.key = `media/${body.newDate}/${body.newDate}_${body.newTime}_${suffix}`;
-              updated.date = body.newDate;
-            }
-
-            return updated;
-          }
-          return item;
-        })
-      );
-
-      setSelectedItems(new Set());
-      setMultiEditTags([]);
-      setMultiEditDate("");
-      setMultiEditTime("");
-    } catch (err) {
-      alert("Bulk update failed: " + err.message);
-    }
-  };
-
-
-
-return (
-  <>
-    {/* Sticky search header */}
-    <div
-      style={{
-        padding: "5px",
-        textAlign: "center",
-        background: "#111",
-        position: "sticky",
-        top: 0,
-        zIndex: 10,
-      }}
-    >
-      <h1 style={{ marginBottom: "1px" }}>Gallery</h1>
-      <h2 style={{color: "#aaa" }}>
-  Total: {stats.photos} photos • {stats.videos} videos
-</h2>
-
-      <div style={{ margin: "5px 0" }}>
-        <input
-          type="text"
-          placeholder="Search, Ex. tits+ass, tits -ass, tits ass,   space=OR, +=AND, -exclude)"
-          value={searchInput}
-          onChange={(e) => setSearchInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              triggerSearch();
-            }
-          }}
-          style={{
-            padding: "8px",
-            width: "80%",
-            maxWidth: "100%",
-            fontSize: "1em",
-            borderRadius: "8px",
-            border: "1px solid #ccc",
-          }}
-        />
-        <button
-          onClick={triggerSearch}
-          style={{ marginLeft: "2px", padding: "1px 3px" }}
-        >
-          Search
-        </button>
-       {activeSearchQuery && (
-          <>
-            <button
-              onClick={() => {
-                setSearchInput("");
-                setActiveSearchQuery("");
-                setDisplayedQuery("");
-                setMedia([]);
-                setOffset(0);
-                setHasMore(true);
-                loadMoreGroups(0, "", true);
-                window.history.pushState(null, "", window.location.pathname);
-              }}
-              style={{ marginLeft: "2px", padding: "1px 3px" }}
-            >
-              Clear
-            </button>
-            <p style={{ fontSize: ".8em", margin: "5px 0" }}>
-              Like a particular tag, or want to hide anything with a particular tag? You can add them to your{" "}
-              <a href="/Profile#collapse-favoritemutedtags">favorites or mute lists!</a>
-            </p>
-          </>
+        {activeSearchQuery && (
+          <p style={{ margin: "5px 0", color: "#aaa", fontStyle: "italic" }}>
+            Searching for: <strong>"{displayedQuery}"</strong>
+          </p>
         )}
       </div>
 
-      {activeSearchQuery && (
-        <p style={{ margin: "5px 0", color: "#aaa", fontStyle: "italic" }}>
-          Searching for: <strong>"{displayedQuery}"</strong>
-        </p>
-      )}
-    </div>
-
-    {/* Main wrapper for multi-select panel and gallery content */}
-    <div>
-      {/* Admin Multi-Select Toggle */}
-      {!!isAdmin && (
-        <div
-          style={{
-            position: "fixed",
-            bottom: "5px",
-            right: "5px",
-            background: "#333",
-            padding: "1px",
-            borderRadius: "1px",
-            zIndex: 100,
-            boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
-            color: "#fff",
-          }}
-        >
-          <label>
-            <input
-              type="checkbox"
-              checked={multiSelectMode}
-              onChange={(e) => {
-                setMultiSelectMode(e.target.checked);
-                if (!e.target.checked) setSelectedItems(new Set());
-              }}
-            />
-            Multi-select ({selectedItems.size} selected)
-          </label>
-
-{multiSelectMode && selectedItems.size > 0 && (
-  <div style={{ marginTop: "2px" }}>
-    <TagSelect
-      initialTags={multiCommonTags.join(",")}
-      onSave={(tagsString) => {
-        const newTags = getTagsArray(tagsString);
-        const added = newTags.filter(t => !multiCommonTags.includes(t));
-        const removed = multiCommonTags.filter(t => !newTags.includes(t));
-
-        if (added.length > 0 || removed.length > 0) {
-          const keys = Array.from(selectedItems);
-          const body = { keys };
-          if (added.length > 0) body.addedTags = added;
-          if (removed.length > 0) body.removedTags = removed;
-
-          apiFetch("/bulk-update", {
-            method: "POST",
-            body: JSON.stringify(body),
-          }).then(res => {
-            if (res.ok) {
-              // Optimistic update
-              setMedia(prev => prev.map(item => {
-                if (keys.includes(item.key)) {
-                  let current = getTagsArray(item.tags);
-                  current = current.filter(t => !removed.includes(t));
-                  current = [...new Set([...current, ...added])];
-                  return { ...item, tags: current.join(", ") };
-                }
-                return item;
-              }));
-            }
-          });
-        }
-      }}
-      placeholder="Edit tags (common shown)..."
-    />
-        </div>
-      )}</div>)}
-      {/* Gallery content */}
-      <div style={{ padding: "2px", maxWidth: "90%", margin: "0 auto" }}>
-        {/* Full-screen modal */}
-        {fullscreenItem && (
+      {/* Main wrapper */}
+      <div>
+        {/* Admin Multi-Select Toggle */}
+        {!!isAdmin && (
           <div
             style={{
               position: "fixed",
-              top: 0,
-              left: 0,
-              width: "100vw",
-              height: "100vh",
-              background: "rgba(0,0,0,0.95)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              zIndex: 1000,
+              bottom: "5px",
+              right: "5px",
+              background: "#333",
+              padding: "1px",
+              borderRadius: "1px",
+              zIndex: 100,
+              boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
+              color: "#fff",
             }}
-            onClick={closeFullscreen}
-          ><div
+          >
+            <label>
+              <input
+                type="checkbox"
+                checked={multiSelectMode}
+                onChange={(e) => {
+                  setMultiSelectMode(e.target.checked);
+                  if (!e.target.checked) setSelectedItems(new Set());
+                }}
+              />
+              Multi-select ({selectedItems.size} selected)
+            </label>
+
+            {multiSelectMode && selectedItems.size > 0 && (
+              <div style={{ marginTop: "2px" }}>
+                <TagSelect
+                  initialTags={multiCommonTags.join(",")}
+                  onSave={(tagsString) => {
+                    const newTags = getTagsArray(tagsString);
+                    const added = newTags.filter(t => !multiCommonTags.includes(t));
+                    const removed = multiCommonTags.filter(t => !newTags.includes(t));
+
+                    if (added.length > 0 || removed.length > 0) {
+                      const keys = Array.from(selectedItems);
+                      const body = { keys };
+                      if (added.length > 0) body.addedTags = added;
+                      if (removed.length > 0) body.removedTags = removed;
+
+                      apiFetch("/bulk-update", {
+                        method: "POST",
+                        body: JSON.stringify(body),
+                      }).then(res => {
+                        if (res.ok) {
+                          setMedia(prev => prev.map(item => {
+                            if (keys.includes(item.key)) {
+                              let current = getTagsArray(item.tags);
+                              current = current.filter(t => !removed.includes(t));
+                              current = [...new Set([...current, ...added])];
+                              return { ...item, tags: current.join(", ") };
+                            }
+                            return item;
+                          }));
+                        }
+                      });
+                    }
+                  }}
+                  placeholder="Edit tags (common shown)..."
+                />
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Gallery content */}
+        <div style={{ padding: "2px", maxWidth: "90%", margin: "0 auto" }}>
+          {/* Full-screen modal */}
+          {fullscreenItem && (
+            <div
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100vw",
+                height: "100vh",
+                background: "rgba(0,0,0,0.95)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                zIndex: 1000,
+              }}
+              onClick={closeFullscreen}
+            >
+              <div
                 style={{
                   position: "absolute",
                   right: "2%",
@@ -689,217 +526,249 @@ return (
                   color: "#fff",
                   cursor: "pointer",
                 }}
-                onClick={(e) => {
-                  closeFullscreen;
-                }}
+                onClick={closeFullscreen}
               >
                 x
               </div>
-            {media.findIndex((m) => m.key === fullscreenItem.key) > 0 && (
-              <div
-                style={{
-                  position: "absolute",
-                  left: "2%",
-                  fontSize: "5em",
-                  color: "#fff",
-                  cursor: "pointer",
-                }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  goPrev();
-                }}
-              >
-                ‹-
-              </div>
-            )}
+              {media.findIndex((m) => m.key === fullscreenItem.key) > 0 && (
+                <div
+                  style={{
+                    position: "absolute",
+                    left: "2%",
+                    fontSize: "5em",
+                    color: "#fff",
+                    cursor: "pointer",
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    goPrev();
+                  }}
+                >
+                  ‹-
+                </div>
+              )}
 
-            <div
-              style={{ maxWidth: "95%", maxHeight: "95%" }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              {fullscreenItem.isVideo ? (
-                <video
-                  src={`${R2_PUBLIC_URL}/${fullscreenItem.key}`}
-                  controls
-                  autoPlay
-                  loop
-                  controlsList="nodownload"
-                  onContextMenu={(e) => e.preventDefault()}
+              <div
+                style={{ maxWidth: "95%", maxHeight: "95%" }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {fullscreenItem.isVideo ? (
+                  <video
+                    src={`${R2_PUBLIC_URL}/${fullscreenItem.key}`}
+                    controls
+                    autoPlay
+                    loop
+                    controlsList="nodownload"
+                    onContextMenu={(e) => e.preventDefault()}
+                    style={{
+                      maxWidth: "100%",
+                      maxHeight: "90vh",
+                      width: "auto",
+                      height: "auto",
+                      objectFit: "contain",
+                      background: "#000",
+                      filter: !isSubscriber || !isAdmin ? "blur(10px)" : "none",
+                    }}
+                  />
+                ) : (
+                  <img
+                    src={`${R2_PUBLIC_URL}/${fullscreenItem.key}`}
+                    alt=""
+                    style={{
+                      maxWidth: "100%",
+                      maxHeight: "90vh",
+                      width: "auto",
+                      height: "auto",
+                      objectFit: "contain",
+                      background: "#000",
+                      filter: !isSubscriber || !isAdmin ? "blur(10px)" : "none",
+                    }}
+                  />
+                )}
+              </div>
+
+              {media.findIndex((m) => m.key === fullscreenItem.key) <
+                media.length - 1 && (
+                <div
                   style={{
-                    maxWidth: "100%",
-                    maxHeight: "90vh",
-                    width: "auto",
-                    height: "auto",
-                    objectFit: "contain",
-                    background: "#000",
-                    filter: !isSubscriber || !isAdmin ? "blur(10px)" : "none",
+                    position: "absolute",
+                    right: "2%",
+                    fontSize: "5em",
+                    color: "#fff",
+                    cursor: "pointer",
                   }}
-                />
-              ) : (
-                <img
-                  src={`${R2_PUBLIC_URL}/${fullscreenItem.key}`}
-                  alt=""
-                  style={{
-                    maxWidth: "100%",
-                    maxHeight: "90vh",
-                    width: "auto",
-                    height: "auto",
-                    objectFit: "contain",
-                    background: "#000",
-                    filter: !isSubscriber || !isAdmin ? "blur(10px)" : "none",
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    goNext();
                   }}
-                />
+                >
+                  -›
+                </div>
               )}
             </div>
+          )}
 
-            {media.findIndex((m) => m.key === fullscreenItem.key) <
-              media.length - 1 && (
+          {/* Groups */}
+          {sortedDates.map((date) => {
+            const { items, commonTags } = groups[date];
+            const videoCount = items.filter((i) => i.isVideo).length;
+            const photoCount = items.length - videoCount;
+            const caption = items[0]?.caption || "";
+
+            const isFirstGroup = date === firstDate;
+
+            return (
               <div
-                style={{
-                  position: "absolute",
-                  right: "2%",
-                  fontSize: "5em",
-                  color: "#fff",
-                  cursor: "pointer",
-                }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  goNext();
-                }}
+                key={date}
+                style={{ marginBottom: "5px", border: "2px dashed white" }}
               >
-                -›
-              </div>
-            )}
-
-          </div>
-        )}
-
-        {/* Groups */}
-        {sortedDates.map((date) => {
-          const { items, commonTags} = groups[date];
-          const videoCount = items.filter((i) => i.isVideo).length;
-          const photoCount = items.length - videoCount;
-          const caption = items[0]?.caption || "";
-
-          const isFirstGroup = date === firstDate;
-
-          return (
-            <div
-              key={date}
-              style={{ marginBottom: "5px", border: "2px dashed white" }}
-            >
-              <h2 style={{ textAlign: "center" }}>
-                {editingGroupCaption === date ? (
-                  <div>
-                    <input
-                      value={tempCaption}
-                      onChange={(e) => setTempCaption(e.target.value)}
-                      placeholder="Group caption"
-                      style={{ width: "60%", fontSize: "1em" }}
-                    />
-                    <button onClick={saveEdit}>Save</button>
-                    <button onClick={() => setEditingGroupCaption(null)}>
-                      Cancel
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    {caption && `${caption} — `}
-                    {!!isAdmin && (
-                      <span
-                        style={{ cursor: "pointer", fontSize: "0.8em" }}
-                        onClick={() => {
-                          setEditingGroupCaption(date);
-                          setTempCaption(caption);
-                        }}
-                      >
-                        ✏️
-                      </span>
-                    )}
-                  </>
-                )}
-              </h2>
-
-              <h4
-                style={{
-                  textAlign: "center",
-                  fontSize: ".8em",
-                  verticalAlign: "baseline",
-                }}
-              >
-                {date}
-                {videoCount > 0 && ` — v${videoCount}`}
-                {photoCount > 0 && ` p${photoCount}`}
-               
-
-              </h4>
-
-            
-
-              <div style={{ textAlign: "center" }}>
-                {items
-                  .slice()
-                  .sort((a, b) => {
-                    const getTime = (key) => {
-                      const filename = key.split("/").pop();
-                      const timePart = filename.split("_")[1]?.split(".")[0] || "000000000";
-                      return timePart;
-                    };
-                    return getTime(a.key).localeCompare(getTime(b.key));
-                  })
-                  .map((item) => {
-                    const itemTags = getTagsArray(item.tags);
-
-                    return (
-                      <div
-                        key={item.key}
-                        style={{
-                          display: "inline-block",
-                          height: "auto",
-                          verticalAlign: "top",
-                          minWidth: "50px",
-                          width: "100px",
-                          maxWidth: "23vw",
-                          margin: "0 3px 5px 3px",
-                          cursor: "pointer",
-                          position: "relative",
-                          border: multiSelectMode && selectedItems.has(item.key) ? "3px solid yellow" : "none",
-                        }}
-                        onClick={(e) => {
-                          if (multiSelectMode) {
-                            e.stopPropagation();
-                            setSelectedItems((prev) => {
-                              const next = new Set(prev);
-                              if (next.has(item.key)) next.delete(item.key);
-                              else next.add(item.key);
-                              return next;
-                            });
-                          } else {
-                            openFullscreen(item);
-                          }
-                        }}
-                        onContextMenu={(e) => e.preventDefault()}
-                      >
-                        <div
-                          style={{
-                            width: "95%",
-                            height: "auto",
-                            display: "inline-block",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            background: "#000",
-                            borderRadius: "12px",
-                            overflow: "hidden",
-                            position: "relative",
-                            border: "1px white solid",
+                <h2 style={{ textAlign: "center" }}>
+                  {editingGroupCaption === date ? (
+                    <div>
+                      <input
+                        value={tempCaption}
+                        onChange={(e) => setTempCaption(e.target.value)}
+                        placeholder="Group caption"
+                        style={{ width: "60%", fontSize: "1em" }}
+                      />
+                      <button onClick={saveEdit}>Save</button>
+                      <button onClick={() => setEditingGroupCaption(null)}>
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      {caption && `${caption} — `}
+                      {!!isAdmin && (
+                        <span
+                          style={{ cursor: "pointer", fontSize: "0.8em" }}
+                          onClick={() => {
+                            setEditingGroupCaption(date);
+                            setTempCaption(caption);
                           }}
                         >
-                          {item.isVideo ? (
-                            <>
-                              <video
+                          ✏️
+                        </span>
+                      )}
+                    </>
+                  )}
+                </h2>
+
+                <h4
+                  style={{
+                    textAlign: "center",
+                    fontSize: ".8em",
+                    verticalAlign: "baseline",
+                  }}
+                >
+                  {date}
+                  {videoCount > 0 && ` — v${videoCount}`}
+                  {photoCount > 0 && ` p${photoCount}`}
+                </h4>
+
+                <div style={{ textAlign: "center" }}>
+                  {items
+                    .slice()
+                    .sort((a, b) => {
+                      const getTime = (key) => {
+                        const filename = key.split("/").pop();
+                        const timePart = filename.split("_")[1]?.split(".")[0] || "000000000";
+                        return timePart;
+                      };
+                      return getTime(a.key).localeCompare(getTime(b.key));
+                    })
+                    .map((item) => {
+                      const itemTags = getTagsArray(item.tags);
+
+                      return (
+                        <div
+                          key={item.key}
+                          style={{
+                            display: "inline-block",
+                            height: "auto",
+                            verticalAlign: "top",
+                            minWidth: "50px",
+                            width: "100px",
+                            maxWidth: "23vw",
+                            margin: "0 3px 5px 3px",
+                            cursor: "pointer",
+                            position: "relative",
+                            border: multiSelectMode && selectedItems.has(item.key) ? "3px solid yellow" : "none",
+                          }}
+                          onClick={(e) => {
+                            if (multiSelectMode) {
+                              e.stopPropagation();
+                              setSelectedItems((prev) => {
+                                const next = new Set(prev);
+                                if (next.has(item.key)) next.delete(item.key);
+                                else next.add(item.key);
+                                return next;
+                              });
+                            } else {
+                              openFullscreen(item);
+                            }
+                          }}
+                          onContextMenu={(e) => e.preventDefault()}
+                        >
+                          <div
+                            style={{
+                              width: "95%",
+                              height: "auto",
+                              display: "inline-block",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              background: "#000",
+                              borderRadius: "12px",
+                              overflow: "hidden",
+                              position: "relative",
+                              border: "1px white solid",
+                            }}
+                          >
+                            {item.isVideo ? (
+                              <>
+                                <video
+                                  src={`${R2_PUBLIC_URL}/${item.key}`}
+                                  muted
+                                  loop
+                                  style={{
+                                    maxHeight: "auto",
+                                    width: "100%",
+                                    objectFit: "contain",
+                                    filter: !isLoggedIn
+                                      ? "blur(10px)"
+                                      : isAdmin || isSubscriber
+                                      ? "none"
+                                      : !isFirstGroup && isLoggedIn
+                                      ? "blur(7px)"
+                                      : "blur(3px)",
+                                  }}
+                                />
+                                <div
+                                  style={{
+                                    position: "absolute",
+                                    top: "50%",
+                                    left: "50%",
+                                    transform: "translate(-50%, -50%)",
+                                    background: "rgba(0,0,0,0.5)",
+                                    borderRadius: "50%",
+                                    width: "30%",
+                                    height: "auto",
+                                    aspectRatio: "1/1",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    pointerEvents: "none",
+                                  }}
+                                >
+                                  <span style={{ color: "#fff", fontSize: "32px" }}>
+                                    ▶
+                                  </span>
+                                </div>
+                              </>
+                            ) : (
+                              <img
                                 src={`${R2_PUBLIC_URL}/${item.key}`}
-                                muted
-                                loop
+                                alt={caption}
                                 style={{
                                   maxHeight: "auto",
                                   width: "100%",
@@ -913,86 +782,29 @@ return (
                                     : "blur(3px)",
                                 }}
                               />
-                              <div
-                                style={{
-                                  position: "absolute",
-                                  top: "50%",
-                                  left: "50%",
-                                  transform: "translate(-50%, -50%)",
-                                  background: "rgba(0,0,0,0.5)",
-                                  borderRadius: "50%",
-                                  width: "30%",
-                                  height: "auto",
-                                  aspectRatio: "1/1",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  pointerEvents: "none",
-                                }}
-                              >
-                                <span style={{ color: "#fff", fontSize: "32px" }}>
-                                  ▶
-                                </span>
+                            )}
+                          </div>
+
+                          <div style={{ textAlign: "center" }}>
+                            {editingItem === item.key ? (
+                              <div onClick={(e) => e.stopPropagation()}>
+                                <TagSelect
+                                  selected={tempTags}
+                                  onChange={setTempTags}
+                                />
+                                <button onClick={saveEdit}>Save</button>
+                                <button
+                                  onClick={() => {
+                                    setEditingItem(null);
+                                    setTempTags([]);
+                                    setOriginalTags([]);
+                                  }}
+                                >
+                                  Cancel
+                                </button>
                               </div>
-                            </>
-                          ) : (
-                            <img
-                              src={`${R2_PUBLIC_URL}/${item.key}`}
-                              alt={caption}
-                              style={{
-                                maxHeight: "auto",
-                                width: "100%",
-                                objectFit: "contain",
-                                filter: !isLoggedIn
-                                  ? "blur(10px)"
-                                  : isAdmin || isSubscriber
-                                  ? "none"
-                                  : !isFirstGroup && isLoggedIn
-                                  ? "blur(7px)"
-                                  : "blur(3px)",
-                              }}
-                            />
-                          )}
-                        </div>
-
-                        <div style={{ textAlign: "center" }}>
-                          {editingItem === item.key ? (
-                            <div onClick={(e) => e.stopPropagation()}>
-                              <TagSelect
-                                selected={tempTags}
-                                onChange={setTempTags}
-                              />
-                              <button onClick={saveEdit}>Save</button>
-                              <button
-                                onClick={() => {
-                                  setEditingItem(null);
-                                  setTempTags([]);
-                                  setOriginalTags([]);
-                                }}
-                              >
-                                Cancel
-                              </button>
-                            </div>
-                          ) : (
-                            <>
-                              <p
-                                style={{
-                                  fontSize: "0.5em",
-                                  color: "#ccc",
-                                  margin: "2px 0",
-                                }}
-                              >
-                                Tags:{" "}
-                                {multiSelectMode ? (
-                                  // Plain text in multi-select mode — allows selection
-                                  itemTags.length > 0 ? itemTags.join(", ") : "none"
-                                ) : (
-                                  // Clickable tags in normal mode
-                                  <ClickableTags tags={item.tags} />
-                                )}
-                              </p>
-
-                              {!!isAdmin && (
+                            ) : (
+                              <>
                                 <p
                                   style={{
                                     fontSize: "0.5em",
@@ -1000,38 +812,54 @@ return (
                                     margin: "2px 0",
                                   }}
                                 >
-                                  Time: {item.key.split("_")[1]?.split(".")[0] || "Unknown"}
+                                  Tags:{" "}
+                                  {multiSelectMode ? (
+                                    itemTags.length > 0 ? itemTags.join(", ") : "none"
+                                  ) : (
+                                    <ClickableTags tags={item.tags} />
+                                  )}
                                 </p>
-                              )}
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-              </div>
-            </div>
-          );
-        })}
 
-        {hasMore && (
-          <button
-            onClick={() => loadMoreGroups()}
-            disabled={loading}
-            style={{
-              display: "block",
-              margin: "10px auto",
-              padding: "2px 5px",
-              fontSize: "1.1em",
-            }}
-          >
-            {loading ? "Loading..." : "Load More"}
-          </button>
-        )}
+                                {!!isAdmin && (
+                                  <p
+                                    style={{
+                                      fontSize: "0.5em",
+                                      color: "#ccc",
+                                      margin: "2px 0",
+                                    }}
+                                  >
+                                    Time: {item.key.split("_")[1]?.split(".")[0] || "Unknown"}
+                                  </p>
+                                )}
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
+              </div>
+            );
+          })}
+
+          {hasMore && (
+            <button
+              onClick={() => loadMoreGroups()}
+              disabled={loading}
+              style={{
+                display: "block",
+                margin: "10px auto",
+                padding: "2px 5px",
+                fontSize: "1.1em",
+              }}
+            >
+              {loading ? "Loading..." : "Load More"}
+            </button>
+          )}
+        </div>
       </div>
-    </div>
-  </>
-);
+    </>
+  );
 };
 
 export default Gallery;
