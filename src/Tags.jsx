@@ -1,6 +1,7 @@
 // ./Tags.jsx
 
 import React, { useState, useEffect } from "react";
+import {apiFetch} from "./Auth.jsx"
 
 // Canonical tags (preferred terms)
 export const CANONICAL_TAGS = [
