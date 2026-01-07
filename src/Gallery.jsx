@@ -10,6 +10,8 @@ import { TagSelect, searchTags, ClickableTags } from "./Tags";
   const [loading, setLoading] = useState(false);
   const [fullscreenItem, setFullscreenItem] = useState(null);
 
+  const [stats, setStats] = useState({ photos: 0, videos: 0 });
+
   const [editingGroupCaption, setEditingGroupCaption] = useState(null);
   const [editingGroupTags, setEditingGroupTags] = useState(null);
   const [editingItem, setEditingItem] = useState(null);
@@ -86,7 +88,20 @@ useEffect(() => {
 
   // Normalize search using searchTags — top result per term
 
-
+useEffect(() => {
+  const fetchStats = async () => {
+    try {
+      const res = await apiFetch("/gallery-stats");
+      if (res.ok) {
+        const data = await res.json();
+        setStats(data);
+      }
+    } catch (err) {
+      // silent fail — stats optional
+    }
+  };
+  fetchStats();
+}, []);
 
 const normalizeSearchInput = (input) => {
   if (!input.trim()) return "";
@@ -505,6 +520,9 @@ return (
       }}
     >
       <h1 style={{ marginBottom: "1px" }}>Gallery</h1>
+      <h2 style={{color: "#aaa" }}>
+  Total: {stats.photos} photos • {stats.videos} videos
+</h2>
 
       <div style={{ margin: "5px 0" }}>
         <input
@@ -549,7 +567,7 @@ return (
             >
               Clear
             </button>
-            <p style={{ fontSize: ".5em", margin: "5px 0" }}>
+            <p style={{ fontSize: ".8em", margin: "5px 0" }}>
               Like a particular tag, or want to hide anything with a particular tag? You can add them to your{" "}
               <a href="/Profile#collapse-favoritemutedtags">favorites or mute lists!</a>
             </p>

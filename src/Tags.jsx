@@ -692,39 +692,64 @@ export const getTagsArray = (tagInput) => {
   }
   return [];
 };
+// At the top of Tags.jsx, after imports
+let cachedTagCounts = null;
+let tagCountsPromise = null;
 
-// Reusable read-only tag list with clickable links to /lounge#tag
+const fetchTagCountsOnce = async () => {
+  if (cachedTagCounts) return cachedTagCounts;
+  if (tagCountsPromise) return tagCountsPromise;
+
+  tagCountsPromise = apiFetch("/tag-stats")
+    .then(res => {
+      if (!res.ok) throw new Error("Failed to fetch tag counts");
+      return res.json();
+    })
+    .then(data => {
+      cachedTagCounts = data;
+      return data;
+    })
+    .catch(err => {
+      console.error(err);
+      return {};
+    });
+
+  return tagCountsPromise;
+};
 export const ClickableTags = ({ tags = "", emptyText = "None set" }) => {
-const tagArray = getTagsArray(tags);
+  const [counts, setCounts] = useState({});
+  const tagArray = getTagsArray(tags);
+
+  useEffect(() => {
+    fetchTagCountsOnce().then(setCounts);
+  }, []);
+
+  if (tagArray.length === 0) {
+    return <span style={{ color: "#666" }}>{emptyText}</span>;
+  }
 
   return (
     <div style={{ margin: "0.5% 0" }}>
-      {tagArray.length === 0 ? (
-        <span style={{ color: "#666" }}>{emptyText}</span>
-      ) : (
-        <>
-          {tagArray.map((tag, i) => (
-            <React.Fragment key={tag}>
-              <a
-                href={`/lounge#${encodeURIComponent(tag)}`}
-                style={{
-                  color: "#0066cc",
-                  textDecoration: "none",
-                  marginRight: "0.5%",
-                }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();  // ← ADD THIS
-                  window.location.href = `/lounge#${encodeURIComponent(tag)}`;
-                }}
-              >
-                {tag}
-              </a>
-              {i < tagArray.length - 1 && <span style={{ color: "#666" }}>, </span>}
-            </React.Fragment>
-          ))}
-        </>
-      )}
+      {tagArray.map((tag, i) => (
+        <React.Fragment key={tag}>
+          <a
+            href={`/lounge#${encodeURIComponent(tag)}`}
+            style={{
+              color: "#0066cc",
+              textDecoration: "none",
+              marginRight: "0.5%",
+            }}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              window.location.href = `/lounge#${encodeURIComponent(tag)}`;
+            }}
+          >
+            {tag} ({counts[tag] || 0})
+          </a>
+          {i < tagArray.length - 1 && <span style={{ color: "#666" }}>, </span>}
+        </React.Fragment>
+      ))}
     </div>
   );
 };
