@@ -102,7 +102,7 @@ export function Preferredlinks() {
           name="Fansly"
           desc="4000+pics &500+vids for $5 a month"
           img={Fansly}
-          link="https://fans.ly/r/Lunepusa"
+          link="https://fansly.com/Lunepusa"
         />
         <Link
           name="Throne"
@@ -147,7 +147,7 @@ export function Paymentlinks() {
             name="Fansly"
             desc="4000+pics &500+vids for $5 a month"
             img={Fansly}
-            link="https://fans.ly/r/Lunepusa"
+            link="https://fansly.com/Lunepusa"
           />
           <Link
             name="Sheer"
@@ -235,7 +235,7 @@ export function Paymentlinks() {
               name="Throne"
               desc="Give me a gift"
               img={Throne}
-              link="https://fans.ly/r/Lunepusa"
+              link="https://throne.com/lunepusa"
             />
           </div>
         </div>
@@ -441,7 +441,7 @@ export function Guestlinks() {
               name="Fansly"
               desc="$5 optional sub"
               img={Fansly}
-              link="https://fans.ly/r/Katya_Luv"
+              link="https://fansly.com/Katya_Luv"
             />
             <Link
               name="Xvideos"
@@ -462,7 +462,7 @@ export function Guestlinks() {
               name="Fansly"
               desc="$5 optional sub"
               img={Fansly}
-              link="https://fans.ly/r/LilytheElfgirl"
+              link="https://fansly.com/LilytheElfgirl"
             />
 
             <Link

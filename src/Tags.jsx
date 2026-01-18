@@ -188,6 +188,7 @@ export const CANONICAL_TAGS = [
   "delete",
   "picture",
   "video",
+  "hidden",
 ];
 
 // Synonym mapping: synonym → canonical tag
@@ -473,6 +474,7 @@ const SYNONYM_MAP = {
  remove: "delete",
  photo: "picture",
  clip: "video",
+ hide:"hidden",
 };
 
 // Lowercase map for fast lookup
