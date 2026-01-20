@@ -20,6 +20,7 @@ import AuthProvider from "./Auth.jsx";
 import { useAuth, apiFetch } from "./Auth";
 import Lounge from "./Lounge.jsx";
 import Profile from "./Profile.jsx";
+import ShareView from "./ShareView.jsx"
 
 export default function App() {
   const location = useLocation();
@@ -94,6 +95,7 @@ export default function App() {
           <Route path="/Lounge" element={<Lounge />} />
           <Route path="/WIP" element={<WIP />} />
           <Route path="/Profile" element={<Profile />} />
+          <Route path="/share/:token" element={<ShareView />} />
           <Route path="*" element={<h1>404 - Page not found</h1>} />
           <Route path="/shh" element={<Shh />} />
         </Routes>

@@ -353,6 +353,53 @@ const Gallery = () => {
     }
   };
 
+// Admin right-click: copy share link for date
+const handleDateShareCopy = (date) => async (e) => {
+  if (!isAdmin) return;
+  e.preventDefault();
+  e.stopPropagation();
+
+  try {
+    const res = await apiFetch('/generate-share-token', {
+      method: 'POST',
+      body: JSON.stringify({ target_type: 'date', target_value: date }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      navigator.clipboard.writeText(data.link);
+      console.log("Date share link copied:", data.link);
+      // Optional: silent toast or nothing visible
+    } else {
+      console.error("Failed to generate date share link:", data.error);
+    }
+  } catch (err) {
+    console.error("Date share copy error:", err);
+  }
+};
+
+// Admin right-click: copy share link for media item
+const handleMediaShareCopy = (item) => async (e) => {
+  if (!isAdmin) return;
+  e.preventDefault();
+  e.stopPropagation();
+
+  try {
+    const res = await apiFetch('/generate-share-token', {
+      method: 'POST',
+      body: JSON.stringify({ target_type: 'media', target_value: item.key }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      navigator.clipboard.writeText(data.link);
+      console.log("Media share link copied:", data.link);
+    } else {
+      console.error("Failed to generate media share link:", data.error);
+    }
+  } catch (err) {
+    console.error("Media share copy error:", err);
+  }
+};
+
   return (
     <>
       {/* Sticky search header */}
@@ -559,7 +606,7 @@ const Gallery = () => {
                     autoPlay
                     loop
                     controlsList="nodownload"
-                    onContextMenu={(e) => e.preventDefault()}
+                    onContextMenu={(e) => e.preventDefault();handleMediaShareCopy(item)(e);}
                     style={{
                       maxWidth: "100%",
                       maxHeight: "90vh",
@@ -622,7 +669,7 @@ const Gallery = () => {
                 key={date}
                 style={{ marginBottom: "5px", border: "2px dashed white" }}
               >
-                <h2 style={{ textAlign: "center" }}>
+                <h2 style={{ textAlign: "center" }} onContextMenu={handleDateShareCopy(date)}>
                   {editingGroupCaption === date ? (
                     <div>
                       <input
@@ -708,7 +755,7 @@ const Gallery = () => {
                               openFullscreen(item);
                             }
                           }}
-                          onContextMenu={(e) => e.preventDefault()}
+                          onContextMenu={(e) => e.preventDefault();handleMediaShareCopy(item)(e);}
                         >
                           <div
                             style={{
