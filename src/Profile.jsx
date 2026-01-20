@@ -15,6 +15,15 @@ const Profile = () => {
   const [editingFavorites, setEditingFavorites] = useState(false);
   const [editingMuted, setEditingMuted] = useState(false);
 
+// Process purchased_dates into a sorted array (newest first)
+const unlockedDates = user?.purchased_dates
+  ? user.purchased_dates
+      .split(',')
+      .map(d => d.trim())
+      .filter(Boolean)
+      .sort((a, b) => b.localeCompare(a)) // newest first
+  : [];
+
   const handlePasswordChange = async (e) => {
     e.preventDefault();
     setMessage("");
@@ -131,6 +140,8 @@ const Profile = () => {
       setError("Failed to update user");
     }
   };
+
+
 
     return (
     <div style={{ padding: "2%", MinWidth: "200px", width: "40VW", margin: "0 auto", display: "inline-block", }}>
@@ -302,6 +313,31 @@ const Profile = () => {
       </div>
         </Collapse>
       </div>
+
+      <div style={{ marginTop: "1%" }}>
+  <Collapse trigger={<h2>Permanently Unlocked Dates</h2>}>
+    {unlockedDates.length === 0 ? (
+      <p>No dates unlocked yet.</p>
+    ) : (
+        {unlockedDates.map(date => (
+            <button
+              onClick={() => {
+                // Navigate to gallery with date as search (your existing hash system)
+                window.location.href = `/lounge#${date}`;
+              }}
+              style={{
+                color: "#0066cc",
+                cursor: "pointer",
+                fontSize: "1.1em",
+                display:"inline-block",
+              }}
+            >
+              {date}
+            </button>
+        ))}
+    )}
+  </Collapse>
+</div>
 
             {user?.username === "lunepusa" && (
         <div style={{ marginTop: "1%" }}>

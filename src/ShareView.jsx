@@ -81,12 +81,16 @@ const ShareView = () => {
     <div style={{textAlign:"center"}}>
      {!user ? (
       <div style={{ fontSize: "1.3em", textAlign: "center" }}>
-        Hope you enjoy! Log in below to permanantly unblur this content!
+        Hope you enjoy! Log in below to permanantly unlock this content through your <a href="/Profile">profile!</a>
         <Login />
       </div>
     ) : (
       <div style={{ fontSize: "1em", textAlign: "center" }}>
         Welcome back, <a href="/Profile">{user.username}!</a> Hope you enjoy!
+        { data.date ?(
+<div>this date has been saved to your permanantly unlocked dates which can be viewed in your <a href="/Profile">profile!</a></div>
+        ):()
+        }
         <Login />
       </div>
     )}
@@ -165,6 +169,7 @@ const ShareView = () => {
               <img
                 src={`${R2_PUBLIC_URL}/${fullscreenItem.key}`}
                 alt=""
+                onContextMenu={(e) => e.preventDefault()}
                 style={{
                   maxWidth: "100%",
                   maxHeight: "90vh",
@@ -245,6 +250,7 @@ const ShareView = () => {
                         src={`${R2_PUBLIC_URL}/${item.key}`}
                         muted
                         loop
+                        onContextMenu={(e) => e.preventDefault()}
                         style={{
                           maxHeight: "auto",
                           width: "100%",
@@ -275,6 +281,7 @@ const ShareView = () => {
                     <img
                       src={`${R2_PUBLIC_URL}/${item.key}`}
                       alt=""
+                      onContextMenu={(e) => e.preventDefault()}
                       style={{
                         maxHeight: "auto",
                         width: "100%",

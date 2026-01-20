@@ -620,6 +620,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                   <img
                     src={`${R2_PUBLIC_URL}/${fullscreenItem.key}`}
                     alt=""
+                    onContextMenu={(e) => {e.preventDefault();handleMediaShareCopy(item)(e);}}
                     style={{
                       maxWidth: "100%",
                       maxHeight: "90vh",
@@ -754,7 +755,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                               openFullscreen(item);
                             }
                           }}
-                          onContextMenu={(e) =>{ e.preventDefault();handleMediaShareCopy(item)(e);}}
+                          onContextMenu={(e) =>{ e.preventDefault();}}
                         >
                           <div
                             style={{
@@ -776,6 +777,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                                   src={`${R2_PUBLIC_URL}/${item.key}`}
                                   muted
                                   loop
+                                  onContextMenu={(e) => e.preventDefault()}
                                   style={{
                                     maxHeight: "auto",
                                     width: "100%",
@@ -815,6 +817,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                               <img
                                 src={`${R2_PUBLIC_URL}/${item.key}`}
                                 alt={caption}
+                                onContextMenu={(e) => e.preventDefault()}
                                 style={{
                                   maxHeight: "auto",
                                   width: "100%",

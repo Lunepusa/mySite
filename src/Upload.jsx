@@ -7,6 +7,7 @@ const Upload = () => {
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState({});
+  const [applyHidden, setApplyHidden] = useState(false); // ← NEW STATE
 
   const handleFileChange = (e) => {
     setFiles(Array.from(e.target.files));
@@ -61,7 +62,7 @@ const Upload = () => {
 
         xhr.onload = async () => {
           if (xhr.status === 200) {
-            // Notify Worker, send initialTag
+            // Notify Worker, send initialTag + applyHidden flag
             await apiFetch("/upload-complete", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -69,6 +70,7 @@ const Upload = () => {
                 objectKey: item.objectKey,
                 fileType: file.type,
                 initialTag,
+                applyHidden, // ← NEW: send the checkbox value
               }),
             });
             resolve();
@@ -87,6 +89,7 @@ const Upload = () => {
       alert("All files uploaded!");
       setFiles([]);
       setProgress({});
+      setApplyHidden(false); // Reset checkbox
     } catch (err) {
       alert("One or more uploads failed: " + err.message);
     } finally {
@@ -105,6 +108,19 @@ const Upload = () => {
         style={{ marginBottom: "10px" }}
       />
       <br />
+
+      {/* NEW: Hidden tag checkbox */}
+      <label style={{ display: "block", margin: "10px 0", fontSize: "1em" }}>
+        <input
+          type="checkbox"
+          checked={applyHidden}
+          onChange={(e) => setApplyHidden(e.target.checked)}
+          disabled={uploading}
+        />
+        {" "}Apply "hidden" tag to all uploaded media  
+        (only visible to me or users with permanent access)
+      </label>
+
       <button
         onClick={handleUpload}
         disabled={uploading || files.length === 0}
