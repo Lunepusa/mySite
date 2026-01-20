@@ -207,7 +207,6 @@ const ShareView = () => {
 
         <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "10px" }}>
           {media.map((item) => {
-            const itemTags = getTagsArray(item.tags || "");
 
             return (
               <div
