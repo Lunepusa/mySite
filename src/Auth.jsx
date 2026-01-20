@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 // src/api.js
+export const R2_PUBLIC_URL = "https://pub-737d16f465e74a25bb9b4613475ea7ef.r2.dev";
+
 export const apiFetch = async (endpoint, options = {}) => {
   const token = localStorage.getItem("token");
 

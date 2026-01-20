@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useAuth, apiFetch } from "./Auth";
+import { useAuth, apiFetch, R2_PUBLIC_URL } from "./Auth";
 import { TagSelect, searchTags, ClickableTags } from "./Tags";
 
 const Gallery = () => {
@@ -28,7 +28,6 @@ const Gallery = () => {
   const [multiSelectMode, setMultiSelectMode] = useState(false);
   const [selectedItems, setSelectedItems] = useState(new Set());
 
-  const R2_PUBLIC_URL = "https://pub-737d16f465e74a25bb9b4613475ea7ef.r2.dev";
   const ITEMS_PER_BATCH = 100;
 
   useEffect(() => {

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { useAuth, apiFetch } from "./Auth";
-import { R2_PUBLIC_URL } from "./Gallery"; // adjust import path if needed
+import { useAuth, apiFetch, R2_PUBLIC_URL } from "./Auth";
 
 const ShareView = () => {
   const { token } = useParams();
