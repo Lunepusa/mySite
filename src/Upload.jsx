@@ -7,7 +7,7 @@ const Upload = () => {
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState({});
-  const [applyHidden, setApplyHidden] = useState(false); // ← NEW STATE
+  const [applyHidden, setApplyHidden] = useState(false); // Checkbox state
 
   const handleFileChange = (e) => {
     setFiles(Array.from(e.target.files));
@@ -22,7 +22,15 @@ const Upload = () => {
     // Derive canonical tag from username
     const usernameLower = user?.username?.toLowerCase() || "lunepusa";
     const matchedTags = searchTags(usernameLower);
-    const initialTag = matchedTags.length > 0 ? matchedTags[0] : usernameLower;
+    let initialTag = matchedTags.length > 0 ? matchedTags[0] : usernameLower;
+
+    // NEW: Append "hidden" if checkbox is checked
+    if (applyHidden) {
+      // Avoid duplicate "hidden"
+      if (!initialTag.includes("hidden")) {
+        initialTag = initialTag ? `${initialTag},hidden` : "hidden";
+      }
+    }
 
     // Step 1: Get presigned URLs
     const fileInfo = files.map((f) => ({
@@ -62,15 +70,14 @@ const Upload = () => {
 
         xhr.onload = async () => {
           if (xhr.status === 200) {
-            // Notify Worker, send initialTag + applyHidden flag
+            // Notify Worker — only send initialTag (now includes hidden if checked)
             await apiFetch("/upload-complete", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 objectKey: item.objectKey,
                 fileType: file.type,
-                initialTag,
-                applyHidden, // ← NEW: send the checkbox value
+                initialTag, // ← now includes "hidden" if checkbox was on
               }),
             });
             resolve();
@@ -89,7 +96,7 @@ const Upload = () => {
       alert("All files uploaded!");
       setFiles([]);
       setProgress({});
-      setApplyHidden(false); // Reset checkbox
+      setApplyHidden(false); // Reset checkbox after success
     } catch (err) {
       alert("One or more uploads failed: " + err.message);
     } finally {
@@ -109,7 +116,7 @@ const Upload = () => {
       />
       <br />
 
-      {/* NEW: Hidden tag checkbox */}
+      {/* Hidden tag checkbox */}
       <label style={{ display: "block", margin: "10px 0", fontSize: "1em" }}>
         <input
           type="checkbox"
