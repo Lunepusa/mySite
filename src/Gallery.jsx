@@ -606,7 +606,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                     autoPlay
                     loop
                     controlsList="nodownload"
-                    onContextMenu={(e) => e.preventDefault();handleMediaShareCopy(item)(e);}
+                    onContextMenu={(e) => {e.preventDefault();handleMediaShareCopy(item)(e);}}
                     style={{
                       maxWidth: "100%",
                       maxHeight: "90vh",
@@ -755,7 +755,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                               openFullscreen(item);
                             }
                           }}
-                          onContextMenu={(e) => e.preventDefault();handleMediaShareCopy(item)(e);}
+                          onContextMenu={(e) =>{ e.preventDefault();handleMediaShareCopy(item)(e);}}
                         >
                           <div
                             style={{
