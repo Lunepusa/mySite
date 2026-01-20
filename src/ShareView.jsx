@@ -78,23 +78,25 @@ const ShareView = () => {
 
   return (
     <>
-    <div style={{textAlign:"center"}}>
-     {!user ? (
-      <div style={{ fontSize: "1.3em", textAlign: "center" }}>
-        Hope you enjoy! Log in below to permanantly unlock this content through your <a href="/Profile">profile!</a>
-        <Login />
-      </div>
-    ) : (
-      <div style={{ fontSize: "1em", textAlign: "center" }}>
-        Welcome back, <a href="/Profile">{user.username}!</a> Hope you enjoy!
-        { data.date ?(
-<div>this date has been saved to your permanantly unlocked dates which can be viewed in your <a href="/Profile">profile!</a></div>
-        ):()
-        }
-        <Login />
-      </div>
-    )}
+    <div style={{ textAlign: "center", padding: "10px", marginBottom: "20px" }}>
+  {!user ? (
+    <div style={{ fontSize: "1.3em" }}>
+      Hope you enjoy! Log in below to permanently unlock this content through your{" "}
+      <a href="/Profile">profile!</a>
+      <Login />
     </div>
+  ) : (
+    <div style={{ fontSize: "1em" }}>
+      Welcome back, <a href="/Profile">{user.username}!</a> Hope you enjoy!
+      {data?.date && (
+        <div style={{ marginTop: "8px" }}>
+          This date has been saved to your permanently unlocked dates, which can be viewed in your{" "}
+          <a href="/Profile">profile!</a>
+        </div>
+      )}
+    </div>
+  )}
+</div>
       {/* Full-screen modal (same as Gallery) */}
       {fullscreenItem && (
         <div

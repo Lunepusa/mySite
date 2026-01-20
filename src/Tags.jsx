@@ -739,7 +739,7 @@ export const ClickableTags = ({ tags = "", emptyText = "None set" }) => {
             href={`/lounge#${encodeURIComponent(tag)}`}
             style={{
               color: "#0066cc",
-              textDecoration: "none",
+              textDecoration: "none",    
               marginRight: "0.5%",
             }}
             onClick={(e) => {

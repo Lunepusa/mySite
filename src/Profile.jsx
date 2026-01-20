@@ -141,6 +141,35 @@ const unlockedDates = user?.purchased_dates
     }
   };
 
+  // Inline clickable dates (same style as ClickableTags)
+const ClickableDates = ({ dates }) => {
+  if (!dates || dates.length === 0) return <span style={{ color: "#ccc" }}>None yet</span>;
+
+  return (
+    <div style={{ margin: "0.5% 0" }}>
+      {dates.map((date, i) => (
+        <React.Fragment key={date}>
+          <a
+            href={`/lounge#${encodeURIComponent(date)}`}
+            style={{
+              color: "#0066cc",
+              textDecoration: "none",
+              marginRight: "0.5%",
+            }}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              window.location.href = `/lounge#${encodeURIComponent(date)}`;
+            }}
+          >
+            {date}
+          </a>
+          {i < dates.length - 1 && <span style={{ color: "#666" }}>, </span>}
+        </React.Fragment>
+      ))}
+    </div>
+  );
+};
 
 
     return (
@@ -314,28 +343,12 @@ const unlockedDates = user?.purchased_dates
         </Collapse>
       </div>
 
-      <div style={{ marginTop: "1%" }}>
+     <div style={{ marginTop: "20px" }}>
   <Collapse trigger={<h2>Permanently Unlocked Dates</h2>}>
-    {unlockedDates.length === 0 ? (
-      <p>No dates unlocked yet.</p>
-    ) : (
-        {unlockedDates.map(date => (
-            <button
-              onClick={() => {
-                // Navigate to gallery with date as search (your existing hash system)
-                window.location.href = `/lounge#${date}`;
-              }}
-              style={{
-                color: "#0066cc",
-                cursor: "pointer",
-                fontSize: "1.1em",
-                display:"inline-block",
-              }}
-            >
-              {date}
-            </button>
-        ))}
-    )}
+    <p style={{ margin: "0.5% 0", color: "#ccc" }}>
+      These dates are permanently unlocked and always visible to you in the gallery.
+    </p>
+    <ClickableDates dates={unlockedDates} />
   </Collapse>
 </div>
 
