@@ -176,7 +176,11 @@ const ClickableDates = ({ dates }) => {
     <div style={{ padding: "2%", MinWidth: "200px", width: "100VW", margin: "0 auto", display: "inline-block", }}>
       <h1 style={{ textAlign: "center" }}>Profile</h1>
 
-      {user ? (
+      {!user ?(
+        <div>You are not logged in. To save favorite or muted tags, or to view all permanantly umlocked media you may have, please log in. 
+          
+          <Login /> </div>
+      )  :(
         <>
           <div style={{ marginBottom: "1%", padding: "2%", background: "#222", borderRadius: "1px"}}>
             <h2>User Information</h2>
