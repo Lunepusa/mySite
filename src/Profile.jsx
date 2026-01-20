@@ -173,12 +173,12 @@ const ClickableDates = ({ dates }) => {
 
 
     return (
-    <div style={{ padding: "2%", MinWidth: "200px", width: "40VW", margin: "0 auto", display: "inline-block", }}>
+    <div style={{ padding: "2%", MinWidth: "200px", width: "100VW", margin: "0 auto", display: "inline-block", }}>
       <h1 style={{ textAlign: "center" }}>Profile</h1>
 
       {user ? (
         <>
-          <div style={{ marginBottom: "1%", padding: "2%", background: "#222", borderRadius: "1px" }}>
+          <div style={{ marginBottom: "1%", padding: "2%", background: "#222", borderRadius: "1px"}}>
             <h2>User Information</h2>
             <p><strong>Username:</strong> {user.username}</p>
             <p><strong>Subscription:</strong> {subscriptionText}</p>

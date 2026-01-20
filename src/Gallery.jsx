@@ -30,24 +30,40 @@ const Gallery = () => {
 
   const ITEMS_PER_BATCH = 100;
 
-  useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash.slice(1);
-      if (hash) {
-        const query = decodeURIComponent(hash);
-        setSearchInput(query);
-        triggerSearch();
-      } else {
-        setSearchInput("");
-        triggerSearch();
-      }
-    };
+ useEffect(() => {
+  const handleHashChange = () => {
+    const hash = window.location.hash.slice(1);
+    const rawQuery = hash ? decodeURIComponent(hash) : "";
 
-    handleHashChange();
-    window.addEventListener("hashchange", handleHashChange);
+    console.log("Hash changed to:", rawQuery); // debug
 
-    return () => window.removeEventListener("hashchange", handleHashChange);
-  }, []);
+    // Always update input field
+    setSearchInput(rawQuery);
+
+    // Normalize and force full search reset
+    const normalized = normalizeSearchInput(rawQuery);
+    setActiveSearchQuery(normalized);
+    setDisplayedQuery(normalized || "(no terms)");
+
+    // Reset pagination and results
+    setMedia([]);
+    setOffset(0);
+    setHasMore(true);
+
+    // Immediately load with new query
+    loadMoreGroups(0, normalized, true);
+  };
+
+  // Run once when component mounts (handles initial load with hash)
+  handleHashChange();
+
+  // Listen for any future hash changes
+  window.addEventListener("hashchange", handleHashChange);
+
+  return () => {
+    window.removeEventListener("hashchange", handleHashChange);
+  };
+}, []); // empty dependency array = only setup/teardown on mount/unmount
 
   useEffect(() => {
     loadMoreGroups();
