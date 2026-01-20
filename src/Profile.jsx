@@ -176,13 +176,9 @@ const ClickableDates = ({ dates }) => {
     <div style={{ padding: "2%", MinWidth: "200px", width: "100VW", margin: "0 auto", display: "inline-block", }}>
       <h1 style={{ textAlign: "center" }}>Profile</h1>
 
-      {!user ?(
-        <div>You are not logged in. To save favorite or muted tags, or to view all permanantly umlocked media you may have, please log in. 
-          
-          <Login /> </div>
-      )  :(
+      {user ? (
         <>
-          <div style={{ marginBottom: "1%", padding: "2%", background: "#222", borderRadius: "1px"}}>
+          <div style={{ marginBottom: "1%", padding: "2%", background: "#222", borderRadius: "1px" }}>
             <h2>User Information</h2>
             <p><strong>Username:</strong> {user.username}</p>
             <p><strong>Subscription:</strong> {subscriptionText}</p>
@@ -419,7 +415,7 @@ const ClickableDates = ({ dates }) => {
         </>
       ) : (
         <div style={{ fontSize: "1.3em", textAlign: "center" }}>
-          This is a private area. Log in below to enter.
+          You are not logged in. To save favorite or muted tags, or to view all permanantly umlocked media you may have, please log in.
           <Login />
         </div>
       )}
