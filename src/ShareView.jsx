@@ -34,13 +34,6 @@ const ShareView = () => {
           setSharedDate(items[0].date || "Unknown");
         }
 
-        // Grant permanent access if logged in and it's a date
-        if (isLoggedIn && data.date) {
-          await apiFetch("/grant-date-access", {
-            method: "POST",
-            body: JSON.stringify({ date: data.date }),
-          });
-        }
       } catch (err) {
         setError(err.message || "Failed to load shared content");
       } finally {
