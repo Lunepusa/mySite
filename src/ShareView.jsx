@@ -11,10 +11,12 @@ const ShareView = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [fullscreenItem, setFullscreenItem] = useState(null);
+  const [isDateShare, setIsDateShare] = useState(false);
 
   // Shared caption/date (taken from first item)
   const [sharedCaption, setSharedCaption] = useState("");
   const [sharedDate, setSharedDate] = useState("");
+
 
   useEffect(() => {
     const loadShared = async () => {
@@ -25,6 +27,8 @@ const ShareView = () => {
 
         const data = await res.json();
         const items = data.media || [];
+            if (data.date) {
+          setIsDateShare(true);
 
         setMedia(items);
 
@@ -81,9 +85,9 @@ const ShareView = () => {
   ) : (
     <div style={{ fontSize: "1em" }}>
       Welcome back, <a href="/Profile">{user.username}!</a> Hope you enjoy!
-      {data?.date && (
+      {isDateShare && (
         <div style={{ marginTop: "8px" }}>
-          This date has been saved to your permanently unlocked dates, which can be viewed in your{" "}
+          This date <strong>{{sharedDate}}</strong> has been saved to your permanently unlocked dates, which can be viewed in your{" "}
           <a href="/Profile">profile!</a>
         </div>
       )}
