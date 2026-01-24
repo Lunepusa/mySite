@@ -28,7 +28,7 @@ const ShareView = () => {
         const data = await res.json();
         const items = data.media || [];
             if (data.date) {
-          setIsDateShare(true);
+          setIsDateShare(true);}
 
         setMedia(items);
 
