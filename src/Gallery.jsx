@@ -633,9 +633,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                                     ? "blur(10px)"
                                     : isAdmin || isSubscriber
                                     ? "none"
-                                    : !isFirstGroup && isLoggedIn
-                                    ? "blur(7px)"
-                                    : "blur(3px)",
+                                    : "blur(7px)",
                     }}
                   />
                 ) : (
@@ -654,9 +652,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                                     ? "blur(10px)"
                                     : isAdmin || isSubscriber
                                     ? "none"
-                                    : !isFirstGroup && isLoggedIn
-                                    ? "blur(7px)"
-                                    : "blur(3px)",
+                                    : "blur(7px)",
                     }}
                   />
                 )}
