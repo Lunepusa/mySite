@@ -629,7 +629,13 @@ const handleMediaShareCopy = (item) => async (e) => {
                       height: "auto",
                       objectFit: "contain",
                       background: "#000",
-                      filter: !isSubscriber || !isAdmin ? "blur(10px)" : "none",
+                      filter: !isLoggedIn
+                                    ? "blur(10px)"
+                                    : isAdmin || isSubscriber
+                                    ? "none"
+                                    : !isFirstGroup && isLoggedIn
+                                    ? "blur(7px)"
+                                    : "blur(3px)",
                     }}
                   />
                 ) : (
@@ -644,7 +650,13 @@ const handleMediaShareCopy = (item) => async (e) => {
                       height: "auto",
                       objectFit: "contain",
                       background: "#000",
-                      filter: !isSubscriber || !isAdmin ? "blur(10px)" : "none",
+                      filter: !isLoggedIn
+                                    ? "blur(10px)"
+                                    : isAdmin || isSubscriber
+                                    ? "none"
+                                    : !isFirstGroup && isLoggedIn
+                                    ? "blur(7px)"
+                                    : "blur(3px)",
                     }}
                   />
                 )}
