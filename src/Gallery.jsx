@@ -620,6 +620,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                     controls
                     autoPlay
                     loop
+                    muted={!(isAdmin || isSubscriber)}
                     controlsList="nodownload"
                     onContextMenu={(e) => {e.preventDefault();handleMediaShareCopy(item)(e);}}
                     style={{
