@@ -617,7 +617,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                 {fullscreenItem.isVideo ? (
                   <video
                     src={`${R2_PUBLIC_URL}/${fullscreenItem.key}`}
-                    controls
+                    controls={isAdmin || isSubscriber}
                     autoPlay
                     loop
                     muted={!(isAdmin || isSubscriber)}
