@@ -19,8 +19,7 @@ export function LoveandLimits() {
             <br /> Google suite
             <br /> Troubleshooting
             <br /> Making
-            <br />
-            Coding
+            <br /> Coding
             <br /> Sewing
             <br /> Book binding
             <br /> Dancing
@@ -98,7 +97,7 @@ export function Availability() {
         <h3 style={{ opacity: ".8" }}>
           When I tend to be available. no guarentee without discussion.
           <br />
-          Customs, Sexting, Calls, and Meets MUST be scheduled in advance
+          Sexting, Calls, and Meets MUST be scheduled in advance. Customs require time to make.
           <br />
           Please tell me the timezone when scheduling. I am in mountain time.
         </h3>
@@ -110,8 +109,8 @@ export function Availability() {
           Wed: ["6:00 PM - 11:00 PM"],
           Thur: ["6:00 PM - 11:00 PM"],
           Fri: ["6:00 PM - 2:00 AM"],
-          Sat: ["9:00 AM - 2:00 AM"],
-          Sun: ["9:00 AM - 11:00 PM"],
+          Sat: ["11:00 AM - 2:00 AM"],
+          Sun: ["11:00 AM - 11:00 PM"],
         }}
         descriptions={{
           Mon: "",
@@ -203,3 +202,4 @@ export default function About() {
     </div>
   );
 }
+
