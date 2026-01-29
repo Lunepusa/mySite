@@ -3,6 +3,152 @@ import { useAuth, apiFetch } from "./Auth";
 import Collapse from "./Utility";
 import { TagSelect, searchTags, getTagsArray, ClickableTags } from "./Tags";
 
+
+export const PaymentChecker = () => {
+  const [savedPairs, setSavedPairs] = useState([]);
+  const [platforms, setPlatforms] = useState([]);
+  const [selectedPair, setSelectedPair] = useState(""); // "" means "new"
+  const [newPlatform, setNewPlatform] = useState("");
+  const [newUsername, setNewUsername] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
+
+  // Fetch saved pairs and platforms on mount
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const pairsRes = await apiFetch("/saved-payment-pairs");
+        const pairsData = await pairsRes.json();
+        setSavedPairs(pairsData.pairs || []);
+
+        const platRes = await apiFetch("/platforms");
+        const platData = await platRes.json();
+        setPlatforms(platData.platforms || []);
+      } catch (err) {
+        console.error("Failed to load payment data:", err);
+      }
+    };
+    loadData();
+  }, []);
+
+  const handleCheck = async () => {
+    setLoading(true);
+    setResult(null);
+
+    let payload;
+    if (selectedPair === "" || selectedPair === "new") {
+      if (!newPlatform || !newUsername) {
+        setResult({ success: false, message: "Please select platform and enter username" });
+        setLoading(false);
+        return;
+      }
+      payload = { platform: newPlatform, username: newUsername };
+    } else {
+      const selected = savedPairs.find(p => `${p.platform}-${p.username}` === selectedPair);
+      if (!selected) {
+        setResult({ success: false, message: "Selected pair not found" });
+        setLoading(false);
+        return;
+      }
+      payload = selected;
+    }
+
+    try {
+      const res = await apiFetch("/check-payment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+      setResult(data);
+    } catch (err) {
+      setResult({ success: false, message: "Error checking payment" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div style={{ padding: "20px", maxWidth: "600px", margin: "0 auto" }}>
+      <Collapse trigger={<h1>Reload Wallet</h2>}>
+      <h3>Check Recent Payment</h3>
+      <p style={{ fontSize: "0.9em", color: "#aaa" }}>
+        Searches emails from the last 7 days only. For older payments or issues, contact LunePusa directly with your receipt.
+      </p>
+
+      <div style={{ marginTop: "20px" }}>
+        <label>Select saved pair or enter new:</label>
+        <select
+          value={selectedPair}
+          onChange={(e) => setSelectedPair(e.target.value)}
+          style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
+        >
+          <option value="">-- Select a saved pair --</option>
+          <option value="new">Enter new pair</option>
+          {savedPairs.map((p, i) => (
+            <option key={i} value={`${p.platform}-${p.username}`}>
+              {p.platform} - {p.username}
+            </option>
+          ))}
+        </select>
+
+        {(selectedPair === "" || selectedPair === "new") && (
+          <>
+            <label>Platform</label>
+            <select
+              value={newPlatform}
+              onChange={(e) => setNewPlatform(e.target.value)}
+              style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
+            >
+              <option value="">Select platform...</option>
+              {platforms.map((p) => (
+                <option key={p.platform} value={p.platform}>
+                  {p.platform}
+                </option>
+              ))}
+            </select>
+
+            <label>Username used in payment</label>
+            <input
+              type="text"
+              value={newUsername}
+              onChange={(e) => setNewUsername(e.target.value)}
+              placeholder="yourusername"
+              style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
+            />
+          </>
+        )}
+
+        <button
+          onClick={handleCheck}
+          disabled={loading}
+          style={{
+            padding: "10px 20px",
+            background: loading ? "#666" : "#0066cc",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            cursor: loading ? "not-allowed" : "pointer",
+          }}
+        >
+          {loading ? "Checking..." : "Check Payment"}
+        </button>
+
+        {result && (
+          <div style={{ marginTop: "20px", padding: "10px", background: result.success ? "#1a3a1a" : "#3a1a1a", borderRadius: "4px" }}>
+            <p style={{ color: result.success ? "lightgreen" : "orange" }}>
+              {result.message}
+            </p>
+          </div>
+        )}
+      </div>
+      </Collapse>
+    </div>
+  );
+};
+
+
 const Profile = () => {
    const { isSubscriber, isLoggedIn, isAdmin, user } = useAuth();
   const [currentPassword, setCurrentPassword] = useState("");
@@ -185,7 +331,7 @@ const ClickableDates = ({ dates }) => {
             <p><strong>Expires:</strong> {expiration}</p>
             <login />
           </div>
-
+<PaymentChecker />
           <div style={{ padding: "2%", MinWidth: "200px", width: "40VW", margin: "0 auto", display: "inline-block" }}>
             <Collapse trigger={<h2>Change Password</h2>}>
               {message && <p style={{ color: "lightgreen" }}>{message}</p>}
@@ -423,145 +569,3 @@ const ClickableDates = ({ dates }) => {
   );}
 export default Profile;
 
-
-const export PaymentChecker = () => {
-  const [savedPairs, setSavedPairs] = useState([]);
-  const [platforms, setPlatforms] = useState([]);
-  const [selectedPair, setSelectedPair] = useState(""); // "" means "new"
-  const [newPlatform, setNewPlatform] = useState("");
-  const [newUsername, setNewUsername] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState(null);
-
-  // Fetch saved pairs and platforms on mount
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const pairsRes = await apiFetch("/saved-payment-pairs");
-        const pairsData = await pairsRes.json();
-        setSavedPairs(pairsData.pairs || []);
-
-        const platRes = await apiFetch("/platforms");
-        const platData = await platRes.json();
-        setPlatforms(platData.platforms || []);
-      } catch (err) {
-        console.error("Failed to load payment data:", err);
-      }
-    };
-    loadData();
-  }, []);
-
-  const handleCheck = async () => {
-    setLoading(true);
-    setResult(null);
-
-    let payload;
-    if (selectedPair === "" || selectedPair === "new") {
-      if (!newPlatform || !newUsername) {
-        setResult({ success: false, message: "Please select platform and enter username" });
-        setLoading(false);
-        return;
-      }
-      payload = { platform: newPlatform, username: newUsername };
-    } else {
-      const selected = savedPairs.find(p => `${p.platform}-${p.username}` === selectedPair);
-      if (!selected) {
-        setResult({ success: false, message: "Selected pair not found" });
-        setLoading(false);
-        return;
-      }
-      payload = selected;
-    }
-
-    try {
-      const res = await apiFetch("/check-payment", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await res.json();
-      setResult(data);
-    } catch (err) {
-      setResult({ success: false, message: "Error checking payment" });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div style={{ padding: "20px", maxWidth: "600px", margin: "0 auto" }}>
-      <h3>Check Recent Payment</h3>
-      <p style={{ fontSize: "0.9em", color: "#aaa" }}>
-        Searches emails from the last 7 days only. For older payments or issues, contact LunePusa directly with your receipt.
-      </p>
-
-      <div style={{ marginTop: "20px" }}>
-        <label>Select saved pair or enter new:</label>
-        <select
-          value={selectedPair}
-          onChange={(e) => setSelectedPair(e.target.value)}
-          style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
-        >
-          <option value="">-- Select a saved pair --</option>
-          <option value="new">Enter new pair</option>
-          {savedPairs.map((p, i) => (
-            <option key={i} value={`${p.platform}-${p.username}`}>
-              {p.platform} - {p.username}
-            </option>
-          ))}
-        </select>
-
-        {(selectedPair === "" || selectedPair === "new") && (
-          <>
-            <label>Platform</label>
-            <select
-              value={newPlatform}
-              onChange={(e) => setNewPlatform(e.target.value)}
-              style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
-            >
-              <option value="">Select platform...</option>
-              {platforms.map((p) => (
-                <option key={p.platform} value={p.platform}>
-                  {p.platform}
-                </option>
-              ))}
-            </select>
-
-            <label>Username used in payment</label>
-            <input
-              type="text"
-              value={newUsername}
-              onChange={(e) => setNewUsername(e.target.value)}
-              placeholder="yourusername"
-              style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
-            />
-          </>
-        )}
-
-        <button
-          onClick={handleCheck}
-          disabled={loading}
-          style={{
-            padding: "10px 20px",
-            background: loading ? "#666" : "#0066cc",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: loading ? "not-allowed" : "pointer",
-          }}
-        >
-          {loading ? "Checking..." : "Check Payment"}
-        </button>
-
-        {result && (
-          <div style={{ marginTop: "20px", padding: "10px", background: result.success ? "#1a3a1a" : "#3a1a1a", borderRadius: "4px" }}>
-            <p style={{ color: result.success ? "lightgreen" : "orange" }}>
-              {result.message}
-            </p>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
