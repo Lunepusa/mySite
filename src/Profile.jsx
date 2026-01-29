@@ -71,7 +71,7 @@ export const PaymentChecker = () => {
 
   return (
     <div style={{ padding: "20px", maxWidth: "600px", margin: "0 auto" }}>
-      <Collapse trigger={<h1>Reload Wallet</h2>}>
+      <Collapse trigger={<h2>Reload Wallet</h2>}>
       <h3>Check Recent Payment</h3>
       <p style={{ fontSize: "0.9em", color: "#aaa" }}>
         Searches emails from the last 7 days only. For older payments or issues, contact LunePusa directly with your receipt.
