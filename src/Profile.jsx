@@ -7,20 +7,27 @@ import { TagSelect, searchTags, getTagsArray, ClickableTags } from "./Tags";
 export const PaymentChecker = () => {
   const [savedPairs, setSavedPairs] = useState([]);
   const [platforms, setPlatforms] = useState([]);
-  const [selectedPair, setSelectedPair] = useState(""); // "" means "new"
-  const [newPlatform, setNewPlatform] = useState("");
-  const [newUsername, setNewUsername] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
 
-  // Fetch saved pairs and platforms on mount
+  // For new pair entry
+  const [selectedPair, setSelectedPair] = useState(""); // "" = new, otherwise saved pair key
+  const [newPlatform, setNewPlatform] = useState("");
+  const [newUsername, setNewUsername] = useState("");
+
+  // Platform info display
+  const [selectedPlatformInfo, setSelectedPlatformInfo] = useState(null);
+
+  // Load saved pairs and platforms
   useEffect(() => {
     const loadData = async () => {
       try {
+        // Saved pairs
         const pairsRes = await apiFetch("/saved-payment-pairs");
         const pairsData = await pairsRes.json();
         setSavedPairs(pairsData.pairs || []);
 
+        // Platforms (full data)
         const platRes = await apiFetch("/platforms");
         const platData = await platRes.json();
         setPlatforms(platData.platforms || []);
@@ -30,6 +37,34 @@ export const PaymentChecker = () => {
     };
     loadData();
   }, []);
+
+  // When selecting a saved pair or switching to new
+  const handlePairChange = (e) => {
+    const value = e.target.value;
+    setSelectedPair(value);
+
+    if (value === "" || value === "new") {
+      setNewPlatform("");
+      setNewUsername("");
+      setSelectedPlatformInfo(null);
+    } else {
+      const selected = savedPairs.find(p => `${p.platform}-${p.username}` === value);
+      if (selected) {
+        setNewPlatform(selected.platform);
+        setNewUsername(selected.username);
+        const platInfo = platforms.find(p => p.platform === selected.platform);
+        setSelectedPlatformInfo(platInfo || null);
+      }
+    }
+  };
+
+  // When changing platform in new entry
+  const handlePlatformChange = (e) => {
+    const value = e.target.value;
+    setNewPlatform(value);
+    const selected = platforms.find(p => p.platform === value);
+    setSelectedPlatformInfo(selected || null);
+  };
 
   const handleCheck = async () => {
     setLoading(true);
@@ -70,19 +105,18 @@ export const PaymentChecker = () => {
   };
 
   return (
-    <div style={{ padding: "20px", maxWidth: "600px", margin: "0 auto" }}>
-      <Collapse trigger={<h2>Reload Wallet</h2>}>
+    <div style={{margin: "0 auto" }}>
       <h3>Check Recent Payment</h3>
-      <p style={{ fontSize: "0.9em", color: "#aaa" }}>
+      <p style={{ fontSize: "0.9em", color: "#aaa", marginBottom: "5px" }}>
         Searches emails from the last 7 days only. For older payments or issues, contact LunePusa directly with your receipt.
       </p>
 
-      <div style={{ marginTop: "20px" }}>
+      <div style={{ marginBottom: "5px" }}>
         <label>Select saved pair or enter new:</label>
         <select
           value={selectedPair}
-          onChange={(e) => setSelectedPair(e.target.value)}
-          style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
+          onChange={handlePairChange}
+          style={{ width: "100%", padding: "2px", marginBottom: "5px" }}
         >
           <option value="">-- Select a saved pair --</option>
           <option value="new">Enter new pair</option>
@@ -98,11 +132,11 @@ export const PaymentChecker = () => {
             <label>Platform</label>
             <select
               value={newPlatform}
-              onChange={(e) => setNewPlatform(e.target.value)}
+              onChange={handlePlatformChange}
               style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
             >
               <option value="">Select platform...</option>
-              {platforms.map((p) => (
+              {platforms.map(p => (
                 <option key={p.platform} value={p.platform}>
                   {p.platform}
                 </option>
@@ -115,38 +149,91 @@ export const PaymentChecker = () => {
               value={newUsername}
               onChange={(e) => setNewUsername(e.target.value)}
               placeholder="yourusername"
-              style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
+              style={{ width: "100%", padding: "2px", marginBottom: "5px" }}
             />
           </>
         )}
 
-        <button
-          onClick={handleCheck}
-          disabled={loading}
-          style={{
-            padding: "10px 20px",
-            background: loading ? "#666" : "#0066cc",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: loading ? "not-allowed" : "pointer",
-          }}
-        >
-          {loading ? "Checking..." : "Check Payment"}
-        </button>
+        {/* Platform info display */}
+        {selectedPlatformInfo && (
+          <div style={{
+            marginTop: "3px",
+            padding: "3px",
+            background: "#1a1a1a",
+            borderRadius: "2px",
+            border: "1px solid #444"
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "3px", marginBottom: "2px" }}>
+              {selectedPlatformInfo.icon && (
+                <img
+                  src={selectedPlatformInfo.icon}
+                  alt={`${selectedPlatformInfo.platform} icon`}
+                  style={{ maxWidth: "80px", maxHeight: "80px", objectFit: "contain" }}
+                />
+              )}
+              <h4 style={{ margin: 0 }}>{selectedPlatformInfo.platform}</h4>
+            </div>
 
-        {result && (
-          <div style={{ marginTop: "20px", padding: "10px", background: result.success ? "#1a3a1a" : "#3a1a1a", borderRadius: "4px" }}>
-            <p style={{ color: result.success ? "lightgreen" : "orange" }}>
-              {result.message}
-            </p>
+            {selectedPlatformInfo.description && (
+              <p style={{ margin: "8px 0", color: "#ccc" }}>
+                {selectedPlatformInfo.description}
+              </p>
+            )}
+
+            {selectedPlatformInfo.category && (
+              <p style={{ margin: "8px 0", fontSize: "0.9em" }}>
+                <strong>Category:</strong> {selectedPlatformInfo.category}
+              </p>
+            )}
+
+            {selectedPlatformInfo.link_to_page && (
+              <p style={{ margin: "8px 0" }}>
+                <a
+                  href={selectedPlatformInfo.link_to_page}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: "#0066cc", textDecoration: "none" }}
+                >
+                  Visit website →
+                </a>
+              </p>
+            )}
+
+            {selectedPlatformInfo.is_favorite && (
+              <p style={{ margin: "8px 0", color: "#ffcc00" }}>
+                ★ Favorite Platform
+              </p>
+            )}
           </div>
         )}
       </div>
-      </Collapse>
+
+      <button
+        onClick={handleCheck}
+        disabled={loading}
+        style={{
+          padding: "10px 20px",
+          background: loading ? "#666" : "#0066cc",
+          color: "white",
+          border: "none",
+          borderRadius: "4px",
+          cursor: loading ? "not-allowed" : "pointer",
+        }}
+      >
+        {loading ? "Checking..." : "Check Payment"}
+      </button>
+
+      {result && (
+        <div style={{ marginTop: "20px", padding: "10px", background: result.success ? "#1a3a1a" : "#3a1a1a", borderRadius: "4px" }}>
+          <p style={{ color: result.success ? "lightgreen" : "orange" }}>
+            {result.message}
+          </p>
+        </div>
+      )}
     </div>
   );
 };
+
 
 
 const Profile = () => {
@@ -330,8 +417,9 @@ const ClickableDates = ({ dates }) => {
             <p><strong>Subscription:</strong> {subscriptionText}</p>
             <p><strong>Expires:</strong> {expiration}</p>
             <login />
-          </div>
+          </div><Collapse trigger={<h2>Reload Wallet</h2>}>
 <PaymentChecker />
+</Collapse>
           <div style={{ padding: "2%", MinWidth: "200px", width: "40VW", margin: "0 auto", display: "inline-block" }}>
             <Collapse trigger={<h2>Change Password</h2>}>
               {message && <p style={{ color: "lightgreen" }}>{message}</p>}
