@@ -1,6 +1,7 @@
 import React from "react";
 import "./styles.css";
 import Collapse from "./Utility";
+import PaymentChecker from "./Profile"
 
 export default function Shh() {
   return (
@@ -26,6 +27,7 @@ export default function Shh() {
           Google apps script file
         </a>
       </h3>
+<PaymentChecker />
     </div>
   );
 }

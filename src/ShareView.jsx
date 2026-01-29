@@ -87,8 +87,8 @@ const ShareView = () => {
       Welcome back, <a href="/Profile">{user.username}!</a> Hope you enjoy!
       {isDateShare && (
         <div style={{ marginTop: "8px" }}>
-          This date <strong>({sharedDate})</strong> has been saved to your permanently unlocked dates, which can be viewed in your{" "}
-          <a href="/Profile">profile!</a>
+          This date has been saved to your permanently unlocked dates, which can be viewed in your 
+          <a href="/Profile#collapse-permanentlyunlockeddates"> profile!</a>
         </div>
       )}
     </div>
