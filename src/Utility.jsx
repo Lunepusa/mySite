@@ -570,7 +570,7 @@ export function SpendFromWallet({
   style = {},
   className = "",
 }) {
-  const { isLoggedIn, walletBalance, user, walletBalance } = useAuth();
+  const { isLoggedIn, walletBalance, user} = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [result, setResult] = useState(null);
