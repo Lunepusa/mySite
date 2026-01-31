@@ -419,7 +419,9 @@ const ClickableDates = ({ dates }) => {
             <p><strong>Subscription:</strong> {subscriptionText}</p>
             <p><strong>Expires:</strong> {expiration}</p>
             <login />
-          </div><Collapse trigger={<h2>Reload Wallet</h2>}>
+          </div><Collapse trigger={<h2 style={{ margin: 0, cursor: "pointer" }}>
+                  Reload Wallet (${walletBalance})
+                </h2>}>
 <PaymentChecker />
 </Collapse>
           <div style={{ padding: "2%", MinWidth: "200px", width: "40VW", margin: "0 auto", display: "inline-block" }}>

@@ -558,7 +558,7 @@ export function LocalTimeSchedule({
 
 
 
-export default function SpendFromWallet({
+export function SpendFromWallet({
   amountCents,
   itemSlug,
   description,
