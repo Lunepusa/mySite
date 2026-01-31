@@ -7,6 +7,9 @@ import React, {
 } from "react";
 import { useLocation } from "react-router-dom";
 import "./styles.css";
+import { useAuth, apiFetch, Login } from "./Auth"; // adjust path to your Auth file
+import {PaymentChecker} from "./Profile";
+
 
 export default function Collapse({ trigger, children }) {
   const [isCollapsed, setIsCollapsed] = useState(true);
@@ -549,6 +552,149 @@ export function LocalTimeSchedule({
   return (
     <div>
       <div>{scheduleDisplay}</div>
+    </div>
+  );
+}
+
+
+
+export default function SpendFromWallet({
+  amountCents,
+  itemSlug,
+  description,
+  buttonText,
+  disabled = false,
+  onSuccess,
+  onError,
+  children,
+  style = {},
+  className = "",
+}) {
+  const { isLoggedIn, walletBalance, user } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [result, setResult] = useState(null);
+
+  const numericBalance = parseFloat(walletBalance) || 0;
+  const hasEnough = numericBalance * 100 >= amountCents;
+
+  const handleSpend = async () => {
+    if (!hasEnough) {
+      setError(`Insufficient balance: $${walletBalance} available`);
+      if (onError) onError("Insufficient balance");
+      return;
+    }
+
+    if (!confirm(`Spend $${(amountCents / 100).toFixed(2)} for "${description}"?`)) return;
+
+    setLoading(true);
+    setError(null);
+    setResult(null);
+
+    try {
+      const res = await apiFetch("/spend-wallet", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amountCents,
+          itemSlug,
+          description,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        // Refresh auth to update balance
+        // Assuming you have refreshUser in useAuth - call it if available
+        // Otherwise, reload page or refresh manually
+        window.location.reload(); // simple refresh for now
+        if (onSuccess) onSuccess(data);
+      } else {
+        throw new Error(data.message || "Spend failed");
+      }
+    } catch (err) {
+      console.error("Spend error:", err);
+      setError(err.message || "Error spending from wallet");
+      if (onError) onError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div>
+      {!isLoggedIn ? (
+        // Not logged in: show only Login
+        <div>
+          <p>Please log in to purchase</p>
+          <Login />
+        </div>
+      ) : (
+        // Logged in: show button + collapse below
+        <>
+          <button
+            onClick={handleSpend}
+            disabled={loading || disabled || !hasEnough}
+            style={{
+              padding: "3px 6px",
+              background: loading || disabled || !hasEnough || user.subscription_expires > 4542307200 ? "#666" : "#0066cc",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: loading || disabled || !hasEnough || user.subscription_expires > 4542307200 ? "not-allowed" : "pointer",
+              ...style,
+            }}
+            className={className}
+          >
+            {loading ? "Processing..." : children || buttonText}
+          </button>
+
+          {/* Result banner */}
+          {result && (
+            <div style={{
+              marginTop: "20px",
+              padding: "15px",
+              background: result.success ? "#1a3a1a" : "#3a1a1a",
+              borderRadius: "8px",
+              border: `2px solid ${result.success ? "#4caf50" : "#f44336"}`,
+              textAlign: "center",
+              fontWeight: "bold",
+              fontSize: "1.1em"
+            }}>
+              {result.success ? "Success!" : "Failed"}
+              <br />
+              {result.message}
+            </div>
+          )}
+
+          {/* Error / Insufficient */}
+          {error && (
+            <p style={{ color: "orange", marginTop: "8px", fontSize: "0.9em" }}>
+              {error}
+            </p>
+          )}
+
+          {!hasEnough && !error && !result && (
+            <p style={{ color: "orange", marginTop: "8px", fontSize: "0.9em" }}>
+              Need ${(amountCents / 100).toFixed(2)} – current: ${walletBalance}
+            </p>
+          )}
+
+          {/* Reload Wallet Collapse - always shown when logged in */}
+          <div style={{ marginTop: "20px" }}>
+            <Collapse
+              trigger={
+                <h2 style={{ margin: 0, cursor: "pointer" }}>
+                  Reload Wallet (${walletBalance})
+                </h2>
+              }
+            >
+              <PaymentChecker />
+            </Collapse>
+          </div>
+        </>
+      )}
     </div>
   );
 }

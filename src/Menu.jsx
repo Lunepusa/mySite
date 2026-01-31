@@ -14,8 +14,11 @@ import textratepreview from "./Images/Preview/textrate.jpg";
 import vidratepreview from "./Images/Preview/vidrate.jpg";
 import vidcallpreview from "./Images/Preview/vidcall.png";
 import sextpreview from "./Images/Preview/sext.jpg";
+import spendfromwallet from "./Utility";
+import walletBalance from "./auth";
 
 export default function Menu() {
+   const { isSubscriber, isLoggedIn, isAdmin, user } = useAuth();
   return (
     <div style={{ textAlign: "center", width: "95%", margin: "auto" }}>
       <h1>Menu</h1>
@@ -85,9 +88,13 @@ export default function Menu() {
           <br />
           Yearly ($60) and lifetime ($205) also available.
           <br />{" "}
-          <h3>
-            will soon be replaced with <a href="/Lounge">the Lounge</a>
-          </h3>
+          <SpendFromWallet
+  amountCents={1000}
+  itemSlug="lounge-monthly"
+  description="Monthly Lounge access"
+  buttonText={`Subscribe Monthly with Wallet ($${walletBalance < 10 ? 'Insufficient' :user.subscription_expires > 4542307200 ? "You already have Lifetime Access": '10.00'})`}
+  disabled={parseFloat(walletBalance) < 10 || user.subscription_expires > 4542307200}
+/>
           <img
             src={DrivePosts}
             style={{ maxWidth: "100%", maxHeight: "60vh" }}

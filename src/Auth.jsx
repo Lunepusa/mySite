@@ -111,15 +111,36 @@ export const Login = () => {
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [walletBalance, setWalletBalance] = useState("0.00");
 
   const loadUser = async () => {
     setLoading(true);
     try {
       const res = await apiFetch("/me");
-      const data = await res.json();
-      setUser(data.user || null);
+      if (res.ok) {
+        const data = await res.json();
+        const fetchedUser = data.user || null;
+        setUser(fetchedUser);
+
+        // Parse wallet balance (assuming TEXT JSON with { balance: number })
+        let balanceCents = 0;
+        if (fetchedUser?.wallet && fetchedUser.wallet.trim() !== '[]') {
+          try {
+            const walletData = JSON.parse(fetchedUser.wallet);
+            balanceCents = walletData.balance || 0;
+          } catch (e) {
+            console.error("Invalid wallet JSON:", e);
+          }
+        }
+        setWalletBalance((balanceCents / 100).toFixed(2));
+      } else {
+        setUser(null);
+        setWalletBalance("0.00");
+      }
     } catch (err) {
+      console.error("Failed to load user:", err);
       setUser(null);
+      setWalletBalance("0.00");
     } finally {
       setLoading(false);
     }
@@ -129,18 +150,23 @@ const AuthProvider = ({ children }) => {
     loadUser();
   }, []);
 
-  // Derived auth states — now available everywhere
+  // Expose refresh function for use after spending / purchases
+  const refreshUser = loadUser;
+
+  // Derived auth states
   const isLoggedIn = !!user;
   const isAdmin = user?.is_admin || false;
   const isSubscriber = user?.subscription_expires > Math.floor(Date.now() / 1000) || isAdmin;
-  
+
   const value = {
     user,
     loading,
-    loadUser,
+    loadUser: refreshUser,
     isLoggedIn,
     isAdmin,
     isSubscriber,
+    walletBalance,           // always string "$XX.XX"
+    refreshUser,             // call this after any wallet change
   };
 
   if (loading) return <p>Loading auth...</p>;

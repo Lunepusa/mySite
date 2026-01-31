@@ -28,6 +28,41 @@ export default function Shh() {
         </a>
       </h3>
 <PaymentChecker />
+How to Use spendfromwallet (Examples)
+1. Basic use (like your Link component)
+<SpendFromWallet
+  amountCents={1000}           // $10.00
+  itemSlug="lounge-subscription"
+  description="Monthly Lounge access"
+  buttonText="Subscribe with Wallet ($10)"
+/>
+2. With custom button content (like Collapse's trigger flexibility)
+<SpendFromWallet
+  amountCents={500}
+  itemSlug="custom-content-unlock"
+  description="Unlock exclusive video"
+>
+  Unlock for $5 (Wallet)
+</SpendFromWallet>
+3. With callbacks (e.g. show toast, refresh page)
+<SpendFromWallet
+  amountCents={2000}
+  itemSlug="premium-tip"
+  description="Tip creator"
+  onSuccess={() => {
+    alert("Tip sent!");
+    window.location.reload(); // or refresh some state
+  }}
+  onError={(msg) => alert(`Failed: ${msg}`)}
+/>
+4. Disabled or styled
+<SpendFromWallet
+  amountCents={1500}
+  itemSlug="gift-sub"
+  description="Gift subscription"
+  disabled={true} // force disable
+  style={{ background: "#ff6600" }}
+/>
     </div>
   );
 }

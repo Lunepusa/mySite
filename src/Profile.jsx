@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useAuth, apiFetch } from "./Auth";
+import { useAuth, apiFetch, Login } from "./Auth";
 import Collapse from "./Utility";
 import { TagSelect, searchTags, getTagsArray, ClickableTags } from "./Tags";
 
@@ -303,9 +303,11 @@ const unlockedDates = user?.purchased_dates
     ? "Subscriber"
     : "Free User";
 
-  const expiration = user.subscription_expires
-    ? new Date(user.subscription_expires * 1000).toLocaleDateString()
-    : "Never";
+const expiration = !user?.subscription_expires 
+  ? "Never subscribed" 
+  : user.subscription_expires > 4542307200
+    ? "Never - Lifetime access" 
+    : new Date(user.subscription_expires * 1000).toLocaleDateString();
 
       const [tagPrefs, setTagPrefs] = useState({
     favorite_tags: "",
