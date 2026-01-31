@@ -15,7 +15,7 @@ import vidratepreview from "./Images/Preview/vidrate.jpg";
 import vidcallpreview from "./Images/Preview/vidcall.png";
 import sextpreview from "./Images/Preview/sext.jpg";
 import {SpendFromWallet} from "./Utility";
-import { useAuth, apiFetch, Login, walleBalance } from "./Auth";
+import { useAuth, apiFetch, Login, walletBalance } from "./Auth";
 
 
 export default function Menu() {

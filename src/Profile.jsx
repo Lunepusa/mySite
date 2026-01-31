@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useAuth, apiFetch, Login, walleBalance } from "./Auth";
+import { useAuth, apiFetch, Login, walletBalance } from "./Auth";
 import Collapse from "./Utility";
 import { TagSelect, searchTags, getTagsArray, ClickableTags } from "./Tags";
 
