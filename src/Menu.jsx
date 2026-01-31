@@ -15,11 +15,11 @@ import vidratepreview from "./Images/Preview/vidrate.jpg";
 import vidcallpreview from "./Images/Preview/vidcall.png";
 import sextpreview from "./Images/Preview/sext.jpg";
 import {SpendFromWallet} from "./Utility";
-import { useAuth, apiFetch, Login, walletBalance } from "./Auth";
+import { useAuth, apiFetch, Login,} from "./Auth";
 
 
 export default function Menu() {
-   const { isSubscriber, isLoggedIn, isAdmin, user } = useAuth();
+   const { isSubscriber, isLoggedIn, isAdmin, user, walletBalance } = useAuth();
   return (
     <div style={{ textAlign: "center", width: "95%", margin: "auto" }}>
       <h1>Menu</h1>

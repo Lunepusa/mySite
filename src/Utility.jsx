@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import { useLocation } from "react-router-dom";
 import "./styles.css";
-import { useAuth, apiFetch, Login, walletBalance } from "./Auth"; // adjust path to your Auth file
+import { useAuth, apiFetch, Login } from "./Auth"; // adjust path to your Auth file
 import {PaymentChecker} from "./Profile";
 
 
@@ -570,7 +570,7 @@ export function SpendFromWallet({
   style = {},
   className = "",
 }) {
-  const { isLoggedIn, walletBalance, user } = useAuth();
+  const { isLoggedIn, walletBalance, user, walletBalance } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [result, setResult] = useState(null);

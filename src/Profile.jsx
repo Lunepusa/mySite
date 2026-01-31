@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useAuth, apiFetch, Login, walletBalance } from "./Auth";
+import { useAuth, apiFetch, Login} from "./Auth";
 import Collapse from "./Utility";
 import { TagSelect, searchTags, getTagsArray, ClickableTags } from "./Tags";
 
@@ -237,7 +237,7 @@ export const PaymentChecker = () => {
 
 
 const Profile = () => {
-   const { isSubscriber, isLoggedIn, isAdmin, user } = useAuth();
+   const { isSubscriber, isLoggedIn, isAdmin, user, walletBalance } = useAuth();
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");

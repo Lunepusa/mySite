@@ -30,7 +30,7 @@ export const useAuth = () => useContext(AuthContext);
 
 // Reusable Login/Signup component
 export const Login = () => {
-  const { user, loadUser } = useAuth();
+  const { user, loadUser} = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isSignup, setIsSignup] = useState(false);

@@ -5,7 +5,7 @@ import Upload from "./Upload";
 import Gallery from "./Gallery";
 
 const Lounge = () => {
-    const { isSubscriber, isLoggedIn, isAdmin, user } = useAuth();
+    const { isSubscriber, isLoggedIn, isAdmin, user, walletBalance } = useAuth();
 
   return (
   <div style={{ textAlign: "center" }}>
