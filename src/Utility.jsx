@@ -16,8 +16,14 @@ export default function Collapse({ trigger, children }) {
   const location = useLocation();
   const { analyticsData } = useAnalytics();
 
+  // Safely extract text from trigger (handles string, element, or array children)
   const triggerText =
-    typeof trigger === "string" ? trigger : trigger.props.children;
+    typeof trigger === "string"
+      ? trigger
+      : Array.isArray(trigger.props.children)
+        ? trigger.props.children.join("") // join array into string
+        : String(trigger.props.children || "content");
+
   const id = `collapse-${(triggerText || "content")
     .replace(/\s+/g, "-")
     .replace(
@@ -81,7 +87,6 @@ export default function Collapse({ trigger, children }) {
     </div>
   );
 }
-
 export function Copylink(id, location) {
   const baseUrl = window.location.origin;
   const path = location.pathname;
