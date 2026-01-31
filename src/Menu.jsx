@@ -14,7 +14,7 @@ import textratepreview from "./Images/Preview/textrate.jpg";
 import vidratepreview from "./Images/Preview/vidrate.jpg";
 import vidcallpreview from "./Images/Preview/vidcall.png";
 import sextpreview from "./Images/Preview/sext.jpg";
-import spendfromwallet from "./Utility";
+import {SpendFromWallet} from "./Utility";
 import { useAuth, apiFetch, Login, walleBalance } from "./Auth";
 
 
