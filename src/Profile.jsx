@@ -9,6 +9,7 @@ export const PaymentChecker = () => {
   const [platforms, setPlatforms] = useState([]);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
+  const { refreshUser } = useAuth();
 
   // For new pair entry
   const [selectedPair, setSelectedPair] = useState(""); // "" = new, otherwise saved pair key
