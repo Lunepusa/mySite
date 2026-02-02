@@ -99,22 +99,23 @@ export const PaymentChecker = () => {
     const data = await res.json();
     setResult(data);
 
-    // Always refresh auth after API call (success or failure)
+    // Refresh auth data (updates walletBalance live) — no page reload
     console.log("Refreshing user after payment check. Success:", data.success);
-    await refreshUser(); // This should update walletBalance everywhere
+    await refreshUser();
 
-    // Optional: small delay to allow DB commit
-    await new Promise(resolve => setTimeout(resolve, 500));
-    await refreshUser(); // call again for safety
+    // Optional small delay for DB commit consistency (usually not needed)
+    // await new Promise(resolve => setTimeout(resolve, 500));
+    // await refreshUser();
   } catch (err) {
     console.error("Check payment error:", err);
     setResult({ success: false, message: "Error checking payment" });
-    // Still refresh on error
+    // Still refresh on error to be safe
     await refreshUser();
   } finally {
     setLoading(false);
   }
 };
+
   return (
     <div style={{margin: "0 auto" }}>
       <h3>Check Recent Payment</h3>
