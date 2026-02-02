@@ -221,7 +221,9 @@ export const PaymentChecker = () => {
       </div>
 
       <button
-        onClick={handleCheck}
+        onClick={(e) => {
+    e.preventDefault();
+    e.stopPropagation();handleCheck}}
         disabled={loading}
         style={{
           padding: "10px 20px",
