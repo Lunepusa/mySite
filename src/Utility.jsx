@@ -16,14 +16,8 @@ export default function Collapse({ trigger, children }) {
   const location = useLocation();
   const { analyticsData } = useAnalytics();
 
-  // Safely extract text from trigger (handles string, element, or array children)
   const triggerText =
-    typeof trigger === "string"
-      ? trigger
-      : Array.isArray(trigger.props.children)
-        ? trigger.props.children.join("") // join array into string
-        : String(trigger.props.children || "content");
-
+    typeof trigger === "string" ? trigger : trigger.props.children;
   const id = `collapse-${(triggerText || "content")
     .replace(/\s+/g, "-")
     .replace(
@@ -87,6 +81,7 @@ export default function Collapse({ trigger, children }) {
     </div>
   );
 }
+
 export function Copylink(id, location) {
   const baseUrl = window.location.origin;
   const path = location.pathname;
@@ -575,7 +570,7 @@ export function SpendFromWallet({
   style = {},
   className = "",
 }) {
-  const { isLoggedIn, walletBalance, user} = useAuth();
+  const { isLoggedIn, walletBalance, user, refreshUser} = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [result, setResult] = useState(null);
@@ -610,10 +605,7 @@ export function SpendFromWallet({
       const data = await res.json();
 
       if (data.success) {
-        // Refresh auth to update balance
-        // Assuming you have refreshUser in useAuth - call it if available
-        // Otherwise, reload page or refresh manually
-        window.location.reload(); // simple refresh for now
+      await refreshUser(); 
         if (onSuccess) onSuccess(data);
       } else {
         throw new Error(data.message || "Spend failed");
