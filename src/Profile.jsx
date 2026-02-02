@@ -97,6 +97,10 @@ export const PaymentChecker = () => {
 
       const data = await res.json();
       setResult(data);
+      // Auto-refresh auth after success (updates walletBalance everywhere)
+      if (data.success) {
+        await refreshUser();
+      }
     } catch (err) {
       setResult({ success: false, message: "Error checking payment" });
     } finally {
@@ -237,7 +241,7 @@ export const PaymentChecker = () => {
 
 
 const Profile = () => {
-   const { isSubscriber, isLoggedIn, isAdmin, user, walletBalance } = useAuth();
+   const { isSubscriber, isLoggedIn, isAdmin, user, walletBalance, refreshUser } = useAuth();
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
