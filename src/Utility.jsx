@@ -17,7 +17,13 @@ export default function Collapse({ trigger, children }) {
   const { analyticsData } = useAnalytics();
 
   const triggerText =
-    typeof trigger === "string" ? trigger : trigger.props.children;
+  typeof trigger === "string"
+    ? trigger
+    : Array.isArray(trigger.props.children)
+      ? trigger.props.children.join("")  // join array into single string
+      : typeof trigger.props.children === "string"
+        ? trigger.props.children
+        : String(trigger.props.children || "content");  // fallback to string
   const id = `collapse-${(triggerText || "content")
     .replace(/\s+/g, "-")
     .replace(
