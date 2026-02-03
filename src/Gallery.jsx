@@ -180,24 +180,24 @@ const Gallery = () => {
     }
   };
 
-  const multiCommonTags = useMemo(() => {
-    if (selectedItems.size === 0) return [];
+const multiCommonTags = useMemo(() => {
+  if (selectedItems.size === 0) return [];
 
-    const keys = Array.from(selectedItems);
-    const firstItem = media.find(m => m.key === keys[0]);
-    if (!firstItem) return [];
+  const keys = Array.from(selectedItems);
+  const firstItem = media.find(m => m.key === keys[0]);
+  if (!firstItem) return [];
 
-    let common = getTagsArray(firstItem.tags);
+  let common = getTagsArray(firstItem.tags);
 
-    for (const key of keys.slice(1)) {
-      const item = media.find(m => m.key === key);
-      if (!item) continue;
-      const itemTags = getTagsArray(item.tags);
-      common = common.filter(t => itemTags.includes(t));
-    }
+  for (const key of keys.slice(1)) {
+    const item = media.find(m => m.key === key);
+    if (!item) continue;
+    const itemTags = getTagsArray(item.tags);
+    common = common.filter(t => itemTags.includes(t));
+  }
 
-    return common;
-  }, [selectedItems, media]);
+  return common;
+}, [Array.from(selectedItems), media]);  // ← Array.from creates a new array on every content change
 
   // Group by date
   const groups = {};
