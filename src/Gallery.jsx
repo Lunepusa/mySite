@@ -194,6 +194,7 @@ const multiCommonTags = useMemo(() => {
     if (!item) continue;
     const itemTags = getTagsArray(item.tags);
     common = common.filter(t => itemTags.includes(t));
+    console.log("multiCommonTags recalculated for selection:", Array.from(selectedItems));
   }
 
   return common;
