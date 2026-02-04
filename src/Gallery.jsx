@@ -180,7 +180,7 @@ const Gallery = () => {
     }
   };
 
-const multiCommonTags = useMemo(() => {
+const calculateMultiCommonTags = () => {
   if (selectedItems.size === 0) return [];
 
   const keys = Array.from(selectedItems);
@@ -194,11 +194,15 @@ const multiCommonTags = useMemo(() => {
     if (!item) continue;
     const itemTags = getTagsArray(item.tags);
     common = common.filter(t => itemTags.includes(t));
-    console.log("multiCommonTags recalculated for selection:", Array.from(selectedItems));
   }
 
   return common;
-}, [Array.from(selectedItems), media]);  // ← Array.from creates a new array on every content change
+};
+
+const multiCommonTags = useMemo(calculateMultiCommonTags, [
+  Array.from(selectedItems),
+  media,
+]);
 
   // Group by date
   const groups = {};
