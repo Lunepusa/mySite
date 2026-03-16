@@ -471,8 +471,10 @@ const SYNONYM_MAP = {
   //other
  nopost: "delete",
  remove: "delete",
- photo: "picture",
+ picture: "photo",
+pic: "photo",
  clip: "video",
+  vid: "video",
  hide:"hidden",
 };
 
