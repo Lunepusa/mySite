@@ -548,12 +548,23 @@ export const getAllTags = () => CANONICAL_TAGS;
 
 // TagSelect component — editable with Save button
 export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add tags..." }) => {
-  const [localTags, setLocalTags] = useState(initialTags.split(",").map(t => t.trim()).filter(t => t));
+  const [localTags, setLocalTags] = useState(
+    initialTags.split(",").map(t => t.trim()).filter(t => t)
+  );
   const [inputValue, setInputValue] = useState("");
-  const [filteredSuggestions, setFilteredSuggestions] = useState([])useEffect(() => {
-   
-    
+  const [filteredSuggestions, setFilteredSuggestions] = useState([]);
 
+  // This is the NEW effect — added right after the state declarations
+  useEffect(() => {
+    const freshTags = initialTags
+      .split(",")
+      .map(t => t.trim())
+      .filter(t => t.length > 0);
+    
+    setLocalTags(freshTags);
+  }, [initialTags]);   // ← important: depend on initialTags
+
+  // This is your existing suggestions effect — keep it exactly where it was
   useEffect(() => {
     if (inputValue.trim()) {
       const results = searchTags(inputValue);
@@ -562,12 +573,7 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
       setFilteredSuggestions([]);
     }
   }, [inputValue, localTags]);
-    const freshTags = initialTags
-      .split(",")
-      .map(t => t.trim())
-      .filter(t => t.length > 0);
-    setLocalTags(freshTags);
-  }, [initialTags]);;
+    
 
   const addTag = (tag) => {
     tag = tag.trim();
