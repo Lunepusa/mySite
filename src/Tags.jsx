@@ -135,7 +135,7 @@ export const CANONICAL_TAGS = [
   // Taboo
   "taboo",
   "scat",
-  "fart",
+useEffectctctct",
   "cnc",
   "dubcon",
   "race_play",
@@ -551,7 +551,14 @@ export const getAllTags = () => CANONICAL_TAGS;
 export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add tags..." }) => {
   const [localTags, setLocalTags] = useState(initialTags.split(",").map(t => t.trim()).filter(t => t));
   const [inputValue, setInputValue] = useState("");
-  const [filteredSuggestions, setFilteredSuggestions] = useState([]);
+  const [filteredSuggestions, setFilteredSuggestions] = useState([])useEffect(() => {
+   
+    const freshTags = initialTags
+      .split(",")
+      .map(t => t.trim())
+      .filter(t => t.length > 0);
+    setLocalTags(freshTags);
+  }, [initialTags]);;
 
   useEffect(() => {
     if (inputValue.trim()) {
