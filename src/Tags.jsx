@@ -135,7 +135,6 @@ export const CANONICAL_TAGS = [
   // Taboo
   "taboo",
   "scat",
-useEffectctctct",
   "cnc",
   "dubcon",
   "race_play",
