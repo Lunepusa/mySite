@@ -199,10 +199,13 @@ const calculateMultiCommonTags = () => {
   return common;
 };
 
-const multiCommonTags = useMemo(calculateMultiCommonTags, [
-  Array.from(selectedItems),
-  media,
-]);
+const multiCommonTags = useMemo(() => {
+  console.log("calculateMultiCommonTags RAN → selected:", 
+    Array.from(selectedItems), 
+    "common:", calculateMultiCommonTags()  // or just compute here
+  );
+  return calculateMultiCommonTags();
+}, [Array.from(selectedItems), media]);
 
   // Group by date
   const groups = {};
