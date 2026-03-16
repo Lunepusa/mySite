@@ -552,12 +552,7 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
   const [inputValue, setInputValue] = useState("");
   const [filteredSuggestions, setFilteredSuggestions] = useState([])useEffect(() => {
    
-    const freshTags = initialTags
-      .split(",")
-      .map(t => t.trim())
-      .filter(t => t.length > 0);
-    setLocalTags(freshTags);
-  }, [initialTags]);;
+    
 
   useEffect(() => {
     if (inputValue.trim()) {
@@ -567,6 +562,12 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
       setFilteredSuggestions([]);
     }
   }, [inputValue, localTags]);
+    const freshTags = initialTags
+      .split(",")
+      .map(t => t.trim())
+      .filter(t => t.length > 0);
+    setLocalTags(freshTags);
+  }, [initialTags]);;
 
   const addTag = (tag) => {
     tag = tag.trim();
