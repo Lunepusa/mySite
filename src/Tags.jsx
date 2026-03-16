@@ -185,7 +185,7 @@ export const CANONICAL_TAGS = [
 
   //other
   "delete",
-  "picture",
+  "photo",
   "video",
   "hidden",
 ];
