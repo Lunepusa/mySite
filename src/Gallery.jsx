@@ -577,8 +577,8 @@ const handleMediaShareCopy = (item) => async (e) => {
                 position: "fixed",
                 top: 0,
                 left: 0,
-                width: "100vw",
-                height: "100vh",
+                width: "100dvw",
+                height: "100DVH",
                 background: "rgba(0,0,0,0.95)",
                 display: "flex",
                 alignItems: "center",
@@ -635,7 +635,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                     onContextMenu={(e) => {e.preventDefault();handleMediaShareCopy(item)(e);}}
                     style={{
                       maxWidth: "100%",
-                      maxHeight: "85vh",
+                      maxHeight: "85DVH",
                       width: "auto",
                       height: "auto",
                       objectFit: "contain",
@@ -654,7 +654,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                     onContextMenu={(e) => {e.preventDefault();handleMediaShareCopy(item)(e);}}
                     style={{
                       maxWidth: "100%",
-                      maxHeight: "85vh",
+                      maxHeight: "85DVH",
                       width: "auto",
                       height: "auto",
                       objectFit: "contain",
@@ -772,7 +772,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                             verticalAlign: "top",
                             minWidth: "50px",
                             width: "100px",
-                            maxWidth: "23vw",
+                            maxWidth: "23dvw",
                             margin: "0 3px 5px 3px",
                             cursor: "pointer",
                             position: "relative",
