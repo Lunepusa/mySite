@@ -635,7 +635,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                     onContextMenu={(e) => {e.preventDefault();handleMediaShareCopy(item)(e);}}
                     style={{
                       maxWidth: "100%",
-                      maxHeight: "85DVH",
+                      maxHeight: "100DVH",
                       width: "auto",
                       height: "auto",
                       objectFit: "contain",
@@ -654,7 +654,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                     onContextMenu={(e) => {e.preventDefault();handleMediaShareCopy(item)(e);}}
                     style={{
                       maxWidth: "100%",
-                      maxHeight: "85DVH",
+                      maxHeight: "100DVH",
                       width: "auto",
                       height: "auto",
                       objectFit: "contain",
