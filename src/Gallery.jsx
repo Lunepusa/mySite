@@ -595,6 +595,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                   fontSize: "3em",
                   color: "#fff",
                   cursor: "pointer",
+                  zIndex:"10",
                 }}
                 onClick={closeFullscreen}
               >
@@ -608,6 +609,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                     fontSize: "5em",
                     color: "#fff",
                     cursor: "pointer",
+                    zIndex:"10",
                   }}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -619,7 +621,7 @@ const handleMediaShareCopy = (item) => async (e) => {
               )}
 
               <div
-                style={{ maxWidth: "95%", maxHeight: "95%" }}
+                style={{ maxWidth: "100%", maxHeight: "100%" }}
                 onClick={(e) => e.stopPropagation()}
               >
                 {fullscreenItem.isVideo ? (
@@ -633,7 +635,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                     onContextMenu={(e) => {e.preventDefault();handleMediaShareCopy(item)(e);}}
                     style={{
                       maxWidth: "100%",
-                      maxHeight: "90vh",
+                      maxHeight: "85vh",
                       width: "auto",
                       height: "auto",
                       objectFit: "contain",
@@ -652,7 +654,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                     onContextMenu={(e) => {e.preventDefault();handleMediaShareCopy(item)(e);}}
                     style={{
                       maxWidth: "100%",
-                      maxHeight: "90vh",
+                      maxHeight: "85vh",
                       width: "auto",
                       height: "auto",
                       objectFit: "contain",
@@ -676,6 +678,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                     fontSize: "5em",
                     color: "#fff",
                     cursor: "pointer",
+                    zIndex:"10",
                   }}
                   onClick={(e) => {
                     e.stopPropagation();
