@@ -35,6 +35,77 @@ export const getMediaProps = (date: string, isVideo: boolean) => {
   };
 };
 
+function MediaDisplay({ item, isFullscreen = false }) {
+  const props = getMediaProps(item.date || "Unknown", item.isVideo);
+
+  const commonStyle = {
+    maxWidth: "100%",
+    maxHeight: isFullscreen ? "100dvh" : "auto",
+    width: "auto",
+    height: "auto",
+    objectFit: "contain",
+    background: "#000",
+    filter: props.filter,
+  };
+
+  const handleContextMenu = (e) => {
+    e.preventDefault();
+    // Only call share copy in fullscreen if admin
+    if (isFullscreen && isAdmin) {
+      handleMediaShareCopy(item)(e);
+    }
+  };
+
+  if (item.isVideo) {
+    return (
+      <>
+        <video
+          src={`${R2_PUBLIC_URL}/${item.key}`}
+          controls={props.controls}
+          autoPlay={isFullscreen}
+          loop
+          muted={props.muted}
+          playsInline
+          preload={isFullscreen ? "auto" : "metadata"}
+          controlsList="nodownload"
+          onContextMenu={handleContextMenu}
+          style={commonStyle}
+        />
+        {/* Play icon overlay only in grid (not fullscreen) */}
+        {!isFullscreen && (
+          <div
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              background: "rgba(0,0,0,0.5)",
+              borderRadius: "50%",
+              width: "30%",
+              height: "auto",
+              aspectRatio: "1/1",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              pointerEvents: "none",
+            }}
+          >
+            <span style={{ color: "#fff", fontSize: "32px" }}>▶</span>
+          </div>
+        )}
+      </>
+    );
+  }
+
+  return (
+    <img
+      src={`${R2_PUBLIC_URL}/${item.key}`}
+      alt=""
+      onContextMenu={handleContextMenu}
+      style={commonStyle}
+    />
+  );
+}
 
 
 const Gallery = () => {
@@ -659,41 +730,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                 style={{ maxWidth: "100%", maxHeight: "100%" }}
                 onClick={(e) => e.stopPropagation()}
               >
-                {fullscreenItem.isVideo ? (
-                  <video
-                    src={`${R2_PUBLIC_URL}/${fullscreenItem.key}`}
-                    controls={props.controls}
-                    autoPlay
-                    loop
-                    muted={props.muted}
-                    controlsList="nodownload"
-                    onContextMenu={(e) => {e.preventDefault();handleMediaShareCopy(item)(e);}}
-                    style={{
-                      maxWidth: "100%",
-                      maxHeight: "100DVH",
-                      width: "auto",
-                      height: "auto",
-                      objectFit: "contain",
-                      background: "#000",
-                      filter: props.filter,
-                    }}
-                  />
-                ) : (
-                  <img
-                    src={`${R2_PUBLIC_URL}/${fullscreenItem.key}`}
-                    alt=""
-                    onContextMenu={(e) => {e.preventDefault();handleMediaShareCopy(item)(e);}}
-                    style={{
-                      maxWidth: "100%",
-                      maxHeight: "100DVH",
-                      width: "auto",
-                      height: "auto",
-                      objectFit: "contain",
-                      background: "#000",
-                      filter: props.filter,
-                    }}
-                  />
-                )}
+                <MediaDisplay item={fullscreenItem} isFullscreen />
               </div>
 
               {media.findIndex((m) => m.key === fullscreenItem.key) <
@@ -789,8 +826,6 @@ const handleMediaShareCopy = (item) => async (e) => {
                     })
                     .map((item) => {
                       const itemTags = getTagsArray(item.tags);
-                      const props = getMediaProps(date, item.isVideo);
-                      const isBlurred = props.filter !== "none";
                       
                       return (
                         <div
@@ -836,56 +871,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                               border: "1px white solid",
                             }}
                           >
-                            {item.isVideo ? (
-                              <>
-                                <video
-                                  src={`${R2_PUBLIC_URL}/${item.key}`}
-                                  muted
-                                  loop
-                                  alt={caption}
-                                  onContextMenu={(e) => e.preventDefault()}
-                                  style={{
-                                    maxHeight: "auto",
-                                    width: "100%",
-                                    objectFit: "contain",
-                                    filter: props.filter,
-                                  }}
-                                />
-                                <div
-                                  style={{
-                                    position: "absolute",
-                                    top: "50%",
-                                    left: "50%",
-                                    transform: "translate(-50%, -50%)",
-                                    background: "rgba(0,0,0,0.5)",
-                                    borderRadius: "50%",
-                                    width: "30%",
-                                    height: "auto",
-                                    aspectRatio: "1/1",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    pointerEvents: "none",
-                                  }}
-                                >
-                                  <span style={{ color: "#fff", fontSize: "32px" }}>
-                                    ▶
-                                  </span>
-                                </div>
-                              </>
-                            ) : (
-                              <img
-                                src={`${R2_PUBLIC_URL}/${item.key}`}
-                                alt={caption}
-                                onContextMenu={(e) => e.preventDefault()}
-                                style={{
-                                  maxHeight: "auto",
-                                  width: "100%",
-                                  objectFit: "contain",
-                                filter: props.filter,
-                                }}
-                              />
-                            )}
+                           <MediaDisplay item={fullscreenItem} isFullscreen />
                           </div>
 
                           <div style={{ textAlign: "center" }}>
