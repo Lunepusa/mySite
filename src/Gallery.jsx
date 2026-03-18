@@ -3,6 +3,14 @@ import { useAuth, apiFetch, R2_PUBLIC_URL } from "./Auth";
 import { TagSelect, searchTags, ClickableTags } from "./Tags";
 
 export const getMediaProps = (date: string, isVideo: boolean) => {
+  const { isSubscriber, isLoggedIn, isAdmin, user } = useAuth();
+  const unlockedDates = user?.purchased_dates
+  ? user.purchased_dates
+      .split(',')
+      .map(d => d.trim())
+      .filter(Boolean)
+      .sort((a, b) => b.localeCompare(a)) // newest first
+  : [];
   if (!isLoggedIn) {
     return {
       filter: "blur(10px)",
@@ -26,6 +34,8 @@ export const getMediaProps = (date: string, isVideo: boolean) => {
     muted: true,
   };
 };
+
+
 
 const Gallery = () => {
   const { isSubscriber, isLoggedIn, isAdmin, user } = useAuth();
