@@ -2,6 +2,31 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useAuth, apiFetch, R2_PUBLIC_URL } from "./Auth";
 import { TagSelect, searchTags, ClickableTags } from "./Tags";
 
+export const getMediaProps = (date: string, isVideo: boolean) => {
+  if (!isLoggedIn) {
+    return {
+      filter: "blur(10px)",
+      controls: false,
+      muted: true,
+    };
+  }
+
+  if (isAdmin || isSubscriber || unlockedDates.includes(date)) {
+    return {
+      filter: "none",
+      controls: true,
+      muted: false,
+    };
+  }
+
+  // logged in → teaser mode
+  return {
+    filter: "blur(5px)",   // or "blur(5px)" or whatever you prefer now that there's no first-group distinction
+    controls: false,
+    muted: true,
+  };
+};
+
 const Gallery = () => {
   const { isSubscriber, isLoggedIn, isAdmin, user } = useAuth();
   const [media, setMedia] = useState([]);
@@ -627,10 +652,10 @@ const handleMediaShareCopy = (item) => async (e) => {
                 {fullscreenItem.isVideo ? (
                   <video
                     src={`${R2_PUBLIC_URL}/${fullscreenItem.key}`}
-                    controls={isAdmin || isSubscriber}
+                    controls={props.controls}
                     autoPlay
                     loop
-                    muted={!(isAdmin || isSubscriber)}
+                    muted={props.muted}
                     controlsList="nodownload"
                     onContextMenu={(e) => {e.preventDefault();handleMediaShareCopy(item)(e);}}
                     style={{
@@ -640,11 +665,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                       height: "auto",
                       objectFit: "contain",
                       background: "#000",
-                      filter: !isLoggedIn
-                                    ? "blur(10px)"
-                                    : isAdmin || isSubscriber
-                                    ? "none"
-                                    : "blur(7px)",
+                      filter: props.filter,
                     }}
                   />
                 ) : (
@@ -659,11 +680,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                       height: "auto",
                       objectFit: "contain",
                       background: "#000",
-                      filter: !isLoggedIn
-                                    ? "blur(10px)"
-                                    : isAdmin || isSubscriber
-                                    ? "none"
-                                    : "blur(7px)",
+                      filter: props.filter,
                     }}
                   />
                 )}
@@ -762,6 +779,33 @@ const handleMediaShareCopy = (item) => async (e) => {
                     })
                     .map((item) => {
                       const itemTags = getTagsArray(item.tags);
+                      const props = getMediaProps(date, item.isVideo);
+                      const isBlurred = props.filter !== "none";
+                      const videoRef = item.isVideo ? useRef<HTMLVideoElement>(null) : null;
+    const [durationStr, setDurationStr] = useState<string | null>(null);
+
+    useEffect(() => {
+      if (!item.isVideo || !videoRef?.current) return;
+
+      const video = videoRef.current;
+
+      const onMetadata = () => {
+        if (!Number.isNaN(video.duration) && video.duration > 0) {
+          const mins = Math.floor(video.duration / 60);
+          const secs = Math.floor(video.duration % 60);
+          setDurationStr(`${mins}:${secs.toString().padStart(2, "0")}`);
+        }
+      };
+
+      video.addEventListener("loadedmetadata", onMetadata);
+
+      // If already loaded (rare but possible with caching)
+      if (video.readyState >= 1) onMetadata();
+
+      return () => {
+        video.removeEventListener("loadedmetadata", onMetadata);
+      };
+    }, [item.key]);
 
                       return (
                         <div
@@ -813,18 +857,13 @@ const handleMediaShareCopy = (item) => async (e) => {
                                   src={`${R2_PUBLIC_URL}/${item.key}`}
                                   muted
                                   loop
+                                  alt={caption}
                                   onContextMenu={(e) => e.preventDefault()}
                                   style={{
                                     maxHeight: "auto",
                                     width: "100%",
                                     objectFit: "contain",
-                                    filter: !isLoggedIn
-                                      ? "blur(10px)"
-                                      : isAdmin || isSubscriber
-                                      ? "none"
-                                      : !isFirstGroup && isLoggedIn
-                                      ? "blur(7px)"
-                                      : "blur(3px)",
+                                    filter: props.filter,
                                   }}
                                 />
                                 <div
@@ -858,13 +897,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                                   maxHeight: "auto",
                                   width: "100%",
                                   objectFit: "contain",
-                                  filter: !isLoggedIn
-                                    ? "blur(10px)"
-                                    : isAdmin || isSubscriber
-                                    ? "none"
-                                    : !isFirstGroup && isLoggedIn
-                                    ? "blur(7px)"
-                                    : "blur(3px)",
+                                filter: props.filter,
                                 }}
                               />
                             )}
