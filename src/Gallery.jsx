@@ -791,32 +791,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                       const itemTags = getTagsArray(item.tags);
                       const props = getMediaProps(date, item.isVideo);
                       const isBlurred = props.filter !== "none";
-                      const videoRef = item.isVideo ? useRef<HTMLVideoElement>(null) : null;
-    const [durationStr, setDurationStr] = useState<string | null>(null);
-
-    useEffect(() => {
-      if (!item.isVideo || !videoRef?.current) return;
-
-      const video = videoRef.current;
-
-      const onMetadata = () => {
-        if (!Number.isNaN(video.duration) && video.duration > 0) {
-          const mins = Math.floor(video.duration / 60);
-          const secs = Math.floor(video.duration % 60);
-          setDurationStr(`${mins}:${secs.toString().padStart(2, "0")}`);
-        }
-      };
-
-      video.addEventListener("loadedmetadata", onMetadata);
-
-      // If already loaded (rare but possible with caching)
-      if (video.readyState >= 1) onMetadata();
-
-      return () => {
-        video.removeEventListener("loadedmetadata", onMetadata);
-      };
-    }, [item.key]);
-
+                      
                       return (
                         <div
                           key={item.key}
