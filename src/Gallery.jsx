@@ -2,112 +2,6 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useAuth, apiFetch, R2_PUBLIC_URL } from "./Auth";
 import { TagSelect, searchTags, ClickableTags } from "./Tags";
 
-export const getMediaProps = (date: string, isVideo: boolean) => {
-  const { isSubscriber, isLoggedIn, isAdmin, user } = useAuth();
-  const unlockedDates = user?.purchased_dates
-  ? user.purchased_dates
-      .split(',')
-      .map(d => d.trim())
-      .filter(Boolean)
-      .sort((a, b) => b.localeCompare(a)) // newest first
-  : [];
-  if (!isLoggedIn) {
-    return {
-      filter: "blur(10px)",
-      controls: false,
-      muted: true,
-    };
-  }
-
-  if (isAdmin || isSubscriber || unlockedDates.includes(date)) {
-    return {
-      filter: "none",
-      controls: true,
-      muted: false,
-    };
-  }
-
-  // logged in → teaser mode
-  return {
-    filter: "blur(5px)",   // or "blur(5px)" or whatever you prefer now that there's no first-group distinction
-    controls: false,
-    muted: true,
-  };
-};
-
-function MediaDisplay({ item, isFullscreen = false }) {
-  const props = getMediaProps(item.date || "Unknown", item.isVideo);
-
-  const commonStyle = {
-    maxWidth: "100%",
-    maxHeight: isFullscreen ? "100dvh" : "auto",
-    width: "auto",
-    height: "auto",
-    objectFit: "contain",
-    background: "#000",
-    filter: props.filter,
-  };
-
-  const handleContextMenu = (e) => {
-    e.preventDefault();
-    // Only call share copy in fullscreen if admin
-    if (isFullscreen && isAdmin) {
-      handleMediaShareCopy(item)(e);
-    }
-  };
-
-  if (item.isVideo) {
-    return (
-      <>
-        <video
-          src={`${R2_PUBLIC_URL}/${item.key}`}
-          controls={props.controls}
-          autoPlay={isFullscreen}
-          loop
-          muted={props.muted}
-          playsInline
-          preload={isFullscreen ? "auto" : "metadata"}
-          controlsList="nodownload"
-          onContextMenu={handleContextMenu}
-          style={commonStyle}
-        />
-        {/* Play icon overlay only in grid (not fullscreen) */}
-        {!isFullscreen && (
-          <div
-            style={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              background: "rgba(0,0,0,0.5)",
-              borderRadius: "50%",
-              width: "30%",
-              height: "auto",
-              aspectRatio: "1/1",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              pointerEvents: "none",
-            }}
-          >
-            <span style={{ color: "#fff", fontSize: "32px" }}>▶</span>
-          </div>
-        )}
-      </>
-    );
-  }
-
-  return (
-    <img
-      src={`${R2_PUBLIC_URL}/${item.key}`}
-      alt=""
-      onContextMenu={handleContextMenu}
-      style={commonStyle}
-    />
-  );
-}
-
-
 const Gallery = () => {
   const { isSubscriber, isLoggedIn, isAdmin, user } = useAuth();
   const [media, setMedia] = useState([]);
@@ -730,7 +624,49 @@ const handleMediaShareCopy = (item) => async (e) => {
                 style={{ maxWidth: "100%", maxHeight: "100%" }}
                 onClick={(e) => e.stopPropagation()}
               >
-                <MediaDisplay item={fullscreenItem} isFullscreen />
+                {fullscreenItem.isVideo ? (
+                  <video
+                    src={`${R2_PUBLIC_URL}/${fullscreenItem.key}`}
+                    controls={isAdmin || isSubscriber}
+                    autoPlay
+                    loop
+                    muted={!(isAdmin || isSubscriber)}
+                    controlsList="nodownload"
+                    onContextMenu={(e) => {e.preventDefault();handleMediaShareCopy(item)(e);}}
+                    style={{
+                      maxWidth: "100%",
+                      maxHeight: "100DVH",
+                      width: "auto",
+                      height: "auto",
+                      objectFit: "contain",
+                      background: "#000",
+                      filter: !isLoggedIn
+                                    ? "blur(10px)"
+                                    : isAdmin || isSubscriber
+                                    ? "none"
+                                    : "blur(7px)",
+                    }}
+                  />
+                ) : (
+                  <img
+                    src={`${R2_PUBLIC_URL}/${fullscreenItem.key}`}
+                    alt=""
+                    onContextMenu={(e) => {e.preventDefault();handleMediaShareCopy(item)(e);}}
+                    style={{
+                      maxWidth: "100%",
+                      maxHeight: "100DVH",
+                      width: "auto",
+                      height: "auto",
+                      objectFit: "contain",
+                      background: "#000",
+                      filter: !isLoggedIn
+                                    ? "blur(10px)"
+                                    : isAdmin || isSubscriber
+                                    ? "none"
+                                    : "blur(7px)",
+                    }}
+                  />
+                )}
               </div>
 
               {media.findIndex((m) => m.key === fullscreenItem.key) <
@@ -826,7 +762,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                     })
                     .map((item) => {
                       const itemTags = getTagsArray(item.tags);
-                      
+
                       return (
                         <div
                           key={item.key}
@@ -871,7 +807,67 @@ const handleMediaShareCopy = (item) => async (e) => {
                               border: "1px white solid",
                             }}
                           >
-                           <MediaDisplay item={fullscreenItem} isFullscreen />
+                            {item.isVideo ? (
+                              <>
+                                <video
+                                  src={`${R2_PUBLIC_URL}/${item.key}`}
+                                  muted
+                                  loop
+                                  onContextMenu={(e) => e.preventDefault()}
+                                  style={{
+                                    maxHeight: "auto",
+                                    width: "100%",
+                                    objectFit: "contain",
+                                    filter: !isLoggedIn
+                                      ? "blur(10px)"
+                                      : isAdmin || isSubscriber
+                                      ? "none"
+                                      : !isFirstGroup && isLoggedIn
+                                      ? "blur(7px)"
+                                      : "blur(3px)",
+                                  }}
+                                />
+                                <div
+                                  style={{
+                                    position: "absolute",
+                                    top: "50%",
+                                    left: "50%",
+                                    transform: "translate(-50%, -50%)",
+                                    background: "rgba(0,0,0,0.5)",
+                                    borderRadius: "50%",
+                                    width: "30%",
+                                    height: "auto",
+                                    aspectRatio: "1/1",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    pointerEvents: "none",
+                                  }}
+                                >
+                                  <span style={{ color: "#fff", fontSize: "32px" }}>
+                                    ▶
+                                  </span>
+                                </div>
+                              </>
+                            ) : (
+                              <img
+                                src={`${R2_PUBLIC_URL}/${item.key}`}
+                                alt={caption}
+                                onContextMenu={(e) => e.preventDefault()}
+                                style={{
+                                  maxHeight: "auto",
+                                  width: "100%",
+                                  objectFit: "contain",
+                                  filter: !isLoggedIn
+                                    ? "blur(10px)"
+                                    : isAdmin || isSubscriber
+                                    ? "none"
+                                    : !isFirstGroup && isLoggedIn
+                                    ? "blur(7px)"
+                                    : "blur(3px)",
+                                }}
+                              />
+                            )}
                           </div>
 
                           <div style={{ textAlign: "center" }}>
