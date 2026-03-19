@@ -627,10 +627,10 @@ const handleMediaShareCopy = (item) => async (e) => {
                 {fullscreenItem.isVideo ? (
                   <video
                     src={`${R2_PUBLIC_URL}/${fullscreenItem.key}`}
-                    controls={isAdmin || isSubscriber || unlockedDates.includes(date)}
+                    controls={isAdmin || isSubscriber || unlockedDates.includes(fullscreenItem?.date)}
                     autoPlay
                     loop
-                    muted={!(isAdmin || isSubscriber || unlockedDates.includes(date))}
+                    muted={!(isAdmin || isSubscriber || unlockedDates.includes(fullscreenItem?.date))}
                     controlsList="nodownload"
                     onContextMenu={(e) => {e.preventDefault();handleMediaShareCopy(item)(e);}}
                     style={{
