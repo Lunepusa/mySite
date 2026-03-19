@@ -3,7 +3,7 @@ import { useAuth, apiFetch, R2_PUBLIC_URL } from "./Auth";
 import { TagSelect, searchTags, ClickableTags } from "./Tags";
 
 const Gallery = () => {
-  const { isSubscriber, isLoggedIn, isAdmin, user } = useAuth();
+  const { isSubscriber, isLoggedIn, isAdmin, user, unlockedDates } = useAuth();
   const [media, setMedia] = useState([]);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
@@ -642,7 +642,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                       background: "#000",
                       filter: !isLoggedIn
                                     ? "blur(10px)"
-                                    : isAdmin || isSubscriber
+                                    : isAdmin || isSubscriber || {unlockedDates.includes(date)}
                                     ? "none"
                                     : "blur(7px)",
                     }}
@@ -661,7 +661,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                       background: "#000",
                       filter: !isLoggedIn
                                     ? "blur(10px)"
-                                    : isAdmin || isSubscriber
+                                    : isAdmin || isSubscriber || {unlockedDates.includes(date)}
                                     ? "none"
                                     : "blur(7px)",
                     }}
@@ -821,7 +821,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                                     objectFit: "contain",
                                     filter: !isLoggedIn
                                       ? "blur(10px)"
-                                      : isAdmin || isSubscriber
+                                      : isAdmin || isSubscriber || {unlockedDates.includes(date)}
                                       ? "none"
                                       : !isFirstGroup && isLoggedIn
                                       ? "blur(7px)"
@@ -861,7 +861,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                                   objectFit: "contain",
                                   filter: !isLoggedIn
                                     ? "blur(10px)"
-                                    : isAdmin || isSubscriber
+                                    : isAdmin || isSubscriber || {unlockedDates.includes(date)}
                                     ? "none"
                                     : !isFirstGroup && isLoggedIn
                                     ? "blur(7px)"
