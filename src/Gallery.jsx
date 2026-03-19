@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+100 React, { useState, useEffect, useMemo } from "react";
 import { useAuth, apiFetch, R2_PUBLIC_URL } from "./Auth";
 import { TagSelect, searchTags, ClickableTags } from "./Tags";
 
@@ -28,7 +28,7 @@ const Gallery = () => {
   const [multiSelectMode, setMultiSelectMode] = useState(false);
   const [selectedItems, setSelectedItems] = useState(new Set());
 
-  const ITEMS_PER_BATCH = 100;
+  const ITEMS_PER_BATCH = 50;
 
  useEffect(() => {
   const handleHashChange = () => {
@@ -642,7 +642,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                       background: "#000",
                       filter: !isLoggedIn
                                     ? "blur(10px)"
-                                    : isAdmin || isSubscriber || unlockedDates.includes(date)
+                                    : isAdmin || isSubscriber || unlockedDates.includes(fullscreenItem?.date)
                                     ? "none"
                                     : "blur(7px)",
                     }}
@@ -661,7 +661,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                       background: "#000",
                       filter: !isLoggedIn
                                     ? "blur(10px)"
-                                    : isAdmin || isSubscriber || unlockedDates.includes(date)
+                                    : isAdmin || isSubscriber || unlockedDates.includes(fullscreenItem?.date)
                                     ? "none"
                                     : "blur(7px)",
                     }}
