@@ -157,13 +157,21 @@ const AuthProvider = ({ children }) => {
   const isLoggedIn = !!user;
   const isAdmin = user?.is_admin || false;
   const isSubscriber = user?.subscription_expires > Math.floor(Date.now() / 1000) || isAdmin;
-
+const unlockedDates = user?.purchased_dates
+  ? user.purchased_dates
+      .split(',')
+      .map(d => d.trim())
+      .filter(Boolean)
+      .sort((a, b) => b.localeCompare(a)) // newest first
+  : [];
+  
   const value = {
     user,
     loading,
     loadUser: refreshUser,
     isLoggedIn,
     isAdmin,
+    unlockedDates,
     isSubscriber,
     walletBalance,           // always string "$XX.XX"
     refreshUser,             // call this after any wallet change
