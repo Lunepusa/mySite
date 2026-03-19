@@ -627,10 +627,10 @@ const handleMediaShareCopy = (item) => async (e) => {
                 {fullscreenItem.isVideo ? (
                   <video
                     src={`${R2_PUBLIC_URL}/${fullscreenItem.key}`}
-                    controls={isAdmin || isSubscriber}
+                    controls={isAdmin || isSubscriber || unlockedDates.includes(date)}
                     autoPlay
                     loop
-                    muted={!(isAdmin || isSubscriber)}
+                    muted={!(isAdmin || isSubscriber || unlockedDates.includes(date))}
                     controlsList="nodownload"
                     onContextMenu={(e) => {e.preventDefault();handleMediaShareCopy(item)(e);}}
                     style={{
@@ -642,7 +642,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                       background: "#000",
                       filter: !isLoggedIn
                                     ? "blur(10px)"
-                                    : isAdmin || isSubscriber || {unlockedDates.includes(date)}
+                                    : isAdmin || isSubscriber || unlockedDates.includes(date)
                                     ? "none"
                                     : "blur(7px)",
                     }}
@@ -661,7 +661,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                       background: "#000",
                       filter: !isLoggedIn
                                     ? "blur(10px)"
-                                    : isAdmin || isSubscriber || {unlockedDates.includes(date)}
+                                    : isAdmin || isSubscriber || unlockedDates.includes(date)
                                     ? "none"
                                     : "blur(7px)",
                     }}
@@ -821,7 +821,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                                     objectFit: "contain",
                                     filter: !isLoggedIn
                                       ? "blur(10px)"
-                                      : isAdmin || isSubscriber || {unlockedDates.includes(date)}
+                                      : isAdmin || isSubscriber || unlockedDates.includes(date)
                                       ? "none"
                                       : !isFirstGroup && isLoggedIn
                                       ? "blur(7px)"
@@ -861,7 +861,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                                   objectFit: "contain",
                                   filter: !isLoggedIn
                                     ? "blur(10px)"
-                                    : isAdmin || isSubscriber || {unlockedDates.includes(date)}
+                                    : isAdmin || isSubscriber || unlockedDates.includes(date)
                                     ? "none"
                                     : !isFirstGroup && isLoggedIn
                                     ? "blur(7px)"
