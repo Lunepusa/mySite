@@ -813,6 +813,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                                   src={`${R2_PUBLIC_URL}/${item.key}`}
                                   muted
                                   loop
+                                  preload="metadata"
                                   onContextMenu={(e) => e.preventDefault()}
                                   style={{
                                     maxHeight: "auto",
