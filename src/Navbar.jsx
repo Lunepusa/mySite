@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import "./styles.css";
 import { Link } from "react-router-dom";
 import headerimg from "./Images/Preview/headerimg.png";
+import { useAuth, apiFetch, R2_PUBLIC_URL } from "./Auth";
 
 function Navbar() {
+   const { isSubscriber, isLoggedIn, isAdmin, user, unlockedDates } = useAuth()
   return (
     <div
       style={{
@@ -46,8 +48,13 @@ function Navbar() {
             <Link to="/about">About</Link>
           </li>
           <li>
-            <Link to="/Lounge">Lounge</Link>
+            <Link to="/Lounge">Private Lounge</Link>
           </li>
+          <li>
+            <Link to="/Profile">Profile</Link>
+          </li>
+          
+
         </ul>
         <br />
         <p

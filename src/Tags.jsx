@@ -1,9 +1,11 @@
 // ./Tags.jsx
 
 import React, { useState, useEffect } from "react";
-import {apiFetch} from "./Auth.jsx"
+import { apiFetch } from "./Auth.jsx"
 
-// Canonical tags (preferred terms)
+// ──────────────────────────────────────────────────────────────────────────────
+// Canonical / preferred tag names — all incoming tags should normalize to these
+// ──────────────────────────────────────────────────────────────────────────────
 export const CANONICAL_TAGS = [
   // Body Parts
   "full_body",
@@ -68,14 +70,14 @@ export const CANONICAL_TAGS = [
   "suction_toy",
   "bullet_vibrator",
   "egg_vibrator",
-  "butt_ plug",
+  "butt_plug",
   "anal_beads",
   "cock_ring",
   "fleshlight",
   "strap-on",
   "sybian",
-  "hitachi wand",
-  "prostate massager",
+  "hitachi_wand",
+  "prostate_massager",
 
   // Positions
   "riding",
@@ -183,14 +185,17 @@ export const CANONICAL_TAGS = [
   "vampire",
   "succubus",
 
-  //other
+  // other / meta
   "delete",
   "photo",
   "video",
   "hidden",
 ];
 
-// Synonym mapping: synonym → canonical tag
+// ──────────────────────────────────────────────────────────────────────────────
+// Synonym → canonical mapping (used for normalization and search suggestions)
+// This is the complete map from your original document
+// ──────────────────────────────────────────────────────────────────────────────
 const SYNONYM_MAP = {
   // Body Parts
   "whole body": "full_body",
@@ -468,17 +473,19 @@ const SYNONYM_MAP = {
   "costume play": "cosplay",
   "character cosplay": "cosplay",
 
-  //other
- nopost: "delete",
- remove: "delete",
- picture: "photo",
-pic: "photo",
- clip: "video",
+  // other / meta
+  nopost: "delete",
+  remove: "delete",
+  picture: "photo",
+  pic: "photo",
+  clip: "video",
   vid: "video",
- hide:"hidden",
+  hide: "hidden",
 };
 
-// Lowercase map for fast lookup
+// ──────────────────────────────────────────────────────────────────────────────
+// Fast lowercase lookup: synonym or canonical → canonical tag
+// ──────────────────────────────────────────────────────────────────────────────
 const LOWERCASE_MAP = {};
 Object.keys(SYNONYM_MAP).forEach((syn) => {
   LOWERCASE_MAP[syn.toLowerCase()] = SYNONYM_MAP[syn];
@@ -489,6 +496,7 @@ CANONICAL_TAGS.forEach((tag) => {
 
 /**
  * Search tags by synonym or partial match
+ * Returns sorted list of matching canonical tags
  */
 export const searchTags = (query) => {
   if (!query) return [];
@@ -496,25 +504,26 @@ export const searchTags = (query) => {
 
   const results = new Set();
 
-  // Exact synonym
+  // Exact synonym match (highest priority)
   if (LOWERCASE_MAP[lower]) {
     results.add(LOWERCASE_MAP[lower]);
   }
 
-  // Partial on canonical
+  // Partial match on canonical tags
   CANONICAL_TAGS.forEach((tag) => {
     if (tag.toLowerCase().includes(lower)) {
       results.add(tag);
     }
   });
 
-  // Partial on synonyms
+  // Partial match on synonyms → map to canonical
   Object.keys(SYNONYM_MAP).forEach((syn) => {
     if (syn.toLowerCase().includes(lower)) {
       results.add(SYNONYM_MAP[syn]);
     }
   });
 
+  // Sort: exact → prefix matches → alphabetical
   return Array.from(results).sort((a, b) => {
     const aLower = a.toLowerCase();
     const bLower = b.toLowerCase();
@@ -530,7 +539,7 @@ export const searchTags = (query) => {
 };
 
 /**
- * Normalize tags (synonyms → canonical, dedupe)
+ * Normalize any tag list → deduped canonical tags only
  */
 export const normalizeTags = (tags) => {
   if (!Array.isArray(tags)) return [];
@@ -544,11 +553,13 @@ export const normalizeTags = (tags) => {
 };
 
 /**
- * Get all canonical tags
+ * Return the complete list of canonical tags
  */
 export const getAllTags = () => CANONICAL_TAGS;
 
-// TagSelect component — editable with Save button
+// ──────────────────────────────────────────────────────────────────────────────
+// Interactive tag editor with autocomplete and save callback
+// ──────────────────────────────────────────────────────────────────────────────
 export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add tags..." }) => {
   const [localTags, setLocalTags] = useState(
     initialTags.split(",").map(t => t.trim()).filter(t => t)
@@ -556,17 +567,16 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
   const [inputValue, setInputValue] = useState("");
   const [filteredSuggestions, setFilteredSuggestions] = useState([]);
 
-  // This is the NEW effect — added right after the state declarations
+  // Sync local state when initialTags changes (important for edit reuse)
   useEffect(() => {
     const freshTags = initialTags
       .split(",")
       .map(t => t.trim())
       .filter(t => t.length > 0);
-    
     setLocalTags(freshTags);
-  }, [initialTags]);   // ← important: depend on initialTags
+  }, [initialTags]);
 
-  // This is your existing suggestions effect — keep it exactly where it was
+  // Update suggestions as user types
   useEffect(() => {
     if (inputValue.trim()) {
       const results = searchTags(inputValue);
@@ -575,7 +585,6 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
       setFilteredSuggestions([]);
     }
   }, [inputValue, localTags]);
-    
 
   const addTag = (tag) => {
     tag = tag.trim();
@@ -605,7 +614,7 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
 
   return (
     <div style={{ margin: "10px 0" }}>
-      {/* Current tags */}
+      {/* Currently selected tags (removable pills) */}
       <div style={{ minHeight: "32px", marginBottom: "8px" }}>
         {localTags.map((tag) => (
           <span
@@ -634,7 +643,7 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
         ))}
       </div>
 
-      {/* Input */}
+      {/* Input field */}
       <input
         type="text"
         value={inputValue}
@@ -651,7 +660,7 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
         }}
       />
 
-      {/* Suggestions */}
+      {/* Suggestion dropdown */}
       {filteredSuggestions.length > 0 && (
         <div
           style={{
@@ -710,7 +719,10 @@ export const getTagsArray = (tagInput) => {
   }
   return [];
 };
-// At the top of Tags.jsx, after imports
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Cached tag usage counts (fetched once)
+// ──────────────────────────────────────────────────────────────────────────────
 let cachedTagCounts = null;
 let tagCountsPromise = null;
 
@@ -734,6 +746,10 @@ const fetchTagCountsOnce = async () => {
 
   return tagCountsPromise;
 };
+
+/**
+ * Clickable tag list with usage counts + lounge search links
+ */
 export const ClickableTags = ({ tags = "", emptyText = "None set" }) => {
   const [counts, setCounts] = useState({});
   const tagArray = getTagsArray(tags);

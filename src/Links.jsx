@@ -3,6 +3,8 @@ import "./styles.css";
 import { useLocation } from "react-router-dom";
 import { trackOnClick, useAnalytics, handlerightclick } from "./Utility";
 import Collapse from "./Utility";
+
+// All image imports for link cards
 import Fansly from "./Images/link/Fansly.jpg";
 import Throne from "./Images/link/throne.jpg";
 import xvids from "./Images/link/xvids.jpg";
@@ -40,9 +42,15 @@ import Hangout from "./Images/link/hangout.png";
 import Instagram from "./Images/link/Instagram.png";
 import YouPay from "./Images/link/YouPay.png";
 
+// ──────────────────────────────────────────────────────────────────────────────
+// Reusable single link card component
+// Displays image + hover info + click tracking + right-click copy link
+// ──────────────────────────────────────────────────────────────────────────────
 export function Link({ name, desc, img, link = "" }) {
   const location = useLocation();
   const { analyticsData } = useAnalytics();
+
+  // Generate stable ID for analytics and right-click copy
   const id = `link-${(name || "link")
     .replace(/\s+/g, "-")
     .replace(
@@ -62,6 +70,7 @@ export function Link({ name, desc, img, link = "" }) {
       className="link"
       onContextMenu={(e) => handlerightclick(id, location, e)}
     >
+      {/* Hover info overlay */}
       <div className="info">
         ⏬<br />
         <div className="infotext">
@@ -69,6 +78,8 @@ export function Link({ name, desc, img, link = "" }) {
           <h4>{desc}</h4>
         </div>
       </div>
+
+      {/* Clickable image link */}
       <a href={link} onClick={handleLinkClick}>
         <img src={img} alt={name} />
       </a>
@@ -76,21 +87,23 @@ export function Link({ name, desc, img, link = "" }) {
   );
 }
 
+// ──────────────────────────────────────────────────────────────────────────────
+// Preferred / main links section (always visible)
+// ──────────────────────────────────────────────────────────────────────────────
 export function Preferredlinks() {
   return (
     <div style={{ textAlign: "center", width: "100%", margin: "auto" }}>
-      {" "}
       <h1
         style={{ textAlign: "center", display: "inline-block" }}
         className="info"
       >
-        {" "}
         Preferred Links
         <div className="infotext">
           <h6>where I like to be</h6>
         </div>
       </h1>
       <h1 style={{ display: "inline-block" }}> + </h1>
+
       <div id="preferredlinks">
         <Link
           name="Sheer"
@@ -121,10 +134,12 @@ export function Preferredlinks() {
   );
 }
 
+// ──────────────────────────────────────────────────────────────────────────────
+// Collapsible section with all payment methods
+// ──────────────────────────────────────────────────────────────────────────────
 export function Paymentlinks() {
   return (
     <div style={{ textAlign: "center", width: "100%", margin: "auto" }}>
-      {" "}
       <Collapse
         trigger={
           <h1
@@ -143,6 +158,7 @@ export function Paymentlinks() {
           <h2 style={{ opacity: 0.8 }}>
             if its not linked here, then I dont accept funds there
           </h2>
+
           <Link
             name="Fansly"
             desc="4000+pics &500+vids for $5 a month"
@@ -168,10 +184,10 @@ export function Paymentlinks() {
             link="https://www.sextpanther.com/LunePusa/"
           />
 
+          {/* Gift cards subsection */}
           <div style={{ border: "3px dotted white" }}>
             <h2> Gift cards</h2>
             <h3 style={{ opacity: ".8" }}>
-              {" "}
               send to{" "}
               <u
                 onClick={() => {
@@ -207,11 +223,13 @@ export function Paymentlinks() {
               link="https://store.steampowered.com/digitalgiftcards/selectgiftcard"
             />
           </div>
+
+          {/* Wishlists subsection */}
           <div style={{ border: "3px dotted white" }}>
             <h2> Wishlists</h2>
             <h3 style={{ opacity: ".8" }}>
               Not accepted as payment without discussion. <br />
-              <i> No content/services till items physically arrive </i>{" "}
+              <i> No content/services till items physically arrive </i>
             </h3>
             <Link
               name="YouPay"
@@ -244,6 +262,9 @@ export function Paymentlinks() {
   );
 }
 
+// ──────────────────────────────────────────────────────────────────────────────
+// Collapsible section with other subscription/content platforms
+// ──────────────────────────────────────────────────────────────────────────────
 export function Otherlinks() {
   return (
     <div style={{ textAlign: "center", width: "100%", margin: "auto" }}>
@@ -266,6 +287,7 @@ export function Otherlinks() {
             All other accounts I have, but can't guarentee I use in any
             capacity.
           </h2>
+
           <Link
             name="Chaturbate"
             desc=""
@@ -303,6 +325,10 @@ export function Otherlinks() {
     </div>
   );
 }
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Collapsible section with social media & messaging accounts
+// ──────────────────────────────────────────────────────────────────────────────
 export function Sociallinks() {
   return (
     <div style={{ textAlign: "center", width: "100%", margin: "auto" }}>
@@ -325,6 +351,7 @@ export function Sociallinks() {
             Social media / free accounts. I rarely chat one on one here without
             $$
           </h2>
+
           <Link
             name="Xvideos"
             desc=""
@@ -373,9 +400,12 @@ export function Sociallinks() {
             img={Reddit}
             link="https://www.reddit.com/u/LunePusa/s/Zf0SLuahbd"
           />
+
+          {/* Instant Messaging subsection */}
           <div style={{ border: "3px dotted white" }}>
             <h2>Instant Messaging</h2>
             <h3 style={{ opacity: ".8" }}>Good places for paid services.</h3>
+
             <Link
               name="Discord"
               desc=""
@@ -413,6 +443,10 @@ export function Sociallinks() {
     </div>
   );
 }
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Collapsible section showing guest appearances / collabs
+// ──────────────────────────────────────────────────────────────────────────────
 export function Guestlinks() {
   return (
     <div style={{ textAlign: "center", width: "100%", margin: "auto" }}>
@@ -435,6 +469,8 @@ export function Guestlinks() {
             Accounts I join for content! if you want to see me not solo, this is
             where.
           </h2>
+
+          {/* Katya_Luv subsection */}
           <div style={{ border: "3px dotted white" }}>
             <h3> Katya_Luv </h3>
             <Link
@@ -456,6 +492,8 @@ export function Guestlinks() {
               link="https://www.pornhub.com/model/katyaluv27"
             />
           </div>
+
+          {/* LilytheElfgirl subsection */}
           <div style={{ border: "3px dotted white" }}>
             <h3> LilytheElfgirl </h3>
             <Link
@@ -464,7 +502,6 @@ export function Guestlinks() {
               img={Fansly}
               link="https://fansly.com/LilytheElfgirl"
             />
-
             <Link
               name="Lily's Pornhub"
               desc=""
@@ -477,10 +514,13 @@ export function Guestlinks() {
     </div>
   );
 }
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Root component — renders all link sections in order
+// ──────────────────────────────────────────────────────────────────────────────
 export default function Links() {
   return (
     <div style={{ textAlign: "center", width: "100%", margin: "auto" }}>
-      {" "}
       <Preferredlinks />
       <Paymentlinks />
       <Otherlinks />

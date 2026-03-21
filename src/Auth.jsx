@@ -1,8 +1,15 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
-// src/api.js
+// ──────────────────────────────────────────────────────────────────────────────
+// Public Cloudflare R2 bucket URL for media assets
+// Used across the app for img/video src attributes
+// ──────────────────────────────────────────────────────────────────────────────
 export const R2_PUBLIC_URL = "https://pub-737d16f465e74a25bb9b4613475ea7ef.r2.dev";
 
+// ──────────────────────────────────────────────────────────────────────────────
+// Centralized fetch wrapper with automatic Bearer token + base URL
+// All API calls should go through this function
+// ──────────────────────────────────────────────────────────────────────────────
 export const apiFetch = async (endpoint, options = {}) => {
   const token = localStorage.getItem("token");
 
@@ -20,17 +27,23 @@ export const apiFetch = async (endpoint, options = {}) => {
   return fetch(url, {
     ...options,
     headers,
-    credentials: "include",
+    credentials: "include", // needed for any cookie-based auth (if used)
   });
 };
 
+// ──────────────────────────────────────────────────────────────────────────────
+// Context + hook to access auth state anywhere in the app
+// ──────────────────────────────────────────────────────────────────────────────
 const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);
 
-// Reusable Login/Signup component
+// ──────────────────────────────────────────────────────────────────────────────
+// Combined Login + Signup form component
+// Handles both modes + shows current user + logout when authenticated
+// ──────────────────────────────────────────────────────────────────────────────
 export const Login = () => {
-  const { user, loadUser} = useAuth();
+  const { user, loadUser } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isSignup, setIsSignup] = useState(false);
@@ -62,6 +75,7 @@ export const Login = () => {
     }
   };
 
+  // Already logged in → show username + logout button
   if (user) {
     return (
       <div>
@@ -79,6 +93,7 @@ export const Login = () => {
     );
   }
 
+  // Login / Signup form
   return (
     <form onSubmit={handleSubmit}>
       <h2>{isSignup ? "Sign Up" : "Log In"}</h2>
@@ -107,12 +122,16 @@ export const Login = () => {
   );
 };
 
-// Auth Provider
+// ──────────────────────────────────────────────────────────────────────────────
+// Root auth provider — manages user state, token, wallet, derived flags
+// Wrap your entire app with <AuthProvider> ... </AuthProvider>
+// ──────────────────────────────────────────────────────────────────────────────
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [walletBalance, setWalletBalance] = useState("0.00");
 
+  // Core function: fetch current user data from /me endpoint
   const loadUser = async () => {
     setLoading(true);
     try {
@@ -122,7 +141,7 @@ const AuthProvider = ({ children }) => {
         const fetchedUser = data.user || null;
         setUser(fetchedUser);
 
-        // Parse wallet balance (assuming TEXT JSON with { balance: number })
+        // Parse wallet balance stored as JSON string in user.wallet
         let balanceCents = 0;
         if (fetchedUser?.wallet && fetchedUser.wallet.trim() !== '[]') {
           try {
@@ -146,25 +165,31 @@ const AuthProvider = ({ children }) => {
     }
   };
 
+  // Load user once on mount
   useEffect(() => {
     loadUser();
   }, []);
 
-  // Expose refresh function for use after spending / purchases
+  // Alias so components can call refreshUser() after purchases/spends
   const refreshUser = loadUser;
 
-  // Derived auth states
+  // Derived boolean states
   const isLoggedIn = !!user;
   const isAdmin = user?.is_admin || false;
-  const isSubscriber = user?.subscription_expires > Math.floor(Date.now() / 1000) || isAdmin;
-const unlockedDates = user?.purchased_dates
-  ? user.purchased_dates
-      .split(',')
-      .map(d => d.trim())
-      .filter(Boolean)
-      .sort((a, b) => b.localeCompare(a)) // newest first
-  : [];
-  
+
+  // Active subscription check (or admin override)
+  const isSubscriber =
+    user?.subscription_expires > Math.floor(Date.now() / 1000) || isAdmin;
+
+  // Sorted list of purchased/unlocked dates (newest first)
+  const unlockedDates = user?.purchased_dates
+    ? user.purchased_dates
+        .split(',')
+        .map(d => d.trim())
+        .filter(Boolean)
+        .sort((a, b) => b.localeCompare(a)) // newest → oldest
+    : [];
+
   const value = {
     user,
     loading,
@@ -173,10 +198,11 @@ const unlockedDates = user?.purchased_dates
     isAdmin,
     unlockedDates,
     isSubscriber,
-    walletBalance,           // always string "$XX.XX"
-    refreshUser,             // call this after any wallet change
+    walletBalance,           // formatted string "XX.XX"
+    refreshUser,             // convenience alias for loadUser
   };
 
+  // Show loading state while first auth check is running
   if (loading) return <p>Loading auth...</p>;
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

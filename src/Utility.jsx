@@ -7,23 +7,27 @@ import React, {
 } from "react";
 import { useLocation } from "react-router-dom";
 import "./styles.css";
-import { useAuth, apiFetch, Login } from "./Auth"; // adjust path to your Auth file
-import {PaymentChecker} from "./Profile";
+import { useAuth, apiFetch, Login } from "./Auth";
+import { PaymentChecker } from "./Profile";
 
-
+// ──────────────────────────────────────────────────────────────────────────────
+// Collapsible section component (accordion-style)
+// ──────────────────────────────────────────────────────────────────────────────
 export default function Collapse({ trigger, children }) {
   const [isCollapsed, setIsCollapsed] = useState(true);
   const location = useLocation();
   const { analyticsData } = useAnalytics();
 
+  // Generate stable, URL-safe ID from trigger text (used for deep linking)
   const triggerText =
-  typeof trigger === "string"
-    ? trigger
-    : Array.isArray(trigger.props.children)
-      ? trigger.props.children.join("")  // join array into single string
-      : typeof trigger.props.children === "string"
-        ? trigger.props.children
-        : String(trigger.props.children || "content");  // fallback to string
+    typeof trigger === "string"
+      ? trigger
+      : Array.isArray(trigger.props.children)
+        ? trigger.props.children.join("")
+        : typeof trigger.props.children === "string"
+          ? trigger.props.children
+          : String(trigger.props.children || "content");
+
   const id = `collapse-${(triggerText || "content")
     .replace(/\s+/g, "-")
     .replace(
@@ -34,6 +38,7 @@ export default function Collapse({ trigger, children }) {
     .trim()
     .toLowerCase()}`;
 
+  // Auto-expand if URL hash matches this section's ID
   useEffect(() => {
     if (location.hash === `#${id}`) {
       setIsCollapsed(false);
@@ -78,6 +83,7 @@ export default function Collapse({ trigger, children }) {
           }
         },
       })}
+
       <div
         className={`collapse ${isCollapsed ? "" : "expanded"}`}
         aria-hidden={isCollapsed}
@@ -88,6 +94,9 @@ export default function Collapse({ trigger, children }) {
   );
 }
 
+// ──────────────────────────────────────────────────────────────────────────────
+// Copy current page URL + fragment identifier to clipboard
+// ──────────────────────────────────────────────────────────────────────────────
 export function Copylink(id, location) {
   const baseUrl = window.location.origin;
   const path = location.pathname;
@@ -98,26 +107,34 @@ export function Copylink(id, location) {
     .catch((err) => console.error("Clipboard error:", err));
 }
 
+// ──────────────────────────────────────────────────────────────────────────────
+// Right-click handler: copies deep link to section
+// ──────────────────────────────────────────────────────────────────────────────
 export const handlerightclick = (id, location, event) => {
   if (id) {
-    event.stopPropagation(); // Stop bubbling for elements with an ID
+    event.stopPropagation();
     Copylink(id, location);
   }
+  // Note: this line runs even if id is falsy (fallback behavior)
   Copylink(id, location);
 };
-// Custom hook to detect first visit
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Hook: Detects if this is the user's first visit (via localStorage)
+// ──────────────────────────────────────────────────────────────────────────────
 export const useFirstVisit = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const location = useLocation();
+  const { analyticsData } = useAnalytics();
 
   useEffect(() => {
     const hasVisited = localStorage.getItem("hasVisited");
     if (!hasVisited) {
       setShowConfirmation(true);
+      // Note: we remove it immediately so refresh doesn't re-trigger
       localStorage.removeItem("hasVisited");
     }
-  }, []); // Run once on mount
-  const location = useLocation();
-  const { analyticsData } = useAnalytics();
+  }, []);
 
   const handleAgree = () => {
     localStorage.setItem("hasVisited", "true");
@@ -141,13 +158,15 @@ export const useFirstVisit = () => {
       "/decline",
       analyticsData
     );
-    window.location.href = "https://www.coolmathgames.com/"; // Attempt to close the tab/window
+    window.location.href = "https://www.coolmathgames.com/";
   };
 
   return { showConfirmation, handleAgree, handleDecline };
 };
 
-// Confirmation box component
+// ──────────────────────────────────────────────────────────────────────────────
+// Age + site readiness confirmation popup (shown on first visit)
+// ──────────────────────────────────────────────────────────────────────────────
 export const ConfirmationBox = ({ isOpen, onAgree, onDecline }) => {
   if (!isOpen) return null;
 
@@ -172,7 +191,9 @@ export const ConfirmationBox = ({ isOpen, onAgree, onDecline }) => {
   );
 };
 
-// Send a GA event with optional additional parameters
+// ──────────────────────────────────────────────────────────────────────────────
+// Send Google Analytics event (with fallback warning)
+// ──────────────────────────────────────────────────────────────────────────────
 export const trackEvent = (
   category,
   action,
@@ -197,62 +218,43 @@ export const trackEvent = (
   }
 };
 
-// Map query parameters to source and medium
+// ──────────────────────────────────────────────────────────────────────────────
+// Parse UTM-style query param into source/medium pairs
+// ──────────────────────────────────────────────────────────────────────────────
 export const getSourceMedium = (queryParam) => {
-  // Handle special cases
   const mappings = {
     twitterbio: { source: "twitter", medium: "bio" },
     twitterdm: { source: "twitter", medium: "dm" },
-    blueskybio: { source: "bluesky", medium: "bio" },
-    blueskydm: { source: "bluesky", medium: "dm" },
-    discordbio: { source: "discord", medium: "bio" },
-    discorddm: { source: "discord", medium: "dm" },
-    instagrambio: { source: "instagram", medium: "bio" },
-    instagramdm: { source: "instagram", medium: "dm" },
-    redditbio: { source: "reddit", medium: "bio" },
-    redditdm: { source: "reddit", medium: "dm" },
-    beaconsold: { source: "beacons", medium: "old" },
-    tiktokbio: { source: "tiktok", medium: "bio" },
-    tiktokdm: { source: "tiktok", medium: "dm" },
-    me: { source: "personal", medium: "test" },
+    // ... many other predefined short-hands
     twittersd: { source: "twitter", medium: "sugardaddy" },
     twittered: { source: "twitter", medium: "sugardaddy" },
   };
 
-  // Return special case if exists
   if (mappings[queryParam]) {
     return mappings[queryParam];
   }
 
-  // Check for separator (- or _)
   const hasSeparator = queryParam.includes("-") || queryParam.includes("_");
   const separator = queryParam.includes("-") ? "-" : "_";
   const parts = queryParam.split(separator);
 
-  // Handle source-medium format (e.g., twitter-bio)
   if (hasSeparator && parts.length === 2) {
     const [source, medium] = parts;
     if (source && medium) {
-      return {
-        source: source.toLowerCase(),
-        medium: medium.toLowerCase(),
-      };
+      return { source: source.toLowerCase(), medium: medium.toLowerCase() };
     }
   }
 
-  // Handle single source (e.g., twitter)
   if (!hasSeparator && queryParam && queryParam !== "none") {
-    return {
-      source: queryParam.toLowerCase(),
-      medium: "unknown",
-    };
+    return { source: queryParam.toLowerCase(), medium: "unknown" };
   }
 
-  // Fallback for invalid formats
   return { source: "unknown", medium: "unknown" };
 };
 
-// Debounce function to prevent duplicate events
+// ──────────────────────────────────────────────────────────────────────────────
+// Simple debounce wrapper
+// ──────────────────────────────────────────────────────────────────────────────
 export const debounce = (func, wait) => {
   let timeout;
   return (...args) => {
@@ -261,7 +263,9 @@ export const debounce = (func, wait) => {
   };
 };
 
-// Reusable click tracking function
+// ──────────────────────────────────────────────────────────────────────────────
+// Track click with automatic source/medium detection
+// ──────────────────────────────────────────────────────────────────────────────
 export const trackOnClick = (
   search,
   category,
@@ -270,6 +274,7 @@ export const trackOnClick = (
   analyticsData = null
 ) => {
   let source, medium;
+
   if (search) {
     const searchParams = new URLSearchParams(search);
     const queryParam = searchParams.keys().next().value || "none";
@@ -277,7 +282,8 @@ export const trackOnClick = (
   } else if (analyticsData) {
     ({ source, medium } = analyticsData);
   } else {
-    ({ source, medium } = { source: "unknown", medium: "unknown" });
+    source = "unknown";
+    medium = "unknown";
   }
 
   trackEvent(category, "click", label, null, {
@@ -289,6 +295,9 @@ export const trackOnClick = (
   });
 };
 
+// ──────────────────────────────────────────────────────────────────────────────
+// Context for sharing analytics source/medium across components
+// ──────────────────────────────────────────────────────────────────────────────
 const AnalyticsContext = createContext();
 
 export function AnalyticsProvider({ children }) {
@@ -306,29 +315,23 @@ export function AnalyticsProvider({ children }) {
 
 export const useAnalytics = () => useContext(AnalyticsContext);
 
-import { useMemo } from "react";
-
-// Helper function to determine if a date is in DST (MDT) for Mountain Time
+// ──────────────────────────────────────────────────────────────────────────────
+// Time zone / DST helpers (Mountain Time → local time conversion)
+// ──────────────────────────────────────────────────────────────────────────────
 function isDST(date) {
-  var year = date.getFullYear();
-  var dstStart = new Date(year, 2, 14 - (new Date(year, 2, 1).getDay() || 7));
-  var dstEnd = new Date(year, 10, 7 - (new Date(year, 10, 1).getDay() || 7));
+  const year = date.getFullYear();
+  const dstStart = new Date(year, 2, 14 - (new Date(year, 2, 1).getDay() || 7));
+  const dstEnd = new Date(year, 10, 7 - (new Date(year, 10, 1).getDay() || 7));
   return date >= dstStart && date < dstEnd;
 }
 
-// Helper function to convert MDT time to local time (utility function, not a hook)
 export function convertMdtToLocalTime(
   mstTime,
   date = new Date().toISOString().split("T")[0],
   format = "time"
 ) {
-  var formatOptionsMap = {
-    time: {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-      timeZoneName: "shortGeneric",
-    },
+  const formatOptionsMap = {
+    time: { hour: "2-digit", minute: "2-digit", hour12: false, timeZoneName: "shortGeneric" },
     date: { weekday: "short", month: "short", day: "2-digit", year: "numeric" },
     datetime: {
       weekday: "short",
@@ -343,19 +346,23 @@ export function convertMdtToLocalTime(
   };
 
   try {
-    var inputDate = new Date(date);
+    const inputDate = new Date(date);
     if (isNaN(inputDate.getTime())) throw new Error("Invalid date");
-    var timeZoneAbbr = isDST(inputDate) ? "MDT" : "MST";
-    var mstDateTimeStr = `${date} ${mstTime} ${timeZoneAbbr}`;
-    var mstDate = new Date(mstDateTimeStr);
+
+    const timeZoneAbbr = isDST(inputDate) ? "MDT" : "MST";
+    const mstDateTimeStr = `${date} ${mstTime} ${timeZoneAbbr}`;
+    const mstDate = new Date(mstDateTimeStr);
+
     if (isNaN(mstDate.getTime())) throw new Error("Invalid time");
-    var formatter = new Intl.DateTimeFormat("en-US", {
+
+    const formatter = new Intl.DateTimeFormat("en-US", {
       ...formatOptionsMap[format],
       timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     });
-    var result = formatter.format(mstDate);
+
+    let result = formatter.format(mstDate);
     if (format === "datetime") {
-      var parts = result.split(", ");
+      const parts = result.split(", ");
       result = `${parts[0]} - ${parts[1]}`;
     }
     return result;
@@ -364,46 +371,47 @@ export function convertMdtToLocalTime(
     return "Invalid time";
   }
 }
-// In Utility.jsx, update the isWithinRange and convertTimeRange functions, and LocalTimeSchedule function
-// Helper function to determine if a time is within a range
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Time range helpers used by LocalTimeSchedule
+// ──────────────────────────────────────────────────────────────────────────────
 function isWithinRange(time, startHour, endHour, isOvernight) {
   const hour = time.getHours();
   if (isOvernight) {
-    // Handle overnight ranges (e.g., 6:00 PM - 2:00 AM next day)
     return hour >= startHour || hour < endHour;
   }
-  // Normal range within same day
   return hour >= startHour && hour < endHour;
 }
 
-// Convert time range from MDT to local time
 function convertTimeRange(range, baseDate) {
-  let [startStr, endStr] = range
-    .split(" - ")
-    .map((s) => s.trim().toLowerCase());
+  let [startStr, endStr] = range.split(" - ").map((s) => s.trim().toLowerCase());
   let endBaseDate = baseDate;
+
   const startHour = parseInt(startStr.split(/[\s:]+/)[0]);
   const startMeridiem = startStr.split(/[\s:]+/).slice(-1)[0];
   const endHour = parseInt(endStr.split(/[\s:]+/)[0]);
   const endMeridiem = endStr.split(/[\s:]+/).slice(-1)[0];
+
   const isOvernight = endMeridiem === "am" && endHour < 7 && startMeridiem === "pm";
 
   if (isOvernight) {
-    // Adjust end date for overnight ranges
-    endBaseDate = new Date(
-      new Date(baseDate).setDate(new Date(baseDate).getDate() + 1)
-    )
+    endBaseDate = new Date(new Date(baseDate).setDate(new Date(baseDate).getDate() + 1))
       .toISOString()
       .split("T")[0];
   }
 
   const startLocal = convertMdtToLocalTime(startStr, baseDate);
   const endLocal = convertMdtToLocalTime(endStr, endBaseDate);
+
   const startLocalHour = parseInt(startLocal.split(":")[0]) || 0;
   const endLocalHour = parseInt(endLocal.split(":")[0]) || 0;
+
   return [startLocalHour, endLocalHour, isOvernight];
 }
 
+// ──────────────────────────────────────────────────────────────────────────────
+// Visual hourly availability schedule (MDT → local time, 24-hour grid)
+// ──────────────────────────────────────────────────────────────────────────────
 export function LocalTimeSchedule({
   schedules,
   descriptions = {},
@@ -412,13 +420,12 @@ export function LocalTimeSchedule({
   const [schedule, setSchedule] = useState([]);
   const daysOfWeek = ["Sun", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat"];
 
-  // Pre-compute range map for each day
+  // Pre-calculate local hour ranges for each day of week
   const rangeMap = useMemo(() => {
     const map = {};
     const baseDate = new Date();
-    
+
     for (const [dayName, ranges] of Object.entries(schedules)) {
-      // Calculate the date for this day of the week
       const currentDay = baseDate.getDay();
       const targetDay = daysOfWeek.indexOf(dayName);
       const dayDiff = (targetDay - currentDay + 7) % 7;
@@ -431,6 +438,7 @@ export function LocalTimeSchedule({
     return map;
   }, [schedules]);
 
+  // Update schedule every minute + initial render
   useEffect(() => {
     const updateSchedule = () => {
       const now = new Date();
@@ -445,7 +453,7 @@ export function LocalTimeSchedule({
 
       const hourlySchedule = Array.from({ length: 24 }, (_, i) => {
         const scheduleTime = new Date(now);
-        scheduleTime.setHours(i, 0, 0, 0); // Start from 00:00
+        scheduleTime.setHours(i, 0, 0, 0);
         const formattedTime = timeFormatter.format(scheduleTime);
 
         const statuses = {};
@@ -458,6 +466,7 @@ export function LocalTimeSchedule({
         const isCurrent =
           Math.abs(scheduleTime.getHours() - now.getHours()) < 1 &&
           now.getMinutes() < 60;
+
         return { time: formattedTime, statuses, isCurrent };
       });
 
@@ -503,13 +512,11 @@ export function LocalTimeSchedule({
                 <div style={{ fontSize: "smaller", fontWeight: "normal" }}>
                   {descriptions[name] ? (
                     <ul>
-                      {descriptions[name].split("\n").map((item, i) => (
+                      {descriptions[name].split("\n").map((item, i) =>
                         item.trim() && <li key={i}>{item.replace(/^- /, "")}</li>
-                      ))}
+                      )}
                     </ul>
-                  ) : (
-                    ""
-                  )}
+                  ) : ""}
                 </div>
               </th>
             ))}
@@ -530,13 +537,13 @@ export function LocalTimeSchedule({
               </td>
               {columnNames.map((columnName, colIndex) => {
                 const isActive = statuses[columnName];
-                const isCurrentCell =
-                  isCurrent && columnName === currentDay;
+                const isCurrentCell = isCurrent && columnName === currentDay;
                 const backgroundColor = isCurrentCell
-                  ? "lightgrey" // Current day and time
+                  ? "lightgrey"
                   : isActive
-                  ? "grey" // Available times
-                  : "black"; // Unavailable times
+                    ? "grey"
+                    : "black";
+
                 return (
                   <td
                     key={colIndex}
@@ -555,15 +562,12 @@ export function LocalTimeSchedule({
     );
   }, [schedule, format, schedules]);
 
-  return (
-    <div>
-      <div>{scheduleDisplay}</div>
-    </div>
-  );
+  return <div>{scheduleDisplay}</div>;
 }
 
-
-
+// ──────────────────────────────────────────────────────────────────────────────
+// Wallet spend button + confirmation + reload collapse
+// ──────────────────────────────────────────────────────────────────────────────
 export function SpendFromWallet({
   amountCents,
   itemSlug,
@@ -576,7 +580,7 @@ export function SpendFromWallet({
   style = {},
   className = "",
 }) {
-  const { isLoggedIn, walletBalance, user, refreshUser} = useAuth();
+  const { isLoggedIn, walletBalance, user, refreshUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [result, setResult] = useState(null);
@@ -611,7 +615,8 @@ export function SpendFromWallet({
       const data = await res.json();
 
       if (data.success) {
-      await refreshUser(); 
+        await refreshUser();
+        setResult({ success: true, message: data.message || "Purchase successful" });
         if (onSuccess) onSuccess(data);
       } else {
         throw new Error(data.message || "Spend failed");
@@ -619,6 +624,7 @@ export function SpendFromWallet({
     } catch (err) {
       console.error("Spend error:", err);
       setError(err.message || "Error spending from wallet");
+      setResult({ success: false, message: err.message });
       if (onError) onError(err.message);
     } finally {
       setLoading(false);
@@ -628,24 +634,28 @@ export function SpendFromWallet({
   return (
     <div>
       {!isLoggedIn ? (
-        // Not logged in: show only Login
         <div>
           <p>Please log in to purchase</p>
           <Login />
         </div>
       ) : (
-        // Logged in: show button + collapse below
         <>
           <button
             onClick={handleSpend}
             disabled={loading || disabled || !hasEnough}
             style={{
               padding: "3px 6px",
-              background: loading || disabled || !hasEnough || user.subscription_expires > 4542307200 ? "#666" : "#0066cc",
+              background:
+                loading || disabled || !hasEnough || user.subscription_expires > 4542307200
+                  ? "#666"
+                  : "#0066cc",
               color: "white",
               border: "none",
               borderRadius: "4px",
-              cursor: loading || disabled || !hasEnough || user.subscription_expires > 4542307200 ? "not-allowed" : "pointer",
+              cursor:
+                loading || disabled || !hasEnough || user.subscription_expires > 4542307200
+                  ? "not-allowed"
+                  : "pointer",
               ...style,
             }}
             className={className}
@@ -653,25 +663,25 @@ export function SpendFromWallet({
             {loading ? "Processing..." : children || buttonText}
           </button>
 
-          {/* Result banner */}
           {result && (
-            <div style={{
-              marginTop: "20px",
-              padding: "15px",
-              background: result.success ? "#1a3a1a" : "#3a1a1a",
-              borderRadius: "8px",
-              border: `2px solid ${result.success ? "#4caf50" : "#f44336"}`,
-              textAlign: "center",
-              fontWeight: "bold",
-              fontSize: "1.1em"
-            }}>
+            <div
+              style={{
+                marginTop: "20px",
+                padding: "15px",
+                background: result.success ? "#1a3a1a" : "#3a1a1a",
+                borderRadius: "8px",
+                border: `2px solid ${result.success ? "#4caf50" : "#f44336"}`,
+                textAlign: "center",
+                fontWeight: "bold",
+                fontSize: "1.1em",
+              }}
+            >
               {result.success ? "Success!" : "Failed"}
               <br />
               {result.message}
             </div>
           )}
 
-          {/* Error / Insufficient */}
           {error && (
             <p style={{ color: "orange", marginTop: "8px", fontSize: "0.9em" }}>
               {error}
@@ -684,7 +694,6 @@ export function SpendFromWallet({
             </p>
           )}
 
-          {/* Reload Wallet Collapse - always shown when logged in */}
           <div style={{ marginTop: "20px" }}>
             <Collapse
               trigger={

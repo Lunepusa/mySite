@@ -2,7 +2,8 @@ import React from "react";
 import "./styles.css";
 import Invoice from "./invoice";
 import Collapse from "./Utility";
-import DrivePosts from "./Images/Preview/DrivePosts.png";
+import loungepreview from "./Images/Preview/lounge.jpg";
+import dmpreview from "./Images/Preview/dm.jpg";
 import headerimg from "./Images/Preview/headerimg.png";
 import fepreview from "./Images/Preview/FE.jpg";
 import pgfepreview from "./Images/Preview/PGFE.jpg";
@@ -14,27 +15,31 @@ import textratepreview from "./Images/Preview/textrate.jpg";
 import vidratepreview from "./Images/Preview/vidrate.jpg";
 import vidcallpreview from "./Images/Preview/vidcall.png";
 import sextpreview from "./Images/Preview/sext.jpg";
-import {SpendFromWallet} from "./Utility";
-import { useAuth, apiFetch, Login,} from "./Auth";
+import { SpendFromWallet } from "./Utility";
+import { useAuth, apiFetch, Login } from "./Auth";
 
-
+// ──────────────────────────────────────────────────────────────────────────────
+// Main Menu page — lists all services, rates, markups/discounts, and invoice form
+// ──────────────────────────────────────────────────────────────────────────────
 export default function Menu() {
-   const { isSubscriber, isLoggedIn, isAdmin, user, walletBalance } = useAuth();
+  const { isSubscriber, isLoggedIn, isAdmin, user, walletBalance } = useAuth();
+
   return (
     <div style={{ textAlign: "center", width: "95%", margin: "auto" }}>
       <h1>Menu</h1>
+
+      {/* Markup / discount explanation section */}
       <div style={{ borderBottom: "2px dashed white" }}>
-        {" "}
         <h4 style={{ opacity: ".8" }}>
           Prices listed are subject to change, particularly based on the
           following markups and discounts
         </h4>
+
         <Collapse
           trigger={
             <h4>📈Exclusive, Rush, Taboo, Jerk ~ 50% markup each📈⏬</h4>
           }
         >
-          {" "}
           <p
             style={{
               display: "inline-block",
@@ -60,8 +65,8 @@ export default function Menu() {
             agreeing to that.
           </p>
         </Collapse>
+
         <Collapse trigger={<h4>📉Bulk, Easy ~ 25% discount each📉⏬</h4>}>
-          {" "}
           <p
             style={{
               display: "inline-block",
@@ -78,32 +83,51 @@ export default function Menu() {
           </p>
         </Collapse>
       </div>
+
+      {/* Main services list */}
       <div>
-        <Collapse trigger={<h3>🗃️160+gb drive ~ $10/month 🗃️⏬</h3>}>
-          1 month of access to a{" "}
-          <a href="https://drive.google.com/drive/folders/1U23lCgkRosUxkWq5qtfJ2_3KbdwExiti?usp=sharing">
-            google drive
-          </a>{" "}
-          that I update with all of my solo content before I post it anywhere
+        {/* Lounge / Drive access */}
+        <Collapse trigger={<h3>🗃️private lounge ~ $10/month 🗃️⏬</h3>}>
+          1 month of access to my custom built <a href="/lounge"> media feed</> that I update with all of my solo content before I post it anywhere
           else.
           <br />
           Yearly ($60) and lifetime ($205) also available.
           <br />{" "}
+          {/* Wallet subscription button */}
           <SpendFromWallet
-  amountCents={1000}
-  itemSlug="lounge-monthly"
-  description="Monthly Lounge access"
-  buttonText={`Subscribe Monthly with Wallet ($${walletBalance < 10 ? 'Insufficient' :user.subscription_expires > 4542307200 ? "You already have Lifetime Access": '10.00'})`}
-  disabled={parseFloat(walletBalance) < 10 || user.subscription_expires > 4542307200}
-/>
+            amountCents={1000}
+            itemSlug="lounge-monthly"
+            description="Monthly Lounge access"
+            buttonText={`Subscribe Monthly with Wallet ($${walletBalance < 10 ? 'Insufficient' : user.subscription_expires > 4542307200 ? "You already have Lifetime Access": '10.00'})`}
+            disabled={parseFloat(walletBalance) < 10 || user.subscription_expires > 4542307200}
+          />
           <img
-            src={DrivePosts}
+            src={loungepreview}
             style={{ maxWidth: "100%", maxHeight: "60vh" }}
           />
         </Collapse>
+
+{/* Custom video */}
+        <Collapse trigger={<h3>✉️ Pay-Per-Message ~ $1 per my reply ✉️⏬</h3>}>
+          <div>
+            <p
+              style={{
+                display: "inline-block",
+                width: "70%",
+              }}
+            >
+              ~ Dont want to commit to a larger price tag, but still want to ask some questions or chat? this is the option for you!
+              <br />Extremely casual no media messaging, responding when I have time.
+            </p>
+            <img src={dmpreview} className="previewimg" />
+          </div>
+        </Collapse>
+
+        
+        {/* Custom photoset */}
         <Collapse trigger={<h3>📸Custom photoset~ $15+📸⏬</h3>}>
           <div>
-            <img src={custompicpreview} class="previewimg" />{" "}
+            <img src={custompicpreview} className="previewimg" />{" "}
             <p
               style={{
                 display: "inline-block",
@@ -118,8 +142,9 @@ export default function Menu() {
             </p>
           </div>
         </Collapse>
+
+        {/* Custom video */}
         <Collapse trigger={<h3>🎬3m Custom Vid~ $20+🎬⏬</h3>}>
-          {" "}
           <div>
             <p
               style={{
@@ -132,14 +157,15 @@ export default function Menu() {
               reach out for a{" "}
               <a href="/menu#collapse-invoiceformformakingquotes">quote!</a>
             </p>
-            <img src={customvidpreview} class="previewimg" />
+            <img src={customvidpreview} className="previewimg" />
           </div>
         </Collapse>
+
+        {/* Text rating */}
         <Collapse trigger={<h3>🍌 Text Rating ~ $5🍌⏬</h3>}>
-          {" "}
           <div>
             <div>
-              <img src={textratepreview} class="previewimg" />
+              <img src={textratepreview} className="previewimg" />
               <p
                 style={{
                   display: "inline-block",
@@ -163,8 +189,9 @@ export default function Menu() {
             </p>
           </div>
         </Collapse>
+
+        {/* Video rating */}
         <Collapse trigger={<h3>🍆 Video Rating ~ $30🍆⏬</h3>}>
-          {" "}
           <div>
             <div>
               <p
@@ -179,7 +206,7 @@ export default function Menu() {
                 Including nothing.
                 <br />
               </p>
-              <img src={vidratepreview} class="previewimg" />
+              <img src={vidratepreview} className="previewimg" />
             </div>
             <p
               style={{
@@ -193,10 +220,11 @@ export default function Menu() {
             </p>
           </div>
         </Collapse>
+
+        {/* Sexting session */}
         <Collapse trigger={<h3>💌15m Sexting Session ~ $30+💌⏬</h3>}>
-          {" "}
           <div>
-            <img src={sextpreview} class="previewimg" />
+            <img src={sextpreview} className="previewimg" />
             <p
               style={{
                 display: "inline-block",
@@ -208,8 +236,9 @@ export default function Menu() {
             </p>
           </div>
         </Collapse>
+
+        {/* Video call */}
         <Collapse trigger={<h3>📳5m Video Call ~ $55+📳⏬</h3>}>
-          {" "}
           <div>
             <p
               style={{
@@ -221,13 +250,14 @@ export default function Menu() {
               want. My camera and mic will be on
               <br />~ $25 for every additional 5 minutes
             </p>
-            <img src={vidcallpreview} class="previewimg" />
+            <img src={vidcallpreview} className="previewimg" />
           </div>
         </Collapse>
+
+        {/* Friend Experience */}
         <Collapse trigger={<h3>🗨️1 week Friend Experience ~ $25+🗨️ ⏬</h3>}>
-          {" "}
           <div>
-            <img src={fepreview} class="previewimg" />
+            <img src={fepreview} className="previewimg" />
             <p
               style={{
                 display: "inline-block",
@@ -239,8 +269,9 @@ export default function Menu() {
             </p>
           </div>
         </Collapse>
+
+        {/* Girlfriend Experience */}
         <Collapse trigger={<h3>💋1 week Girfriend Experience ~ $95+💋⏬</h3>}>
-          {" "}
           <div>
             <p
               style={{
@@ -251,15 +282,16 @@ export default function Menu() {
               ~ 1 week of no media texting/sexting throughout the day, good
               morning and good night pics <br /> online only
             </p>
-            <img src={gfepreview} class="previewimg" />
+            <img src={gfepreview} className="previewimg" />
           </div>
         </Collapse>
+
+        {/* Premium Girlfriend Experience */}
         <Collapse
           trigger={<h3>💍1 week Premium Girlfriend Experience ~ $495+💍⏬</h3>}
         >
-          {" "}
           <div>
-            <img src={pgfepreview} class="previewimg" />
+            <img src={pgfepreview} className="previewimg" />
             <p
               style={{
                 display: "inline-block",
@@ -271,6 +303,8 @@ export default function Menu() {
             </p>
           </div>
         </Collapse>
+
+        {/* Calgary meets */}
         <div>
           <Collapse trigger={<h2> 🛏️Calgary meets🛏️⏬</h2>}>
             Full details listed{" "}
@@ -289,11 +323,13 @@ export default function Menu() {
                 ~ markups and discounts above may apply
                 <br />~ No Fly Me to You. Calgary only.
               </Collapse>
-              <img src={meetpreview} class="previewimg" />
+              <img src={meetpreview} className="previewimg" />
             </div>
           </Collapse>
         </div>
       </div>
+
+      {/* Invoice / quote form */}
       <Collapse trigger={<h2>🧮Invoice form for making quotes🧮⏬</h2>}>
         <Invoice />
       </Collapse>
