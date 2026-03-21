@@ -4,14 +4,18 @@ import { TagSelect, searchTags, ClickableTags } from "./Tags";
 
 const Gallery = () => {
   const { isSubscriber, isLoggedIn, isAdmin, user, unlockedDates } = useAuth();
+
+  // Main list of loaded media items (photos + videos)
   const [media, setMedia] = useState([]);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
   const [fullscreenItem, setFullscreenItem] = useState(null);
 
+  // Total counts displayed in header
   const [stats, setStats] = useState({ photos: 0, videos: 0 });
 
+  // Editing states for group caption/tags or single item tags
   const [editingGroupCaption, setEditingGroupCaption] = useState(null);
   const [editingGroupTags, setEditingGroupTags] = useState(null);
   const [editingItem, setEditingItem] = useState(null);
@@ -20,55 +24,57 @@ const Gallery = () => {
   const [tempTags, setTempTags] = useState([]);
   const [originalTags, setOriginalTags] = useState([]);
 
+  // Search input and active normalized query
   const [searchInput, setSearchInput] = useState("");
   const [activeSearchQuery, setActiveSearchQuery] = useState("");
   const [displayedQuery, setDisplayedQuery] = useState("");
 
-  // Multi-select mode
+  // Multi-select mode (admin only)
   const [multiSelectMode, setMultiSelectMode] = useState(false);
   const [selectedItems, setSelectedItems] = useState(new Set());
 
   const ITEMS_PER_BATCH = 50;
 
- useEffect(() => {
-  const handleHashChange = () => {
-    const hash = window.location.hash.slice(1);
-    const rawQuery = hash ? decodeURIComponent(hash) : "";
+  // -------------------------------------------------------------------------
+  // Effect: Sync URL hash ↔ search query + reset results on hash change
+  // -------------------------------------------------------------------------
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.slice(1);
+      const rawQuery = hash ? decodeURIComponent(hash) : "";
 
-    console.log("Hash changed to:", rawQuery); // debug
+      // Always mirror hash in the input field
+      setSearchInput(rawQuery);
 
-    // Always update input field
-    setSearchInput(rawQuery);
+      const normalized = normalizeSearchInput(rawQuery);
+      setActiveSearchQuery(normalized);
+      setDisplayedQuery(normalized || "(no terms)");
 
-    // Normalize and force full search reset
-    const normalized = normalizeSearchInput(rawQuery);
-    setActiveSearchQuery(normalized);
-    setDisplayedQuery(normalized || "(no terms)");
+      // Reset pagination and media when query changes via hash
+      setMedia([]);
+      setOffset(0);
+      setHasMore(true);
 
-    // Reset pagination and results
-    setMedia([]);
-    setOffset(0);
-    setHasMore(true);
+      loadMoreGroups(0, normalized, true);
+    };
 
-    // Immediately load with new query
-    loadMoreGroups(0, normalized, true);
-  };
+    // Run once on mount (handles initial hash or empty)
+    handleHashChange();
 
-  // Run once when component mounts (handles initial load with hash)
-  handleHashChange();
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
+  }, []);
 
-  // Listen for any future hash changes
-  window.addEventListener("hashchange", handleHashChange);
-
-  return () => {
-    window.removeEventListener("hashchange", handleHashChange);
-  };
-}, []); // empty dependency array = only setup/teardown on mount/unmount
-
+  // -------------------------------------------------------------------------
+  // Effect: Initial load of first batch (runs once after mount)
+  // -------------------------------------------------------------------------
   useEffect(() => {
     loadMoreGroups();
   }, []);
 
+  // -------------------------------------------------------------------------
+  // Effect: Fetch total photo/video counts for header
+  // -------------------------------------------------------------------------
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -78,12 +84,15 @@ const Gallery = () => {
           setStats(data);
         }
       } catch (err) {
-        // silent
+        // silent fail
       }
     };
     fetchStats();
   }, []);
 
+  // -------------------------------------------------------------------------
+  // Utility: Convert tag string or array into clean array
+  // -------------------------------------------------------------------------
   const getTagsArray = (tagInput) => {
     if (!tagInput) return [];
     if (Array.isArray(tagInput)) return tagInput;
@@ -96,6 +105,11 @@ const Gallery = () => {
     return [];
   };
 
+  // -------------------------------------------------------------------------
+  // Utility: Normalize search input into internal format
+  //   space = OR (~), + = AND, - = exclude
+  //   also replaces & with + and prefers known tags from searchTags
+  // -------------------------------------------------------------------------
   const normalizeSearchInput = (input) => {
     if (!input.trim()) return "";
 
@@ -114,18 +128,25 @@ const Gallery = () => {
       const normalizedAnd = andTerms.map(term => {
         const clean = term.trim();
         const matches = searchTags(clean);
-        return matches[0] || clean;
+        return matches[0] || clean; // prefer canonical if match exists
       });
 
       const normalizedGroup = normalizedAnd.join('+');
-
       return isExclude ? `-${normalizedGroup}` : normalizedGroup;
     });
 
     return normalizedOrGroups.join('~');
   };
 
-  const loadMoreGroups = async (currentOffset = offset, queryToUse = activeSearchQuery, ignoreChecks = false) => {
+  // -------------------------------------------------------------------------
+  // Core pagination loader — fetches next batch of media
+  // Supports search query and offset-based loading
+  // -------------------------------------------------------------------------
+  const loadMoreGroups = async (
+    currentOffset = offset,
+    queryToUse = activeSearchQuery,
+    ignoreChecks = false
+  ) => {
     if (!ignoreChecks) {
       if (loading || !hasMore) return;
     }
@@ -147,7 +168,6 @@ const Gallery = () => {
 
       if (data.media.length === 0) {
         setHasMore(false);
-        setLoading(false);
         if (currentOffset === 0) setMedia([]);
         return;
       }
@@ -164,10 +184,14 @@ const Gallery = () => {
     }
   };
 
+  // -------------------------------------------------------------------------
+  // Trigger new search: normalize, reset list, update URL hash
+  // -------------------------------------------------------------------------
   const triggerSearch = () => {
     const normalized = normalizeSearchInput(searchInput);
     setActiveSearchQuery(normalized);
     setDisplayedQuery(normalized || "(no terms)");
+
     setMedia([]);
     setOffset(0);
     setHasMore(true);
@@ -180,34 +204,35 @@ const Gallery = () => {
     }
   };
 
-const calculateMultiCommonTags = () => {
-  if (selectedItems.size === 0) return [];
+  // -------------------------------------------------------------------------
+  // Calculate tags common to ALL selected items (for multi-edit)
+  // -------------------------------------------------------------------------
+  const calculateMultiCommonTags = () => {
+    if (selectedItems.size === 0) return [];
 
-  const keys = Array.from(selectedItems);
-  const firstItem = media.find(m => m.key === keys[0]);
-  if (!firstItem) return [];
+    const keys = Array.from(selectedItems);
+    const firstItem = media.find(m => m.key === keys[0]);
+    if (!firstItem) return [];
 
-  let common = getTagsArray(firstItem.tags);
+    let common = getTagsArray(firstItem.tags);
 
-  for (const key of keys.slice(1)) {
-    const item = media.find(m => m.key === key);
-    if (!item) continue;
-    const itemTags = getTagsArray(item.tags);
-    common = common.filter(t => itemTags.includes(t));
-  }
+    for (const key of keys.slice(1)) {
+      const item = media.find(m => m.key === key);
+      if (!item) continue;
+      const itemTags = getTagsArray(item.tags);
+      common = common.filter(t => itemTags.includes(t));
+    }
 
-  return common;
-};
+    return common;
+  };
 
-const multiCommonTags = useMemo(() => {
-  console.log("calculateMultiCommonTags RAN → selected:", 
-    Array.from(selectedItems), 
-    "common:", calculateMultiCommonTags()  // or just compute here
-  );
-  return calculateMultiCommonTags();
-}, [Array.from(selectedItems), media]);
+  const multiCommonTags = useMemo(() => {
+    return calculateMultiCommonTags();
+  }, [selectedItems.size, media]);
 
-  // Group by date
+  // -------------------------------------------------------------------------
+  // Group media by date + compute common tags per date group
+  // -------------------------------------------------------------------------
   const groups = {};
   media.forEach((item) => {
     const date = item.date || "Unknown";
@@ -283,6 +308,10 @@ const multiCommonTags = useMemo(() => {
     }
   };
 
+  // -------------------------------------------------------------------------
+  // Save edited caption or tags (group or single item)
+  // Uses optimistic update on success
+  // -------------------------------------------------------------------------
   const saveEdit = async () => {
     const body = {};
 
@@ -376,56 +405,59 @@ const multiCommonTags = useMemo(() => {
     }
   };
 
-// Admin right-click: copy share link for date
-const handleDateShareCopy = (date) => async (e) => {
-  if (!isAdmin) return;
-  e.preventDefault();
-  e.stopPropagation();
+  // -------------------------------------------------------------------------
+  // Admin: Right-click date header → copy share link for whole date
+  // -------------------------------------------------------------------------
+  const handleDateShareCopy = (date) => async (e) => {
+    if (!isAdmin) return;
+    e.preventDefault();
+    e.stopPropagation();
 
-  try {
-    const res = await apiFetch('/generate-share-token', {
-      method: 'POST',
-      body: JSON.stringify({ target_type: 'date', target_value: date }),
-    });
-    const data = await res.json();
-    if (data.success) {
-      navigator.clipboard.writeText(data.link);
-      console.log("Date share link copied:", data.link);
-      // Optional: silent toast or nothing visible
-    } else {
-      console.error("Failed to generate date share link:", data.error);
+    try {
+      const res = await apiFetch('/generate-share-token', {
+        method: 'POST',
+        body: JSON.stringify({ target_type: 'date', target_value: date }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        navigator.clipboard.writeText(data.link);
+        console.log("Date share link copied:", data.link);
+      } else {
+        console.error("Failed to generate date share link:", data.error);
+      }
+    } catch (err) {
+      console.error("Date share copy error:", err);
     }
-  } catch (err) {
-    console.error("Date share copy error:", err);
-  }
-};
+  };
 
-// Admin right-click: copy share link for media item
-const handleMediaShareCopy = (item) => async (e) => {
-  if (!isAdmin) return;
-  e.preventDefault();
-  e.stopPropagation();
+  // -------------------------------------------------------------------------
+  // Admin: Right-click media thumbnail/fullscreen → copy item share link
+  // -------------------------------------------------------------------------
+  const handleMediaShareCopy = (item) => async (e) => {
+    if (!isAdmin) return;
+    e.preventDefault();
+    e.stopPropagation();
 
-  try {
-    const res = await apiFetch('/generate-share-token', {
-      method: 'POST',
-      body: JSON.stringify({ target_type: 'media', target_value: item.key }),
-    });
-    const data = await res.json();
-    if (data.success) {
-      navigator.clipboard.writeText(data.link);
-      console.log("Media share link copied:", data.link);
-    } else {
-      console.error("Failed to generate media share link:", data.error);
+    try {
+      const res = await apiFetch('/generate-share-token', {
+        method: 'POST',
+        body: JSON.stringify({ target_type: 'media', target_value: item.key }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        navigator.clipboard.writeText(data.link);
+        console.log("Media share link copied:", data.link);
+      } else {
+        console.error("Failed to generate media share link:", data.error);
+      }
+    } catch (err) {
+      console.error("Media share copy error:", err);
     }
-  } catch (err) {
-    console.error("Media share copy error:", err);
-  }
-};
+  };
 
   return (
     <>
-      {/* Sticky search header */}
+      {/* Sticky search + stats header */}
       <div
         style={{
           padding: "5px",
@@ -499,7 +531,7 @@ const handleMediaShareCopy = (item) => async (e) => {
         )}
       </div>
 
-      {/* Main wrapper */}
+      {/* Main content wrapper */}
       <div>
         {/* Admin Multi-Select Toggle */}
         {!!isAdmin && (
@@ -632,7 +664,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                     loop
                     muted={!(isAdmin || isSubscriber || unlockedDates.includes(fullscreenItem?.date))}
                     controlsList="nodownload"
-                    onContextMenu={(e) => {e.preventDefault();handleMediaShareCopy(item)(e);}}
+                    onContextMenu={(e) => {e.preventDefault();handleMediaShareCopy(fullscreenItem)(e);}}
                     style={{
                       maxWidth: "100%",
                       maxHeight: "100DVH",
@@ -651,7 +683,7 @@ const handleMediaShareCopy = (item) => async (e) => {
                   <img
                     src={`${R2_PUBLIC_URL}/${fullscreenItem.key}`}
                     alt=""
-                    onContextMenu={(e) => {e.preventDefault();handleMediaShareCopy(item)(e);}}
+                    onContextMenu={(e) => {e.preventDefault();handleMediaShareCopy(fullscreenItem)(e);}}
                     style={{
                       maxWidth: "100%",
                       maxHeight: "100DVH",
@@ -691,7 +723,7 @@ const handleMediaShareCopy = (item) => async (e) => {
             </div>
           )}
 
-          {/* Groups */}
+          {/* Date groups */}
           {sortedDates.map((date) => {
             const { items, commonTags } = groups[date];
             const videoCount = items.filter((i) => i.isVideo).length;
