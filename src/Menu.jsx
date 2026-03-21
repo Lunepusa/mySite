@@ -88,7 +88,7 @@ export default function Menu() {
       <div>
         {/* Lounge / Drive access */}
         <Collapse trigger={<h3>🗃️private lounge ~ $10/month 🗃️⏬</h3>}>
-          1 month of access to my custom built <a href="/lounge"> media feed</> that I update with all of my solo content before I post it anywhere
+          1 month of access to my custom built <a href="/lounge"> media feed</a> that I update with all of my solo content before I post it anywhere
           else.
           <br />
           Yearly ($60) and lifetime ($205) also available.
