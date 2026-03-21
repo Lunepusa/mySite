@@ -2,10 +2,9 @@ import React, { useState } from "react";
 import "./styles.css";
 import { Link } from "react-router-dom";
 import headerimg from "./Images/Preview/headerimg.png";
-import { useAuth, apiFetch, R2_PUBLIC_URL } from "./Auth";
+
 
 function Navbar() {
-   const { isSubscriber, isLoggedIn, isAdmin, user, unlockedDates } = useAuth()
   return (
     <div
       style={{
