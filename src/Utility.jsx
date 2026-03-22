@@ -4,6 +4,7 @@ import React, {
   useRef,
   createContext,
   useContext,
+  useMemo,
 } from "react";
 import { useLocation } from "react-router-dom";
 import "./styles.css";
