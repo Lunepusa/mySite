@@ -1,4 +1,4 @@
-import React, { StrictMode } from "react";
+import React, { StrictMode, usememo } from "react";
 import { createRoot } from "react-dom/client";
 import { reactDOM } from "react-dom";
 import "./styles.css";
