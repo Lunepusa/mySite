@@ -1,16 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth, apiFetch } from "./Auth";
-import { searchTags } from "./Tags"; // Import from Tags.jsx
+import { searchTags, TagSelect } from "./Tags";
 
 const Upload = () => {
   const { user } = useAuth();
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState({});
-  const [applyHidden, setApplyHidden] = useState(false); // Checkbox state
+  const [initialTag, setInitialTag] = useState("");   // Controlled by TagSelect
+
+  // Derive default tag from username when component mounts or user changes
+  useEffect(() => {
+    const usernameLower = user?.username?.toLowerCase() || "lunepusa";
+    const matchedTags = searchTags(usernameLower);
+    const userTag = matchedTags.length > 0 ? matchedTags[0] : usernameLower;
+ setInitialtag(userTag);
+  }, [user]);
 
   const handleFileChange = (e) => {
     setFiles(Array.from(e.target.files));
+  };
+
+  const handleTagsSave = (tagsString) => {
+    setInitialTag(tagsString);
   };
 
   const handleUpload = async () => {
@@ -18,19 +30,6 @@ const Upload = () => {
 
     setUploading(true);
     setProgress({});
-
-    // Derive canonical tag from username
-    const usernameLower = user?.username?.toLowerCase() || "lunepusa";
-    const matchedTags = searchTags(usernameLower);
-    let initialTag = matchedTags.length > 0 ? matchedTags[0] : usernameLower;
-
-    // NEW: Append "hidden" if checkbox is checked
-    if (applyHidden) {
-      // Avoid duplicate "hidden"
-      if (!initialTag.includes("hidden")) {
-        initialTag = initialTag ? `${initialTag},hidden` : "hidden";
-      }
-    }
 
     // Step 1: Get presigned URLs
     const fileInfo = files.map((f) => ({
@@ -70,14 +69,14 @@ const Upload = () => {
 
         xhr.onload = async () => {
           if (xhr.status === 200) {
-            // Notify Worker — only send initialTag (now includes hidden if checked)
+            // Notify backend with the current tags from TagSelect
             await apiFetch("/upload-complete", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 objectKey: item.objectKey,
                 fileType: file.type,
-                initialTag, // ← now includes "hidden" if checkbox was on
+                initialTag,        // Full comma-separated tag string
               }),
             });
             resolve();
@@ -96,7 +95,8 @@ const Upload = () => {
       alert("All files uploaded!");
       setFiles([]);
       setProgress({});
-      setApplyHidden(false); // Reset checkbox after success
+      // Do not reset tags here - keep user's selected tags for next upload if desired
+      // setInitialTag("");   // Uncomment if you want to reset after every upload
     } catch (err) {
       alert("One or more uploads failed: " + err.message);
     } finally {
@@ -116,17 +116,17 @@ const Upload = () => {
       />
       <br />
 
-      {/* Hidden tag checkbox */}
-      <label style={{ display: "block", margin: "10px 0", fontSize: "1em" }}>
-        <input
-          type="checkbox"
-          checked={applyHidden}
-          onChange={(e) => setApplyHidden(e.target.checked)}
-          disabled={uploading}
+      {/* Tag selection - replaces the old hidden checkbox */}
+      <div style={{ margin: "15px 0", textAlign: "left", maxWidth: "600px", marginLeft: "auto", marginRight: "auto" }}>
+        <label style={{ display: "block", marginBottom: "8px", fontSize: "1em" }}>
+          Tags for this upload:
+        </label>
+        <TagSelect
+          initialTags={initialTag}
+          onSave={handleTagsSave}
+          placeholder="Type to add tags... (e.g. hidden, art, etc.)"
         />
-        {" "}Apply "hidden" tag to all uploaded media  
-        (only visible to me or users with permanent access)
-      </label>
+      </div>
 
       <button
         onClick={handleUpload}
