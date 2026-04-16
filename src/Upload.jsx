@@ -14,7 +14,7 @@ const Upload = () => {
     const usernameLower = user?.username?.toLowerCase() || "lunepusa";
     const matchedTags = searchTags(usernameLower);
     const userTag = matchedTags.length > 0 ? matchedTags[0] : usernameLower;
- setInitialtag(userTag);
+ setInitialTag(userTag);
   }, [user]);
 
   const handleFileChange = (e) => {
