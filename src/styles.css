@@ -314,3 +314,11 @@ tfoot td {
   filter: blur(40px);
   transition: filter 0.3s ease;
 }
+
+img, video {
+  -webkit-touch-callout: none;     /* iOS: disables long-press callout */
+  -webkit-user-select: none;       /* Prevents selection */
+  user-select: none;
+  pointer-events: auto;            /* Keep clicks/taps working */
+  touch-action: none;              /* Disables browser touch gestures like long-press menu in many cases */
+}
