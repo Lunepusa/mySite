@@ -90,6 +90,30 @@ const Gallery = () => {
     fetchStats();
   }, []);
 
+useEffect(() => {
+  const preventImageLongPress = (e) => {
+    if (e.target.tagName === "IMG" || e.target.tagName === "VIDEO") {
+      // This helps block the gesture that triggers Safari's preview/unblur
+      e.preventDefault();
+    }
+  };
+
+  // Use capture phase and passive: false for better chance of blocking
+  document.addEventListener("touchstart", preventImageLongPress, { passive: false });
+  document.addEventListener("touchmove", preventImageLongPress, { passive: false });
+  document.addEventListener("contextmenu", (e) => {
+    if (e.target.tagName === "IMG" || e.target.tagName === "VIDEO") {
+      e.preventDefault();
+    }
+  }, { passive: false });
+
+  return () => {
+    document.removeEventListener("touchstart", preventImageLongPress);
+    document.removeEventListener("touchmove", preventImageLongPress);
+    document.removeEventListener("contextmenu", preventImageLongPress); // reuse the handler if you want
+  };
+}, []);
+  
   // -------------------------------------------------------------------------
   // Utility: Convert tag string or array into clean array
   // -------------------------------------------------------------------------
