@@ -91,26 +91,38 @@ const Gallery = () => {
   }, []);
 
 useEffect(() => {
-  const preventImageLongPress = (e) => {
+  const handleTouch = (e) => {
+    const target = e.target;
+
+    // Only act on images and videos that are currently blurred
+    const isBlurred = 
+      target.style.filter && 
+      (target.style.filter.includes("blur") || 
+       getComputedStyle(target).filter.includes("blur"));
+
+    if ((target.tagName === "IMG" || target.tagName === "VIDEO") && isBlurred) {
+      // Only preventDefault on long-press gestures, not on normal taps
+      if (e.touches && e.touches.length > 1) {
+        e.preventDefault(); // multi-touch
+      }
+    }
+  };
+
+  // We still prevent the context menu
+  const preventContextMenu = (e) => {
     if (e.target.tagName === "IMG" || e.target.tagName === "VIDEO") {
-      // This helps block the gesture that triggers Safari's preview/unblur
       e.preventDefault();
     }
   };
 
-  // Use capture phase and passive: false for better chance of blocking
-  document.addEventListener("touchstart", preventImageLongPress, { passive: false });
-  document.addEventListener("touchmove", preventImageLongPress, { passive: false });
-  document.addEventListener("contextmenu", (e) => {
-    if (e.target.tagName === "IMG" || e.target.tagName === "VIDEO") {
-      e.preventDefault();
-    }
-  }, { passive: false });
+  document.addEventListener("touchstart", handleTouch, { passive: false });
+  document.addEventListener("touchmove", handleTouch, { passive: false });
+  document.addEventListener("contextmenu", preventContextMenu, { passive: false });
 
   return () => {
-    document.removeEventListener("touchstart", preventImageLongPress);
-    document.removeEventListener("touchmove", preventImageLongPress);
-    document.removeEventListener("contextmenu", preventImageLongPress); // reuse the handler if you want
+    document.removeEventListener("touchstart", handleTouch);
+    document.removeEventListener("touchmove", handleTouch);
+    document.removeEventListener("contextmenu", preventContextMenu);
   };
 }, []);
   
