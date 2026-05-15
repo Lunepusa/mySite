@@ -305,8 +305,7 @@ export default function Menu() {
         </Collapse>
 
         {/* Calgary meets */}
-        <div>
-          <Collapse trigger={<h2> 🛏️Calgary meets🛏️⏬</h2>}>
+        <meets          <Collapse trigger={<h2> 🛏️Calgary meets🛏️⏬-NOT CURRENTLY AVAILABLE</h2>}>
             Full details listed{" "}
             <a href="https://tryst.link/escort/lunepusa"> here</a>
             <br />
