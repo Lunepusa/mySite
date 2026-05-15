@@ -306,6 +306,81 @@ export default function Menu() {
 
         {/* Calgary meets */}
         <div>
+          <Collapse trigger={<h2> 🛏️Calgary meets🛏️⏬-NOT CURRENTLY AVAILABLE</h2>}>
+            Full details listed{" "}
+            <a href="https://tryst.link/escort/lunepusa"> here</a>
+            <br />
+            <div>
+              <h4>🏩1hr at my hotel room ~ $500🏩</h4>
+              Includes $200 deposit required minimum 3 days prior
+              <h4>🏠1hr at your place ~ $400🏠</h4>
+              Includes $100 deposit required minimum 12 hours prior
+              <h4>⏳Additional hour~ $200⏳</h4>
+              <Collapse trigger={<h3>Rules ⏬</h3>}>
+                ~ Condoms required for everything <br />
+                ~ no same day appointments <br />
+                ~ I cannot guarantee availability till deposit is paid. <br />
+                ~ markups and discounts above may apply
+                <br />~ No Fly Me to You. Calgary only.
+              </Collapse>
+              <img src={meetpreview} className="previewimg" />
+            </div>
+          </Collapse>
+        </div>
+      </div>
+
+      {/* Invoice / quote form */}
+      <Collapse trigger={<h2>🧮Invoice form for making quotes🧮⏬</h2>}>
+        <Invoice />
+      </Collapse>
+    </div>
+  );
+}
+dth: "70%",
+              }}
+            >
+              ~ 1 week of extremely casual no media texting resonding when I
+              have time <br /> online only
+            </p>
+          </div>
+        </Collapse>
+
+        {/* Girlfriend Experience */}
+        <Collapse trigger={<h3>💋1 week Girfriend Experience ~ $95+💋⏬</h3>}>
+          <div>
+            <p
+              style={{
+                display: "inline-block",
+                width: "70%",
+              }}
+            >
+              ~ 1 week of no media texting/sexting throughout the day, good
+              morning and good night pics <br /> online only
+            </p>
+            <img src={gfepreview} className="previewimg" />
+          </div>
+        </Collapse>
+
+        {/* Premium Girlfriend Experience */}
+        <Collapse
+          trigger={<h3>💍1 week Premium Girlfriend Experience ~ $495+💍⏬</h3>}
+        >
+          <div>
+            <img src={pgfepreview} className="previewimg" />
+            <p
+              style={{
+                display: "inline-block",
+                width: "70%",
+              }}
+            >
+              ~ 1 week of live media texting/sexting throughout the day, up to 2
+              hours of customs or calls throughout the week <br /> online only
+            </p>
+          </div>
+        </Collapse>
+
+        {/* Calgary meets */}
+        <div>
           <Collapse trigger={<h2> 🛏️Calgary meets🛏️⏬</h2>}>
             Full details listed{" "}
             <a href="https://tryst.link/escort/lunepusa"> here</a>
