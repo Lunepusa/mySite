@@ -983,7 +983,7 @@ dth: "70%",
         </Collapse>
 
         {/* Calgary meets */}
-        <meets          <Collapse trigger={<h2> 🛏️Calgary meets🛏️⏬-NOT CURRENTLY AVAILABLE</h2>}>
+        <Collapse trigger={<h2> 🛏️Calgary meets🛏️⏬-NOT CURRENTLY AVAILABLE</h2>}>
             Full details listed{" "}
             <a href="https://tryst.link/escort/lunepusa"> here</a>
             <br />
