@@ -909,8 +909,8 @@ let targetKey = item.key;
 
   // 3. Apply Cloudflare parameter rules
   const cloudflareUrl = !hasAccess
-    ? `${window.location.origin}/cdn-cgi/image/width=250,quality=80,format=auto,blur=40/${absoluteAssetUrl}`
-    : `${window.location.origin}/cdn-cgi/image/width=250,quality=85,format=auto/${absoluteAssetUrl}`;
+    ? `lunepusa.com/cdn-cgi/image/width=250,quality=80,format=auto,blur=40/${absoluteAssetUrl}`
+    : `lunepusa.com/cdn-cgi/image/width=250,quality=85,format=auto/${absoluteAssetUrl}`;
 
 
       return (
