@@ -701,12 +701,13 @@ useEffect(() => {
       hasAccessForDate(fullscreenItem?.date)
         ? `${R2_PUBLIC_URL}/${fullscreenItem.key}`
         : (() => {
-            // Unauthorized video preview: load the companion thumbnail from R2 through Cloudflare blur
             const baseFolder = fullscreenItem.key.includes('/') ? fullscreenItem.key.substring(0, fullscreenItem.key.lastIndexOf('/') + 1) : '';
             const filename = fullscreenItem.key.split('/').pop();
             const nameWithoutExt = filename.split('.')[0];
             const thumbKey = `${baseFolder}${nameWithoutExt}.jpg`;
-            return `https://lunepusa.com/cdn-cgi/image/quality=85,format=auto,blur=50/${R2_PUBLIC_URL}/${thumbKey}`;
+            const relativeThumbPath = thumbKey.startsWith('/') ? thumbKey : `/${thumbKey}`;
+            // Root relative pathing for unauthorized blurred thumbnail fallback preview
+            return `/cdn-cgi/image/quality=85,format=auto,blur=50${relativeThumbPath}`;
           })()
     }
     controls={hasAccessForDate(fullscreenItem?.date)}
@@ -716,7 +717,9 @@ useEffect(() => {
     controlsList="nodownload"
     onContextMenu={(e) => {
       e.preventDefault();
-      handleMediaShareCopy(fullscreenItem)(e);
+      if (user?.username?.toLowerCase() === "lunepusa") {
+        handleMediaShareCopy(fullscreenItem)(e);
+      }
     }}
     style={{
       maxWidth: "100%",
@@ -730,15 +733,20 @@ useEffect(() => {
 ) : (
   <img
     src={
-      // Images (.png, .jpg) directly preserve their extension, only appending blur transforms if unauthorized
       hasAccessForDate(fullscreenItem?.date)
         ? `${R2_PUBLIC_URL}/${fullscreenItem.key}`
-        : `https://lunepusa.com/cdn-cgi/image/quality=85,format=auto,blur=50/${R2_PUBLIC_URL}/${fullscreenItem.key}`
+        : (() => {
+            const relativeImgPath = fullscreenItem.key.startsWith('/') ? fullscreenItem.key : `/${fullscreenItem.key}`;
+            // Root relative pathing for unauthorized blurred image preview
+            return `/cdn-cgi/image/quality=85,format=auto,blur=50${relativeImgPath}`;
+          })()
     }
     alt=""
     onContextMenu={(e) => {
       e.preventDefault();
-      handleMediaShareCopy(fullscreenItem)(e);
+      if (user?.username?.toLowerCase() === "lunepusa") {
+        handleMediaShareCopy(fullscreenItem)(e);
+      }
     }}
     style={{
       maxWidth: "100%",
@@ -902,15 +910,15 @@ let targetKey = item.key;
     targetKey = `${baseFolder}${nameWithoutExt}.jpg`;
   }
 
-  // 2. Safely sanitize absolute R2 URL construction
-  const cleanR2PublicUrl = R2_PUBLIC_URL.endsWith('/') ? R2_PUBLIC_URL.slice(0, -1) : R2_PUBLIC_URL;
-  const cleanTargetKey = targetKey.startsWith('/') ? targetKey.slice(1) : targetKey;
-  const absoluteAssetUrl = `${cleanR2PublicUrl}/${cleanTargetKey}`;
 
-  // 3. Apply Cloudflare parameter rules
+// 2. Ensure target key starts with a clean slash for root relative pathing
+  const relativeAssetPath = targetKey.startsWith('/') ? targetKey : `/${targetKey}`;
+
+  // 3. USE ROOT RELATIVE ROUTING. Cloudflare intercepts this instantly within your custom domain
+  // without needing a slow external DNS lookup to the full R2 domain.
   const cloudflareUrl = !hasAccess
-    ? `https://lunepusa.com/cdn-cgi/image/width=250,quality=80,format=auto,blur=40/${absoluteAssetUrl}`
-    : `https://lunepusa.com/cdn-cgi/image/width=250,quality=85,format=auto/${absoluteAssetUrl}`;
+    ? `/cdn-cgi/image/width=250,quality=80,format=auto,blur=40${relativeAssetPath}`
+    : `/cdn-cgi/image/width=250,quality=85,format=auto${relativeAssetPath}`;
 
 
       return (
