@@ -4,6 +4,9 @@ import { TagSelect, searchTags, ClickableTags } from "./Tags";
 
 const Gallery = () => {
   const { isSubscriber, isLoggedIn, isAdmin, user, unlockedDates } = useAuth();
+  const hasAccessForDate = (dateString) => {
+  return isAdmin || isSubscriber || (unlockedDates && unlockedDates.includes(dateString));
+};
 
   // Main list of loaded media items (photos + videos)
   const [media, setMedia] = useState([]);
@@ -693,48 +696,49 @@ useEffect(() => {
                 onClick={(e) => e.stopPropagation()}
               >
                 {fullscreenItem.isVideo ? (
-                  <video
-                    src={`${R2_PUBLIC_URL}/${fullscreenItem.key}`}
-                    controls={isAdmin || isSubscriber || unlockedDates.includes(fullscreenItem?.date)}
-                    autoPlay
-                    loop
-                    muted={!(isAdmin || isSubscriber || unlockedDates.includes(fullscreenItem?.date))}
-                    controlsList="nodownload"
-                    onContextMenu={(e) => {e.preventDefault();handleMediaShareCopy(fullscreenItem)(e);}}
-                    style={{
-                      maxWidth: "100%",
-                      maxHeight: "100DVH",
-                      width: "auto",
-                      height: "auto",
-                      objectFit: "contain",
-                      background: "#000",
-                      filter: !isLoggedIn
-                                    ? "blur(10px)"
-                                    : isAdmin || isSubscriber || unlockedDates.includes(fullscreenItem?.date)
-                                    ? "none"
-                                    : "blur(7px)",
-                    }}
-                  />
-                ) : (
-                  <img
-                    src={`${R2_PUBLIC_URL}/${fullscreenItem.key}`}
-                    alt=""
-                    onContextMenu={(e) => {e.preventDefault();handleMediaShareCopy(fullscreenItem)(e);}}
-                    style={{
-                      maxWidth: "100%",
-                      maxHeight: "100DVH",
-                      width: "auto",
-                      height: "auto",
-                      objectFit: "contain",
-                      background: "#000",
-                      filter: !isLoggedIn
-                                    ? "blur(10px)"
-                                    : isAdmin || isSubscriber || unlockedDates.includes(fullscreenItem?.date)
-                                    ? "none"
-                                    : "blur(7px)",
-                    }}
-                  />
-                )}
+  <video
+    src={
+      // If the user does not have access, load the companion thumbnail blurred directly on Cloudflare's edge
+      !(isAdmin || isSubscriber || unlockedDates.includes(fullscreenItem?.date))
+        ? `${window.location.origin}/cdn-cgi/image/quality=85,format=auto,blur=50/${R2_PUBLIC_URL}/${fullscreenItem.key.replace(/\.[^/.]+$/, ".jpg")}`
+        : `${R2_PUBLIC_URL}/${fullscreenItem.key}`
+    }
+    controls={isAdmin || isSubscriber || unlockedDates.includes(fullscreenItem?.date)}
+    autoPlay
+    loop
+    muted={!(isAdmin || isSubscriber || unlockedDates.includes(fullscreenItem?.date))}
+    controlsList="nodownload"
+    onContextMenu={(e) => {e.preventDefault();handleMediaShareCopy(fullscreenItem)(e);}}
+    style={{
+      maxWidth: "100%",
+      maxHeight: "100DVH",
+      width: "auto",
+      height: "auto",
+      objectFit: "contain",
+      background: "#000",
+      // Removed client-side css filter blurs entirely
+    }}
+  />
+) : (
+  <img
+    src={
+      !(isAdmin || isSubscriber || unlockedDates.includes(fullscreenItem?.date))
+        ? `${window.location.origin}/cdn-cgi/image/quality=85,format=auto,blur=50/${R2_PUBLIC_URL}/${fullscreenItem.key}`
+        : `${R2_PUBLIC_URL}/${fullscreenItem.key}`
+    }
+    alt=""
+    onContextMenu={(e) => {e.preventDefault();handleMediaShareCopy(fullscreenItem)(e);}}
+    style={{
+      maxWidth: "100%",
+      maxHeight: "100DVH",
+      width: "auto",
+      height: "auto",
+      objectFit: "contain",
+      background: "#000",
+      // Removed client-side css filter blurs entirely
+    }}
+  />
+)}
               </div>
 
               {media.findIndex((m) => m.key === fullscreenItem.key) <
@@ -826,7 +830,7 @@ useEffect(() => {
                         const timePart = filename.split("_")[1]?.split(".")[0] || "000000000";
                         return timePart;
                       };
-                      return getTime(a.key).localeCompare(getTime(b.key));
+                      return getTime(b.key).localeCompare(getTime(a.key));
                     })
                     .map((item) => {
                       const itemTags = getTagsArray(item.tags);
@@ -862,82 +866,74 @@ useEffect(() => {
                           onContextMenu={(e) =>{ e.preventDefault();}}
                         >
                           <div
-                            style={{
-                              width: "95%",
-                              height: "auto",
-                              display: "inline-block",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              background: "#000",
-                              borderRadius: "12px",
-                              overflow: "hidden",
-                              position: "relative",
-                              border: "1px white solid",
-                            }}
-                          >
-                            {item.isVideo ? (
-                              <>
-                                <video
-                                  src={`${R2_PUBLIC_URL}/${item.key}`}
-                                  muted
-                                  loop
-                                  preload="metadata"
-                                  onContextMenu={(e) => e.preventDefault()}
-                                  style={{
-                                    maxHeight: "auto",
-                                    width: "100%",
-                                    objectFit: "contain",
-                                    filter: !isLoggedIn
-                                      ? "blur(10px)"
-                                      : isAdmin || isSubscriber || unlockedDates.includes(date)
-                                      ? "none"
-                                      : !isFirstGroup && isLoggedIn
-                                      ? "blur(7px)"
-                                      : "blur(3px)",
-                                  }}
-                                />
-                                <div
-                                  style={{
-                                    position: "absolute",
-                                    top: "50%",
-                                    left: "50%",
-                                    transform: "translate(-50%, -50%)",
-                                    background: "rgba(0,0,0,0.5)",
-                                    borderRadius: "50%",
-                                    width: "30%",
-                                    height: "auto",
-                                    aspectRatio: "1/1",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    pointerEvents: "none",
-                                  }}
-                                >
-                                  <span style={{ color: "#fff", fontSize: "32px" }}>
-                                    ▶
-                                  </span>
-                                </div>
-                              </>
-                            ) : (
-                              <img
-                                src={`${R2_PUBLIC_URL}/${item.key}`}
-                                alt={caption}
-                                onContextMenu={(e) => e.preventDefault()}
-                                style={{
-                                  maxHeight: "auto",
-                                  width: "100%",
-                                  objectFit: "contain",
-                                  filter: !isLoggedIn
-                                    ? "blur(10px)"
-                                    : isAdmin || isSubscriber || unlockedDates.includes(date)
-                                    ? "none"
-                                    : !isFirstGroup && isLoggedIn
-                                    ? "blur(7px)"
-                                    : "blur(3px)",
-                                }}
-                              />
-                            )}
-                          </div>
+    style={{
+      width: "95%",
+      height: "auto",
+      display: "inline-block",
+      alignItems: "center",
+      justifyContent: "center",
+      background: "#000",
+      borderRadius: "12px",
+      overflow: "hidden",
+      position: "relative",
+      border: "1px white solid",
+    }}
+  >
+    {(() => {
+      // 1. Determine if current user has access to this date
+      const hasAccess = isAdmin || isSubscriber || unlockedDates.includes(date);
+
+      // 2. Derive file path: If it's a video, switch extension to load our generated thumbnail image instead
+      const targetKey = item.isVideo ? item.key.replace(/\.[^/.]+$/, ".jpg") : item.key;
+      const baseAssetUrl = `${R2_PUBLIC_URL}/${targetKey}`;
+
+      // 3. Assemble Cloudflare transformation URLs (Width constraint + Edge Blurring if unauthorized)
+      const cloudflareUrl = !hasAccess
+        ? `${window.location.origin}/cdn-cgi/image/width=250,quality=80,format=auto,blur=40/${baseAssetUrl}`
+        : `${window.location.origin}/cdn-cgi/image/width=250,quality=85,format=auto/${baseAssetUrl}`;
+
+      return (
+        <>
+          {/* Every item now renders a flat, fast optimized image in the grid */}
+          <img
+            src={cloudflareUrl}
+            alt={caption}
+            onContextMenu={(e) => e.preventDefault()}
+            style={{
+              maxHeight: "auto",
+              width: "100%",
+              objectFit: "contain",
+            }}
+          />
+
+          {/* If it's a video, add an overlay icon to distinguish it */}
+          {item.isVideo && (
+            <div
+              style={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                background: "rgba(0,0,0,0.5)",
+                borderRadius: "50%",
+                width: "30%",
+                height: "auto",
+                aspectRatio: "1/1",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                pointerEvents: "none",
+              }}
+            >
+              <span style={{ color: "#fff", fontSize: "1.2em" }}>
+                {hasAccess ? "▶" : "🔒"}
+              </span>
+            </div>
+          )}
+        </>
+      );
+    })()}
+  </div>
 
                           <div style={{ textAlign: "center" }}>
                             {editingItem === item.key ? (
