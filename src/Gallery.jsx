@@ -698,17 +698,26 @@ useEffect(() => {
                 {fullscreenItem.isVideo ? (
   <video
     src={
-      // If the user does not have access, load the companion thumbnail blurred directly on Cloudflare's edge
-      !(isAdmin || isSubscriber || unlockedDates.includes(fullscreenItem?.date))
-        ? `${window.location.origin}/cdn-cgi/image/quality=85,format=auto,blur=50/${R2_PUBLIC_URL}/${fullscreenItem.key.replace(/\.[^/.]+$/, ".jpg")}`
-        : `${R2_PUBLIC_URL}/${fullscreenItem.key}`
+      hasAccessForDate(fullscreenItem?.date)
+        ? `${R2_PUBLIC_URL}/${fullscreenItem.key}`
+        : (() => {
+            // Unauthorized video preview: load the companion thumbnail from R2 through Cloudflare blur
+            const baseFolder = fullscreenItem.key.includes('/') ? fullscreenItem.key.substring(0, fullscreenItem.key.lastIndexOf('/') + 1) : '';
+            const filename = fullscreenItem.key.split('/').pop();
+            const nameWithoutExt = filename.split('.')[0];
+            const thumbKey = `${baseFolder}${nameWithoutExt}.jpg`;
+            return `${window.location.origin}/cdn-cgi/image/quality=85,format=auto,blur=50/${R2_PUBLIC_URL}/${thumbKey}`;
+          })()
     }
-    controls={isAdmin || isSubscriber || unlockedDates.includes(fullscreenItem?.date)}
+    controls={hasAccessForDate(fullscreenItem?.date)}
     autoPlay
     loop
-    muted={!(isAdmin || isSubscriber || unlockedDates.includes(fullscreenItem?.date))}
+    muted={!hasAccessForDate(fullscreenItem?.date)}
     controlsList="nodownload"
-    onContextMenu={(e) => {e.preventDefault();handleMediaShareCopy(fullscreenItem)(e);}}
+    onContextMenu={(e) => {
+      e.preventDefault();
+      handleMediaShareCopy(fullscreenItem)(e);
+    }}
     style={{
       maxWidth: "100%",
       maxHeight: "100DVH",
@@ -716,18 +725,21 @@ useEffect(() => {
       height: "auto",
       objectFit: "contain",
       background: "#000",
-      // Removed client-side css filter blurs entirely
     }}
   />
 ) : (
   <img
     src={
-      !(isAdmin || isSubscriber || unlockedDates.includes(fullscreenItem?.date))
-        ? `${window.location.origin}/cdn-cgi/image/quality=85,format=auto,blur=50/${R2_PUBLIC_URL}/${fullscreenItem.key}`
-        : `${R2_PUBLIC_URL}/${fullscreenItem.key}`
+      // Images (.png, .jpg) directly preserve their extension, only appending blur transforms if unauthorized
+      hasAccessForDate(fullscreenItem?.date)
+        ? `${R2_PUBLIC_URL}/${fullscreenItem.key}`
+        : `${window.location.origin}/cdn-cgi/image/quality=85,format=auto,blur=50/${R2_PUBLIC_URL}/${fullscreenItem.key}`
     }
     alt=""
-    onContextMenu={(e) => {e.preventDefault();handleMediaShareCopy(fullscreenItem)(e);}}
+    onContextMenu={(e) => {
+      e.preventDefault();
+      handleMediaShareCopy(fullscreenItem)(e);
+    }}
     style={{
       maxWidth: "100%",
       maxHeight: "100DVH",
@@ -735,7 +747,6 @@ useEffect(() => {
       height: "auto",
       objectFit: "contain",
       background: "#000",
-      // Removed client-side css filter blurs entirely
     }}
   />
 )}
@@ -883,14 +894,24 @@ useEffect(() => {
       // 1. Determine if current user has access to this date
       const hasAccess = isAdmin || isSubscriber || unlockedDates.includes(date);
 
-      // 2. Derive file path: If it's a video, switch extension to load our generated thumbnail image instead
-      const targetKey = item.isVideo ? item.key.replace(/\.[^/.]+$/, ".jpg") : item.key;
-      const baseAssetUrl = `${R2_PUBLIC_URL}/${targetKey}`;
 
-      // 3. Assemble Cloudflare transformation URLs (Width constraint + Edge Blurring if unauthorized)
-      const cloudflareUrl = !hasAccess
-        ? `${window.location.origin}/cdn-cgi/image/width=250,quality=80,format=auto,blur=40/${baseAssetUrl}`
-        : `${window.location.origin}/cdn-cgi/image/width=250,quality=85,format=auto/${baseAssetUrl}`;
+  if (item.isVideo) {
+    const baseFolder = item.key.includes('/') ? item.key.substring(0, item.key.lastIndexOf('/') + 1) : '';
+    const filename = item.key.split('/').pop();
+    const nameWithoutExt = filename.split('.')[0];
+    targetKey = `${baseFolder}${nameWithoutExt}.jpg`;
+  }
+
+  // 2. Safely sanitize absolute R2 URL construction
+  const cleanR2PublicUrl = R2_PUBLIC_URL.endsWith('/') ? R2_PUBLIC_URL.slice(0, -1) : R2_PUBLIC_URL;
+  const cleanTargetKey = targetKey.startsWith('/') ? targetKey.slice(1) : targetKey;
+  const absoluteAssetUrl = `${cleanR2PublicUrl}/${cleanTargetKey}`;
+
+  // 3. Apply Cloudflare parameter rules
+  const cloudflareUrl = !hasAccess
+    ? `${window.location.origin}/cdn-cgi/image/width=250,quality=80,format=auto,blur=40/${absoluteAssetUrl}`
+    : `${window.location.origin}/cdn-cgi/image/width=250,quality=85,format=auto/${absoluteAssetUrl}`;
+
 
       return (
         <>
