@@ -706,7 +706,7 @@ useEffect(() => {
             const filename = fullscreenItem.key.split('/').pop();
             const nameWithoutExt = filename.split('.')[0];
             const thumbKey = `${baseFolder}${nameWithoutExt}.jpg`;
-            return `${window.location.origin}/cdn-cgi/image/quality=85,format=auto,blur=50/${R2_PUBLIC_URL}/${thumbKey}`;
+            return `lunepusa.com/cdn-cgi/image/quality=85,format=auto,blur=50/${R2_PUBLIC_URL}/${thumbKey}`;
           })()
     }
     controls={hasAccessForDate(fullscreenItem?.date)}
@@ -733,7 +733,7 @@ useEffect(() => {
       // Images (.png, .jpg) directly preserve their extension, only appending blur transforms if unauthorized
       hasAccessForDate(fullscreenItem?.date)
         ? `${R2_PUBLIC_URL}/${fullscreenItem.key}`
-        : `${window.location.origin}/cdn-cgi/image/quality=85,format=auto,blur=50/${R2_PUBLIC_URL}/${fullscreenItem.key}`
+        : `lunepusa.com/cdn-cgi/image/quality=85,format=auto,blur=50/${R2_PUBLIC_URL}/${fullscreenItem.key}`
     }
     alt=""
     onContextMenu={(e) => {
