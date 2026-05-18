@@ -894,7 +894,7 @@ useEffect(() => {
       // 1. Determine if current user has access to this date
       const hasAccess = isAdmin || isSubscriber || unlockedDates.includes(date);
 
-
+let targetKey = item.key;
   if (item.isVideo) {
     const baseFolder = item.key.includes('/') ? item.key.substring(0, item.key.lastIndexOf('/') + 1) : '';
     const filename = item.key.split('/').pop();
