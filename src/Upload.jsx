@@ -14,7 +14,8 @@ const extractVideoThumbnail = (videoFile) => {
     video.src = videoUrl;
 
     video.onloadeddata = () => {
-      video.currentTime = 0.2; // Move past 0s frame to prevent black images
+      // Seek slightly past 0 to force decoding pipeline and avoid black frames
+      video.currentTime = 0.2;
     };
 
     video.onseeked = () => {
@@ -28,8 +29,11 @@ const extractVideoThumbnail = (videoFile) => {
         
         canvas.toBlob((blob) => {
           URL.revokeObjectURL(videoUrl);
-          if (blob) resolve(blob);
-          else reject(new Error("Canvas blob generation failed."));
+          if (blob) {
+            resolve(blob);
+          } else {
+            reject(new Error("Canvas blob generation failed."));
+          }
         }, 'image/jpeg', 0.85);
       } catch (err) {
         URL.revokeObjectURL(videoUrl);
@@ -39,7 +43,7 @@ const extractVideoThumbnail = (videoFile) => {
 
     video.onerror = () => {
       URL.revokeObjectURL(videoUrl);
-      reject(new Error("Failed to decode video file locally."));
+      reject(new Error("Failed to load video data in browser."));
     };
   });
 };
@@ -48,9 +52,10 @@ const Upload = () => {
   const { user } = useAuth();
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
-  const [statusMessage, setStatusMessage] = useState("");
-  const [initialTag, setInitialTag] = useState("");
+  const [progress, setProgress] = useState({});
+  const [initialTag, setInitialTag] = useState("");   // Controlled by TagSelect
 
+  // Derive default tag from username when component mounts or user changes
   useEffect(() => {
     const usernameLower = user?.username?.toLowerCase() || "lunepusa";
     const matchedTags = searchTags(usernameLower);
@@ -62,84 +67,105 @@ const Upload = () => {
     setFiles(Array.from(e.target.files));
   };
 
+  const handleTagsSave = (tagsString) => {
+    setInitialTag(tagsString);
+  };
+
   const handleUpload = async () => {
     if (files.length === 0) return;
 
     setUploading(true);
-    setStatusMessage("Requesting authorization tokens...");
+    setProgress({});
 
-    // Step 1: Tell backend about files to get presigned URLs
+    // Step 1: Get presigned URLs
     const fileInfo = files.map((f) => ({
       name: f.name,
       type: f.type || "application/octet-stream",
     }));
 
-    try {
-      const res = await apiFetch("/presign", {
+    const res = await apiFetch("/presign", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ files: fileInfo }),
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      alert("Failed to get upload URLs: " + err);
+      setUploading(false);
+      return;
+    }
+
+    const { presigned } = await res.json();
+
+    // Step 2: Upload each file directly
+    const uploadPromises = presigned.map(async (item, i) => {
+      const file = files[i];
+
+      // Helper function wrapping XHR to keep your original progress layout functional
+      const performXhrUpload = (targetUrl, payloadBlob, trackerKey, contentType) => {
+        return new Promise((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.open("PUT", targetUrl);
+          
+          // CRITICAL: Must specify the Content-Type to align with the signed parameter rules
+          xhr.setRequestHeader("Content-Type", contentType);
+
+          xhr.upload.onprogress = (e) => {
+            if (e.lengthComputable) {
+              const percent = Math.round((e.loaded / e.total) * 100);
+              setProgress((prev) => ({ ...prev, [trackerKey]: percent }));
+            }
+          };
+
+          xhr.onload = () => (xhr.status === 200 ? resolve() : reject(new Error(`Upload failed: ${xhr.status}`)));
+          xhr.onerror = () => reject(new Error("Network error"));
+          xhr.send(payloadBlob);
+        });
+      };
+
+      // Extract and upload thumbnail in parallel right alongside the main file if it's a video
+      const fileOperations = [];
+      if (file.type.startsWith("video/") && item.thumbPresignedUrl) {
+        try {
+          const thumbBlob = await extractVideoThumbnail(file);
+          const thumbTrackName = `📸 Thumb: ${file.name}`;
+          
+          fileOperations.push(
+            performXhrUpload(item.thumbPresignedUrl, thumbBlob, thumbTrackName, "image/jpeg")
+          );
+        } catch (thumbErr) {
+          console.warn("Thumbnail generation skipped:", thumbErr.message);
+        }
+      }
+
+      // Add main asset file upload operation
+      fileOperations.push(
+        performXhrUpload(item.presignedUrl, file, file.name, file.type || "application/octet-stream")
+      );
+
+      // Wait for both the video and its thumbnail chunk to finish pushing
+      await Promise.all(fileOperations);
+
+      // Step 3: Notify backend with your original post-upload route parameters
+      await apiFetch("/upload-complete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ files: fileInfo }),
+        body: JSON.stringify({
+          objectKey: item.objectKey,
+          fileType: file.type,
+          initialTag,        // Full comma-separated tag string
+        }),
       });
+    });
 
-      if (!res.ok) {
-        const err = await res.text();
-        alert("Failed to get upload URLs: " + err);
-        setUploading(false);
-        return;
-      }
-
-      const { presigned } = await res.json();
-
-      // Step 2: Sequentially process and upload files directly to R2 using raw fetch
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const target = presigned[i];
-
-        // 2a. Handle thumbnail generation first if it's a video asset
-        if (file.type.startsWith("video/") && target.thumbPresignedUrl) {
-          setStatusMessage(`Extracting preview image for ${file.name}...`);
-          try {
-            const thumbBlob = await extractVideoThumbnail(file);
-            
-            await fetch(target.thumbPresignedUrl, {
-              method: "PUT",
-              body: thumbBlob,
-            });
-          } catch (thumbErr) {
-            console.warn("Thumbnail generation skipped:", thumbErr.message);
-          }
-        }
-
-        // 2b. Push master media item natively
-        setStatusMessage(`Uploading ${file.name}... (Please keep tab open)`);
-        const uploadRes = await fetch(target.presignedUrl, {
-          method: "PUT",
-          body: file,
-        });
-
-        if (!uploadRes.ok) {
-          throw new Error(`Failed network destination sync for ${file.name}`);
-        }
-
-        // Step 3: Inform your Cloudflare worker the transfer is done to execute SQL updates
-        setStatusMessage(`Finalizing metadata registration for ${file.name}...`);
-        await apiFetch("/upload-complete", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            objectKey: target.objectKey,
-            fileType: file.type,
-            initialTag,
-          }),
-        });
-      }
-
-      setStatusMessage("All items uploaded successfully!");
-      alert("All content successfully pushed to R2!");
+    try {
+      await Promise.all(uploadPromises);
+      alert("All files uploaded!");
       setFiles([]);
+      setProgress({});
     } catch (err) {
-      alert("Upload pipeline failure: " + err.message);
-      setStatusMessage("Upload process errored out.");
+      alert("One or more uploads failed: " + err.message);
     } finally {
       setUploading(false);
     }
@@ -163,8 +189,8 @@ const Upload = () => {
         </label>
         <TagSelect
           initialTags={initialTag}
-          onSave={(tagsString) => setInitialTag(tagsString)}
-          placeholder="Type to add tags..."
+          onSave={handleTagsSave}
+          placeholder="Type to add tags... (e.g. hidden, art, etc.)"
         />
       </div>
 
@@ -173,12 +199,22 @@ const Upload = () => {
         disabled={uploading || files.length === 0}
         style={{ padding: "10px 20px", fontSize: "1em" }}
       >
-        {uploading ? "Processing..." : "Start Upload"}
+        {uploading ? "Uploading..." : "Start Upload"}
       </button>
 
-      {statusMessage && (
-        <div style={{ marginTop: "20px", fontWeight: "bold", color: "#007acc" }}>
-          Status: {statusMessage}
+      {uploading && files.length > 0 && (
+        <div style={{ marginTop: "20px" }}>
+          <h3>Progress:</h3>
+          {files.map((file) => (
+            <div key={file.name}>
+              {file.name}: {progress[file.name] || 0}% 
+              {progress[`📸 Thumb: ${file.name}`] !== undefined && (
+                <span style={{ fontSize: "0.85em", color: "#666", marginLeft: "10px" }}>
+                  (Thumbnail: {progress[`📸 Thumb: ${file.name}`]}%)
+                </span>
+              )}
+            </div>
+          ))}
         </div>
       )}
     </div>
