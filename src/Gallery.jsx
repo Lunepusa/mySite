@@ -706,7 +706,7 @@ useEffect(() => {
             const filename = fullscreenItem.key.split('/').pop();
             const nameWithoutExt = filename.split('.')[0];
             const thumbKey = `${baseFolder}${nameWithoutExt}.jpg`;
-            return `lunepusa.com/cdn-cgi/image/quality=85,format=auto,blur=50/${R2_PUBLIC_URL}/${thumbKey}`;
+            return `https://lunepusa.com/cdn-cgi/image/quality=85,format=auto,blur=50/${R2_PUBLIC_URL}/${thumbKey}`;
           })()
     }
     controls={hasAccessForDate(fullscreenItem?.date)}
@@ -733,7 +733,7 @@ useEffect(() => {
       // Images (.png, .jpg) directly preserve their extension, only appending blur transforms if unauthorized
       hasAccessForDate(fullscreenItem?.date)
         ? `${R2_PUBLIC_URL}/${fullscreenItem.key}`
-        : `lunepusa.com/cdn-cgi/image/quality=85,format=auto,blur=50/${R2_PUBLIC_URL}/${fullscreenItem.key}`
+        : `https://lunepusa.com/cdn-cgi/image/quality=85,format=auto,blur=50/${R2_PUBLIC_URL}/${fullscreenItem.key}`
     }
     alt=""
     onContextMenu={(e) => {
@@ -909,8 +909,8 @@ let targetKey = item.key;
 
   // 3. Apply Cloudflare parameter rules
   const cloudflareUrl = !hasAccess
-    ? `lunepusa.com/cdn-cgi/image/width=250,quality=80,format=auto,blur=40/${absoluteAssetUrl}`
-    : `lunepusa.com/cdn-cgi/image/width=250,quality=85,format=auto/${absoluteAssetUrl}`;
+    ? `https://lunepusa.com/cdn-cgi/image/width=250,quality=80,format=auto,blur=40/${absoluteAssetUrl}`
+    : `https://lunepusa.com/cdn-cgi/image/width=250,quality=85,format=auto/${absoluteAssetUrl}`;
 
 
       return (
