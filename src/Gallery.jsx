@@ -707,7 +707,7 @@ useEffect(() => {
             const thumbKey = `${baseFolder}${nameWithoutExt}.jpg`;
             const relativeThumbPath = thumbKey.startsWith('/') ? thumbKey : `/${thumbKey}`;
             // Root relative pathing for unauthorized blurred thumbnail fallback preview
-            return `/cdn-cgi/image/width=250,quality=85,format=auto,blur=10$/${R2_PUBLIC_URL}/${thumbKey}`;
+            return `/cdn-cgi/image/quality=85,format=auto,blur=100$/${R2_PUBLIC_URL}/${thumbKey}`;
           })()
     }
     controls={hasAccessForDate(fullscreenItem?.date)}
@@ -738,7 +738,7 @@ useEffect(() => {
         : (() => {
             const relativeImgPath = fullscreenItem.key.startsWith('/') ? fullscreenItem.key : `/${fullscreenItem.key}`;
             // Root relative pathing for unauthorized blurred image preview
-            return `/cdn-cgi/image/width=250,quality=85,format=auto,blur=10/${R2_PUBLIC_URL}/${fullscreenItem.key}`;
+            return `/cdn-cgi/image/quality=85,format=auto,blur=100/${R2_PUBLIC_URL}/${fullscreenItem.key}`;
           })()
     }
     alt=""
@@ -916,7 +916,7 @@ let targetKey = item.key;
   // 3. USE ROOT RELATIVE ROUTING. Cloudflare intercepts this instantly within your custom domain
   // without needing a slow external DNS lookup to the full R2 domain.
   const cloudflareUrl = !hasAccess
-    ? `/cdn-cgi/image/width=250,quality=80,format=auto,blur=10/${R2_PUBLIC_URL}/${targetKey}`
+    ? `/cdn-cgi/image/width=250,quality=80,format=auto,blur=15/${R2_PUBLIC_URL}/${targetKey}`
     : `/cdn-cgi/image/width=250,quality=85,format=auto/${R2_PUBLIC_URL}/${targetKey}`;
 
 

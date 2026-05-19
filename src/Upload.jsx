@@ -51,7 +51,7 @@ const generateVideoThumbnail = (videoFile) => {
 };
 
 const handleBackfillThumbnails = async () => {
-  if (!window.confirm("Are you sure you want to query the database specifically for videos and generate missing thumbnails in R2?")) {
+  if (!window.confirm("Are you sure you want to verify and backfill missing video thumbnails via Cloudflare Edge paths?")) {
     return;
   }
 
@@ -63,19 +63,17 @@ const handleBackfillThumbnails = async () => {
     const batchLimit = 250; 
     let keepFetching = true;
 
-    // 1. Loop through paginated pages of the flat /media route requesting ONLY video records
+    // 1. Fetch only video entries from your database via the /media query parameter
     while (keepFetching) {
       console.log(`Fetching video metadata slice (Offset: ${currentOffset}, Limit: ${batchLimit})...`);
       
-      // Use URLSearchParams to pass 'q=video' cleanly down to your worker logic
       const params = new URLSearchParams({
         offset: currentOffset.toString(),
         limit: batchLimit.toString(),
-        q: "video" // Strips out images immediately at the database level!
+        q: "video" 
       });
 
       const res = await apiFetch(`/media?${params.toString()}`);
-      
       if (!res.ok) {
         throw new Error(`Media index fetch failed at offset ${currentOffset} with status: ${res.status}`);
       }
@@ -96,57 +94,89 @@ const handleBackfillThumbnails = async () => {
     }
 
     if (videoItems.length === 0) {
-      alert("Scan complete: No videos returned from your filtered database index.");
+      alert("Scan complete: No videos returned from your database.");
       return;
     }
 
-    console.log(`Identified ${videoItems.length} video entries. Starting direct R2 processing loop...`);
+    console.log(`Identified ${videoItems.length} video entries. Running CORS-safe verification loop...`);
 
     for (let i = 0; i < videoItems.length; i++) {
       const videoItem = videoItems[i];
       const videoKey = videoItem.key;
       if (!videoKey) continue;
 
-      // Swap extensions to compute what the thumbnail name *should* be
+      // Swap extensions to compute the expected thumbnail name
       const baseFolder = videoKey.includes('/') ? videoKey.substring(0, videoKey.lastIndexOf('/') + 1) : '';
       const filename = videoKey.split('/').pop();
       const nameWithoutExt = filename.split('.')[0];
       const targetThumbKey = `${baseFolder}${nameWithoutExt}.jpg`;
 
-      // Absolute paths directly targeting your public R2 bucket instance
-      const videoUrl = `${R2_PUBLIC_URL}/${videoKey}`;
-      const thumbUrl = `${R2_PUBLIC_URL}/${targetThumbKey}`;
+      // Absolute path to the original video file on R2
+      const cleanR2Url = R2_PUBLIC_URL.endsWith('/') ? R2_PUBLIC_URL.slice(0, -1) : R2_PUBLIC_URL;
+      const absoluteVideoUrl = `${cleanR2Url}/${videoKey.startsWith('/') ? videoKey.slice(1) : videoKey}`;
+
+      // Build a test path through your custom domain transformation endpoint
+      const cleanThumbKey = targetThumbKey.startsWith('/') ? targetThumbKey.slice(1) : targetThumbKey;
+      const absoluteThumbUrl = `${cleanR2Url}/${cleanThumbKey}`;
+      
+      // Request a tiny 16px asset. Cloudflare rewrites this proxy path on your domain, avoiding CORS errors.
+      const edgeTestUrl = `/cdn-cgi/image/width=16,quality=10,format=auto/${absoluteThumbUrl}`;
 
       console.log(`\n[${i + 1}/${videoItems.length}] Auditing file: ${filename}`);
 
       try {
-        // 2. Head check: Save bandwidth by skipping videos that already have their companion thumbnails
-        const checkThumbExist = await fetch(thumbUrl, { method: "HEAD" });
-        if (checkThumbExist.ok) {
+        // 2. CORS-Safe Check: See if Cloudflare can find the thumbnail image at the edge
+        const checkThumbExist = await fetch(edgeTestUrl, { method: "GET" });
+        
+        if (checkThumbExist.ok && checkThumbExist.status === 200) {
           console.log(`-> Thumbnail already exists on R2 for ${filename}. Skipping.`);
           continue;
         }
 
-        console.log(`-> Thumbnail missing. Downloading video track directly out of your R2 bucket...`);
+        console.log(`-> Thumbnail missing. Generating frame from HTML5 video element channel...`);
 
-        // 3. Download video binary payload directly from your public R2 path
-        const videoResponse = await fetch(videoUrl);
-        if (!videoResponse.ok) {
-          throw new Error(`Public storage bucket path refused download stream connection.`);
-        }
-        const videoBlob = await videoResponse.blob();
+        // 3. CORS-Safe Frame Extraction: Load video inside an off-screen DOM element with crossOrigin="anonymous"
+        const thumbnailFile = await new Promise((resolve) => {
+          const video = document.createElement("video");
+          video.preload = "metadata";
+          video.crossOrigin = "anonymous"; // Prevents canvas staining blocks
+          video.muted = true;
+          video.playsInline = true;
+          video.src = absoluteVideoUrl;
 
-        // 4. Package it back into an HTML5 recognizable file tracker instance
-        const videoFile = new File([videoBlob], filename, { type: videoItem.type || "video/mp4" });
+          video.onloadeddata = () => {
+            video.currentTime = Math.min(1, video.duration || 0);
+          };
 
-        console.log(`-> Rendering offscreen canvas frame extraction snapshot...`);
-        const thumbnailFile = await generateVideoThumbnail(videoFile);
+          video.onseeked = () => {
+            const canvas = document.createElement("canvas");
+            canvas.width = video.videoWidth || 640;
+            canvas.height = video.videoHeight || 360;
+
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            canvas.toBlob((blob) => {
+              if (blob) {
+                const fileWrapper = new File([blob], `${nameWithoutExt}.jpg`, { type: "image/jpeg" });
+                resolve(fileWrapper);
+              } else {
+                resolve(null);
+              }
+            }, "image/jpeg", 0.85);
+          };
+
+          video.onerror = () => {
+            resolve(null);
+          };
+        });
+
         if (!thumbnailFile) {
-          throw new Error("HTML5 Canvas extraction loop returned an empty frame buffer object.");
+          throw new Error("HTML5 Video element failed to draw a valid image frame buffer.");
         }
 
-        console.log(`-> Initializing presigned write authority token for key name...`);
-        // 5. Request upload authorization specifically for the target side-loaded .jpg name
+        console.log(`-> Requesting thumbnail target presigned key authorization...`);
+        // 4. Request upload authorization for the target thumbnail (.jpg)
         const presignRes = await apiFetch("/presign", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -161,7 +191,7 @@ const handleBackfillThumbnails = async () => {
         const { presigned } = await presignRes.json();
         const uploadTarget = presigned[0];
 
-        // 6. Direct PUT straight up to your R2 file storage container
+        // 5. Upload the generated thumbnail to R2 via the presigned URL
         const uploadRes = await fetch(uploadTarget.presignedUrl, {
           method: "PUT",
           headers: { "Content-Type": "image/jpeg" },
@@ -179,7 +209,7 @@ const handleBackfillThumbnails = async () => {
       }
     }
 
-    alert(`Backfill processing complete! Check developer console output for structural summary listings.`);
+    alert(`Backfill processing complete! All missing video thumbnail files are generated.`);
 
   } catch (globalError) {
     console.error("Global direct migration workflow encountered a critical failure:", globalError);
