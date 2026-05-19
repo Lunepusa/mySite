@@ -916,8 +916,8 @@ let targetKey = item.key;
   // 3. USE ROOT RELATIVE ROUTING. Cloudflare intercepts this instantly within your custom domain
   // without needing a slow external DNS lookup to the full R2 domain.
   const cloudflareUrl = !hasAccess
-    ? `/cdn-cgi/image/width=250,quality=80,format=auto,blur=10/${R2_PUBLIC_URL}/${targetkey}`
-    : `/cdn-cgi/image/width=250,quality=85,format=auto/${R2_PUBLIC_URL}/${targetkey}`;
+    ? `/cdn-cgi/image/width=250,quality=80,format=auto,blur=10/${R2_PUBLIC_URL}/${targetKey}`
+    : `/cdn-cgi/image/width=250,quality=85,format=auto/${R2_PUBLIC_URL}/${targetKey}`;
 
 
       return (
