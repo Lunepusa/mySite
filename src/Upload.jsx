@@ -106,77 +106,85 @@ const handleBackfillThumbnails = async () => {
       const videoKey = videoItem.key;
       if (!videoKey) continue;
 
-      const baseFolder = videoKey.includes('/') ? videoKey.substring(0, videoKey.lastIndexOf('/') + 1) : '';
       const filename = videoKey.split('/').pop();
       const nameWithoutExt = filename.split('.')[0];
-      const targetThumbKey = `${baseFolder}${nameWithoutExt}.jpg`;
+      
+      // CRITICAL PATHING FIX:
+      // Extract the original date string from the existing video key (e.g., "20260418")
+      // so the thumbnail matches the exact historical placement.
+      const dateMatch = videoKey.match(/media\/(\d{8})\//);
+      const originalDatePrefix = dateMatch ? dateMatch[1] : null;
+
+      // If the filename starts with an 8-digit date, we pass that base name so the Worker
+      // reads it accurately. Otherwise, we prepend the historical date manually.
+      let nameForPresign = `${nameWithoutExt}.jpg`;
+      if (!filename.match(/^(\d{8})/) && originalDatePrefix) {
+        nameForPresign = `${originalDatePrefix}_${nameWithoutExt}.jpg`;
+      } else if (originalDatePrefix && !nameWithoutExt.startsWith(originalDatePrefix)) {
+        nameForPresign = `${originalDatePrefix}${nameWithoutExt}.jpg`;
+      }
 
       const cleanVideoKey = videoKey.startsWith('/') ? videoKey.slice(1) : videoKey;
-      const cleanThumbKey = targetThumbKey.startsWith('/') ? targetThumbKey.slice(1) : targetThumbKey;
-
-      // Absolute paths pointing straight to the target destinations
-      const absoluteVideoUrl = `${cleanR2Url}/${cleanVideoKey}`;
+      
+      // Calculate where the thumbnail should live
+      const predictedThumbKey = videoKey.replace(/\.[^/.]+$/, "") + ".jpg";
+      const cleanThumbKey = predictedThumbKey.startsWith('/') ? predictedThumbKey.slice(1) : predictedThumbKey;
       const absoluteThumbUrl = `${cleanR2Url}/${cleanThumbKey}`;
       
-      // Use the absolute R2 target for Cloudflare Images optimization matching rule
+      // Edge check to skip if already processed
       const edgeTestUrl = `/cdn-cgi/image/width=16,quality=10,format=auto/${absoluteThumbUrl}`;
 
       console.log(`\n[${i + 1}/${videoItems.length}] Auditing file: ${filename}`);
 
       try {
-        // 1. Check if Cloudflare can find the thumbnail image at the edge
+        // 1. Edge test check
         const checkThumbExist = await fetch(edgeTestUrl, { method: "GET" });
-        
         if (checkThumbExist.ok && checkThumbExist.status === 200) {
           console.log(`-> Thumbnail already exists on R2 for ${filename}. Skipping.`);
           continue;
         }
 
-        console.log(`-> Thumbnail missing. Downloading video blob via authenticated channel...`);
+        console.log(`-> Thumbnail missing. Downloading video track blob...`);
 
-        // 2. Bypass CORS completely by fetching the video track blob via standard direct download
-        const videoFileResponse = await fetch(absoluteVideoUrl);
+        // 2. Download the video track
+        const videoFileResponse = await fetch(`${cleanR2Url}/${cleanVideoKey}`);
         if (!videoFileResponse.ok) {
-          throw new Error(`R2 Storage bucket returned status ${videoFileResponse.status} for video track source.`);
+          throw new Error(`R2 Storage bucket returned status ${videoFileResponse.status}`);
         }
         const videoBlob = await videoFileResponse.blob();
-        
-        // Create a secure local Blob URL. Since it's generated locally by the browser, it has ZERO CORS restrictions!
         const localVideoUrl = URL.createObjectURL(videoBlob);
 
-        console.log(`-> Extracting frame via local object blob path...`);
+        console.log(`-> Extracting frame locally...`);
 
-        // 3. Load the video inside our off-screen DOM canvas element safely
-        const thumbnailFile = await new Promise((resolve) => {
+        // 3. Render and extract canvas frame as a raw Blob
+        const thumbnailBlob = await new Promise((resolve) => {
           const video = document.createElement("video");
-          video.preload = "metadata";
+          video.preload = "auto";
           video.muted = true;
           video.playsInline = true;
           video.src = localVideoUrl;
 
           video.onloadeddata = () => {
-            video.currentTime = Math.min(1, video.duration || 0);
+            video.currentTime = 0.2; // Skip possible blank frame
           };
 
           video.onseeked = () => {
-            const canvas = document.createElement("canvas");
-            canvas.width = video.videoWidth || 640;
-            canvas.height = video.videoHeight || 360;
+            try {
+              const canvas = document.createElement("canvas");
+              canvas.width = video.videoWidth || 1280;
+              canvas.height = video.videoHeight || 720;
 
-            const ctx = canvas.getContext("2d");
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+              const ctx = canvas.getContext("2d");
+              ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            canvas.toBlob((blob) => {
-              // Revoke the object URL immediately to free system memory
+              canvas.toBlob((blob) => {
+                URL.revokeObjectURL(localVideoUrl);
+                resolve(blob);
+              }, "image/jpeg", 0.85);
+            } catch (err) {
               URL.revokeObjectURL(localVideoUrl);
-
-              if (blob) {
-                const fileWrapper = new File([blob], `${nameWithoutExt}.jpg`, { type: "image/jpeg" });
-                resolve(fileWrapper);
-              } else {
-                resolve(null);
-              }
-            }, "image/jpeg", 0.85);
+              resolve(null);
+            }
           };
 
           video.onerror = () => {
@@ -185,75 +193,60 @@ const handleBackfillThumbnails = async () => {
           };
         });
 
-        if (!thumbnailFile) {
-          throw new Error("HTML5 Video element failed to draw a valid image frame buffer.");
+        if (!thumbnailBlob) {
+          throw new Error("HTML5 Video element failed to map frame data successfully.");
         }
 
-        console.log(`-> Requesting thumbnail target presigned key authorization...`);
+        console.log(`-> Requesting authorization token for name: ${nameForPresign}`);
         
-        // 4. Request upload authorization for the target thumbnail (.jpg)
+        // 4. Request the presigned URL using the standardized date-prefixed file name
         const presignRes = await apiFetch("/presign", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            files: [{ name: targetThumbKey, type: "image/jpeg" }]
+            files: [{ name: nameForPresign, type: "image/jpeg" }]
           }),
         });
 
         if (!presignRes.ok) {
-          throw new Error(`Presign endpoint rejected naming registration string. Status: ${presignRes.status}`);
+          throw new Error(`Presign endpoint rejected query. Status: ${presignRes.status}`);
         }
         const { presigned } = await presignRes.json();
         const uploadTarget = presigned[0];
 
-        // 5. Upload the generated thumbnail to R2 via the presigned URL
-        const uploadRes = await fetch(uploadTarget.presignedUrl, {
-          method: "PUT",
-          headers: { "Content-Type": "image/jpeg" },
-          body: thumbnailFile
+        // 5. Execute the direct storage write operation over native XMLHttpRequest
+        console.log(`-> Uploading thumbnail directly into R2...`);
+        await new Promise((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.open("PUT", uploadTarget.presignedUrl);
+          xhr.setRequestHeader("Content-Type", "image/jpeg");
+
+          xhr.onload = () => {
+            if (xhr.status === 200) {
+              resolve();
+            } else {
+              reject(new Error(`Storage bucket rejected payload sync with status: ${xhr.status}`));
+            }
+          };
+          
+          xhr.onerror = () => reject(new Error("Direct storage network transaction error."));
+          xhr.send(thumbnailBlob);
         });
 
-        if (!uploadRes.ok) {
-          throw new Error(`Direct storage upload transaction string rejected. Status: ${uploadRes.status}`);
-        }
-
-        console.log(`🎉 Successfully backfilled thumbnail file to your bucket: ${targetThumbKey}`);
+        console.log(`🎉 Successfully backfilled thumbnail file to historical destination: ${uploadTarget.objectKey}`);
 
       } catch (itemError) {
-        console.error(`❌ Item skipped. Problem handling media track [${filename}]:`, itemError.message);
+        console.error(`❌ Item skipped. Error processing [${filename}]:`, itemError.message);
       }
     }
 
-    alert(`Backfill processing complete! All missing video thumbnail files are generated.`);
+    alert(`Backfill processing complete! Missing thumbnail operations successfully parsed.`);
 
   } catch (globalError) {
-    console.error("Global direct migration workflow encountered a critical failure:", globalError);
+    console.error("Global migration routine encountered a critical error:", globalError);
     alert(`Backfill failed: ${globalError.message}`);
   }
 };
-
-const Upload = () => {
-  const { user } = useAuth();
-  const [files, setFiles] = useState([]);
-  const [uploading, setUploading] = useState(false);
-  const [progress, setProgress] = useState({});
-  const [initialTag, setInitialTag] = useState("");   // Controlled by TagSelect
-
-  // Derive default tag from username when component mounts or user changes
-  useEffect(() => {
-    const usernameLower = user?.username?.toLowerCase() || "lunepusa";
-    const matchedTags = searchTags(usernameLower);
-    const userTag = matchedTags.length > 0 ? matchedTags[0] : usernameLower;
-    setInitialTag(userTag);
-  }, [user]);
-
-  const handleFileChange = (e) => {
-    setFiles(Array.from(e.target.files));
-  };
-
-  const handleTagsSave = (tagsString) => {
-    setInitialTag(tagsString);
-  };
 
   const handleUpload = async () => {
     if (files.length === 0) return;
