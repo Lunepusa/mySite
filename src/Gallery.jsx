@@ -695,41 +695,46 @@ useEffect(() => {
                 style={{ maxWidth: "100%", maxHeight: "100%" }}
                 onClick={(e) => e.stopPropagation()}
               >
-                {fullscreenItem.isVideo ? (
-  <video
-    src={
-      hasAccessForDate(fullscreenItem?.date)
-        ? `${R2_PUBLIC_URL}/${fullscreenItem.key}`
-        : (() => {
-            const baseFolder = fullscreenItem.key.includes('/') ? fullscreenItem.key.substring(0, fullscreenItem.key.lastIndexOf('/') + 1) : '';
-            const filename = fullscreenItem.key.split('/').pop();
-            const nameWithoutExt = filename.split('.')[0];
-            const thumbKey = `${baseFolder}${nameWithoutExt}.jpg`;
-            const relativeThumbPath = thumbKey.startsWith('/') ? thumbKey : `/${thumbKey}`;
-            // Root relative pathing for unauthorized blurred thumbnail fallback preview
-            return `/cdn-cgi/image/quality=85,format=auto,blur=100/${R2_PUBLIC_URL}/${thumbKey}`;
-          })()
-    }
-    controls={hasAccessForDate(fullscreenItem?.date)}
-    autoPlay
-    loop
-    muted={!hasAccessForDate(fullscreenItem?.date)}
-    controlsList="nodownload"
-    onContextMenu={(e) => {
-      e.preventDefault();
-      if (user?.username?.toLowerCase() === "lunepusa") {
-        handleMediaShareCopy(fullscreenItem)(e);
-      }
-    }}
-    style={{
-      maxWidth: "100%",
-      maxHeight: "100DVH",
-      width: "auto",
-      height: "auto",
-      objectFit: "contain",
-      background: "#000",
-    }}
-  />
+                 {fullscreenItem.isVideo ? (
+  hasAccessForDate(fullscreenItem?.date) ? (
+    <video
+      src={`${R2_PUBLIC_URL}/${fullscreenItem.key}`}
+      controls
+      autoPlay
+      loop
+      muted
+      controlsList="nodownload"
+      onContextMenu={(e) => {
+        e.preventDefault();
+        if (user?.username?.toLowerCase() === "lunepusa") {
+          handleMediaShareCopy(fullscreenItem)(e);
+        }
+      }}
+      style={{
+        maxWidth: "100%",
+        maxHeight: "100DVH",
+        width: "auto",
+        height: "auto",
+        objectFit: "contain",
+        background: "#000",
+      }}
+    />
+  ) : (
+    // Fallback for unauthorized users
+    <img 
+      src={`/cdn-cgi/image/quality=85,format=auto,blur=100/${R2_PUBLIC_URL}/${thumbKey}`}
+      alt="Preview restricted"
+      style={{
+        maxWidth: "100%",
+        maxHeight: "100DVH",
+        width: "auto",
+        height: "auto",
+        objectFit: "contain",
+        background: "#000",
+      }}
+    />
+  )
+
 ) : (
   <img
     src={

@@ -51,11 +51,11 @@ const generateVideoThumbnail = (videoFile) => {
 };
 
 const handleBackfillThumbnails = async () => {
-  if (!window.confirm("Are you sure you want to verify and backfill missing video thumbnails securely?")) {
+  if (!window.confirm("Are you sure you want to verify and backfill missing video thumbnails flatly under media/?")) {
     return;
   }
 
-  console.log("Starting synchronized media registry video scan...");
+  console.log("Starting flat media repository video scan...");
   
   try {
     let videoItems = [];
@@ -74,7 +74,7 @@ const handleBackfillThumbnails = async () => {
 
       const res = await apiFetch(`/media?${params.toString()}`);
       if (!res.ok) {
-        throw new Error(`Media index fetch failed at offset ${currentOffset} with status: ${res.status}`);
+        throw new Error(`Media index fetch failed at offset ${currentOffset}`);
       }
 
       const data = await res.json();
@@ -98,113 +98,73 @@ const handleBackfillThumbnails = async () => {
     }
 
     console.log(`Identified ${videoItems.length} video entries. Running verification loop...`);
-
     const cleanR2Url = R2_PUBLIC_URL.endsWith('/') ? R2_PUBLIC_URL.slice(0, -1) : R2_PUBLIC_URL;
 
     for (let i = 0; i < videoItems.length; i++) {
       const videoItem = videoItems[i];
-      const videoKey = videoItem.key;
+      const videoKey = videoItem.object_key; // Uses your precise database schema column name
       if (!videoKey) continue;
 
       const filename = videoKey.split('/').pop();
       const nameWithoutExt = filename.split('.')[0];
       
-      // CRITICAL PATHING FIX:
-      // Extract the original date string from the existing video key (e.g., "20260418")
-      // so the thumbnail matches the exact historical placement.
-      const dateMatch = videoKey.match(/media\/(\d{8})\//);
-      const originalDatePrefix = dateMatch ? dateMatch[1] : null;
-
-      // If the filename starts with an 8-digit date, we pass that base name so the Worker
-      // reads it accurately. Otherwise, we prepend the historical date manually.
-      let nameForPresign = `${nameWithoutExt}.jpg`;
-      if (!filename.match(/^(\d{8})/) && originalDatePrefix) {
-        nameForPresign = `${originalDatePrefix}_${nameWithoutExt}.jpg`;
-      } else if (originalDatePrefix && !nameWithoutExt.startsWith(originalDatePrefix)) {
-        nameForPresign = `${originalDatePrefix}${nameWithoutExt}.jpg`;
-      }
-
-      const cleanVideoKey = videoKey.startsWith('/') ? videoKey.slice(1) : videoKey;
+      // Target flat paths
+      const flatThumbKey = `media/${nameWithoutExt}.jpg`;
+      const absoluteThumbUrl = `${cleanR2Url}/${flatThumbKey}`;
+      const absoluteVideoUrl = `${cleanR2Url}/media/${filename}`; 
       
-      // Calculate where the thumbnail should live
-      const predictedThumbKey = videoKey.replace(/\.[^/.]+$/, "") + ".jpg";
-      const cleanThumbKey = predictedThumbKey.startsWith('/') ? predictedThumbKey.slice(1) : predictedThumbKey;
-      const absoluteThumbUrl = `${cleanR2Url}/${cleanThumbKey}`;
-      
-      // Edge check to skip if already processed
       const edgeTestUrl = `/cdn-cgi/image/width=16,quality=10,format=auto/${absoluteThumbUrl}`;
 
       console.log(`\n[${i + 1}/${videoItems.length}] Auditing file: ${filename}`);
 
       try {
-        // 1. Edge test check
+        // 1. AUDIT CHECK: Verify if the flat thumbnail image already exists at the Cloudflare Edge
         const checkThumbExist = await fetch(edgeTestUrl, { method: "GET" });
         if (checkThumbExist.ok && checkThumbExist.status === 200) {
-          console.log(`-> Thumbnail already exists on R2 for ${filename}. Skipping.`);
+          console.log(`-> Flat thumbnail already exists on R2 for ${filename}. Skipping.`);
           continue;
         }
 
-        console.log(`-> Thumbnail missing. Downloading video track blob...`);
+        console.log(`-> Thumbnail missing. Capturing 0.2s frame over edge stream link...`);
 
-        // 2. Download the video track
-        const videoFileResponse = await fetch(`${cleanR2Url}/${cleanVideoKey}`);
-        if (!videoFileResponse.ok) {
-          throw new Error(`R2 Storage bucket returned status ${videoFileResponse.status}`);
-        }
-        const videoBlob = await videoFileResponse.blob();
-        const localVideoUrl = URL.createObjectURL(videoBlob);
-
-        console.log(`-> Extracting frame locally...`);
-
-        // 3. Render and extract canvas frame as a raw Blob
+        // 2. HIGH PERFORMANCE STREAMING: Pull only the needed frame bytes directly from R2
         const thumbnailBlob = await new Promise((resolve) => {
           const video = document.createElement("video");
           video.preload = "auto";
+          video.crossOrigin = "anonymous"; // Essential to prevent canvas contamination
           video.muted = true;
           video.playsInline = true;
-          video.src = localVideoUrl;
+          video.src = absoluteVideoUrl;
 
-          video.onloadeddata = () => {
-            video.currentTime = 0.2; // Skip possible blank frame
-          };
-
+          video.onloadeddata = () => { video.currentTime = 0.2; };
+          
           video.onseeked = () => {
             try {
               const canvas = document.createElement("canvas");
               canvas.width = video.videoWidth || 1280;
               canvas.height = video.videoHeight || 720;
-
               const ctx = canvas.getContext("2d");
               ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-              canvas.toBlob((blob) => {
-                URL.revokeObjectURL(localVideoUrl);
-                resolve(blob);
-              }, "image/jpeg", 0.85);
-            } catch (err) {
-              URL.revokeObjectURL(localVideoUrl);
-              resolve(null);
-            }
+              
+              // Export as a raw binary Blob payload directly
+              canvas.toBlob((blob) => { resolve(blob); }, "image/jpeg", 0.85);
+            } catch (err) { resolve(null); }
           };
-
-          video.onerror = () => {
-            URL.revokeObjectURL(localVideoUrl);
-            resolve(null);
-          };
+          video.onerror = () => { resolve(null); };
         });
 
         if (!thumbnailBlob) {
-          throw new Error("HTML5 Video element failed to map frame data successfully.");
+          throw new Error("HTML5 Video element failed to draw a valid image frame buffer.");
         }
 
-        console.log(`-> Requesting authorization token for name: ${nameForPresign}`);
+        console.log(`-> Requesting flat thumbnail authorization for name: ${nameWithoutExt}.jpg`);
         
-        // 4. Request the presigned URL using the standardized date-prefixed file name
+        // 3. PRESIGN REGISTRATION
         const presignRes = await apiFetch("/presign", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            files: [{ name: nameForPresign, type: "image/jpeg" }]
+            files: [{ name: `${nameWithoutExt}.jpg`, type: "image/jpeg" }]
           }),
         });
 
@@ -214,36 +174,29 @@ const handleBackfillThumbnails = async () => {
         const { presigned } = await presignRes.json();
         const uploadTarget = presigned[0];
 
-        // 5. Execute the direct storage write operation over native XMLHttpRequest
-        console.log(`-> Uploading thumbnail directly into R2...`);
+        // 4. PUT STREAM VIA NATIVE XMLHTTPREQUEST (Ensures full CORS compatibility)
         await new Promise((resolve, reject) => {
           const xhr = new XMLHttpRequest();
           xhr.open("PUT", uploadTarget.presignedUrl);
           xhr.setRequestHeader("Content-Type", "image/jpeg");
-
-          xhr.onload = () => {
-            if (xhr.status === 200) {
-              resolve();
-            } else {
-              reject(new Error(`Storage bucket rejected payload sync with status: ${xhr.status}`));
-            }
-          };
           
-          xhr.onerror = () => reject(new Error("Direct storage network transaction error."));
+          xhr.onload = () => { xhr.status === 200 ? resolve() : reject(new Error(`Status: ${xhr.status}`)); };
+          xhr.onerror = () => reject(new Error("Network error"));
+          
+          // Streams raw binary Blob directly without metadata wrappers
           xhr.send(thumbnailBlob);
         });
 
-        console.log(`🎉 Successfully backfilled thumbnail file to historical destination: ${uploadTarget.objectKey}`);
+        console.log(`🎉 Successfully backfilled flat thumbnail destination: ${uploadTarget.objectKey}`);
 
       } catch (itemError) {
         console.error(`❌ Item skipped. Error processing [${filename}]:`, itemError.message);
       }
     }
 
-    alert(`Backfill processing complete! Missing thumbnail operations successfully parsed.`);
-
+    alert(`Backfill processing complete! Missing flat thumbnails are successfully generated.`);
   } catch (globalError) {
-    console.error("Global migration routine encountered a critical error:", globalError);
+    console.error("Global flat backfill routine encountered a critical error:", globalError);
     alert(`Backfill failed: ${globalError.message}`);
   }
 };
@@ -271,7 +224,7 @@ const Upload = () => {
     setInitialTag(tagsString);
   };
 
-  const handleUpload = async () => {
+const handleUpload = async () => {
     if (files.length === 0) return;
 
     setUploading(true);
@@ -280,25 +233,33 @@ const Upload = () => {
     try {
       // Step 1: Automatically generate thumbnails for any videos in the list
       const finalFilesList = [];
-      const thumbnailNames = new Set(); // Keep track of which names are auto-generated thumbnails
+      const thumbnailNames = new Set(); 
 
       for (const file of files) {
         finalFilesList.push(file);
         
         // Check if the file is a video
         if (file.type.startsWith("video/")) {
-          const thumbnailFile = await generateVideoThumbnail(file);
-          if (thumbnailFile) {
-            finalFilesList.push(thumbnailFile);
-            thumbnailNames.add(thumbnailFile.name); // Track it to skip /upload-complete later
+          const thumbnailBlob = await generateVideoThumbnail(file);
+          if (thumbnailBlob) {
+            // Calculate flat thumbnail file name matching your core convention
+            const nameWithoutExt = file.name.replace(/\.[^/.]+$/, "");
+            const thumbName = `${nameWithoutExt}.jpg`;
+
+            // CRITICAL FIX: Keep it as a raw Blob asset to ensure stable stream uploading
+            thumbnailBlob.name = thumbName;
+            thumbnailBlob.contentType = "image/jpeg";
+
+            finalFilesList.push(thumbnailBlob);
+            thumbnailNames.add(thumbName); 
           }
         }
       }
 
-      // Step 2: Get presigned URLs for all items (including generated thumbnails)
+      // Step 2: Get presigned URLs for all items (including flat generated thumbnails)
       const fileInfo = finalFilesList.map((f) => ({
         name: f.name,
-        type: f.type || "application/octet-stream",
+        type: f.contentType || f.type || "application/octet-stream",
       }));
 
       const res = await apiFetch("/presign", {
@@ -316,13 +277,17 @@ const Upload = () => {
 
       const { presigned } = await res.json();
 
-      // Step 3: Upload each file directly
-      const uploadPromises = presigned.map(async (item, i) => {
+      // Step 3: Upload each file directly via raw binary streams
+      const uploadPromises = presigned.map((item, i) => {
         const file = finalFilesList[i];
         const isThumbnail = thumbnailNames.has(file.name);
+        const expectedMime = file.contentType || file.type || "application/octet-stream";
 
         const xhr = new XMLHttpRequest();
         xhr.open("PUT", item.presignedUrl);
+        
+        // CRITICAL FIX: Explicitly supply Content-Type to match the Worker signature perfectly!
+        xhr.setRequestHeader("Content-Type", expectedMime);
 
         return new Promise((resolve, reject) => {
           xhr.upload.onprogress = (e) => {
@@ -340,9 +305,9 @@ const Upload = () => {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({
-                    objectKey: item.objectKey,
+                    objectKey: item.objectKey, // Will cleanly match flat media/filename.ext
                     fileType: file.type,
-                    initialTag,        // Full comma-separated tag string
+                    initialTag,        
                   }),
                 });
               }
@@ -353,6 +318,8 @@ const Upload = () => {
           };
 
           xhr.onerror = () => reject(new Error("Network error"));
+          
+          // Sends clean un-wrapped binary straight across the network pipeline
           xhr.send(file);
         });
       });
