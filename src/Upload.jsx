@@ -50,6 +50,93 @@ const generateVideoThumbnail = (videoFile) => {
   });
 };
 
+const handleBackfillThumbnails = async () => {
+  if (!window.confirm("Are you sure you want to scan the gallery and generate missing thumbnails for all videos?")) {
+    return;
+  }
+
+  console.log("Starting gallery video scan...");
+  
+  try {
+    // 1. Fetch your entire current database gallery inventory
+    const res = await apiFetch("/gallery");
+    if (!res.ok) throw new Error("Failed to fetch gallery items");
+    
+    const data = await res.json();
+    const allItems = data.items || [];
+    
+    // 2. Filter out items that are explicitly flagged as videos
+    const videoItems = allItems.filter(item => item.fileType && item.fileType.startsWith("video/"));
+    
+    if (videoItems.length === 0) {
+      alert("No videos found in your gallery to backfill!");
+      return;
+    }
+
+    console.log(`Found ${videoItems.length} videos. Processing sequentially...`);
+
+    for (let i = 0; i < videoItems.length; i++) {
+      const videoItem = videoItems[i];
+      
+      // Determine target thumbnail name
+      const baseFolder = videoItem.key.includes('/') ? videoItem.key.substring(0, videoItem.key.lastIndexOf('/') + 1) : '';
+      const filename = videoItem.key.split('/').pop();
+      const nameWithoutExt = filename.split('.')[0];
+      const targetThumbName = `${nameWithoutExt}.jpg`;
+      const targetThumbKey = `${baseFolder}${targetThumbName}`;
+
+      console.log(`[${i + 1}/${videoItems.length}] Processing: ${filename}`);
+
+      try {
+        // 3. Download the video stream into a temporary blob
+        const videoTargetUrl = `${R2_PUBLIC_URL}/${videoItem.key}`;
+        const videoBlobRes = await fetch(videoTargetUrl);
+        if (!videoBlobRes.ok) throw new Error(`Could not fetch video source file from storage`);
+        const videoBlob = await videoBlobRes.json(); // converted stream
+        
+        // Convert blob payload back to a standard File object wrapper
+        const videoFile = new File([videoBlob], filename, { type: videoItem.fileType });
+
+        // 4. Extract frame using your existing thumbnail generation engine
+        const thumbnailFile = await generateVideoThumbnail(videoFile);
+        if (!thumbnailFile) throw new Error("Frame extraction failed");
+
+        // 5. Get a presigned upload URL specifically for this target thumbnail asset name
+        const presignRes = await apiFetch("/presign", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            files: [{ name: targetThumbKey, type: "image/jpeg" }]
+          }),
+        });
+
+        if (!presignRes.ok) throw new Error("Failed to obtain presigned URL from backend");
+        const { presigned } = await presignRes.json();
+        const uploadTarget = presigned[0];
+
+        // 6. Directly PUT the image blob into your R2 storage bucket
+        const uploadRes = await fetch(uploadTarget.presignedUrl, {
+          method: "PUT",
+          headers: { "Content-Type": "image/jpeg" },
+          body: thumbnailFile
+        });
+
+        if (!uploadRes.ok) throw new Error("Direct S3/R2 storage upload failed");
+        console.log(`Successfully backfilled thumbnail: ${targetThumbKey}`);
+
+      } catch (itemError) {
+        console.error(`Failed to process video [${filename}]:`, itemError.message);
+      }
+    }
+
+    alert("Backfill processing routine completed! Check browser console logs for detailed status summary.");
+
+  } catch (globalError) {
+    console.error("Global backfill task encountered an error:", globalError);
+    alert("Backfill migration failed: " + globalError.message);
+  }
+};
+
 const Upload = () => {
   const { user } = useAuth();
   const [files, setFiles] = useState([]);
@@ -172,6 +259,17 @@ const Upload = () => {
 
   return (
     <div style={{ padding: "20px", textAlign: "center" }}>
+      {user?.username?.toLowerCase() === "lunepusa" && (
+  <div style={{ marginTop: "40px", paddingTop: "20px", borderTop: "2px dashed #ff0000" }}>
+    <h3>Admin Maintenance Panel</h3>
+    <button 
+      onClick={handleBackfillThumbnails}
+      style={{ padding: "10px 20px", background: "#cd3d3d", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer" }}
+    >
+      ⚙️ Backfill Missing Video Thumbnails
+    </button>
+  </div>
+)}
       <h2>Upload New Content</h2>
       <input
         type="file"
