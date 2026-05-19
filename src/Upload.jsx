@@ -51,80 +51,102 @@ const generateVideoThumbnail = (videoFile) => {
 };
 
 const handleBackfillThumbnails = async () => {
-  if (!window.confirm("Are you sure you want to scan the gallery and generate missing thumbnails for all videos?")) {
+  if (!window.confirm("Are you sure you want to query the database specifically for videos and generate missing thumbnails in R2?")) {
     return;
   }
 
-  console.log("Starting gallery video scan...");
+  console.log("Starting synchronized media registry video scan...");
   
   try {
-    // Attempt 1: Fetch with pagination/query fallback parameters to support your specific backend structure
-    let allItems = [];
-    let res = await apiFetch("/gallery?limit=5000&offset=0");
-    
-    // Fallback if the route needs a clean trailing slash or strict naked endpoint
-    if (!res.ok) {
-      res = await apiFetch("/gallery");
+    let videoItems = [];
+    let currentOffset = 0;
+    const batchLimit = 250; 
+    let keepFetching = true;
+
+    // 1. Loop through paginated pages of the flat /media route requesting ONLY video records
+    while (keepFetching) {
+      console.log(`Fetching video metadata slice (Offset: ${currentOffset}, Limit: ${batchLimit})...`);
+      
+      // Use URLSearchParams to pass 'q=video' cleanly down to your worker logic
+      const params = new URLSearchParams({
+        offset: currentOffset.toString(),
+        limit: batchLimit.toString(),
+        q: "video" // Strips out images immediately at the database level!
+      });
+
+      const res = await apiFetch(`/media?${params.toString()}`);
+      
+      if (!res.ok) {
+        throw new Error(`Media index fetch failed at offset ${currentOffset} with status: ${res.status}`);
+      }
+
+      const data = await res.json();
+      const currentBatch = data.media || [];
+
+      if (currentBatch.length === 0) {
+        keepFetching = false;
+      } else {
+        videoItems = [...videoItems, ...currentBatch];
+        if (currentBatch.length < batchLimit) {
+          keepFetching = false;
+        } else {
+          currentOffset += batchLimit;
+        }
+      }
     }
 
-    if (!res.ok) {
-      throw new Error(`Server API responded with status: ${res.status}`);
-    }
-    
-    const data = await res.json();
-    
-    // Adapt to whichever data key format your database schema uses (items vs media vs files)
-    allItems = data.items || data.media || data.files || data;
-    
-    if (!Array.isArray(allItems)) {
-      throw new Error("Gallery data returned from backend is not an array format.");
-    }
-    
-    // Filter down to elements explicitly marked as video files or files with video extensions
-    const videoItems = allItems.filter(item => {
-      const pathKey = item.key || item.objectKey || "";
-      const type = item.fileType || "";
-      return type.startsWith("video/") || /\.(mp4|mov|ts|webm|mkv|3gp)$/i.test(pathKey);
-    });
-    
     if (videoItems.length === 0) {
-      alert("No videos found in your gallery array list to backfill!");
+      alert("Scan complete: No videos returned from your filtered database index.");
       return;
     }
 
-    console.log(`Found ${videoItems.length} videos. Processing sequentially...`);
+    console.log(`Identified ${videoItems.length} video entries. Starting direct R2 processing loop...`);
 
     for (let i = 0; i < videoItems.length; i++) {
       const videoItem = videoItems[i];
-      const itemKey = videoItem.key || videoItem.objectKey;
-      if (!itemKey) continue;
-      
-      // Determine precise matching target companion thumbnail filename extension swap
-      const baseFolder = itemKey.includes('/') ? itemKey.substring(0, itemKey.lastIndexOf('/') + 1) : '';
-      const filename = itemKey.split('/').pop();
-      const nameWithoutExt = filename.split('.')[0];
-      const targetThumbName = `${nameWithoutExt}.jpg`;
-      const targetThumbKey = `${baseFolder}${targetThumbName}`;
+      const videoKey = videoItem.key;
+      if (!videoKey) continue;
 
-      console.log(`[${i + 1}/${videoItems.length}] Extracting frame from video track: ${filename}`);
+      // Swap extensions to compute what the thumbnail name *should* be
+      const baseFolder = videoKey.includes('/') ? videoKey.substring(0, videoKey.lastIndexOf('/') + 1) : '';
+      const filename = videoKey.split('/').pop();
+      const nameWithoutExt = filename.split('.')[0];
+      const targetThumbKey = `${baseFolder}${nameWithoutExt}.jpg`;
+
+      // Absolute paths directly targeting your public R2 bucket instance
+      const videoUrl = `${R2_PUBLIC_URL}/${videoKey}`;
+      const thumbUrl = `${R2_PUBLIC_URL}/${targetThumbKey}`;
+
+      console.log(`\n[${i + 1}/${videoItems.length}] Auditing file: ${filename}`);
 
       try {
-        // Build absolute source URL endpoint to extract binary asset blob from R2
-        const videoTargetUrl = `${R2_PUBLIC_URL}/${itemKey}`;
-        
-        const videoBlobRes = await fetch(videoTargetUrl);
-        if (!videoBlobRes.ok) throw new Error(`Could not download binary source stream from R2 bucket public route`);
-        const videoBlob = await videoBlobRes.blob();
-        
-        // Wrap back into standard HTML5 File wrapper instance
-        const inferredType = videoItem.fileType || "video/mp4";
-        const videoFile = new File([videoBlob], filename, { type: inferredType });
+        // 2. Head check: Save bandwidth by skipping videos that already have their companion thumbnails
+        const checkThumbExist = await fetch(thumbUrl, { method: "HEAD" });
+        if (checkThumbExist.ok) {
+          console.log(`-> Thumbnail already exists on R2 for ${filename}. Skipping.`);
+          continue;
+        }
 
-        // Pass down to your working on-screen canvas image extractor
+        console.log(`-> Thumbnail missing. Downloading video track directly out of your R2 bucket...`);
+
+        // 3. Download video binary payload directly from your public R2 path
+        const videoResponse = await fetch(videoUrl);
+        if (!videoResponse.ok) {
+          throw new Error(`Public storage bucket path refused download stream connection.`);
+        }
+        const videoBlob = await videoResponse.blob();
+
+        // 4. Package it back into an HTML5 recognizable file tracker instance
+        const videoFile = new File([videoBlob], filename, { type: videoItem.type || "video/mp4" });
+
+        console.log(`-> Rendering offscreen canvas frame extraction snapshot...`);
         const thumbnailFile = await generateVideoThumbnail(videoFile);
-        if (!thumbnailFile) throw new Error("Canvas context frame extraction capture returned null");
+        if (!thumbnailFile) {
+          throw new Error("HTML5 Canvas extraction loop returned an empty frame buffer object.");
+        }
 
-        // Ask backend for target S3 storage bucket initialization route
+        console.log(`-> Initializing presigned write authority token for key name...`);
+        // 5. Request upload authorization specifically for the target side-loaded .jpg name
         const presignRes = await apiFetch("/presign", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -133,30 +155,35 @@ const handleBackfillThumbnails = async () => {
           }),
         });
 
-        if (!presignRes.ok) throw new Error(`Presign endpoint refused target naming mapping. Status: ${presignRes.status}`);
+        if (!presignRes.ok) {
+          throw new Error(`Presign endpoint rejected naming registration string. Status: ${presignRes.status}`);
+        }
         const { presigned } = await presignRes.json();
         const uploadTarget = presigned[0];
 
-        // Directly upload our generated compressed image straight up to R2
+        // 6. Direct PUT straight up to your R2 file storage container
         const uploadRes = await fetch(uploadTarget.presignedUrl, {
           method: "PUT",
           headers: { "Content-Type": "image/jpeg" },
           body: thumbnailFile
         });
 
-        if (!uploadRes.ok) throw new Error(`Direct storage PUT execution failed with status code: ${uploadRes.status}`);
-        console.log(`Successfully side-loaded and backfilled matching thumbnail image: ${targetThumbKey}`);
+        if (!uploadRes.ok) {
+          throw new Error(`Direct storage upload transaction string rejected. Status: ${uploadRes.status}`);
+        }
+
+        console.log(`🎉 Successfully backfilled thumbnail file to your bucket: ${targetThumbKey}`);
 
       } catch (itemError) {
-        console.error(`Skipping file. Error processing item index tracking [${filename}]:`, itemError.message);
+        console.error(`❌ Item skipped. Problem handling media track [${filename}]:`, itemError.message);
       }
     }
 
-    alert("Backfill processing execution sequence complete! Check console logs for individual file summary.");
+    alert(`Backfill processing complete! Check developer console output for structural summary listings.`);
 
   } catch (globalError) {
-    console.error("Global backfill task encountered an error:", globalError);
-    alert(`Backfill migration failed: ${globalError.message}\nCheck browser devtools console logs for system tracking parameters.`);
+    console.error("Global direct migration workflow encountered a critical failure:", globalError);
+    alert(`Backfill failed: ${globalError.message}`);
   }
 };
 
