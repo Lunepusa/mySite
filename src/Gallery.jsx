@@ -707,7 +707,7 @@ useEffect(() => {
             const thumbKey = `${baseFolder}${nameWithoutExt}.jpg`;
             const relativeThumbPath = thumbKey.startsWith('/') ? thumbKey : `/${thumbKey}`;
             // Root relative pathing for unauthorized blurred thumbnail fallback preview
-            return `/cdn-cgi/image/quality=85,format=auto,blur=50$/${R2_PUBLIC_URL}/${thumbkey}`;
+            return `/cdn-cgi/image/quality=85,format=auto,blur=10$/${R2_PUBLIC_URL}/${thumbKey}`;
           })()
     }
     controls={hasAccessForDate(fullscreenItem?.date)}
