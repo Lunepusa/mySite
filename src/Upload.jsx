@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useAuth, apiFetch } from "./Auth";
+import { useAuth, apiFetch,R2_PUBLIC_URL } from "./Auth";
 import { searchTags, TagSelect } from "./Tags";
 
 // Helper function to capture a frame from a video file and return a File object
