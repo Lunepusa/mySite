@@ -51,7 +51,7 @@ const generateVideoThumbnail = (videoFile) => {
 };
 
 const handleBackfillThumbnails = async () => {
-  if (!window.confirm("Are you sure you want to verify and backfill missing video thumbnails via Cloudflare Edge paths?")) {
+  if (!window.confirm("Are you sure you want to verify and backfill missing video thumbnails securely?")) {
     return;
   }
 
@@ -63,7 +63,6 @@ const handleBackfillThumbnails = async () => {
     const batchLimit = 250; 
     let keepFetching = true;
 
-    // 1. Fetch only video entries from your database via the /media query parameter
     while (keepFetching) {
       console.log(`Fetching video metadata slice (Offset: ${currentOffset}, Limit: ${batchLimit})...`);
       
@@ -98,34 +97,34 @@ const handleBackfillThumbnails = async () => {
       return;
     }
 
-    console.log(`Identified ${videoItems.length} video entries. Running CORS-safe verification loop...`);
+    console.log(`Identified ${videoItems.length} video entries. Running verification loop...`);
+
+    const cleanR2Url = R2_PUBLIC_URL.endsWith('/') ? R2_PUBLIC_URL.slice(0, -1) : R2_PUBLIC_URL;
 
     for (let i = 0; i < videoItems.length; i++) {
       const videoItem = videoItems[i];
       const videoKey = videoItem.key;
       if (!videoKey) continue;
 
-      // Swap extensions to compute the expected thumbnail name
       const baseFolder = videoKey.includes('/') ? videoKey.substring(0, videoKey.lastIndexOf('/') + 1) : '';
       const filename = videoKey.split('/').pop();
       const nameWithoutExt = filename.split('.')[0];
       const targetThumbKey = `${baseFolder}${nameWithoutExt}.jpg`;
 
-      // Absolute path to the original video file on R2
-      const cleanR2Url = R2_PUBLIC_URL.endsWith('/') ? R2_PUBLIC_URL.slice(0, -1) : R2_PUBLIC_URL;
-      const absoluteVideoUrl = `${cleanR2Url}/${videoKey.startsWith('/') ? videoKey.slice(1) : videoKey}`;
-
-      // Build a test path through your custom domain transformation endpoint
+      const cleanVideoKey = videoKey.startsWith('/') ? videoKey.slice(1) : videoKey;
       const cleanThumbKey = targetThumbKey.startsWith('/') ? targetThumbKey.slice(1) : targetThumbKey;
+
+      // Absolute paths pointing straight to the target destinations
+      const absoluteVideoUrl = `${cleanR2Url}/${cleanVideoKey}`;
       const absoluteThumbUrl = `${cleanR2Url}/${cleanThumbKey}`;
       
-      // Request a tiny 16px asset. Cloudflare rewrites this proxy path on your domain, avoiding CORS errors.
+      // Use the absolute R2 target for Cloudflare Images optimization matching rule
       const edgeTestUrl = `/cdn-cgi/image/width=16,quality=10,format=auto/${absoluteThumbUrl}`;
 
       console.log(`\n[${i + 1}/${videoItems.length}] Auditing file: ${filename}`);
 
       try {
-        // 2. CORS-Safe Check: See if Cloudflare can find the thumbnail image at the edge
+        // 1. Check if Cloudflare can find the thumbnail image at the edge
         const checkThumbExist = await fetch(edgeTestUrl, { method: "GET" });
         
         if (checkThumbExist.ok && checkThumbExist.status === 200) {
@@ -133,16 +132,27 @@ const handleBackfillThumbnails = async () => {
           continue;
         }
 
-        console.log(`-> Thumbnail missing. Generating frame from HTML5 video element channel...`);
+        console.log(`-> Thumbnail missing. Downloading video blob via authenticated channel...`);
 
-        // 3. CORS-Safe Frame Extraction: Load video inside an off-screen DOM element with crossOrigin="anonymous"
+        // 2. Bypass CORS completely by fetching the video track blob via standard direct download
+        const videoFileResponse = await fetch(absoluteVideoUrl);
+        if (!videoFileResponse.ok) {
+          throw new Error(`R2 Storage bucket returned status ${videoFileResponse.status} for video track source.`);
+        }
+        const videoBlob = await videoFileResponse.blob();
+        
+        // Create a secure local Blob URL. Since it's generated locally by the browser, it has ZERO CORS restrictions!
+        const localVideoUrl = URL.createObjectURL(videoBlob);
+
+        console.log(`-> Extracting frame via local object blob path...`);
+
+        // 3. Load the video inside our off-screen DOM canvas element safely
         const thumbnailFile = await new Promise((resolve) => {
           const video = document.createElement("video");
           video.preload = "metadata";
-          video.crossOrigin = "anonymous"; // Prevents canvas staining blocks
           video.muted = true;
           video.playsInline = true;
-          video.src = absoluteVideoUrl;
+          video.src = localVideoUrl;
 
           video.onloadeddata = () => {
             video.currentTime = Math.min(1, video.duration || 0);
@@ -157,6 +167,9 @@ const handleBackfillThumbnails = async () => {
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
             canvas.toBlob((blob) => {
+              // Revoke the object URL immediately to free system memory
+              URL.revokeObjectURL(localVideoUrl);
+
               if (blob) {
                 const fileWrapper = new File([blob], `${nameWithoutExt}.jpg`, { type: "image/jpeg" });
                 resolve(fileWrapper);
@@ -167,6 +180,7 @@ const handleBackfillThumbnails = async () => {
           };
 
           video.onerror = () => {
+            URL.revokeObjectURL(localVideoUrl);
             resolve(null);
           };
         });
@@ -176,6 +190,7 @@ const handleBackfillThumbnails = async () => {
         }
 
         console.log(`-> Requesting thumbnail target presigned key authorization...`);
+        
         // 4. Request upload authorization for the target thumbnail (.jpg)
         const presignRes = await apiFetch("/presign", {
           method: "POST",
