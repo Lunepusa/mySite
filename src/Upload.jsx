@@ -58,18 +58,37 @@ const handleBackfillThumbnails = async () => {
   console.log("Starting gallery video scan...");
   
   try {
-    // 1. Fetch your entire current database gallery inventory
-    const res = await apiFetch("/gallery");
-    if (!res.ok) throw new Error("Failed to fetch gallery items");
+    // Attempt 1: Fetch with pagination/query fallback parameters to support your specific backend structure
+    let allItems = [];
+    let res = await apiFetch("/gallery?limit=5000&offset=0");
+    
+    // Fallback if the route needs a clean trailing slash or strict naked endpoint
+    if (!res.ok) {
+      res = await apiFetch("/gallery");
+    }
+
+    if (!res.ok) {
+      throw new Error(`Server API responded with status: ${res.status}`);
+    }
     
     const data = await res.json();
-    const allItems = data.items || [];
     
-    // 2. Filter out items that are explicitly flagged as videos
-    const videoItems = allItems.filter(item => item.fileType && item.fileType.startsWith("video/"));
+    // Adapt to whichever data key format your database schema uses (items vs media vs files)
+    allItems = data.items || data.media || data.files || data;
+    
+    if (!Array.isArray(allItems)) {
+      throw new Error("Gallery data returned from backend is not an array format.");
+    }
+    
+    // Filter down to elements explicitly marked as video files or files with video extensions
+    const videoItems = allItems.filter(item => {
+      const pathKey = item.key || item.objectKey || "";
+      const type = item.fileType || "";
+      return type.startsWith("video/") || /\.(mp4|mov|ts|webm|mkv|3gp)$/i.test(pathKey);
+    });
     
     if (videoItems.length === 0) {
-      alert("No videos found in your gallery to backfill!");
+      alert("No videos found in your gallery array list to backfill!");
       return;
     }
 
@@ -77,31 +96,35 @@ const handleBackfillThumbnails = async () => {
 
     for (let i = 0; i < videoItems.length; i++) {
       const videoItem = videoItems[i];
+      const itemKey = videoItem.key || videoItem.objectKey;
+      if (!itemKey) continue;
       
-      // Determine target thumbnail name
-      const baseFolder = videoItem.key.includes('/') ? videoItem.key.substring(0, videoItem.key.lastIndexOf('/') + 1) : '';
-      const filename = videoItem.key.split('/').pop();
+      // Determine precise matching target companion thumbnail filename extension swap
+      const baseFolder = itemKey.includes('/') ? itemKey.substring(0, itemKey.lastIndexOf('/') + 1) : '';
+      const filename = itemKey.split('/').pop();
       const nameWithoutExt = filename.split('.')[0];
       const targetThumbName = `${nameWithoutExt}.jpg`;
       const targetThumbKey = `${baseFolder}${targetThumbName}`;
 
-      console.log(`[${i + 1}/${videoItems.length}] Processing: ${filename}`);
+      console.log(`[${i + 1}/${videoItems.length}] Extracting frame from video track: ${filename}`);
 
       try {
-        // 3. Download the video stream into a temporary blob
-        const videoTargetUrl = `${R2_PUBLIC_URL}/${videoItem.key}`;
-        const videoBlobRes = await fetch(videoTargetUrl);
-        if (!videoBlobRes.ok) throw new Error(`Could not fetch video source file from storage`);
-        const videoBlob = await videoBlobRes.json(); // converted stream
+        // Build absolute source URL endpoint to extract binary asset blob from R2
+        const videoTargetUrl = `${R2_PUBLIC_URL}/${itemKey}`;
         
-        // Convert blob payload back to a standard File object wrapper
-        const videoFile = new File([videoBlob], filename, { type: videoItem.fileType });
+        const videoBlobRes = await fetch(videoTargetUrl);
+        if (!videoBlobRes.ok) throw new Error(`Could not download binary source stream from R2 bucket public route`);
+        const videoBlob = await videoBlobRes.blob();
+        
+        // Wrap back into standard HTML5 File wrapper instance
+        const inferredType = videoItem.fileType || "video/mp4";
+        const videoFile = new File([videoBlob], filename, { type: inferredType });
 
-        // 4. Extract frame using your existing thumbnail generation engine
+        // Pass down to your working on-screen canvas image extractor
         const thumbnailFile = await generateVideoThumbnail(videoFile);
-        if (!thumbnailFile) throw new Error("Frame extraction failed");
+        if (!thumbnailFile) throw new Error("Canvas context frame extraction capture returned null");
 
-        // 5. Get a presigned upload URL specifically for this target thumbnail asset name
+        // Ask backend for target S3 storage bucket initialization route
         const presignRes = await apiFetch("/presign", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -110,30 +133,30 @@ const handleBackfillThumbnails = async () => {
           }),
         });
 
-        if (!presignRes.ok) throw new Error("Failed to obtain presigned URL from backend");
+        if (!presignRes.ok) throw new Error(`Presign endpoint refused target naming mapping. Status: ${presignRes.status}`);
         const { presigned } = await presignRes.json();
         const uploadTarget = presigned[0];
 
-        // 6. Directly PUT the image blob into your R2 storage bucket
+        // Directly upload our generated compressed image straight up to R2
         const uploadRes = await fetch(uploadTarget.presignedUrl, {
           method: "PUT",
           headers: { "Content-Type": "image/jpeg" },
           body: thumbnailFile
         });
 
-        if (!uploadRes.ok) throw new Error("Direct S3/R2 storage upload failed");
-        console.log(`Successfully backfilled thumbnail: ${targetThumbKey}`);
+        if (!uploadRes.ok) throw new Error(`Direct storage PUT execution failed with status code: ${uploadRes.status}`);
+        console.log(`Successfully side-loaded and backfilled matching thumbnail image: ${targetThumbKey}`);
 
       } catch (itemError) {
-        console.error(`Failed to process video [${filename}]:`, itemError.message);
+        console.error(`Skipping file. Error processing item index tracking [${filename}]:`, itemError.message);
       }
     }
 
-    alert("Backfill processing routine completed! Check browser console logs for detailed status summary.");
+    alert("Backfill processing execution sequence complete! Check console logs for individual file summary.");
 
   } catch (globalError) {
     console.error("Global backfill task encountered an error:", globalError);
-    alert("Backfill migration failed: " + globalError.message);
+    alert(`Backfill migration failed: ${globalError.message}\nCheck browser devtools console logs for system tracking parameters.`);
   }
 };
 
