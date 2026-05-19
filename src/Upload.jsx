@@ -248,6 +248,29 @@ const handleBackfillThumbnails = async () => {
   }
 };
 
+const Upload = () => {
+  const { user } = useAuth();
+  const [files, setFiles] = useState([]);
+  const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState({});
+  const [initialTag, setInitialTag] = useState("");   // Controlled by TagSelect
+
+  // Derive default tag from username when component mounts or user changes
+  useEffect(() => {
+    const usernameLower = user?.username?.toLowerCase() || "lunepusa";
+    const matchedTags = searchTags(usernameLower);
+    const userTag = matchedTags.length > 0 ? matchedTags[0] : usernameLower;
+    setInitialTag(userTag);
+  }, [user]);
+
+  const handleFileChange = (e) => {
+    setFiles(Array.from(e.target.files));
+  };
+
+  const handleTagsSave = (tagsString) => {
+    setInitialTag(tagsString);
+  };
+
   const handleUpload = async () => {
     if (files.length === 0) return;
 
