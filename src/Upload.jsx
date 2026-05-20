@@ -70,25 +70,24 @@ const processSingleItem = async (videoItem) => {
   const absoluteVideoUrl = `${R2_PUBLIC_URL.replace(/\/$/, '')}/${videoKey}`;
 
   // 1. Check if exists
-  // Replace your existing check with this detailed logging:
-try {
-  const check = await fetch(absoluteThumbUrl, { method: "HEAD" });
-  if (check.status === 200) {
-    const contentType = check.headers.get("content-type");
-    const contentLength = parseInt(check.headers.get("content-length") || "0");
+  try {
+    const check = await fetch(absoluteThumbUrl, { method: "HEAD" });
     
-    console.log(`Checking ${filename}: status ${check.status}, type ${contentType}, size ${contentLength}`);
-    
-    if (contentType?.includes("image/jpeg") && contentLength > 100) {
-      console.log(`-> Skipping: Thumbnail found at ${absoluteThumbUrl}`);
-      return; 
+    // ONLY skip if it's a genuine 200 OK image
+    if (check.status === 200) {
+      const contentType = check.headers.get("content-type");
+      if (contentType?.includes("image/jpeg")) {
+        console.log(`-> Skipping: Thumbnail already exists for ${filename}`);
+        return; 
+      }
     }
-  } else {
-    console.log(`-> Generating: Thumbnail missing for ${filename} (Status: ${check.status})`);
+    // If we reach here, it's a 404 or an invalid file, so we proceed to generation
+    console.log(`-> Thumbnail missing for ${filename}. Proceeding to generation...`);
+  } catch (e) {
+    // 404s often trigger the catch block in browsers. 
+    // We want to proceed if an error occurs!
+    console.log(`-> Error checking existence (likely 404): ${e.message}. Proceeding...`);
   }
-} catch (e) {
-  console.log(`-> Generating: Error checking thumbnail for ${filename}: ${e.message}`);
-}
 
   // 2. Generation
   const blob = await new Promise((resolve) => {
