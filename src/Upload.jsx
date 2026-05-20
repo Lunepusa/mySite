@@ -51,7 +51,7 @@ const generateVideoThumbnail = (videoFile) => {
 };
 
 const handleBackfillThumbnails = async () => {
-  if (!window.confirm("Start batch-processed thumbnail backfill? This will process items in groups of 250.")) return;
+  if (!window.confirm("Start batch-processed thumbnail backfill? This will process items in groups of 100.")) return;
 
   try {
     let currentOffset = 0;
@@ -59,56 +59,52 @@ const handleBackfillThumbnails = async () => {
     let keepFetching = true;
 
     // Helper: Processes a single item to generate and upload its thumbnail
-    const processSingleItem = async (videoItem) => {
-      const processSingleItem = async (videoItem) => {
-  console.log(`Auditing: ${videoItem.object_key}`); // ADD THIS
-      if (!videoItem || !videoItem.object_key) return;
+const processSingleItem = async (videoItem) => {
+  if (!videoItem || !videoItem.object_key) return;
 
-      const videoKey = videoItem.object_key; // e.g., "media/20260516_112219999.mp4"
-      const filename = videoKey.split('/').pop();
-      const nameWithoutExt = filename.split('.')[0];
-      console.log(filename);
-      const flatThumbKey = `media/${nameWithoutExt}.jpg`;
-      const absoluteThumbUrl = `${R2_PUBLIC_URL.replace(/\/$/, '')}/${flatThumbKey}`;
-      const absoluteVideoUrl = `${R2_PUBLIC_URL.replace(/\/$/, '')}/${videoKey}`;
-console.log(absoluteVideoUrl);
+  const videoKey = videoItem.object_key;
+  const filename = videoKey.split('/').pop();
+  const nameWithoutExt = filename.split('.')[0];
+  const flatThumbKey = `media/${nameWithoutExt}.jpg`;
+  const absoluteThumbUrl = `${R2_PUBLIC_URL.replace(/\/$/, '')}/${flatThumbKey}`;
+  const absoluteVideoUrl = `${R2_PUBLIC_URL.replace(/\/$/, '')}/${videoKey}`;
 
+  // 1. Check if exists
+  try {
+    const check = await fetch(absoluteThumbUrl, { method: "HEAD" });
+    if (check.status === 200) {
+      const contentType = check.headers.get("content-type");
+      const contentLength = parseInt(check.headers.get("content-length") || "0");
+      if (contentType?.includes("image/jpeg") && contentLength > 100) return;
+    }
+  } catch (e) { /* Assume it doesn't exist and proceed to generate */ }
 
-const check = await fetch(absoluteThumbUrl, { method: "HEAD" });
+  // 2. Generation
+  const blob = await new Promise((resolve) => {
+    const video = document.createElement("video");
+    video.crossOrigin = "anonymous";
+    video.muted = true;
+    video.preload = "metadata"; // Ensure metadata is loaded
+    
+    video.onloadedmetadata = () => { video.currentTime = video.duration / 2; };
+    video.onseeked = () => {
+      try {
+        const canvas = document.createElement("canvas");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext("2d").drawImage(video, 0, 0);
+        canvas.toBlob((b) => {
+          video.src = ""; // Clean up
+          video.remove(); 
+          resolve(b);
+        }, "image/jpeg", 0.85);
+      } catch (e) { resolve(null); }
+    };
+    video.onerror = () => { video.remove(); resolve(null); };
+    video.src = absoluteVideoUrl;
+  });
 
-// Only skip if it's actually an image
-if (check.status === 200) {
-  const contentType = check.headers.get("content-type");
-  const contentLength = parseInt(check.headers.get("content-length") || "0");
-  
-  // If it's a valid image and not a tiny error file (e.g., < 100 bytes)
-  if (contentType?.includes("image/jpeg") && contentLength > 100) {
-    return; // Really skip
-  }
-}
-
-      console.log(`Generating thumbnail for: ${filename}`);
-
-      // 2. Generation
-      const blob = await new Promise((resolve) => {
-        const video = document.createElement("video");
-        video.crossOrigin = "anonymous";
-        video.muted = true;
-        video.src = absoluteVideoUrl;
-        video.oncanplay = () => { video.currentTime = video.duration / 2; };
-        video.onseeked = () => {
-          try {
-            const canvas = document.createElement("canvas");
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            canvas.getContext("2d").drawImage(video, 0, 0);
-            canvas.toBlob((b) => resolve(b), "image/jpeg", 0.85);
-          } catch (e) { resolve(null); }
-        };
-        video.onerror = () => resolve(null);
-      });
-
-      if (!blob || blob.size === 0) return;
+  if (!blob) return;
 
       // 3. Presign & Upload
       const presignRes = await apiFetch("/presign", {
