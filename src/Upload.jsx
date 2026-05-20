@@ -89,7 +89,7 @@ const handleBackfillThumbnails = async () => {
       console.log(`--- Fetching batch: Offset ${currentOffset} ---`);
       const res = await apiFetch(`/media?offset=${currentOffset}&limit=${batchLimit}`);
       const data = await res.json();
-      const batch = (data.media || []).filter(item => item.isVideo || item.type?.startsWith('video/'));
+      const batch = (data.media || [])
 
       for (const item of batch) {
         await processSingleItem(item);
