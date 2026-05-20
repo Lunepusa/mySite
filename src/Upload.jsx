@@ -51,133 +51,90 @@ const generateVideoThumbnail = (videoFile) => {
 };
 
 const handleBackfillThumbnails = async () => {
-  if (!window.confirm("Are you sure you want to verify and backfill missing video thumbnails flatly under media/?")) {
-    return;
-  }
+  if (!window.confirm("Start batch-processed thumbnail backfill? This will process items in groups of 250.")) return;
 
-  console.log("Starting flat media repository video scan...");
-  
   try {
-    let videoItems = [];
     let currentOffset = 0;
-    const batchLimit = 250; 
+    const batchLimit = 100;
     let keepFetching = true;
 
-    while (keepFetching) {
-      console.log(`Fetching video metadata slice (Offset: ${currentOffset}, Limit: ${batchLimit})...`);
-      
-      const params = new URLSearchParams({
-        offset: currentOffset.toString(),
-        limit: batchLimit.toString(),
-        q: "video" 
-      });
+    // Helper: Processes a single item to generate and upload its thumbnail
+    const processSingleItem = async (videoItem) => {
+      if (!videoItem || !videoItem.object_key) return;
 
-      const res = await apiFetch(`/media?${params.toString()}`);
-      if (!res.ok) {
-        throw new Error(`Media index fetch failed at offset ${currentOffset}`);
-      }
-
-      const data = await res.json();
-      const currentBatch = data.media || [];
-
-      if (currentBatch.length === 0) {
-        keepFetching = false;
-      } else {
-        videoItems = [...videoItems, ...currentBatch];
-        if (currentBatch.length < batchLimit) {
-          keepFetching = false;
-        } else {
-          currentOffset += batchLimit;
-        }
-      }
-    }
-
-    if (videoItems.length === 0) {
-      alert("Scan complete: No videos returned from your database.");
-      return;
-    }
-
-    console.log(`Identified ${videoItems.length} video entries. Running verification loop...`);
-    const cleanR2Url = R2_PUBLIC_URL.endsWith('/') ? R2_PUBLIC_URL.slice(0, -1) : R2_PUBLIC_URL;
-
-    for (let i = 0; i < videoItems.length; i++) {
-      const videoItem = videoItems[i];
-      const filename = videoItem.object_key.split('/').pop();
+      const videoKey = videoItem.object_key; // e.g., "media/20260516_112219999.mp4"
+      const filename = videoKey.split('/').pop();
       const nameWithoutExt = filename.split('.')[0];
       
       const flatThumbKey = `media/${nameWithoutExt}.jpg`;
-      const absoluteThumbUrl = `${cleanR2Url}/${flatThumbKey}`;
-      const absoluteVideoUrl = `${cleanR2Url}/media/${filename}`; 
+      const absoluteThumbUrl = `${R2_PUBLIC_URL.replace(/\/$/, '')}/${flatThumbKey}`;
+      const absoluteVideoUrl = `${R2_PUBLIC_URL.replace(/\/$/, '')}/${videoKey}`;
 
-      // 1. IMPROVED AUDIT: Use HEAD request to verify file existence
-      const checkThumbExist = await fetch(absoluteThumbUrl, { method: "HEAD" });
-      if (checkThumbExist.status === 200) {
-        console.log(`[${i + 1}] Found, skipping: ${nameWithoutExt}`);
-        continue;
-      }
+      // 1. Audit Check: Does it already exist?
+      const check = await fetch(absoluteThumbUrl, { method: "HEAD" });
+      if (check.status === 200) return; // Skip if exists
 
-      console.log(`[${i + 1}] Generating thumbnail for: ${filename}`);
+      console.log(`Generating thumbnail for: ${filename}`);
 
-      // 2. ROBUST GENERATION: Using oncanplay and handling CORS
-      const thumbnailBlob = await new Promise((resolve) => {
+      // 2. Generation
+      const blob = await new Promise((resolve) => {
         const video = document.createElement("video");
-        video.crossOrigin = "anonymous"; // Must match your Bucket CORS settings
+        video.crossOrigin = "anonymous";
         video.muted = true;
         video.src = absoluteVideoUrl;
-        
-        // Wait for enough data to seek
-        video.oncanplay = () => {
-          video.currentTime = 0.5; // Seek to 0.5s for better frame stability
-        };
-
+        video.oncanplay = () => { video.currentTime = 0.5; };
         video.onseeked = () => {
           try {
             const canvas = document.createElement("canvas");
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
             canvas.getContext("2d").drawImage(video, 0, 0);
-            
-            canvas.toBlob((blob) => {
-              if (blob && blob.size > 0) resolve(blob);
-              else resolve(null);
-            }, "image/jpeg", 0.85);
-          } catch (e) {
-            console.error("Canvas error (likely CORS taint):", e);
-            resolve(null);
-          }
+            canvas.toBlob((b) => resolve(b), "image/jpeg", 0.85);
+          } catch (e) { resolve(null); }
         };
-
-        video.onerror = (e) => {
-          console.error("Video element error:", e);
-          resolve(null);
-        };
+        video.onerror = () => resolve(null);
       });
 
-      if (!thumbnailBlob) {
-        console.warn(`Failed to create blob for ${filename}. Check bucket CORS.`);
-        continue;
-      }
+      if (!blob || blob.size === 0) return;
 
-      // 3. PRESIGN & UPLOAD (Your existing logic)
+      // 3. Presign & Upload
       const presignRes = await apiFetch("/presign", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ files: [{ name: `${nameWithoutExt}.jpg`, type: "image/jpeg" }] }),
       });
-
+      
       const { presigned } = await presignRes.json();
-      const uploadTarget = presigned[0];
-
-      await fetch(uploadTarget.presignedUrl, {
+      await fetch(presigned[0].presignedUrl, {
         method: "PUT",
         headers: { "Content-Type": "image/jpeg" },
-        body: thumbnailBlob
+        body: blob
       });
-
       console.log(`Successfully backfilled: ${flatThumbKey}`);
+    };
+
+    // Main Batch Loop
+    while (keepFetching) {
+      console.log(`--- Fetching batch: Offset ${currentOffset} ---`);
+      const res = await apiFetch(`/media?offset=${currentOffset}&limit=${batchLimit}&q=video`);
+      const data = await res.json();
+      const batch = data.media || [];
+
+      for (const item of batch) {
+        await processSingleItem(item);
+      }
+
+      if (batch.length < batchLimit) {
+        keepFetching = false;
+      } else {
+        currentOffset += batchLimit;
+        await new Promise(r => setTimeout(r, 1000)); // 1s throttle between batches
+      }
     }
+    alert("Backfill complete!");
   } catch (err) {
-    console.error("Backfill failed:", err);
+    console.error("Backfill Error:", err);
+    alert("Backfill failed: " + err.message);
   }
 };
 
