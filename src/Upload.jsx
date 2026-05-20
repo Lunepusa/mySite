@@ -83,7 +83,7 @@ if (check.status === 200) {
   
   // If it's a valid image and not a tiny error file (e.g., < 100 bytes)
   if (contentType?.includes("image/jpeg") && contentLength > 100) {
-    continue; // Really skip
+    return; // Really skip
   }
 }
 
@@ -95,7 +95,7 @@ if (check.status === 200) {
         video.crossOrigin = "anonymous";
         video.muted = true;
         video.src = absoluteVideoUrl;
-        video.oncanplay = () => { video.currentTime = Video.duration / 2; };
+        video.oncanplay = () => { video.currentTime = video.duration / 2; };
         video.onseeked = () => {
           try {
             const canvas = document.createElement("canvas");
