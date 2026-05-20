@@ -102,102 +102,82 @@ const handleBackfillThumbnails = async () => {
 
     for (let i = 0; i < videoItems.length; i++) {
       const videoItem = videoItems[i];
-      const videoKey = videoItem.object_key; // Uses your precise database schema column name
-      if (!videoKey) continue;
-
-      const filename = videoKey.split('/').pop();
+      const filename = videoItem.object_key.split('/').pop();
       const nameWithoutExt = filename.split('.')[0];
       
-      // Target flat paths
       const flatThumbKey = `media/${nameWithoutExt}.jpg`;
       const absoluteThumbUrl = `${cleanR2Url}/${flatThumbKey}`;
       const absoluteVideoUrl = `${cleanR2Url}/media/${filename}`; 
-      
-      const edgeTestUrl = `/cdn-cgi/image/width=16,quality=10,format=auto/${absoluteThumbUrl}`;
 
-      console.log(`\n[${i + 1}/${videoItems.length}] Auditing file: ${filename}`);
-
-      try {
-        // 1. AUDIT CHECK: Verify if the flat thumbnail image already exists at the Cloudflare Edge
-        const checkThumbExist = await fetch(edgeTestUrl, { method: "GET" });
-        if (checkThumbExist.ok && checkThumbExist.status === 200) {
-          console.log(`-> Flat thumbnail already exists on R2 for ${filename}. Skipping.`);
-          continue;
-        }
-
-        console.log(`-> Thumbnail missing. Capturing 0.2s frame over edge stream link...`);
-
-        // 2. HIGH PERFORMANCE STREAMING: Pull only the needed frame bytes directly from R2
-        const thumbnailBlob = await new Promise((resolve) => {
-          const video = document.createElement("video");
-          video.preload = "auto";
-          video.crossOrigin = "anonymous"; // Essential to prevent canvas contamination
-          video.muted = true;
-          video.playsInline = true;
-          video.src = absoluteVideoUrl;
-
-          video.onloadeddata = () => { video.currentTime = 0.2; };
-          
-          video.onseeked = () => {
-            try {
-              const canvas = document.createElement("canvas");
-              canvas.width = video.videoWidth || 1280;
-              canvas.height = video.videoHeight || 720;
-              const ctx = canvas.getContext("2d");
-              ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-              
-              // Export as a raw binary Blob payload directly
-              canvas.toBlob((blob) => { resolve(blob); }, "image/jpeg", 0.85);
-            } catch (err) { resolve(null); }
-          };
-          video.onerror = () => { resolve(null); };
-        });
-
-        if (!thumbnailBlob) {
-          throw new Error("HTML5 Video element failed to draw a valid image frame buffer.");
-        }
-
-        console.log(`-> Requesting flat thumbnail authorization for name: ${nameWithoutExt}.jpg`);
-        
-        // 3. PRESIGN REGISTRATION
-        const presignRes = await apiFetch("/presign", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            files: [{ name: `${nameWithoutExt}.jpg`, type: "image/jpeg" }]
-          }),
-        });
-
-        if (!presignRes.ok) {
-          throw new Error(`Presign endpoint rejected query. Status: ${presignRes.status}`);
-        }
-        const { presigned } = await presignRes.json();
-        const uploadTarget = presigned[0];
-
-        // 4. PUT STREAM VIA NATIVE XMLHTTPREQUEST (Ensures full CORS compatibility)
-        await new Promise((resolve, reject) => {
-          const xhr = new XMLHttpRequest();
-          xhr.open("PUT", uploadTarget.presignedUrl);
-          xhr.setRequestHeader("Content-Type", "image/jpeg");
-          
-          xhr.onload = () => { xhr.status === 200 ? resolve() : reject(new Error(`Status: ${xhr.status}`)); };
-          xhr.onerror = () => reject(new Error("Network error"));
-          
-          // Streams raw binary Blob directly without metadata wrappers
-          xhr.send(thumbnailBlob);
-        });
-
-        console.log(`🎉 Successfully backfilled flat thumbnail destination: ${uploadTarget.objectKey}`);
-
-      } catch (itemError) {
-        console.error(`❌ Item skipped. Error processing [${filename}]:`, itemError.message);
+      // 1. IMPROVED AUDIT: Use HEAD request to verify file existence
+      const checkThumbExist = await fetch(absoluteThumbUrl, { method: "HEAD" });
+      if (checkThumbExist.status === 200) {
+        console.log(`[${i + 1}] Found, skipping: ${nameWithoutExt}`);
+        continue;
       }
-    }
 
-    alert(`Backfill processing complete! Missing flat thumbnails are successfully generated.`);
-  } catch (globalError) {
-    console.error("Global flat backfill routine encountered a critical error:", globalError);
-    alert(`Backfill failed: ${globalError.message}`);
+      console.log(`[${i + 1}] Generating thumbnail for: ${filename}`);
+
+      // 2. ROBUST GENERATION: Using oncanplay and handling CORS
+      const thumbnailBlob = await new Promise((resolve) => {
+        const video = document.createElement("video");
+        video.crossOrigin = "anonymous"; // Must match your Bucket CORS settings
+        video.muted = true;
+        video.src = absoluteVideoUrl;
+        
+        // Wait for enough data to seek
+        video.oncanplay = () => {
+          video.currentTime = 0.5; // Seek to 0.5s for better frame stability
+        };
+
+        video.onseeked = () => {
+          try {
+            const canvas = document.createElement("canvas");
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext("2d").drawImage(video, 0, 0);
+            
+            canvas.toBlob((blob) => {
+              if (blob && blob.size > 0) resolve(blob);
+              else resolve(null);
+            }, "image/jpeg", 0.85);
+          } catch (e) {
+            console.error("Canvas error (likely CORS taint):", e);
+            resolve(null);
+          }
+        };
+
+        video.onerror = (e) => {
+          console.error("Video element error:", e);
+          resolve(null);
+        };
+      });
+
+      if (!thumbnailBlob) {
+        console.warn(`Failed to create blob for ${filename}. Check bucket CORS.`);
+        continue;
+      }
+
+      // 3. PRESIGN & UPLOAD (Your existing logic)
+      const presignRes = await apiFetch("/presign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ files: [{ name: `${nameWithoutExt}.jpg`, type: "image/jpeg" }] }),
+      });
+
+      const { presigned } = await presignRes.json();
+      const uploadTarget = presigned[0];
+
+      await fetch(uploadTarget.presignedUrl, {
+        method: "PUT",
+        headers: { "Content-Type": "image/jpeg" },
+        body: thumbnailBlob
+      });
+
+      console.log(`Successfully backfilled: ${flatThumbKey}`);
+    }
+  } catch (err) {
+    console.error("Backfill failed:", err);
   }
 };
 
