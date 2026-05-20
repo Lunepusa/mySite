@@ -60,19 +60,32 @@ const handleBackfillThumbnails = async () => {
 
     // Helper: Processes a single item to generate and upload its thumbnail
     const processSingleItem = async (videoItem) => {
+      const processSingleItem = async (videoItem) => {
+  console.log(`Auditing: ${videoItem.object_key}`); // ADD THIS
       if (!videoItem || !videoItem.object_key) return;
 
       const videoKey = videoItem.object_key; // e.g., "media/20260516_112219999.mp4"
       const filename = videoKey.split('/').pop();
       const nameWithoutExt = filename.split('.')[0];
-      
+      console.log(filename);
       const flatThumbKey = `media/${nameWithoutExt}.jpg`;
       const absoluteThumbUrl = `${R2_PUBLIC_URL.replace(/\/$/, '')}/${flatThumbKey}`;
       const absoluteVideoUrl = `${R2_PUBLIC_URL.replace(/\/$/, '')}/${videoKey}`;
+console.log(absoluteVideoUrl);
 
-      // 1. Audit Check: Does it already exist?
-      const check = await fetch(absoluteThumbUrl, { method: "HEAD" });
-      if (check.status === 200) return; // Skip if exists
+
+const check = await fetch(absoluteThumbUrl, { method: "HEAD" });
+
+// Only skip if it's actually an image
+if (check.status === 200) {
+  const contentType = check.headers.get("content-type");
+  const contentLength = parseInt(check.headers.get("content-length") || "0");
+  
+  // If it's a valid image and not a tiny error file (e.g., < 100 bytes)
+  if (contentType?.includes("image/jpeg") && contentLength > 100) {
+    continue; // Really skip
+  }
+}
 
       console.log(`Generating thumbnail for: ${filename}`);
 
@@ -82,7 +95,7 @@ const handleBackfillThumbnails = async () => {
         video.crossOrigin = "anonymous";
         video.muted = true;
         video.src = absoluteVideoUrl;
-        video.oncanplay = () => { video.currentTime = 0.5; };
+        video.oncanplay = () => { video.currentTime = Video.duration / 2; };
         video.onseeked = () => {
           try {
             const canvas = document.createElement("canvas");
@@ -110,7 +123,7 @@ const handleBackfillThumbnails = async () => {
         headers: { "Content-Type": "image/jpeg" },
         body: blob
       });
-      console.log(`Successfully backfilled: ${flatThumbKey}`);
+      console.log(`Successfully backfilled: ${flatThumbKey} - ${absoluteThumbUrl}`);
     };
 
     // Main Batch Loop
