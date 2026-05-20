@@ -70,14 +70,25 @@ const processSingleItem = async (videoItem) => {
   const absoluteVideoUrl = `${R2_PUBLIC_URL.replace(/\/$/, '')}/${videoKey}`;
 
   // 1. Check if exists
-  try {
-    const check = await fetch(absoluteThumbUrl, { method: "HEAD" });
-    if (check.status === 200) {
-      const contentType = check.headers.get("content-type");
-      const contentLength = parseInt(check.headers.get("content-length") || "0");
-      if (contentType?.includes("image/jpeg") && contentLength > 100) return;
+  // Replace your existing check with this detailed logging:
+try {
+  const check = await fetch(absoluteThumbUrl, { method: "HEAD" });
+  if (check.status === 200) {
+    const contentType = check.headers.get("content-type");
+    const contentLength = parseInt(check.headers.get("content-length") || "0");
+    
+    console.log(`Checking ${filename}: status ${check.status}, type ${contentType}, size ${contentLength}`);
+    
+    if (contentType?.includes("image/jpeg") && contentLength > 100) {
+      console.log(`-> Skipping: Thumbnail found at ${absoluteThumbUrl}`);
+      return; 
     }
-  } catch (e) { /* Assume it doesn't exist and proceed to generate */ }
+  } else {
+    console.log(`-> Generating: Thumbnail missing for ${filename} (Status: ${check.status})`);
+  }
+} catch (e) {
+  console.log(`-> Generating: Error checking thumbnail for ${filename}: ${e.message}`);
+}
 
   // 2. Generation
   const blob = await new Promise((resolve) => {
@@ -115,7 +126,7 @@ const processSingleItem = async (videoItem) => {
       
       const { presigned } = await presignRes.json();
       await fetch(presigned[0].presignedUrl, {
-        method: "PUT",
+        method: "PUT", 
         headers: { "Content-Type": "image/jpeg" },
         body: blob
       });
