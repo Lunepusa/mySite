@@ -10,7 +10,7 @@ import { TagSelect, searchTags, ClickableTags } from "./Tags";
 //      tags: row.tags || '',
 //      type: row.file_type,
 //      isVideo: row.file_type?.startsWith('video/') || false,
-    }));
+//   }));
 // /share path 
 // const media = mediaList.results.map(row => ({
 //              key: row.object_key,
