@@ -108,7 +108,7 @@ const Upload = () => {
       
 
       for (const file of files) {
-        const cleanFile ="";
+        let cleanFile =file;
         // Remove PXL_ prefix on frontend
         if (file.name.startsWith("PXL_")) {
           const newName = file.name.substring(4);
