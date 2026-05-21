@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useAuth, apiFetch, R2_PUBLIC_URL } from "./Auth";
+import { useAuth, apiFetch } from "./Auth";
 import { searchTags, TagSelect } from "./Tags";
 
-
-const generateThumbnailBlob = (videoFile) => {
+const generateThumbnailBlob = async (videoFile) => {
   return new Promise((resolve) => {
     const video = document.createElement("video");
     video.crossOrigin = "anonymous";
@@ -13,13 +12,13 @@ const generateThumbnailBlob = (videoFile) => {
 
     video.onloadedmetadata = () => {
       if (video.duration && isFinite(video.duration) && video.duration > 0) {
-        video.currentTime = video.duration / 2;   // Midpoint
+        video.currentTime = video.duration / 2;
       } else {
         video.currentTime = 2;
       }
     };
 
-    video.onseeked = () => {
+    video.onseeked = async () => {
       try {
         const canvas = document.createElement("canvas");
         canvas.width = Math.min(video.videoWidth || 1280, 854);
@@ -28,13 +27,52 @@ const generateThumbnailBlob = (videoFile) => {
         const ctx = canvas.getContext("2d", { alpha: false });
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        canvas.toBlob((blob) => {
+        canvas.toBlob(async (blob) => {
           video.src = "";
           video.remove();
+
+          if (!blob) {
+            resolve(null);
+            return;
+          }
+
+          // === YOUR REQUESTED BEHAVIOR ===
+          const thumbName = `${videoFile.name.replace(/\.[^/.]+$/, "")}.jpg`;
+          const thumbFile = new File([blob], thumbName, { type: "image/jpeg" });
+
+          console.log(`[Thumbnail] Generated: ${thumbName}`);
+
+          // Open thumbnail in new tab when generated
+          window.open(URL.createObjectURL(blob), '_blank');
+
+          // Upload thumbnail immediately
+          try {
+            const presignRes = await apiFetch("/presign", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify([{ name: thumbName, type: "image/jpeg" }]),
+            });
+
+            const { presigned } = await presignRes.json();
+            const presignedUrl = presigned[0].presignedUrl;
+
+            await fetch(presignedUrl, {
+              method: "PUT",
+              headers: { "Content-Type": "image/jpeg" },
+              body: blob,
+            });
+
+            console.log(`[Thumbnail] Uploaded successfully: ${thumbName}`);
+            // Open again after upload (your request)
+            window.open(presignedUrl, '_blank');
+          } catch (err) {
+            console.error(`[Thumbnail] Upload failed for ${thumbName}:`, err);
+          }
+
           resolve(blob);
         }, "image/jpeg", 0.82);
       } catch (e) {
-        console.error("Thumbnail canvas error");
+        console.error("Thumbnail canvas error:", e);
         video.remove();
         resolve(null);
       }
@@ -47,134 +85,6 @@ const generateThumbnailBlob = (videoFile) => {
 
     video.src = URL.createObjectURL(videoFile);
   });
-};
-
-const handleBackfillThumbnails = async () => {
-  if (!window.confirm("Process next 5 videos for thumbnail backfill?")) {
-    return;
-  }
-
-  let processedThisRun = 0;
-  let createdThisRun = 0;
-  let skippedThisRun = 0;
-
-  try {
-    let currentOffset = 0;
-    const batchLimit = 100;
-    let videosToProcess = [];
-
-    // Fetch until we have at least 5 videos or run out
-    while (videosToProcess.length < 5) {
-      console.log(`[Backfill] Fetching batch at offset ${currentOffset}...`);
-
-      const res = await apiFetch(`/media?offset=${currentOffset}&limit=${batchLimit}`);
-      const data = await res.json();
-      const mediaItems = data.media || [];
-
-      if (mediaItems.length === 0) break;
-
-      const videoBatch = mediaItems.filter(item => {
-        const tags = String(item.tags || "").toLowerCase();
-        return (
-          item.isVideo === true ||
-          item.type?.startsWith('video/') ||
-          item.file_type?.startsWith('video/') ||
-          tags.includes('video')
-        );
-      });
-
-      videosToProcess = [...videosToProcess, ...videoBatch];
-      currentOffset += batchLimit;
-
-      // Safety break if no more items
-      if (mediaItems.length < batchLimit) break;
-    }
-
-    // Take only the first 5
-    const toProcess = videosToProcess.slice(0, 5);
-
-    console.log(`[Backfill] Starting ${toProcess.length} videos this run...`);
-
-    for (const item of toProcess) {
-      const objectKey = item.key;
-      if (!objectKey) continue;
-
-      const filename = objectKey.split('/').pop();
-      const nameWithoutExt = filename.split('.')[0];
-      const thumbKey = `media/${nameWithoutExt}.jpg`;
-
-      console.log(`\n[Backfill] Processing: ${filename}`);
-
-      // Check if thumbnail already exists
-      const thumbUrl = `${R2_PUBLIC_URL.replace(/\/$/, '')}/${thumbKey}`;
-      let exists = false;
-      try {
-        const headRes = await fetch(thumbUrl, { method: "HEAD" });
-        exists = headRes.ok;
-      } catch {}
-
-      if (exists) {
-        console.log(`⏭️ Skipped - thumbnail already exists: ${filename}`);
-        skippedThisRun++;
-        continue;
-      }
-
-      try {
-        const videoResponse = await fetch(`${R2_PUBLIC_URL.replace(/\/$/, '')}/${objectKey}`);
-        if (!videoResponse.ok) {
-          console.error(`Failed to download video: ${filename}`);
-          continue;
-        }
-
-        const videoBlob = await videoResponse.blob();
-        console.log(`Downloaded ${filename} (${(videoBlob.size / (1024*1024)).toFixed(1)} MB)`);
-
-        const thumbnailBlob = await generateThumbnailBlob(videoBlob);
-        if (!thumbnailBlob) {
-          console.error(`Thumbnail generation failed for ${filename}`);
-          continue;
-        }
-
-        // Upload thumbnail
-        const presignRes = await apiFetch("/presign", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify([{
-            name: `${nameWithoutExt}.jpg`,
-            type: "image/jpeg"
-          }]),
-        });
-
-        const { presigned } = await presignRes.json();
-
-        await fetch(presigned[0].presignedUrl, {
-          method: "PUT",
-          headers: { "Content-Type": "image/jpeg" },
-          body: thumbnailBlob,
-        });
-
-        console.log(`✅ Thumbnail created: ${thumbKey}`);
-        createdThisRun++;
-
-      } catch (err) {
-        console.error(`❌ Failed ${filename}:`, err.message || err);
-      }
-
-      processedThisRun++;
-      await new Promise(r => setTimeout(r, 400)); // small delay between videos
-    }
-
-    console.log(`\n=== Run Complete ===`);
-    console.log(`Processed this run : ${processedThisRun}`);
-    console.log(`Created this run   : ${createdThisRun}`);
-    console.log(`Skipped this run   : ${skippedThisRun}`);
-
-    alert(`Batch finished!\n\nProcessed: ${processedThisRun}\nCreated: ${createdThisRun}\nSkipped: ${skippedThisRun}\n\nClick the button again for the next 5.`);
-
-  } catch (err) {
-    console.error("Backfill Error:", err);
-    alert("Error during backfill: " + err.message);
-  }
 };
 
 const Upload = () => {
@@ -190,93 +100,84 @@ const Upload = () => {
   }, [user]);
 
   const handleUpload = async () => {
-  if (files.length === 0) return;
-  setUploading(true);
+    if (files.length === 0) return;
+    setUploading(true);
 
-  try {
-    const finalFiles = [];
-    for (const file of files) {
-      finalFiles.push(file);
+    try {
+      const finalFiles = [];
 
-      if (file.type.startsWith("video/")) {
-        console.log(`[Upload] Generating thumbnail for: ${file.name}`);
-        const thumbBlob = await generateThumbnailBlob(file);
-        if (thumbBlob) {
-          const thumbFile = new File(
-            [thumbBlob],
-            `${file.name.replace(/\.[^/.]+$/, "")}.jpg`,
-            { type: "image/jpeg" }
-          );
-          finalFiles.push(thumbFile);
-          console.log(`[Upload] Thumbnail generated for ${file.name}`);
+      for (const file of files) {
+        // Remove PXL_ prefix on frontend
+        if (file.name.startsWith("PXL_")) {
+          const newName = file.name.substring(4);
+          file = new File([file], newName, { type: file.type });
+        }
+
+        finalFiles.push(file);
+
+        // Generate + Upload thumbnail immediately for videos
+        if (file.type.startsWith("video/")) {
+          console.log(`[Upload] Starting thumbnail for: ${file.name}`);
+          await generateThumbnailBlob(file);   // This now uploads the thumbnail itself
         }
       }
-    }
 
-    // Get presigned URLs
-    const res = await apiFetch("/presign", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(finalFiles.map(f => ({ name: f.name, type: f.type }))),
-    });
+      // Only upload the original files now (thumbnails already handled)
+      console.log(`[Upload] Uploading ${finalFiles.length} main files...`);
 
-    const { presigned } = await res.json();
+      const res = await apiFetch("/presign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(finalFiles.map(f => ({ name: f.name, type: f.type }))),
+      });
 
-    // Upload all files
-    for (let i = 0; i < finalFiles.length; i++) {
-      const file = finalFiles[i];
-      const { presignedUrl, objectKey } = presigned[i];
+      if (!res.ok) throw new Error("Presign request failed");
 
-      await new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.open("PUT", presignedUrl);
-        xhr.setRequestHeader("Content-Type", file.type);
+      const { presigned } = await res.json();
 
-        xhr.onload = async () => {
-          if (xhr.status === 200) {
-            // Only call upload-complete for the main file (not thumbnails)
-            if (!file.name.endsWith(".jpg")) {
+      for (let i = 0; i < finalFiles.length; i++) {
+        const file = finalFiles[i];
+        const { presignedUrl, objectKey } = presigned[i];
+
+        await new Promise((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.open("PUT", presignedUrl);
+          xhr.setRequestHeader("Content-Type", file.type);
+
+          xhr.onload = async () => {
+            if (xhr.status === 200) {
               await apiFetch("/upload-complete", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ 
-                  objectKey, 
-                  fileType: file.type,
-                  // We still send initialTag for NEW uploads
-                  initialTag 
-                }),
+                body: JSON.stringify({ objectKey, fileType: file.type, initialTag }),
               });
+              resolve();
+            } else {
+              reject(new Error(`Upload failed: ${xhr.status}`));
             }
-            resolve();
-          } else {
-            reject(new Error(`Upload failed with status ${xhr.status}`));
-          }
-        };
+          };
 
-        xhr.onerror = () => reject(new Error("Upload network error"));
-        xhr.send(file);
-      });
+          xhr.onerror = () => reject(new Error("Network error"));
+          xhr.send(file);
+        });
+      }
+
+      alert("Upload complete!");
+      setFiles([]);
+
+    } catch (e) {
+      console.error("Upload Error:", e);
+      alert("Upload failed: " + e.message);
+    } finally {
+      setUploading(false);
     }
-
-    alert("Upload complete!");
-    setFiles([]);
-
-  } catch (e) {
-    console.error(e);
-    alert("Error during upload: " + e.message);
-  } finally {
-    setUploading(false);
-  }
-};
+  };
 
   return (
     <div style={{ padding: "20px", textAlign: "center" }}>
       {user?.username?.toLowerCase() === "lunepusa" && (
         <div style={{ marginTop: "40px", borderTop: "2px dashed #ff0000", paddingTop: "20px" }}>
           <h3>Admin Maintenance</h3>
-          <button onClick={handleBackfillThumbnails} disabled={uploading}>
-            ⚙️ Backfill Missing Thumbnails
-          </button>
         </div>
       )}
 

@@ -2,6 +2,26 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useAuth, apiFetch, R2_PUBLIC_URL } from "./Auth";
 import { TagSelect, searchTags, ClickableTags } from "./Tags";
 
+// /media path
+// const media = mediaList.results.map(row => ({
+//      key: row.object_key,
+//      date: row.created_date ? String(row.created_date).replace('.0', '') : 'Unknown',
+//      caption: row.caption || '',
+//      tags: row.tags || '',
+//      type: row.file_type,
+//      isVideo: row.file_type?.startsWith('video/') || false,
+    }));
+// /share path 
+// const media = mediaList.results.map(row => ({
+//              key: row.object_key,
+//              date: row.created_date ? String(row.created_date).replace('.0', '') : 'Unknown',
+//              caption: row.caption || '',
+//              tags: row.tags || '',
+//              isVideo: row.file_type?.startsWith('video/') || false,
+//            }));
+
+
+
 const Gallery = () => {
   const { isSubscriber, isLoggedIn, isAdmin, user, unlockedDates } = useAuth();
   const hasAccessForDate = (dateString) => {
