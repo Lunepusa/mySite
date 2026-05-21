@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth, apiFetch, R2_PUBLIC_URL } from "./Auth";
 import { searchTags, TagSelect } from "./Tags";
 
-// Unified logic: Captures frame at duration / 2
+
 const generateThumbnailBlob = (videoFile) => {
   return new Promise((resolve) => {
     const video = document.createElement("video");
@@ -12,22 +12,32 @@ const generateThumbnailBlob = (videoFile) => {
     video.playsInline = true;
 
     video.onloadedmetadata = () => {
-      video.currentTime = 2; // Fixed 2 seconds in
+      if (video.duration && isFinite(video.duration) && video.duration > 0) {
+        video.currentTime = video.duration / 2;   // Midpoint
+      } else {
+        video.currentTime = 2;
+      }
     };
 
     video.onseeked = () => {
-      const canvas = document.createElement("canvas");
-      canvas.width = Math.min(video.videoWidth || 1280, 854);
-      canvas.height = Math.min(video.videoHeight || 720, 480);
+      try {
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.min(video.videoWidth || 1280, 854);
+        canvas.height = Math.min(video.videoHeight || 720, 480);
 
-      const ctx = canvas.getContext("2d", { alpha: false });
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const ctx = canvas.getContext("2d", { alpha: false });
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-      canvas.toBlob((blob) => {
-        video.src = "";
+        canvas.toBlob((blob) => {
+          video.src = "";
+          video.remove();
+          resolve(blob);
+        }, "image/jpeg", 0.82);
+      } catch (e) {
+        console.error("Thumbnail canvas error");
         video.remove();
-        resolve(blob);
-      }, "image/jpeg", 0.78);
+        resolve(null);
+      }
     };
 
     video.onerror = () => {
@@ -180,76 +190,84 @@ const Upload = () => {
   }, [user]);
 
   const handleUpload = async () => {
-    if (files.length === 0) return;
-    setUploading(true);
+  if (files.length === 0) return;
+  setUploading(true);
 
-    try {
-      const finalFiles = [];
-      for (const file of files) {
-        finalFiles.push(file);
+  try {
+    const finalFiles = [];
+    for (const file of files) {
+      finalFiles.push(file);
 
-        if (file.type.startsWith("video/")) {
-          console.log(`[Upload] Generating thumbnail for: ${file.name}`);
-          const thumbBlob = await generateThumbnailBlob(file);
-          if (thumbBlob) {
-            const thumbFile = new File(
-              [thumbBlob],
-              `${file.name.replace(/\.[^/.]+$/, "")}.jpg`,
-              { type: "image/jpeg" }
-            );
-            finalFiles.push(thumbFile);
-            console.log(`[Upload] Thumbnail ready for ${file.name}`);
-          }
+      if (file.type.startsWith("video/")) {
+        console.log(`[Upload] Generating thumbnail for: ${file.name}`);
+        const thumbBlob = await generateThumbnailBlob(file);
+        if (thumbBlob) {
+          const thumbFile = new File(
+            [thumbBlob],
+            `${file.name.replace(/\.[^/.]+$/, "")}.jpg`,
+            { type: "image/jpeg" }
+          );
+          finalFiles.push(thumbFile);
+          console.log(`[Upload] Thumbnail generated for ${file.name}`);
         }
       }
-
-      // ... rest of your upload logic stays the same
-      const res = await apiFetch("/presign", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(finalFiles.map(f => ({ name: f.name, type: f.type }))),
-      });
-
-      const { presigned } = await res.json();
-
-      for (let i = 0; i < finalFiles.length; i++) {
-        const file = finalFiles[i];
-        const { presignedUrl, objectKey } = presigned[i];
-
-        await new Promise((resolve, reject) => {
-          const xhr = new XMLHttpRequest();
-          xhr.open("PUT", presignedUrl);
-          xhr.setRequestHeader("Content-Type", file.type);
-
-          xhr.onload = async () => {
-            if (xhr.status === 200) {
-              if (!file.name.endsWith(".jpg")) {
-                await apiFetch("/upload-complete", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ objectKey, fileType: file.type, initialTag }),
-                });
-              }
-              resolve();
-            } else {
-              reject(new Error(`Upload failed with status ${xhr.status}`));
-            }
-          };
-
-          xhr.onerror = () => reject(new Error("XHR error"));
-          xhr.send(file);
-        });
-      }
-
-      alert("Upload complete!");
-      setFiles([]);
-    } catch (e) {
-      console.error(e);
-      alert("Error during upload: " + e.message);
-    } finally {
-      setUploading(false);
     }
-  };
+
+    // Get presigned URLs
+    const res = await apiFetch("/presign", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(finalFiles.map(f => ({ name: f.name, type: f.type }))),
+    });
+
+    const { presigned } = await res.json();
+
+    // Upload all files
+    for (let i = 0; i < finalFiles.length; i++) {
+      const file = finalFiles[i];
+      const { presignedUrl, objectKey } = presigned[i];
+
+      await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open("PUT", presignedUrl);
+        xhr.setRequestHeader("Content-Type", file.type);
+
+        xhr.onload = async () => {
+          if (xhr.status === 200) {
+            // Only call upload-complete for the main file (not thumbnails)
+            if (!file.name.endsWith(".jpg")) {
+              await apiFetch("/upload-complete", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                  objectKey, 
+                  fileType: file.type,
+                  // We still send initialTag for NEW uploads
+                  initialTag 
+                }),
+              });
+            }
+            resolve();
+          } else {
+            reject(new Error(`Upload failed with status ${xhr.status}`));
+          }
+        };
+
+        xhr.onerror = () => reject(new Error("Upload network error"));
+        xhr.send(file);
+      });
+    }
+
+    alert("Upload complete!");
+    setFiles([]);
+
+  } catch (e) {
+    console.error(e);
+    alert("Error during upload: " + e.message);
+  } finally {
+    setUploading(false);
+  }
+};
 
   return (
     <div style={{ padding: "20px", textAlign: "center" }}>
