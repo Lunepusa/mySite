@@ -110,15 +110,15 @@ const Upload = () => {
         // Remove PXL_ prefix on frontend
         if (file.name.startsWith("PXL_")) {
           const newName = file.name.substring(4);
-          file = new File([file], newName, { type: file.type });
+          cleanFile = new File([file], newName, { type: file.type });
         }
 
-        finalFiles.push(file);
+        finalFiles.push(cleanFile);
 
         // Generate + Upload thumbnail immediately for videos
-        if (file.type.startsWith("video/")) {
-          console.log(`[Upload] Starting thumbnail for: ${file.name}`);
-          await generateThumbnailBlob(file);   // This now uploads the thumbnail itself
+        if (cleanFile.type.startsWith("video/")) {
+          console.log(`[Upload] Starting thumbnail for: ${cleanFile.name}`);
+          await generateThumbnailBlob(cleanFile);   // This now uploads the thumbnail itself
         }
       }
 
