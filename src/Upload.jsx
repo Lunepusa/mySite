@@ -68,12 +68,12 @@ const handleBackfillThumbnails = async () => {
     let keepFetching = true;
 
     const processSingleItem = async (videoItem) => {
-      if (!videoItem?.object_key) {
-        console.warn("[Backfill] Item missing object_key");
+      if (!videoItem?.key) {
+        console.warn("[Backfill] Item missing key");
         return;
       }
 
-      const videoKey = videoItem.object_key;
+      const videoKey = videoItem.key;
       const filename = videoKey.split('/').pop();
       const nameWithoutExt = filename.split('.')[0];
       const thumbKey = `media/${nameWithoutExt}.jpg`;
