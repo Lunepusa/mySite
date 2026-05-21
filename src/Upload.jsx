@@ -5,8 +5,6 @@ import { searchTags, TagSelect } from "./Tags";
 // Unified logic: Captures frame at duration / 2
 const generateThumbnailBlob = (videoFile) => {
   return new Promise((resolve) => {
-    console.log(`[ThumbnailGen] Starting for video size: ${videoFile?.size} bytes`);
-
     const video = document.createElement("video");
     video.crossOrigin = "anonymous";
     video.muted = true;
@@ -14,94 +12,120 @@ const generateThumbnailBlob = (videoFile) => {
     video.playsInline = true;
 
     video.onloadedmetadata = () => {
-      console.log(`[ThumbnailGen] Metadata loaded - Duration: ${video.duration}s`);
-      video.currentTime = (video.duration && isFinite(video.duration)) ? video.duration / 2 : 0;
+      video.currentTime = 2; // Fixed 2 seconds in
     };
 
     video.onseeked = () => {
-      try {
-        const canvas = document.createElement("canvas");
-        canvas.width = video.videoWidth || 1280;
-        canvas.height = video.videoHeight || 720;
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.min(video.videoWidth || 1280, 854);
+      canvas.height = Math.min(video.videoHeight || 720, 480);
 
-        canvas.toBlob((blob) => {
-          console.log(`[ThumbnailGen] Success - Generated thumbnail size: ${blob?.size} bytes`);
-          video.src = "";
-          video.remove();
-          resolve(blob);
-        }, "image/jpeg", 0.85);
-      } catch (e) {
-        console.error("[ThumbnailGen] Canvas error:", e);
+      const ctx = canvas.getContext("2d", { alpha: false });
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      canvas.toBlob((blob) => {
+        video.src = "";
         video.remove();
-        resolve(null);
-      }
+        resolve(blob);
+      }, "image/jpeg", 0.78);
     };
 
-    video.onerror = (e) => {
-      console.error("[ThumbnailGen] Video loading error:", e);
+    video.onerror = () => {
       video.remove();
       resolve(null);
     };
 
-    if (videoFile instanceof File || videoFile instanceof Blob) {
-      video.src = URL.createObjectURL(videoFile);
-    } else {
-      console.error("[ThumbnailGen] Invalid video input");
-      resolve(null);
-    }
+    video.src = URL.createObjectURL(videoFile);
   });
 };
 
 const handleBackfillThumbnails = async () => {
-  if (!window.confirm("Start batch-processed thumbnail backfill? This will process items in groups of 100.")) {
+  if (!window.confirm("Process next 5 videos for thumbnail backfill?")) {
     return;
   }
 
-  let totalProcessed = 0;
-  let totalThumbnailsCreated = 0;
+  let processedThisRun = 0;
+  let createdThisRun = 0;
+  let skippedThisRun = 0;
 
   try {
     let currentOffset = 0;
     const batchLimit = 100;
-    let keepFetching = true;
+    let videosToProcess = [];
 
-    const processSingleItem = async (videoItem) => {
-      if (!videoItem?.key) {
-        console.warn("[Backfill] Item missing key");
-        return;
-      }
+    // Fetch until we have at least 5 videos or run out
+    while (videosToProcess.length < 5) {
+      console.log(`[Backfill] Fetching batch at offset ${currentOffset}...`);
 
-      const videoKey = videoItem.key;
-      const filename = videoKey.split('/').pop();
+      const res = await apiFetch(`/media?offset=${currentOffset}&limit=${batchLimit}`);
+      const data = await res.json();
+      const mediaItems = data.media || [];
+
+      if (mediaItems.length === 0) break;
+
+      const videoBatch = mediaItems.filter(item => {
+        const tags = String(item.tags || "").toLowerCase();
+        return (
+          item.isVideo === true ||
+          item.type?.startsWith('video/') ||
+          item.file_type?.startsWith('video/') ||
+          tags.includes('video')
+        );
+      });
+
+      videosToProcess = [...videosToProcess, ...videoBatch];
+      currentOffset += batchLimit;
+
+      // Safety break if no more items
+      if (mediaItems.length < batchLimit) break;
+    }
+
+    // Take only the first 5
+    const toProcess = videosToProcess.slice(0, 5);
+
+    console.log(`[Backfill] Starting ${toProcess.length} videos this run...`);
+
+    for (const item of toProcess) {
+      const objectKey = item.key;
+      if (!objectKey) continue;
+
+      const filename = objectKey.split('/').pop();
       const nameWithoutExt = filename.split('.')[0];
       const thumbKey = `media/${nameWithoutExt}.jpg`;
 
-      const absoluteVideoUrl = `${R2_PUBLIC_URL.replace(/\/$/, '')}/${videoKey}`;
+      console.log(`\n[Backfill] Processing: ${filename}`);
 
-      console.log(`[Backfill] Processing: ${filename}`);
+      // Check if thumbnail already exists
+      const thumbUrl = `${R2_PUBLIC_URL.replace(/\/$/, '')}/${thumbKey}`;
+      let exists = false;
+      try {
+        const headRes = await fetch(thumbUrl, { method: "HEAD" });
+        exists = headRes.ok;
+      } catch {}
+
+      if (exists) {
+        console.log(`⏭️ Skipped - thumbnail already exists: ${filename}`);
+        skippedThisRun++;
+        continue;
+      }
 
       try {
-        // 1. Fetch video
-        console.log(`[Backfill] Fetching video from R2: ${filename}`);
-        const videoResponse = await fetch(absoluteVideoUrl);
+        const videoResponse = await fetch(`${R2_PUBLIC_URL.replace(/\/$/, '')}/${objectKey}`);
         if (!videoResponse.ok) {
-          console.error(`[Backfill] Failed to fetch video ${filename} - Status: ${videoResponse.status}`);
-          return;
+          console.error(`Failed to download video: ${filename}`);
+          continue;
         }
-        const videoBlob = await videoResponse.blob();
-        console.log(`[Backfill] Video fetched - Size: ${(videoBlob.size / (1024*1024)).toFixed(2)} MB`);
 
-        // 2. Generate thumbnail
+        const videoBlob = await videoResponse.blob();
+        console.log(`Downloaded ${filename} (${(videoBlob.size / (1024*1024)).toFixed(1)} MB)`);
+
         const thumbnailBlob = await generateThumbnailBlob(videoBlob);
         if (!thumbnailBlob) {
-          console.error(`[Backfill] Thumbnail generation failed for ${filename}`);
-          return;
+          console.error(`Thumbnail generation failed for ${filename}`);
+          continue;
         }
 
-        // 3. Get presigned URL
-        console.log(`[Backfill] Requesting presigned URL for thumbnail`);
+        // Upload thumbnail
         const presignRes = await apiFetch("/presign", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -112,63 +136,34 @@ const handleBackfillThumbnails = async () => {
         });
 
         const { presigned } = await presignRes.json();
-        const presignedUrl = presigned[0].presignedUrl;
 
-        // 4. Upload thumbnail
-        console.log(`[Backfill] Uploading thumbnail...`);
-        await fetch(presignedUrl, {
+        await fetch(presigned[0].presignedUrl, {
           method: "PUT",
           headers: { "Content-Type": "image/jpeg" },
           body: thumbnailBlob,
         });
 
-        console.log(`✅ [Backfill] SUCCESS - Thumbnail created: ${thumbKey}`);
-        totalThumbnailsCreated++;
+        console.log(`✅ Thumbnail created: ${thumbKey}`);
+        createdThisRun++;
 
       } catch (err) {
-        console.error(`❌ [Backfill] Failed for ${filename}:`, err);
-      }
-    };
-
-    while (keepFetching) {
-      console.log(`\n=== Fetching batch ${currentOffset} ===`);
-
-      const res = await apiFetch(`/media?offset=${currentOffset}&limit=${batchLimit}`);
-      const data = await res.json();
-      const mediaItems = data.media || [];
-
-      const videoBatch = mediaItems.filter(item => {
-        return item.isVideo === true ||
-               item.type?.startsWith('video/') ||
-               item.file_type?.startsWith('video/') ||
-               (Array.isArray(item.tags) && item.tags.some(t => typeof t === 'string' && t.toLowerCase().includes('video')));
-      });
-
-      console.log(`Found ${videoBatch.length} videos in this batch (total items: ${mediaItems.length})`);
-
-      for (const item of videoBatch) {
-        await processSingleItem(item);
-        totalProcessed++;
-        await new Promise(r => setTimeout(r, 400)); // small delay
+        console.error(`❌ Failed ${filename}:`, err.message || err);
       }
 
-      if (mediaItems.length < batchLimit) {
-        keepFetching = false;
-      } else {
-        currentOffset += batchLimit;
-        await new Promise(r => setTimeout(r, 1000));
-      }
+      processedThisRun++;
+      await new Promise(r => setTimeout(r, 400)); // small delay between videos
     }
 
-    console.log(`\n🎉 BACKFILL FINISHED`);
-    console.log(`Total videos processed: ${totalProcessed}`);
-    console.log(`Thumbnails successfully created: ${totalThumbnailsCreated}`);
+    console.log(`\n=== Run Complete ===`);
+    console.log(`Processed this run : ${processedThisRun}`);
+    console.log(`Created this run   : ${createdThisRun}`);
+    console.log(`Skipped this run   : ${skippedThisRun}`);
 
-    alert(`Backfill complete!\n\nProcessed: ${totalProcessed} videos\nThumbnails created: ${totalThumbnailsCreated}`);
+    alert(`Batch finished!\n\nProcessed: ${processedThisRun}\nCreated: ${createdThisRun}\nSkipped: ${skippedThisRun}\n\nClick the button again for the next 5.`);
 
   } catch (err) {
-    console.error("❌ Backfill Error:", err);
-    alert("Backfill failed: " + err.message);
+    console.error("Backfill Error:", err);
+    alert("Error during backfill: " + err.message);
   }
 };
 
