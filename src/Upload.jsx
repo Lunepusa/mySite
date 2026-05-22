@@ -69,7 +69,7 @@ const generateThumbnailBlob = async (videoFile) => {
               method: "PUT",
               headers: { "Content-Type": "image/jpeg" },
               body: blob,
-            }).then(console.log(`[Thumbnail] Uploaded successfully: ${thumbName}`, presignedUrl););
+            }).then(console.log(`[Thumbnail] Uploaded successfully: ${thumbName}`, presignedUrl));
             
           } catch (err) {
             console.error(`[Thumbnail] Upload failed for ${thumbName}:`, err);
