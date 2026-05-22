@@ -621,39 +621,53 @@ useEffect(() => {
 
             {multiSelectMode && selectedItems.size > 0 && (
               <div style={{ marginTop: "2px" }}>
-                <TagSelect
-                  initialTags={multiCommonTags.join(",")}
-                  onSave={(tagsString) => {
-                    const newTags = getTagsArray(tagsString);
-                    const added = newTags.filter(t => !multiCommonTags.includes(t));
-                    const removed = multiCommonTags.filter(t => !newTags.includes(t));
+  <TagSelect
+    initialTags={multiCommonTags.join(",")}
+    onSave={(tagsString, dateValue) => {
+      const newTags = getTagsArray(tagsString);
+      const added = newTags.filter(t => !multiCommonTags.includes(t));
+      const removed = multiCommonTags.filter(t => !newTags.includes(t));
 
-                    if (added.length > 0 || removed.length > 0) {
-                      const keys = Array.from(selectedItems);
-                      const body = { keys };
-                      if (added.length > 0) body.addedTags = added;
-                      if (removed.length > 0) body.removedTags = removed;
+      if (added.length > 0 || removed.length > 0 || (dateValue && dateValue.length === 8)) {
+        const keys = Array.from(selectedItems);
+        const body = { keys };
 
-                      apiFetch("/bulk-update", {
-                        method: "POST",
-                        body: JSON.stringify(body),
-                      }).then(res => {
-                        if (res.ok) {
-                          setMedia(prev => prev.map(item => {
-                            if (keys.includes(item.key)) {
-                              let current = getTagsArray(item.tags);
-                              current = current.filter(t => !removed.includes(t));
-                              current = [...new Set([...current, ...added])];
-                              return { ...item, tags: current.join(", ") };
-                            }
-                            return item;
-                          }));
-                        }
-                      });
-                    }
-                  }}
-                  placeholder="Edit tags (common shown)..."
-                />
+        if (added.length > 0) body.addedTags = added;
+        if (removed.length > 0) body.removedTags = removed;
+        
+        // Include date if it's exactly 8 digits
+        if (dateValue && dateValue.length === 8) {
+          body.newDate = dateValue;
+        }
+
+        apiFetch("/bulk-update", {
+          method: "POST",
+          body: JSON.stringify(body),
+        }).then(res => {
+          if (res.ok) {
+            setMedia(prev => prev.map(item => {
+              if (keys.includes(item.key)) {
+                let current = getTagsArray(item.tags);
+                current = current.filter(t => !removed.includes(t));
+                current = [...new Set([...current, ...added])];
+                return { 
+                  ...item, 
+                  tags: current.join(", "),
+                  created_date: dateValue.length === 8 ? dateValue : item.created_date
+                };
+              }
+              return item;
+            }));
+
+            // Deselect everything
+            setSelectedItems(new Set());
+          }
+        });
+      }
+    }}
+    placeholder="Edit tags (common shown)..."
+  />
+>
               </div>
             )}
           </div>
@@ -742,7 +756,7 @@ useEffect(() => {
   ) : (
     // Fallback for unauthorized users
     <img 
-      src={`${R2_PUBLIC_URL}/cdn-cgi/image/quality=85,format=auto,blur=200/${thumbKey}`}
+      src={`${R2_PUBLIC_URL}/cdn-cgi/image/quality=85,format=auto,blur=50/${(fullscreenItem.key.replace(/\.[^/.]+$/, "") + ".jpg")}`}
       alt="Preview restricted"
       style={{
         maxWidth: "100%",
@@ -763,7 +777,7 @@ useEffect(() => {
         : (() => {
             const relativeImgPath = fullscreenItem.key.startsWith('/') ? fullscreenItem.key : `/${fullscreenItem.key}`;
             // Root relative pathing for unauthorized blurred image preview
-            return `${R2_PUBLIC_URL}/cdn-cgi/image/quality=85,format=auto,blur=50/${fullscreenItem.key}`;
+            return `${R2_PUBLIC_URL}/cdn-cgi/image/quality=85,format=auto,blur=200/${fullscreenItem.key}`;
           })()
     }
     alt=""
@@ -939,8 +953,8 @@ let targetKey = item.key;
   // 3. USE ROOT RELATIVE ROUTING. Cloudflare intercepts this instantly within your custom domain
   // without needing a slow external DNS lookup to the full R2 domain.
   const cloudflareUrl = !hasAccess
-    ? `${R2_PUBLIC_URL}/cdn-cgi/image/width=250,quality=80,format=auto,blur=20}/${targetKey}`
-    : `${R2_PUBLIC_URL}/cdn-cgi/image/width=250,quality=80,format=auto}/${targetKey}`
+    ? `${R2_PUBLIC_URL}/cdn-cgi/image/width=250,quality=80,format=auto,blur=20/${targetKey}`
+    : `${R2_PUBLIC_URL}/cdn-cgi/image/width=250,quality=80,format=auto/${targetKey}`
 
 
       return (
@@ -1029,7 +1043,6 @@ let targetKey = item.key;
                                       margin: "2px 0",
                                     }}
                                   >
-                                    Time: {item.key.split("_")[1]?.split(".")[0] || "Unknown"}
                                   </p>
                                 )}
                               </>

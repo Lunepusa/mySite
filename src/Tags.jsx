@@ -564,6 +564,7 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
   const [localTags, setLocalTags] = useState(
     initialTags.split(",").map(t => t.trim()).filter(t => t)
   );
+  const [dateValue, setDateValue] = useState("");
   const [inputValue, setInputValue] = useState("");
   const [filteredSuggestions, setFilteredSuggestions] = useState([]);
 
@@ -608,8 +609,19 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
     }
   };
 
+  const handleDateChange = (e) => {
+    // Only allow numbers
+    setDateValue(e.target.value.replace(/\D/g, ""));
+  };
+
   const handleSave = () => {
-    onSave(localTags.join(","));
+    // Validation: 8 digit check
+    if (dateValue.length > 0 && dateValue.length !== 8) {
+      alert("Date must be exactly 8 digits.");
+      return;
+    }
+    onSave(localTags.join(","), dateValue);
+    setDateValue("");
   };
 
   return (
@@ -660,6 +672,25 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
         }}
       />
 
+      {/* New: Date Input field */}
+      <input
+        type="text"
+        inputMode="numeric"
+        maxLength={8}
+        value={dateValue}
+        onChange={handleDateChange}
+        placeholder="YYYYMMDD (Optional)"
+        style={{
+          width: "100%",
+          padding: "8px",
+          marginTop: "10px",
+          background: "#222",
+          border: "1px solid #444",
+          color: "#fff",
+          borderRadius: "4px",
+        }}
+      />
+
       {/* Suggestion dropdown */}
       {filteredSuggestions.length > 0 && (
         <div
@@ -702,11 +733,11 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
           cursor: "pointer",
         }}
       >
-        Save tags
+        Save tags & date
       </button>
     </div>
   );
-};
+};};
 
 export const getTagsArray = (tagInput) => {
   if (!tagInput) return [];

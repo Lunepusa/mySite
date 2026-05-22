@@ -34,7 +34,6 @@ const generateThumbnailBlob = async (videoFile) => {
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
         canvas.toBlob(async (blob) => {
-          // FIX: Detach the error listener before clearing the source
           video.onerror = null; 
           video.src = "";
           video.remove();
@@ -125,7 +124,6 @@ const Upload = () => {
           }
           console.log(`[Upload] Starting thumbnail for: ${cleanFile.name}`);
           
-          // FIX: Added try/catch so one bad thumbnail doesn't crash the loop
           try {
             await generateThumbnailBlob(cleanFile);
           } catch (thumbErr) {
@@ -172,6 +170,9 @@ const Upload = () => {
 
           xhr.onload = async () => {
             if (xhr.status === 200) {
+              // Force progress to 100% immediately on success
+              setProgress(prev => ({ ...prev, [file.name]: 100 }));
+              
               await apiFetch("/upload-complete", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -234,7 +235,7 @@ const Upload = () => {
             return (
               <div key={file.name} style={{ marginBottom: "5px" }}>
                 <span style={{ fontSize: "0.8em" }}>{displayName}: </span>
-                <progress value={progress[displayName] || 0} max="100" />
+                {/* Visual progress bar removed, strictly numbers now */}
                 <span> {progress[displayName] || 0}%</span>
               </div>
             );
