@@ -3,7 +3,7 @@ import { useAuth, apiFetch } from "./Auth";
 import { searchTags, TagSelect } from "./Tags";
 
 const generateThumbnailBlob = async (videoFile) => {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => { // Added reject
     const video = document.createElement("video");
     video.crossOrigin = "anonymous";
     video.muted = true;
@@ -11,84 +11,48 @@ const generateThumbnailBlob = async (videoFile) => {
     video.playsInline = true;
 
     video.onloadedmetadata = () => {
-      if (video.duration && isFinite(video.duration) && video.duration > 0) {
-        video.currentTime = video.duration / 2;
-      } else {
-        video.currentTime = 2;
-      }
+      video.currentTime = (video.duration && isFinite(video.duration) && video.duration > 0) ? video.duration / 2 : 2;
     };
 
     video.onseeked = async () => {
       try {
         const canvas = document.createElement("canvas");
-        // 1. Get original video dimensions
-        const videoWidth = video.videoWidth;
-        const videoHeight = video.videoHeight;
-
-        // 2. Define the absolute maximum for BOTH width and height
-        const MAX_SIZE = 720;
-
-        // 3. Calculate the scale needed to fit within the 780x780 bounding box
-        // (Math.min with 1 ensures we only shrink, we never stretch small videos)
-        const scale = Math.min(1, MAX_SIZE / videoWidth, MAX_SIZE / videoHeight);
-
-        // 4. Set the literal pixel dimensions of the final JPEG file
-        // (Using Math.round to ensure we don't pass decimal pixels to the canvas)
-        canvas.width = Math.round(videoWidth * scale);
-        canvas.height = Math.round(videoHeight * scale);
-
+        canvas.width = Math.min(video.videoWidth || 1280, 854);
+        canvas.height = Math.min(video.videoHeight || 720, 480);
         const ctx = canvas.getContext("2d", { alpha: false });
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
         canvas.toBlob(async (blob) => {
           video.src = "";
           video.remove();
+          if (!blob) { resolve(null); return; }
 
-          if (!blob) {
-            resolve(null);
-            return;
-          }
-
-          // === YOUR REQUESTED BEHAVIOR ===
           const thumbName = `${videoFile.name.replace(/\.[^/.]+$/, "")}.jpg`;
-          const thumbFile = new File([blob], thumbName, { type: "image/jpeg" });
-
-          console.log(`[Thumbnail] Generated: ${thumbName}`, URL.createObjectURL(blob));
-          
           try {
             const presignRes = await apiFetch("/presign", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify([{ name: thumbName, type: "image/jpeg" }]),
+              body: JSON.stringify({ files: [{ name: thumbName, type: "image/jpeg" }] }),
             });
-
             const { presigned } = await presignRes.json();
-            const presignedUrl = presigned[0].presignedUrl;
-
-            await fetch(presignedUrl, {
-              method: "PUT",
-              headers: { "Content-Type": "image/jpeg" },
-              body: blob,
-            }).then(console.log(`[Thumbnail] Uploaded successfully: ${thumbName}`, presignedUrl));
             
-          } catch (err) {
-            console.error(`[Thumbnail] Upload failed for ${thumbName}:`, err);
+            // CRITICAL: Await the actual upload fetch
+            await fetch(presigned[0].presignedUrl, { 
+                method: "PUT", 
+                headers: { "Content-Type": "image/jpeg" }, 
+                body: blob 
+            });
+            
+            console.log(`[Thumbnail] Upload Success: ${thumbName}`);
+            resolve(blob); // Resolve only AFTER fetch is done
+          } catch (err) { 
+            console.error(`[Thumbnail] Failed:`, err);
+            reject(err); // Reject on error
           }
-
-          resolve(blob);
         }, "image/jpeg", 0.82);
-      } catch (e) {
-        console.error("Thumbnail canvas error:", e);
-        video.remove();
-        resolve(null);
-      }
+      } catch (e) { video.remove(); reject(e); }
     };
-
-    video.onerror = () => {
-      video.remove();
-      resolve(null);
-    };
-
+    video.onerror = () => { video.remove(); reject(); };
     video.src = URL.createObjectURL(videoFile);
   });
 };
