@@ -627,7 +627,7 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
   return (
     <div style={{ margin: "10px 0" }}>
       {/* Currently selected tags (removable pills) */}
-      <div style={{ minHeight: "32px", marginBottom: "8px" }}>
+      <div style={{ minHeight: "32px", marginBottom: "8px",width:"30%" }}>
         {localTags.map((tag) => (
           <span
             key={tag}
@@ -656,7 +656,7 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
       </div>
 
       {/* Input field */}
-      <input
+      tagsearch<input
         type="text"
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
@@ -673,7 +673,7 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
       />
 
       {/* New: Date Input field */}
-      <input
+      date<input
         type="text"
         inputMode="numeric"
         maxLength={8}

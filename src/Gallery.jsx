@@ -660,7 +660,7 @@ useEffect(() => {
             }));
 
             // Deselect everything
-            setSelectedItems(new Set());
+            setSelectedItems([]);
           }
         });
       }
