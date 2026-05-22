@@ -11,7 +11,6 @@ const generateThumbnailBlob = async (videoFile) => {
     video.playsInline = true;
 
     video.onloadedmetadata = () => {
-      // Your exact original logic for grabbing the middle of the file
       if (video.duration && isFinite(video.duration) && video.duration > 0) {
         video.currentTime = video.duration / 2;
       } else {
@@ -23,7 +22,6 @@ const generateThumbnailBlob = async (videoFile) => {
       try {
         const canvas = document.createElement("canvas");
         
-        // Your exact original sizing logic
         const videoWidth = video.videoWidth;
         const videoHeight = video.videoHeight;
         const MAX_SIZE = 720;
@@ -36,6 +34,8 @@ const generateThumbnailBlob = async (videoFile) => {
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
         canvas.toBlob(async (blob) => {
+          // FIX: Detach the error listener before clearing the source
+          video.onerror = null; 
           video.src = "";
           video.remove();
 
@@ -58,16 +58,14 @@ const generateThumbnailBlob = async (videoFile) => {
 
             const { presigned } = await presignRes.json();
             const presignedUrl = presigned[0].presignedUrl;
-            const objectKey = presigned[0].objectKey; // Needed for the public URL log
+            const objectKey = presigned[0].objectKey;
 
-            // The crucial await that ensures the file is physically uploaded
             await fetch(presignedUrl, {
               method: "PUT",
               headers: { "Content-Type": "image/jpeg" },
               body: blob,
             });
 
-            // Restored public URL logging
             const publicUrl = `https://files.lunepusa.com/${objectKey}`;
             console.log(`[Thumbnail] Uploaded successfully: ${thumbName}`);
             console.log(`[Thumbnail] Public URL: ${publicUrl}`);
@@ -81,12 +79,14 @@ const generateThumbnailBlob = async (videoFile) => {
         }, "image/jpeg", 0.82);
       } catch (e) {
         console.error("Thumbnail canvas error:", e);
+        video.onerror = null;
         video.remove();
         reject(e);
       }
     };
 
     video.onerror = () => {
+      video.onerror = null;
       video.remove();
       reject(new Error("Video load error"));
     };
@@ -115,7 +115,6 @@ const Upload = () => {
 
     try {
       // 1. THUMBNAIL BLOCK
-      // Process and upload thumbnails one by one (awaiting each) to avoid overwhelming the browser
       const videoFiles = files.filter(f => f.type.startsWith("video/"));
       if (videoFiles.length > 0) {
         for (const file of videoFiles) {
@@ -125,7 +124,13 @@ const Upload = () => {
             cleanFile = new File([file], newName, { type: file.type });
           }
           console.log(`[Upload] Starting thumbnail for: ${cleanFile.name}`);
-          await generateThumbnailBlob(cleanFile);
+          
+          // FIX: Added try/catch so one bad thumbnail doesn't crash the loop
+          try {
+            await generateThumbnailBlob(cleanFile);
+          } catch (thumbErr) {
+            console.warn(`[Upload] Skipping thumbnail for ${cleanFile.name} due to error:`, thumbErr);
+          }
         }
         alert("Thumbnails generated and fully uploaded!");
       }
@@ -150,7 +155,6 @@ const Upload = () => {
 
       const { presigned } = await res.json();
 
-      // Initiate all XHR requests simultaneously for parallel speed
       const uploadPromises = presigned.map((item, i) => {
         const file = processedFiles[i];
         const { presignedUrl, objectKey } = item;
@@ -184,7 +188,6 @@ const Upload = () => {
         });
       });
 
-      // Wait for all parallel uploads to finish
       await Promise.all(uploadPromises);
 
       alert("All files uploaded!");
