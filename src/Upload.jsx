@@ -53,8 +53,8 @@ const generateThumbnailBlob = async (videoFile) => {
           const thumbName = `${videoFile.name.replace(/\.[^/.]+$/, "")}.jpg`;
           const thumbFile = new File([blob], thumbName, { type: "image/jpeg" });
 
-          console.log(`[Thumbnail] Generated: ${thumbName}` URL.createObjectURL(blob));
-          // Upload thumbnail immediately
+          console.log(`[Thumbnail] Generated: ${thumbName}`, URL.createObjectURL(blob));
+          
           try {
             const presignRes = await apiFetch("/presign", {
               method: "POST",
