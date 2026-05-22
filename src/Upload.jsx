@@ -111,26 +111,30 @@ const Upload = () => {
 
     try {
       const finalFiles = [];
-      
 
+      // 1. Thumbnail Generation & Upload Phase
       for (const file of files) {
-        let cleanFile =file;
-        // Remove PXL_ prefix on frontend
+        let cleanFile = file;
         if (file.name.startsWith("PXL_")) {
           const newName = file.name.substring(4);
           cleanFile = new File([file], newName, { type: file.type });
         }
-
         finalFiles.push(cleanFile);
 
-        // Generate + Upload thumbnail immediately for videos
         if (cleanFile.type.startsWith("video/")) {
           console.log(`[Upload] Starting thumbnail for: ${cleanFile.name}`);
-          await generateThumbnailBlob(cleanFile);   // This now uploads the thumbnail itself
+          // This await ensures the blob is generated AND uploaded 
+          // before moving to the next file
+          await generateThumbnailBlob(cleanFile);
         }
-      }.then(alert("thumbnails done!"));
-        return;
-      // Only upload the original files now (thumbnails already handled)
+      }
+      
+      // This alert now only triggers after the loop finishes 
+      // and all thumbnail uploads are confirmed by the code inside generateThumbnailBlob
+      alert("Thumbnails generated and fully uploaded!");
+      return;
+
+      // 2. Main File Upload Phase
       console.log(`[Upload] Uploading ${finalFiles.length} main files...`);
 
       const res = await apiFetch("/presign", {
@@ -170,7 +174,7 @@ const Upload = () => {
         });
       }
 
-      alert("Upload complete!");
+      alert("All files uploaded!");
       setFiles([]);
 
     } catch (e) {
