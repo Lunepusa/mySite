@@ -21,8 +21,21 @@ const generateThumbnailBlob = async (videoFile) => {
     video.onseeked = async () => {
       try {
         const canvas = document.createElement("canvas");
-        canvas.width = Math.min(video.videoWidth || 1280, 854);
-        canvas.height = Math.min(video.videoHeight || 720, 480);
+        // 1. Get original video dimensions
+        const videoWidth = video.videoWidth;
+        const videoHeight = video.videoHeight;
+
+        // 2. Define the absolute maximum for BOTH width and height
+        const MAX_SIZE = 720;
+
+        // 3. Calculate the scale needed to fit within the 780x780 bounding box
+        // (Math.min with 1 ensures we only shrink, we never stretch small videos)
+        const scale = Math.min(1, MAX_SIZE / videoWidth, MAX_SIZE / videoHeight);
+
+        // 4. Set the literal pixel dimensions of the final JPEG file
+        // (Using Math.round to ensure we don't pass decimal pixels to the canvas)
+        canvas.width = Math.round(videoWidth * scale);
+        canvas.height = Math.round(videoHeight * scale);
 
         const ctx = canvas.getContext("2d", { alpha: false });
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
