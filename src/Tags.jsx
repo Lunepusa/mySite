@@ -737,7 +737,7 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
       </button>
     </div>
   );
-};};
+};
 
 export const getTagsArray = (tagInput) => {
   if (!tagInput) return [];
