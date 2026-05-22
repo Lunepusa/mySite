@@ -742,7 +742,7 @@ useEffect(() => {
   ) : (
     // Fallback for unauthorized users
     <img 
-      src={`/cdn-cgi/image/quality=85,format=auto,blur=100/${R2_PUBLIC_URL}/${thumbKey}`}
+      src={`/cdn-cgi/image/quality=85,format=auto,blur=200/${R2_PUBLIC_URL}/${thumbKey}`}
       alt="Preview restricted"
       style={{
         maxWidth: "100%",
@@ -763,7 +763,7 @@ useEffect(() => {
         : (() => {
             const relativeImgPath = fullscreenItem.key.startsWith('/') ? fullscreenItem.key : `/${fullscreenItem.key}`;
             // Root relative pathing for unauthorized blurred image preview
-            return `/cdn-cgi/image/quality=85,format=auto,blur=100/${R2_PUBLIC_URL}/${fullscreenItem.key}`;
+            return `/cdn-cgi/image/quality=85,format=auto,blur=50/${R2_PUBLIC_URL}/${fullscreenItem.key}`;
           })()
     }
     alt=""
@@ -941,7 +941,7 @@ let targetKey = item.key;
   // 3. USE ROOT RELATIVE ROUTING. Cloudflare intercepts this instantly within your custom domain
   // without needing a slow external DNS lookup to the full R2 domain.
   const cloudflareUrl = !hasAccess
-    ? `/cdn-cgi/image/width=250,quality=80,format=auto,blur=15/${R2_PUBLIC_URL}/${targetKey}`
+    ? `/cdn-cgi/image/width=250,quality=80,format=auto,blur=20/${R2_PUBLIC_URL}/${targetKey}`
     : `/cdn-cgi/image/width=250,quality=85,format=auto/${R2_PUBLIC_URL}/${targetKey}`;
 
 
