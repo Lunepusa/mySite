@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 // Public Cloudflare R2 bucket URL for media assets
 // Used across the app for img/video src attributes
 // ──────────────────────────────────────────────────────────────────────────────
-export const R2_PUBLIC_URL = "https://pub-737d16f465e74a25bb9b4613475ea7ef.r2.dev";
+export const R2_PUBLIC_URL = "https://files.lunepusa.com";
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Centralized fetch wrapper with automatic Bearer token + base URL

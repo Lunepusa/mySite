@@ -71,8 +71,7 @@ const generateThumbnailBlob = async (videoFile) => {
               body: blob,
             });
             console.log(`[Thumbnail] Uploaded successfully: ${thumbName}`, presignedUrl);
-            // Open again after upload (your request)
-            window.open(presignedUrl, '_blank');
+
           } catch (err) {
             console.error(`[Thumbnail] Upload failed for ${thumbName}:`, err);
           }
