@@ -53,11 +53,7 @@ const generateThumbnailBlob = async (videoFile) => {
           const thumbName = `${videoFile.name.replace(/\.[^/.]+$/, "")}.jpg`;
           const thumbFile = new File([blob], thumbName, { type: "image/jpeg" });
 
-          console.log(`[Thumbnail] Generated: ${thumbName}`);
-
-          // Open thumbnail in new tab when generated
-          window.open(URL.createObjectURL(blob), '_blank');
-
+          console.log(`[Thumbnail] Generated: ${thumbName}` URL.createObjectURL(blob));
           // Upload thumbnail immediately
           try {
             const presignRes = await apiFetch("/presign", {
@@ -74,8 +70,7 @@ const generateThumbnailBlob = async (videoFile) => {
               headers: { "Content-Type": "image/jpeg" },
               body: blob,
             });
-
-            console.log(`[Thumbnail] Uploaded successfully: ${thumbName}`);
+            console.log(`[Thumbnail] Uploaded successfully: ${thumbName}`, presignedUrl);
             // Open again after upload (your request)
             window.open(presignedUrl, '_blank');
           } catch (err) {
