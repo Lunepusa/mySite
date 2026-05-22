@@ -742,7 +742,7 @@ useEffect(() => {
   ) : (
     // Fallback for unauthorized users
     <img 
-      src={`/cdn-cgi/image/quality=85,format=auto,blur=200/${R2_PUBLIC_URL}/${thumbKey}`}
+      src={`/${R2_PUBLIC_URL}/cdn-cgi/image/quality=85,format=auto,blur=200/${thumbKey}`}
       alt="Preview restricted"
       style={{
         maxWidth: "100%",
@@ -763,7 +763,7 @@ useEffect(() => {
         : (() => {
             const relativeImgPath = fullscreenItem.key.startsWith('/') ? fullscreenItem.key : `/${fullscreenItem.key}`;
             // Root relative pathing for unauthorized blurred image preview
-            return `/cdn-cgi/image/quality=85,format=auto,blur=50/${R2_PUBLIC_URL}/${fullscreenItem.key}`;
+            return `/${R2_PUBLIC_URL}/cdn-cgi/image/quality=85,format=auto,blur=50/${fullscreenItem.key}`;
           })()
     }
     alt=""
@@ -929,10 +929,8 @@ useEffect(() => {
 
 let targetKey = item.key;
   if (item.isVideo) {
-    const baseFolder = item.key.includes('/') ? item.key.substring(0, item.key.lastIndexOf('/') + 1) : '';
-    const filename = item.key.split('/').pop();
-    const nameWithoutExt = filename.split('.')[0];
-    targetKey = `${baseFolder}${nameWithoutExt}.jpg`;
+    // This perfectly matches your upload logic so .TS files don't break
+    targetKey = item.key.replace(/\.[^/.]+$/, "") + ".jpg";
   }
 
 // 2. Ensure target key starts with a clean slash for root relative pathing
@@ -941,8 +939,8 @@ let targetKey = item.key;
   // 3. USE ROOT RELATIVE ROUTING. Cloudflare intercepts this instantly within your custom domain
   // without needing a slow external DNS lookup to the full R2 domain.
   const cloudflareUrl = !hasAccess
-    ? `/cdn-cgi/image/width=250,quality=80,format=auto,blur=20/${R2_PUBLIC_URL}/${targetKey}`
-    : `/cdn-cgi/image/width=250,quality=85,format=auto/${R2_PUBLIC_URL}/${targetKey}`;
+    ? `/${R2_PUBLIC_URL/cdn-cgi/image/width=250,quality=80,format=auto,blur=20}/${targetKey}`
+    : `/${R2_PUBLIC_URL/cdn-cgi/image/width=250,quality=80,format=auto}/${targetKey}`
 
 
       return (
