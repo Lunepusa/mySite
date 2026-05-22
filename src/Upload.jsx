@@ -129,7 +129,7 @@ const Upload = () => {
           await generateThumbnailBlob(cleanFile);   // This now uploads the thumbnail itself
         }
       }.then(alert("thumbnails done!"));
-        break;
+        return;
       // Only upload the original files now (thumbnails already handled)
       console.log(`[Upload] Uploading ${finalFiles.length} main files...`);
 
