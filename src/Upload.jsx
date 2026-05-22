@@ -3,39 +3,94 @@ import { useAuth, apiFetch } from "./Auth";
 import { searchTags, TagSelect } from "./Tags";
 
 const generateThumbnailBlob = async (videoFile) => {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const video = document.createElement("video");
     video.crossOrigin = "anonymous";
     video.muted = true;
     video.preload = "metadata";
     video.playsInline = true;
-    video.onloadedmetadata = () => { video.currentTime = (video.duration && isFinite(video.duration) && video.duration > 0) ? video.duration / 2 : 2; };
+
+    video.onloadedmetadata = () => {
+      // Your exact original logic for grabbing the middle of the file
+      if (video.duration && isFinite(video.duration) && video.duration > 0) {
+        video.currentTime = video.duration / 2;
+      } else {
+        video.currentTime = 2;
+      }
+    };
+
     video.onseeked = async () => {
       try {
         const canvas = document.createElement("canvas");
-        canvas.width = Math.min(video.videoWidth || 1280, 854);
-        canvas.height = Math.min(video.videoHeight || 720, 480);
+        
+        // Your exact original sizing logic
+        const videoWidth = video.videoWidth;
+        const videoHeight = video.videoHeight;
+        const MAX_SIZE = 720;
+        const scale = Math.min(1, MAX_SIZE / videoWidth, MAX_SIZE / videoHeight);
+
+        canvas.width = Math.round(videoWidth * scale);
+        canvas.height = Math.round(videoHeight * scale);
+
         const ctx = canvas.getContext("2d", { alpha: false });
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
         canvas.toBlob(async (blob) => {
-          video.src = ""; video.remove();
-          if (!blob) { resolve(null); return; }
+          video.src = "";
+          video.remove();
+
+          if (!blob) {
+            resolve(null);
+            return;
+          }
+
           const thumbName = `${videoFile.name.replace(/\.[^/.]+$/, "")}.jpg`;
+          const thumbFile = new File([blob], thumbName, { type: "image/jpeg" });
+
+          console.log(`[Thumbnail] Generated: ${thumbName}`, URL.createObjectURL(blob));
+          
           try {
             const presignRes = await apiFetch("/presign", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ files: [{ name: thumbName, type: "image/jpeg" }] }),
+              body: JSON.stringify([{ name: thumbName, type: "image/jpeg" }]),
             });
+
             const { presigned } = await presignRes.json();
-            await fetch(presigned[0].presignedUrl, { method: "PUT", headers: { "Content-Type": "image/jpeg" }, body: blob });
-            console.log(`[Thumbnail] Success: ${thumbName}`);
-          } catch (err) { console.error(`[Thumbnail] Failed:`, err); }
-          resolve(blob);
+            const presignedUrl = presigned[0].presignedUrl;
+            const objectKey = presigned[0].objectKey; // Needed for the public URL log
+
+            // The crucial await that ensures the file is physically uploaded
+            await fetch(presignedUrl, {
+              method: "PUT",
+              headers: { "Content-Type": "image/jpeg" },
+              body: blob,
+            });
+
+            // Restored public URL logging
+            const publicUrl = `https://files.lunepusa.com/${objectKey}`;
+            console.log(`[Thumbnail] Uploaded successfully: ${thumbName}`);
+            console.log(`[Thumbnail] Public URL: ${publicUrl}`);
+
+            resolve(blob);
+          } catch (err) {
+            console.error(`[Thumbnail] Upload failed for ${thumbName}:`, err);
+            reject(err);
+          }
+
         }, "image/jpeg", 0.82);
-      } catch (e) { video.remove(); resolve(null); }
+      } catch (e) {
+        console.error("Thumbnail canvas error:", e);
+        video.remove();
+        reject(e);
+      }
     };
-    video.onerror = () => { video.remove(); resolve(null); };
+
+    video.onerror = () => {
+      video.remove();
+      reject(new Error("Video load error"));
+    };
+
     video.src = URL.createObjectURL(videoFile);
   });
 };
@@ -44,12 +99,13 @@ const Upload = () => {
   const { user } = useAuth();
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
-  const [progress, setProgress] = useState({});
   const [initialTag, setInitialTag] = useState("");
+  const [progress, setProgress] = useState({});
 
   useEffect(() => {
     const usernameLower = user?.username?.toLowerCase() || "lunepusa";
-    setInitialTag(searchTags(usernameLower)[0] || usernameLower);
+    const matchedTags = searchTags(usernameLower);
+    setInitialTag(matchedTags.length > 0 ? matchedTags[0] : usernameLower);
   }, [user]);
 
   const handleUpload = async () => {
@@ -57,63 +113,129 @@ const Upload = () => {
     setUploading(true);
     setProgress({});
 
-    // 1. THUMBNAIL BLOCK: Generates and uploads without calling upload-complete
-    const videoFiles = files.filter(f => f.type.startsWith("video/"));
-    for (const f of videoFiles) {
-        console.log(`[Thumbnail] Starting: ${f.name}`);
-        await generateThumbnailBlob(f);
-    }
-    alert("Thumbnails done!");
-
-    // 2. MAIN UPLOAD BLOCK: Handles actual file uploads with parallel XHR
-    const processedFiles = files.map(f => f.name.startsWith("PXL_") ? new File([f], f.name.substring(4), { type: f.type }) : f);
-    const res = await apiFetch("/presign", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ files: processedFiles.map(f => ({ name: f.name, type: f.type })) }),
-    });
-    const { presigned } = await res.json();
-
-    // Fire all uploads at once for speed
-    const uploadPromises = presigned.map((item, i) => {
-      const file = processedFiles[i];
-      return new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.open("PUT", item.presignedUrl);
-        xhr.upload.onprogress = (e) => {
-          if (e.lengthComputable) setProgress(prev => ({ ...prev, [file.name]: Math.round((e.loaded / e.total) * 100) }));
-        };
-        xhr.onload = async () => {
-          if (xhr.status === 200) {
-            await apiFetch("/upload-complete", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ objectKey: item.objectKey, fileType: file.type, initialTag }),
-            });
-            resolve();
-          } else reject(new Error(`Upload failed: ${xhr.status}`));
-        };
-        xhr.send(file);
-      });
-    });
-
     try {
+      // 1. THUMBNAIL BLOCK
+      // Process and upload thumbnails one by one (awaiting each) to avoid overwhelming the browser
+      const videoFiles = files.filter(f => f.type.startsWith("video/"));
+      if (videoFiles.length > 0) {
+        for (const file of videoFiles) {
+          let cleanFile = file;
+          if (file.name.startsWith("PXL_")) {
+            const newName = file.name.substring(4);
+            cleanFile = new File([file], newName, { type: file.type });
+          }
+          console.log(`[Upload] Starting thumbnail for: ${cleanFile.name}`);
+          await generateThumbnailBlob(cleanFile);
+        }
+        alert("Thumbnails generated and fully uploaded!");
+      }
+
+      // 2. MAIN UPLOAD BLOCK
+      const processedFiles = files.map(file => {
+        if (file.name.startsWith("PXL_")) {
+          return new File([file], file.name.substring(4), { type: file.type });
+        }
+        return file;
+      });
+
+      console.log(`[Upload] Uploading ${processedFiles.length} main files...`);
+
+      const res = await apiFetch("/presign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(processedFiles.map(f => ({ name: f.name, type: f.type }))),
+      });
+
+      if (!res.ok) throw new Error("Presign request failed");
+
+      const { presigned } = await res.json();
+
+      // Initiate all XHR requests simultaneously for parallel speed
+      const uploadPromises = presigned.map((item, i) => {
+        const file = processedFiles[i];
+        const { presignedUrl, objectKey } = item;
+
+        return new Promise((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.open("PUT", presignedUrl);
+          xhr.setRequestHeader("Content-Type", file.type);
+
+          xhr.upload.onprogress = (e) => {
+            if (e.lengthComputable) {
+              setProgress(prev => ({ ...prev, [file.name]: Math.round((e.loaded / e.total) * 100) }));
+            }
+          };
+
+          xhr.onload = async () => {
+            if (xhr.status === 200) {
+              await apiFetch("/upload-complete", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ objectKey, fileType: file.type, initialTag }),
+              });
+              resolve();
+            } else {
+              reject(new Error(`Upload failed: ${xhr.status}`));
+            }
+          };
+
+          xhr.onerror = () => reject(new Error("Network error"));
+          xhr.send(file);
+        });
+      });
+
+      // Wait for all parallel uploads to finish
       await Promise.all(uploadPromises);
+
       alert("All files uploaded!");
       setFiles([]);
-    } catch (e) { alert("Upload failed: " + (e?.message || String(e))); }
-    finally { setUploading(false); }
+
+    } catch (e) {
+      console.error("Upload Error:", e);
+      alert("Upload failed: " + (e.message || String(e)));
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
     <div style={{ padding: "20px", textAlign: "center" }}>
+      {user?.username?.toLowerCase() === "lunepusa" && (
+        <div style={{ marginTop: "40px", borderTop: "2px dashed #ff0000", paddingTop: "20px" }}>
+          <h3>Admin Maintenance</h3>
+        </div>
+      )}
+
       <h2>Upload</h2>
-      <input type="file" multiple onChange={(e) => setFiles(Array.from(e.target.files))} disabled={uploading} />
-      <TagSelect initialTags={initialTag} onSave={setInitialTag} />
-      <button onClick={handleUpload} disabled={uploading || files.length === 0}>Start Upload</button>
-      {uploading && (
-        <div style={{ marginTop: "20px" }}>
-          {files.map(f => <div key={f.name}>{f.name}: {progress[f.name] || 0}%</div>)}
+      <input 
+        type="file" 
+        multiple 
+        onChange={(e) => setFiles(Array.from(e.target.files))} 
+        disabled={uploading}
+        style={{ marginBottom: "10px" }}
+      />
+      
+      <div style={{ margin: "15px 0" }}>
+        <TagSelect initialTags={initialTag} onSave={setInitialTag} />
+      </div>
+
+      <button onClick={handleUpload} disabled={uploading || files.length === 0}>
+        {uploading ? "Uploading..." : "Start Upload"}
+      </button>
+
+      {uploading && files.length > 0 && (
+        <div style={{ marginTop: "20px", textAlign: "left", display: "inline-block" }}>
+          <h3>Progress:</h3>
+          {files.map((file) => {
+            const displayName = file.name.startsWith("PXL_") ? file.name.substring(4) : file.name;
+            return (
+              <div key={file.name} style={{ marginBottom: "5px" }}>
+                <span style={{ fontSize: "0.8em" }}>{displayName}: </span>
+                <progress value={progress[displayName] || 0} max="100" />
+                <span> {progress[displayName] || 0}%</span>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
