@@ -100,6 +100,7 @@ const Upload = () => {
   const [uploading, setUploading] = useState(false);
   const [initialTag, setInitialTag] = useState("");
   const [progress, setProgress] = useState({});
+  const[thumbOnly, setThumbOnly] = useState(false);
 
   useEffect(() => {
     const usernameLower = user?.username?.toLowerCase() || "lunepusa";
@@ -131,6 +132,7 @@ const Upload = () => {
           }
         }
         alert("Thumbnails generated and fully uploaded!");
+        if(thumbOnly) return;
       }
 
       // 2. MAIN UPLOAD BLOCK
@@ -244,6 +246,10 @@ const Upload = () => {
             >
               Purge "delete" Tag
             </button>
+            <div style={{border:"2pxsolidwhite"}}>
+              Upload only the thumbnails?
+              <input type="checkbox" onChange={setThumbOnly(!thumbOnly)} />
+            </div>
         </div>
       )}
 
