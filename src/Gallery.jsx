@@ -667,7 +667,6 @@ useEffect(() => {
     }}
     placeholder="Edit tags (common shown)..."
   />
->
               </div>
             )}
           </div>
@@ -756,7 +755,7 @@ useEffect(() => {
   ) : (
     // Fallback for unauthorized users
     <img 
-      src={`${R2_PUBLIC_URL}/cdn-cgi/image/quality=85,format=auto,blur=50/${(fullscreenItem.key.replace(/\.[^/.]+$/, "") + ".jpg")}`}
+      src={`${R2_PUBLIC_URL}/cdn-cgi/image/quality=85,format=auto,blur=50/${(fullscreenItem.key.replace(/\.[^/.]+$/, "") + "_thumb.jpg")}`}
       alt="Preview restricted"
       style={{
         maxWidth: "100%",
@@ -944,7 +943,7 @@ useEffect(() => {
 let targetKey = item.key;
   if (item.isVideo) {
     // This perfectly matches your upload logic so .TS files don't break
-    targetKey = item.key.replace(/\.[^/.]+$/, "") + ".jpg";
+    targetKey = item.key.replace(/\.[^/.]+$/, "") + "_thumb.jpg";
   }
 
 // 2. Ensure target key starts with a clean slash for root relative pathing

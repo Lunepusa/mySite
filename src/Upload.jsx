@@ -43,7 +43,7 @@ const generateThumbnailBlob = async (videoFile) => {
             return;
           }
 
-          const thumbName = `${videoFile.name.replace(/\.[^/.]+$/, "")}.jpg`;
+          const thumbName = `${videoFile.name.replace(/\.[^/.]+$/, "")}_thumb.jpg`;
           const thumbFile = new File([blob], thumbName, { type: "image/jpeg" });
 
           console.log(`[Thumbnail] Generated: ${thumbName}`, URL.createObjectURL(blob));
@@ -202,11 +202,48 @@ const Upload = () => {
     }
   };
 
+  const handlePurgeDeleted = async () => {
+    if (!window.confirm("Are you sure? This will permanently delete all files and database rows tagged with 'delete'.")) {
+      return;
+    }
+
+    try {
+      const res = await apiFetch("/purge-deleted", { method: "POST" });
+      if (!res.ok) throw new Error("Purge request failed");
+      
+      const data = await res.json();
+      alert(`Successfully purged ${data.deleted} items from the server!`);
+      
+      // Force a hard refresh of the gallery to clear the deleted items from the UI
+      setMedia([]);
+      setOffset(0);
+      setHasMore(true);
+      loadMoreGroups(0, activeSearchQuery, true);
+    } catch (err) {
+      console.error("Purge error:", err);
+      alert("Failed to purge items: " + err.message);
+    }
+  };
+
   return (
     <div style={{ padding: "20px", textAlign: "center" }}>
       {user?.username?.toLowerCase() === "lunepusa" && (
         <div style={{ marginTop: "40px", borderTop: "2px dashed #ff0000", paddingTop: "20px" }}>
           <h3>Admin Maintenance</h3>
+          <button 
+              onClick={handlePurgeDeleted}
+              style={{
+                background: "#ff4444",
+                color: "white",
+                border: "none",
+                padding: "4px 8px",
+                borderRadius: "4px",
+                cursor: "pointer",
+                fontWeight: "bold"
+              }}
+            >
+              Purge "delete" Tag
+            </button>
         </div>
       )}
 
