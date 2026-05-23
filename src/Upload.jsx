@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth, apiFetch } from "./Auth";
 import { searchTags, TagSelect } from "./Tags";
 
-// ... (keep generateThumbnailBlob exactly the same as before) ...
+// ... (generateThumbnailBlob exactly the same) ...
 const generateThumbnailBlob = async (videoFile) => {
   return new Promise((resolve, reject) => {
     const video = document.createElement("video");
@@ -120,24 +120,19 @@ const Upload = () => {
     setInitialTag(matchedTags.length > 0 ? matchedTags[0] : usernameLower);
   }, [user]);
 
-  // Helper function to append files without duplicates
   const handleAddFiles = (newFilesList) => {
     const incomingFiles = Array.from(newFilesList);
-
     setFiles((prevFiles) => {
       const existingIdentifiers = new Set(
         prevFiles.map((f) => `${f.name}-${f.size}`),
       );
-
       const uniqueNewFiles = incomingFiles.filter(
         (f) => !existingIdentifiers.has(`${f.name}-${f.size}`),
       );
-
       return [...prevFiles, ...uniqueNewFiles];
     });
   };
 
-  // --- Drag and Drop Handlers ---
   const handleDragOver = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -159,14 +154,11 @@ const Upload = () => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
-
     if (uploading) return;
-
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       handleAddFiles(e.dataTransfer.files);
     }
   };
-  // ------------------------------
 
   const handleUpload = async () => {
     if (files.length === 0) return;
@@ -181,16 +173,11 @@ const Upload = () => {
         return file;
       });
 
-      // PATH A: THUMBNAILS ONLY
       if (thumbOnly) {
         const videoFiles = processedFiles.filter((f) =>
           f.type.startsWith("video/"),
         );
         if (videoFiles.length > 0) {
-          console.log(
-            `[Upload] Generating thumbnails only for ${videoFiles.length} videos...`,
-          );
-
           await Promise.all(
             videoFiles.map(async (file) => {
               try {
@@ -204,15 +191,11 @@ const Upload = () => {
             }),
           );
         }
-
         alert("Thumbnails generated and uploaded successfully!");
         setFiles([]);
         setUploading(false);
         return;
       }
-
-      // PATH B: MAIN UPLOAD
-      console.log(`[Upload] Uploading ${processedFiles.length} main files...`);
 
       const res = await apiFetch("/presign", {
         method: "POST",
@@ -247,7 +230,6 @@ const Upload = () => {
           xhr.onload = async () => {
             if (xhr.status === 200) {
               setProgress((prev) => ({ ...prev, [file.name]: 100 }));
-
               try {
                 await apiFetch("/upload-complete", {
                   method: "POST",
@@ -258,14 +240,9 @@ const Upload = () => {
                     initialTag,
                   }),
                 });
-
                 if (file.type.startsWith("video/")) {
-                  console.log(
-                    `[Upload] Main video uploaded, creating thumbnail for: ${file.name}`,
-                  );
                   await generateThumbnailBlob(file);
                 }
-
                 resolve();
               } catch (err) {
                 console.error(
@@ -304,13 +281,11 @@ const Upload = () => {
     ) {
       return;
     }
-
     try {
       const res = await apiFetch("/purge-deleted", { method: "POST" });
       if (!res.ok) throw new Error("Purge request failed");
-
       const data = await res.json();
-      alert(`Successfully purged ${data.deleted} items from the server!`);
+      alert(`Successfully purged ${data.deleted} items!`);
     } catch (err) {
       console.error("Purge error:", err);
       alert("Failed to purge items: " + err.message);
@@ -320,60 +295,73 @@ const Upload = () => {
   return (
     <div
       style={{
-        padding: "20px",
+        padding: "5px",
         textAlign: "center",
         maxWidth: "600px",
         margin: "0 auto",
-        display:"inline-block",
       }}
     >
       {user?.username?.toLowerCase() === "lunepusa" && (
         <div
           style={{
-            marginTop: "40px",
-            borderTop: "2px dashed #ff0000",
-            paddingTop: "20px",
-            marginBottom: "30px",
+            marginTop: "10px",
+            borderTop: "1px dashed #ff0000",
+            paddingTop: "5px",
+            marginBottom: "5px",
           }}
         >
-          <h3>Admin Maintenance</h3>
+          <h3
+            style={{
+              display: "inline-block",
+              margin: "0 10px 0 0",
+              fontSize: "1em",
+              verticalAlign: "middle",
+            }}
+          >
+            Admin:
+          </h3>
           <button
             onClick={handlePurgeDeleted}
             style={{
               background: "#ff4444",
               color: "white",
               border: "none",
+              padding: "2px 8px",
               borderRadius: "4px",
               cursor: "pointer",
-              display:"inline-block",
+              fontWeight: "bold",
+              display: "inline-block",
+              margin: "0 5px",
+              verticalAlign: "middle",
             }}
           >
-            Purge "delete" Tag
+            Purge "delete"
           </button>
-          <br />
           <div
             style={{
-              border: "2px solid white",
-              padding: "10px",
+              border: "1px solid #ccc",
+              padding: "2px 6px",
               borderRadius: "4px",
               display: "inline-block",
-              margin: "0 auto", display:"inline-block",
+              margin: "0 5px",
+              verticalAlign: "middle",
+              fontSize: "0.9em",
             }}
           >
-            <label style={{ cursor: "pointer" }}>
+            <label style={{ cursor: "pointer", margin: 0 }}>
               <input
                 type="checkbox"
                 checked={thumbOnly}
                 onChange={(e) => setThumbOnly(e.target.checked)}
-                style={{ marginRight: "8px" }}
+                style={{ margin: "0 5px 0 0", verticalAlign: "middle" }}
               />
-              Upload only the thumbnails?
+              Thumbnails Only
             </label>
           </div>
         </div>
       )}
 
-      <h2>Upload</h2>
+      <h2 style={{ margin: "5px 0 10px 0", fontSize: "1.2em" }}>Upload</h2>
 
       <div
         onDragOver={handleDragOver}
@@ -388,29 +376,26 @@ const Upload = () => {
           backgroundColor: isDragging
             ? "rgba(0, 123, 255, 0.1)"
             : "transparent",
-          padding: "50px 20px",
-          borderRadius: "8px",
+          padding: "20px 10px",
+          borderRadius: "4px",
           cursor: uploading ? "not-allowed" : "pointer",
           transition: "all 0.2s ease",
-          marginBottom: "20px",
-          position: "relative",display:"inline-block",
+          margin: "0 0 10px 0",
         }}
       >
-        {uploading ? (
-          <p>Uploading in progress...</p>
-        ) : (
-          <p
-            style={{
-              margin: 0,
-              fontSize: "1.1em",
-              color: isDragging ? "#007bff" : "inherit",
-            }}
-          >
-            {isDragging
-              ? "Drop files here!"
-              : "Drag & drop files here, or click to browse"}
-          </p>
-        )}
+        <p
+          style={{
+            margin: 0,
+            fontSize: "0.9em",
+            color: isDragging ? "#007bff" : "inherit",
+          }}
+        >
+          {uploading
+            ? "Uploading..."
+            : isDragging
+              ? "Drop here!"
+              : "Drag & drop files, or click"}
+        </p>
 
         <input
           id="hiddenFileInput"
@@ -422,16 +407,13 @@ const Upload = () => {
         />
       </div>
 
-      {/* Reverted back to the simple file count div */}
-      {!uploading && files.length > 0 && (
-        <div style={{ marginBottom: "15px", color: "#4CAF50" }}>
-          <strong>
-            {files.length} file{files.length === 1 ? "" : "s"} selected
-          </strong>
-        </div>
-      )}
-
-      <div style={{ margin: "15px 0" }}>
+      <div
+        style={{
+          display: "inline-block",
+          margin: "0 5px",
+          verticalAlign: "middle",
+        }}
+      >
         <TagSelect initialTags={initialTag} onSave={setInitialTag} />
       </div>
 
@@ -439,37 +421,37 @@ const Upload = () => {
         onClick={handleUpload}
         disabled={uploading || files.length === 0}
         style={{
-          padding: "10px 20px",
-          fontSize: "1em",
+          display: "inline-block",
+          padding: "4px 12px",
+          margin: "0 5px",
+          fontSize: "0.9em",
+          verticalAlign: "middle",
           cursor: uploading || files.length === 0 ? "not-allowed" : "pointer",
         }}
       >
-        {uploading ? "Uploading..." : "Start Upload"}
+        {uploading ? "Uploading..." : `Upload (${files.length})`}
       </button>
 
       {uploading && files.length > 0 && (
-        <br />
         <div
           style={{
-            marginTop: "20px",
+            marginTop: "10px",
             textAlign: "left",
-            display: "inline-block",
             width: "100%",
+            fontSize: "0.85em",
           }}
         >
-          <h3>Progress:</h3>
           {files.map((file) => {
             const displayName = file.name.startsWith("PXL_")
               ? file.name.substring(4)
               : file.name;
             return (
-              <div key={file.name} style={{ marginBottom: "8px" }}>
+              <div key={file.name} style={{ marginBottom: "4px" }}>
                 <div
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
-                    fontSize: "0.9em",
-                    marginBottom: "4px",
+                    marginBottom: "2px",
                   }}
                 >
                   <span
@@ -487,7 +469,7 @@ const Upload = () => {
                 <div
                   style={{
                     width: "100%",
-                    height: "4px",
+                    height: "3px",
                     backgroundColor: "#333",
                     borderRadius: "2px",
                   }}
