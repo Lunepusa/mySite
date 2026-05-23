@@ -1,0 +1,27 @@
+name = "api"
+main = "worker-api.js"
+compatibility_date = "2025-12-28"
+
+compatibility_flags = ["nodejs_compat"]
+
+[observability]
+enabled = true
+
+# R2 binding
+[[r2_buckets]]
+binding = "Media"
+bucket_name = "lunepusa"
+
+# D1 binding (replace with your actual D1 database name and ID)
+[[d1_databases]]
+binding = "Db"
+database_name = "lunepusa-db"
+database_id = "ed010595-e965-4d1b-ab55-353d83fb4cb3"
+
+# KV binding if you use one (optional)
+ [[kv_namespaces]]
+ binding = "kv"
+ id = "9ad1d135526f465e8f67e202cd13dab6"
+
+[media]
+binding = "Transform"   
