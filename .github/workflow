@@ -1,0 +1,19 @@
+name: Deploy API
+on:
+  push:
+    branches:
+      - worked
+    paths:
+      - 'API/**' 
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          workingDirectory: 'API'
