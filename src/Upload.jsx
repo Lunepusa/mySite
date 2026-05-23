@@ -120,12 +120,11 @@ const Upload = () => {
     setInitialTag(matchedTags.length > 0 ? matchedTags[0] : usernameLower);
   }, [user]);
 
-  // --- NEW: Helper function to append files without duplicates ---
+  // Helper function to append files without duplicates
   const handleAddFiles = (newFilesList) => {
     const incomingFiles = Array.from(newFilesList);
 
     setFiles((prevFiles) => {
-      // Create a Set of existing file names + sizes to prevent duplicates
       const existingIdentifiers = new Set(
         prevFiles.map((f) => `${f.name}-${f.size}`),
       );
@@ -164,7 +163,7 @@ const Upload = () => {
     if (uploading) return;
 
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      handleAddFiles(e.dataTransfer.files); // Use the new append function
+      handleAddFiles(e.dataTransfer.files);
     }
   };
   // ------------------------------
@@ -325,6 +324,7 @@ const Upload = () => {
         textAlign: "center",
         maxWidth: "600px",
         margin: "0 auto",
+        display:"inline-block",
       }}
     >
       {user?.username?.toLowerCase() === "lunepusa" && (
@@ -343,11 +343,9 @@ const Upload = () => {
               background: "#ff4444",
               color: "white",
               border: "none",
-              padding: "4px 8px",
               borderRadius: "4px",
               cursor: "pointer",
-              fontWeight: "bold",
-              marginBottom: "15px",
+              display:"inline-block",
             }}
           >
             Purge "delete" Tag
@@ -359,7 +357,7 @@ const Upload = () => {
               padding: "10px",
               borderRadius: "4px",
               display: "inline-block",
-              margin: "0 auto",
+              margin: "0 auto", display:"inline-block",
             }}
           >
             <label style={{ cursor: "pointer" }}>
@@ -395,7 +393,7 @@ const Upload = () => {
           cursor: uploading ? "not-allowed" : "pointer",
           transition: "all 0.2s ease",
           marginBottom: "20px",
-          position: "relative",
+          position: "relative",display:"inline-block",
         }}
       >
         {uploading ? (
@@ -414,7 +412,6 @@ const Upload = () => {
           </p>
         )}
 
-        {/* Updated: Also use handleAddFiles when browsing manually */}
         <input
           id="hiddenFileInput"
           type="file"
@@ -424,6 +421,15 @@ const Upload = () => {
           style={{ display: "none" }}
         />
       </div>
+
+      {/* Reverted back to the simple file count div */}
+      {!uploading && files.length > 0 && (
+        <div style={{ marginBottom: "15px", color: "#4CAF50" }}>
+          <strong>
+            {files.length} file{files.length === 1 ? "" : "s"} selected
+          </strong>
+        </div>
+      )}
 
       <div style={{ margin: "15px 0" }}>
         <TagSelect initialTags={initialTag} onSave={setInitialTag} />
@@ -442,6 +448,7 @@ const Upload = () => {
       </button>
 
       {uploading && files.length > 0 && (
+        <br />
         <div
           style={{
             marginTop: "20px",
