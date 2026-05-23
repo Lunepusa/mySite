@@ -10,6 +10,9 @@ const generateThumbnailBlob = async (videoFile) => {
     video.preload = "metadata";
     video.playsInline = true;
 
+    // Create the URL once so we can revoke it later to prevent memory crashes
+    const videoUrl = URL.createObjectURL(videoFile);
+
     video.onloadedmetadata = () => {
       if (video.duration && isFinite(video.duration) && video.duration > 0) {
         video.currentTime = video.duration / 2;
@@ -34,9 +37,10 @@ const generateThumbnailBlob = async (videoFile) => {
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
         canvas.toBlob(async (blob) => {
+          // Cleanup memory
           video.onerror = null; 
           video.src = "";
-          video.remove();
+          URL.revokeObjectURL(videoUrl);
 
           if (!blob) {
             resolve(null);
@@ -45,8 +49,6 @@ const generateThumbnailBlob = async (videoFile) => {
 
           const thumbName = `${videoFile.name.replace(/\.[^/.]+$/, "")}_thumb.jpg`;
           const thumbFile = new File([blob], thumbName, { type: "image/jpeg" });
-
-          console.log(`[Thumbnail] Generated: ${thumbName}`, URL.createObjectURL(blob));
           
           try {
             const presignRes = await apiFetch("/presign", {
@@ -54,6 +56,8 @@ const generateThumbnailBlob = async (videoFile) => {
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify([{ name: thumbName, type: "image/jpeg" }]),
             });
+
+            if (!presignRes.ok) throw new Error("Thumbnail presign failed");
 
             const { presigned } = await presignRes.json();
             const presignedUrl = presigned[0].presignedUrl;
@@ -65,10 +69,7 @@ const generateThumbnailBlob = async (videoFile) => {
               body: blob,
             });
 
-            const publicUrl = `https://files.lunepusa.com/${objectKey}`;
             console.log(`[Thumbnail] Uploaded successfully: ${thumbName}`);
-            console.log(`[Thumbnail] Public URL: ${publicUrl}`);
-
             resolve(blob);
           } catch (err) {
             console.error(`[Thumbnail] Upload failed for ${thumbName}:`, err);
@@ -79,18 +80,21 @@ const generateThumbnailBlob = async (videoFile) => {
       } catch (e) {
         console.error("Thumbnail canvas error:", e);
         video.onerror = null;
-        video.remove();
+        video.src = "";
+        URL.revokeObjectURL(videoUrl);
         reject(e);
       }
     };
 
     video.onerror = () => {
       video.onerror = null;
-      video.remove();
+      video.src = "";
+      URL.revokeObjectURL(videoUrl);
       reject(new Error("Video load error"));
     };
 
-    video.src = URL.createObjectURL(videoFile);
+    // Trigger the load
+    video.src = videoUrl;
   });
 };
 
@@ -100,7 +104,7 @@ const Upload = () => {
   const [uploading, setUploading] = useState(false);
   const [initialTag, setInitialTag] = useState("");
   const [progress, setProgress] = useState({});
-  const[thumbOnly, setThumbOnly] = useState(false);
+  const [thumbOnly, setThumbOnly] = useState(false);
 
   useEffect(() => {
     const usernameLower = user?.username?.toLowerCase() || "lunepusa";
@@ -114,28 +118,6 @@ const Upload = () => {
     setProgress({});
 
     try {
-      // 1. THUMBNAIL BLOCK
-      const videoFiles = files.filter(f => f.type.startsWith("video/"));
-      if (videoFiles.length > 0) {
-        for (const file of videoFiles) {
-          let cleanFile = file;
-          if (file.name.startsWith("PXL_")) {
-            const newName = file.name.substring(4);
-            cleanFile = new File([file], newName, { type: file.type });
-          }
-          console.log(`[Upload] Starting thumbnail for: ${cleanFile.name}`);
-          
-          try {
-            await generateThumbnailBlob(cleanFile);
-          } catch (thumbErr) {
-            console.warn(`[Upload] Skipping thumbnail for ${cleanFile.name} due to error:`, thumbErr);
-          }
-        }
-        alert("Thumbnails generated and fully uploaded!");
-        if(thumbOnly) return;
-      }
-
-      // 2. MAIN UPLOAD BLOCK
       const processedFiles = files.map(file => {
         if (file.name.startsWith("PXL_")) {
           return new File([file], file.name.substring(4), { type: file.type });
@@ -143,6 +125,32 @@ const Upload = () => {
         return file;
       });
 
+      // ------------------------------------------------------------------
+      // PATH A: THUMBNAILS ONLY
+      // ------------------------------------------------------------------
+      if (thumbOnly) {
+        const videoFiles = processedFiles.filter(f => f.type.startsWith("video/"));
+        if (videoFiles.length > 0) {
+          console.log(`[Upload] Generating thumbnails only for ${videoFiles.length} videos...`);
+          
+          await Promise.all(videoFiles.map(async (file) => {
+            try {
+              await generateThumbnailBlob(file);
+            } catch (thumbErr) {
+              console.warn(`[Upload] Skipping thumbnail for ${file.name}:`, thumbErr);
+            }
+          }));
+        }
+        
+        alert("Thumbnails generated and uploaded successfully!");
+        setFiles([]);
+        setUploading(false);
+        return; // Exit early, do not process main uploads
+      }
+
+      // ------------------------------------------------------------------
+      // PATH B: MAIN UPLOAD (with staggered thumbnails)
+      // ------------------------------------------------------------------
       console.log(`[Upload] Uploading ${processedFiles.length} main files...`);
 
       const res = await apiFetch("/presign", {
@@ -172,15 +180,27 @@ const Upload = () => {
 
           xhr.onload = async () => {
             if (xhr.status === 200) {
-              // Force progress to 100% immediately on success
               setProgress(prev => ({ ...prev, [file.name]: 100 }));
               
-              await apiFetch("/upload-complete", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ objectKey, fileType: file.type, initialTag }),
-              });
-              resolve();
+              try {
+                // 1. Mark upload complete in the DB
+                await apiFetch("/upload-complete", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ objectKey, fileType: file.type, initialTag }),
+                });
+
+                // 2. STAGGERED THUMBNAIL: Generate only after video is safely in the DB
+                if (file.type.startsWith("video/")) {
+                  console.log(`[Upload] Main video uploaded, creating thumbnail for: ${file.name}`);
+                  await generateThumbnailBlob(file);
+                }
+
+                resolve();
+              } catch (err) {
+                console.error(`Post-upload tasks failed for ${file.name}:`, err);
+                resolve(); // Still resolve so Promise.all finishes, since main file uploaded
+              }
             } else {
               reject(new Error(`Upload failed: ${xhr.status}`));
             }
@@ -193,7 +213,7 @@ const Upload = () => {
 
       await Promise.all(uploadPromises);
 
-      alert("All files uploaded!");
+      alert("All files uploaded and thumbnails generated!");
       setFiles([]);
 
     } catch (e) {
@@ -216,11 +236,6 @@ const Upload = () => {
       const data = await res.json();
       alert(`Successfully purged ${data.deleted} items from the server!`);
       
-      // Force a hard refresh of the gallery to clear the deleted items from the UI
-      setMedia([]);
-      setOffset(0);
-      setHasMore(true);
-      loadMoreGroups(0, activeSearchQuery, true);
     } catch (err) {
       console.error("Purge error:", err);
       alert("Failed to purge items: " + err.message);
@@ -241,14 +256,22 @@ const Upload = () => {
                 padding: "4px 8px",
                 borderRadius: "4px",
                 cursor: "pointer",
-                fontWeight: "bold"
+                fontWeight: "bold",
+                marginBottom: "15px"
               }}
             >
               Purge "delete" Tag
             </button>
-            <div style={{border:"2pxsolidwhite"}}>
-              Upload only the thumbnails?
-              <input type="checkbox" onChange={setThumbOnly(!thumbOnly)} />
+            <div style={{ border: "2px solid white", padding: "10px", borderRadius: "4px", display: "inline-block", margin: "0 auto" }}>
+              <label style={{ cursor: "pointer" }}>
+                <input 
+                  type="checkbox" 
+                  checked={thumbOnly}
+                  onChange={(e) => setThumbOnly(e.target.checked)} 
+                  style={{ marginRight: "8px" }}
+                />
+                Upload only the thumbnails?
+              </label>
             </div>
         </div>
       )}
@@ -278,7 +301,6 @@ const Upload = () => {
             return (
               <div key={file.name} style={{ marginBottom: "5px" }}>
                 <span style={{ fontSize: "0.8em" }}>{displayName}: </span>
-                {/* Visual progress bar removed, strictly numbers now */}
                 <span> {progress[displayName] || 0}%</span>
               </div>
             );
