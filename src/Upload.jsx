@@ -24,11 +24,15 @@ const generateThumbnailBlob = async (videoFile) => {
     video.onseeked = async () => {
       try {
         const canvas = document.createElement("canvas");
-        
+
         const videoWidth = video.videoWidth;
         const videoHeight = video.videoHeight;
         const MAX_SIZE = 720;
-        const scale = Math.min(1, MAX_SIZE / videoWidth, MAX_SIZE / videoHeight);
+        const scale = Math.min(
+          1,
+          MAX_SIZE / videoWidth,
+          MAX_SIZE / videoHeight,
+        );
 
         canvas.width = Math.round(videoWidth * scale);
         canvas.height = Math.round(videoHeight * scale);
@@ -36,47 +40,52 @@ const generateThumbnailBlob = async (videoFile) => {
         const ctx = canvas.getContext("2d", { alpha: false });
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        canvas.toBlob(async (blob) => {
-          // Cleanup memory
-          video.onerror = null; 
-          video.src = "";
-          URL.revokeObjectURL(videoUrl);
+        canvas.toBlob(
+          async (blob) => {
+            // Cleanup memory
+            video.onerror = null;
+            video.src = "";
+            URL.revokeObjectURL(videoUrl);
 
-          if (!blob) {
-            resolve(null);
-            return;
-          }
+            if (!blob) {
+              resolve(null);
+              return;
+            }
 
-          const thumbName = `${videoFile.name.replace(/\.[^/.]+$/, "")}_thumb.jpg`;
-          const thumbFile = new File([blob], thumbName, { type: "image/jpeg" });
-          
-          try {
-            const presignRes = await apiFetch("/presign", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify([{ name: thumbName, type: "image/jpeg" }]),
+            const thumbName = `${videoFile.name.replace(/\.[^/.]+$/, "")}_thumb.jpg`;
+            const thumbFile = new File([blob], thumbName, {
+              type: "image/jpeg",
             });
 
-            if (!presignRes.ok) throw new Error("Thumbnail presign failed");
+            try {
+              const presignRes = await apiFetch("/presign", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify([{ name: thumbName, type: "image/jpeg" }]),
+              });
 
-            const { presigned } = await presignRes.json();
-            const presignedUrl = presigned[0].presignedUrl;
-            const objectKey = presigned[0].objectKey;
+              if (!presignRes.ok) throw new Error("Thumbnail presign failed");
 
-            await fetch(presignedUrl, {
-              method: "PUT",
-              headers: { "Content-Type": "image/jpeg" },
-              body: blob,
-            });
+              const { presigned } = await presignRes.json();
+              const presignedUrl = presigned[0].presignedUrl;
+              const objectKey = presigned[0].objectKey;
 
-            console.log(`[Thumbnail] Uploaded successfully: ${thumbName}`);
-            resolve(blob);
-          } catch (err) {
-            console.error(`[Thumbnail] Upload failed for ${thumbName}:`, err);
-            reject(err);
-          }
+              await fetch(presignedUrl, {
+                method: "PUT",
+                headers: { "Content-Type": "image/jpeg" },
+                body: blob,
+              });
 
-        }, "image/jpeg", 0.82);
+              console.log(`[Thumbnail] Uploaded successfully: ${thumbName}`);
+              resolve(blob);
+            } catch (err) {
+              console.error(`[Thumbnail] Upload failed for ${thumbName}:`, err);
+              reject(err);
+            }
+          },
+          "image/jpeg",
+          0.82,
+        );
       } catch (e) {
         console.error("Thumbnail canvas error:", e);
         video.onerror = null;
@@ -105,6 +114,7 @@ const Upload = () => {
   const [initialTag, setInitialTag] = useState("");
   const [progress, setProgress] = useState({});
   const [thumbOnly, setThumbOnly] = useState(false);
+  const [isDragging, setIsDragging] = useState(false); // New state for drag UI
 
   useEffect(() => {
     const usernameLower = user?.username?.toLowerCase() || "lunepusa";
@@ -112,51 +122,89 @@ const Upload = () => {
     setInitialTag(matchedTags.length > 0 ? matchedTags[0] : usernameLower);
   }, [user]);
 
+  // --- Drag and Drop Handlers ---
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDragEnter = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!uploading) setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    if (uploading) return;
+
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      setFiles(Array.from(e.dataTransfer.files));
+    }
+  };
+  // ------------------------------
+
   const handleUpload = async () => {
     if (files.length === 0) return;
     setUploading(true);
     setProgress({});
 
     try {
-      const processedFiles = files.map(file => {
+      const processedFiles = files.map((file) => {
         if (file.name.startsWith("PXL_")) {
           return new File([file], file.name.substring(4), { type: file.type });
         }
         return file;
       });
 
-      // ------------------------------------------------------------------
       // PATH A: THUMBNAILS ONLY
-      // ------------------------------------------------------------------
       if (thumbOnly) {
-        const videoFiles = processedFiles.filter(f => f.type.startsWith("video/"));
+        const videoFiles = processedFiles.filter((f) =>
+          f.type.startsWith("video/"),
+        );
         if (videoFiles.length > 0) {
-          console.log(`[Upload] Generating thumbnails only for ${videoFiles.length} videos...`);
-          
-          await Promise.all(videoFiles.map(async (file) => {
-            try {
-              await generateThumbnailBlob(file);
-            } catch (thumbErr) {
-              console.warn(`[Upload] Skipping thumbnail for ${file.name}:`, thumbErr);
-            }
-          }));
+          console.log(
+            `[Upload] Generating thumbnails only for ${videoFiles.length} videos...`,
+          );
+
+          await Promise.all(
+            videoFiles.map(async (file) => {
+              try {
+                await generateThumbnailBlob(file);
+              } catch (thumbErr) {
+                console.warn(
+                  `[Upload] Skipping thumbnail for ${file.name}:`,
+                  thumbErr,
+                );
+              }
+            }),
+          );
         }
-        
+
         alert("Thumbnails generated and uploaded successfully!");
         setFiles([]);
         setUploading(false);
-        return; // Exit early, do not process main uploads
+        return;
       }
 
-      // ------------------------------------------------------------------
-      // PATH B: MAIN UPLOAD (with staggered thumbnails)
-      // ------------------------------------------------------------------
+      // PATH B: MAIN UPLOAD
       console.log(`[Upload] Uploading ${processedFiles.length} main files...`);
 
       const res = await apiFetch("/presign", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(processedFiles.map(f => ({ name: f.name, type: f.type }))),
+        body: JSON.stringify(
+          processedFiles.map((f) => ({ name: f.name, type: f.type })),
+        ),
       });
 
       if (!res.ok) throw new Error("Presign request failed");
@@ -174,32 +222,42 @@ const Upload = () => {
 
           xhr.upload.onprogress = (e) => {
             if (e.lengthComputable) {
-              setProgress(prev => ({ ...prev, [file.name]: Math.round((e.loaded / e.total) * 100) }));
+              setProgress((prev) => ({
+                ...prev,
+                [file.name]: Math.round((e.loaded / e.total) * 100),
+              }));
             }
           };
 
           xhr.onload = async () => {
             if (xhr.status === 200) {
-              setProgress(prev => ({ ...prev, [file.name]: 100 }));
-              
+              setProgress((prev) => ({ ...prev, [file.name]: 100 }));
+
               try {
-                // 1. Mark upload complete in the DB
                 await apiFetch("/upload-complete", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ objectKey, fileType: file.type, initialTag }),
+                  body: JSON.stringify({
+                    objectKey,
+                    fileType: file.type,
+                    initialTag,
+                  }),
                 });
 
-                // 2. STAGGERED THUMBNAIL: Generate only after video is safely in the DB
                 if (file.type.startsWith("video/")) {
-                  console.log(`[Upload] Main video uploaded, creating thumbnail for: ${file.name}`);
+                  console.log(
+                    `[Upload] Main video uploaded, creating thumbnail for: ${file.name}`,
+                  );
                   await generateThumbnailBlob(file);
                 }
 
                 resolve();
               } catch (err) {
-                console.error(`Post-upload tasks failed for ${file.name}:`, err);
-                resolve(); // Still resolve so Promise.all finishes, since main file uploaded
+                console.error(
+                  `Post-upload tasks failed for ${file.name}:`,
+                  err,
+                );
+                resolve();
               }
             } else {
               reject(new Error(`Upload failed: ${xhr.status}`));
@@ -215,7 +273,6 @@ const Upload = () => {
 
       alert("All files uploaded and thumbnails generated!");
       setFiles([]);
-
     } catch (e) {
       console.error("Upload Error:", e);
       alert("Upload failed: " + (e.message || String(e)));
@@ -225,17 +282,20 @@ const Upload = () => {
   };
 
   const handlePurgeDeleted = async () => {
-    if (!window.confirm("Are you sure? This will permanently delete all files and database rows tagged with 'delete'.")) {
+    if (
+      !window.confirm(
+        "Are you sure? This will permanently delete all files and database rows tagged with 'delete'.",
+      )
+    ) {
       return;
     }
 
     try {
       const res = await apiFetch("/purge-deleted", { method: "POST" });
       if (!res.ok) throw new Error("Purge request failed");
-      
+
       const data = await res.json();
       alert(`Successfully purged ${data.deleted} items from the server!`);
-      
     } catch (err) {
       console.error("Purge error:", err);
       alert("Failed to purge items: " + err.message);
@@ -243,65 +303,193 @@ const Upload = () => {
   };
 
   return (
-    <div style={{ padding: "20px", textAlign: "center" }}>
+    <div
+      style={{
+        padding: "20px",
+        textAlign: "center",
+        maxWidth: "600px",
+        margin: "0 auto",
+      }}
+    >
       {user?.username?.toLowerCase() === "lunepusa" && (
-        <div style={{ marginTop: "40px", borderTop: "2px dashed #ff0000", paddingTop: "20px" }}>
+        <div
+          style={{
+            marginTop: "40px",
+            borderTop: "2px dashed #ff0000",
+            paddingTop: "20px",
+            marginBottom: "30px",
+          }}
+        >
           <h3>Admin Maintenance</h3>
-          <button 
-              onClick={handlePurgeDeleted}
-              style={{
-                background: "#ff4444",
-                color: "white",
-                border: "none",
-                padding: "4px 8px",
-                borderRadius: "4px",
-                cursor: "pointer",
-                fontWeight: "bold",
-                marginBottom: "15px"
-              }}
-            >
-              Purge "delete" Tag
-            </button>
-            <div style={{ border: "2px solid white", padding: "10px", borderRadius: "4px", display: "inline-block", margin: "0 auto" }}>
-              <label style={{ cursor: "pointer" }}>
-                <input 
-                  type="checkbox" 
-                  checked={thumbOnly}
-                  onChange={(e) => setThumbOnly(e.target.checked)} 
-                  style={{ marginRight: "8px" }}
-                />
-                Upload only the thumbnails?
-              </label>
-            </div>
+          <button
+            onClick={handlePurgeDeleted}
+            style={{
+              background: "#ff4444",
+              color: "white",
+              border: "none",
+              padding: "4px 8px",
+              borderRadius: "4px",
+              cursor: "pointer",
+              fontWeight: "bold",
+              marginBottom: "15px",
+            }}
+          >
+            Purge "delete" Tag
+          </button>
+          <br />
+          <div
+            style={{
+              border: "2px solid white",
+              padding: "10px",
+              borderRadius: "4px",
+              display: "inline-block",
+              margin: "0 auto",
+            }}
+          >
+            <label style={{ cursor: "pointer" }}>
+              <input
+                type="checkbox"
+                checked={thumbOnly}
+                onChange={(e) => setThumbOnly(e.target.checked)}
+                style={{ marginRight: "8px" }}
+              />
+              Upload only the thumbnails?
+            </label>
+          </div>
         </div>
       )}
 
       <h2>Upload</h2>
-      <input 
-        type="file" 
-        multiple 
-        onChange={(e) => setFiles(Array.from(e.target.files))} 
-        disabled={uploading}
-        style={{ marginBottom: "10px" }}
-      />
-      
+
+      {/* DRAG AND DROP ZONE */}
+      <div
+        onDragOver={handleDragOver}
+        onDragEnter={handleDragEnter}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        onClick={() =>
+          !uploading && document.getElementById("hiddenFileInput").click()
+        }
+        style={{
+          border: isDragging ? "2px dashed #007bff" : "2px dashed #ccc",
+          backgroundColor: isDragging
+            ? "rgba(0, 123, 255, 0.1)"
+            : "transparent",
+          padding: "50px 20px",
+          borderRadius: "8px",
+          cursor: uploading ? "not-allowed" : "pointer",
+          transition: "all 0.2s ease",
+          marginBottom: "20px",
+          position: "relative",
+        }}
+      >
+        {uploading ? (
+          <p>Uploading in progress...</p>
+        ) : (
+          <p
+            style={{
+              margin: 0,
+              fontSize: "1.1em",
+              color: isDragging ? "#007bff" : "inherit",
+            }}
+          >
+            {isDragging
+              ? "Drop files here!"
+              : "Drag & drop files here, or click to browse"}
+          </p>
+        )}
+
+        {/* Hidden file input triggered by clicking the div */}
+        <input
+          id="hiddenFileInput"
+          type="file"
+          multiple
+          onChange={(e) => setFiles(Array.from(e.target.files))}
+          disabled={uploading}
+          style={{ display: "none" }}
+        />
+      </div>
+
+      {/* Show selected files count before upload */}
+      {!uploading && files.length > 0 && (
+        <div style={{ marginBottom: "15px", color: "#4CAF50" }}>
+          <strong>
+            {files.length} file{files.length === 1 ? "" : "s"} selected
+          </strong>
+        </div>
+      )}
+
       <div style={{ margin: "15px 0" }}>
         <TagSelect initialTags={initialTag} onSave={setInitialTag} />
       </div>
 
-      <button onClick={handleUpload} disabled={uploading || files.length === 0}>
+      <button
+        onClick={handleUpload}
+        disabled={uploading || files.length === 0}
+        style={{
+          padding: "10px 20px",
+          fontSize: "1em",
+          cursor: uploading || files.length === 0 ? "not-allowed" : "pointer",
+        }}
+      >
         {uploading ? "Uploading..." : "Start Upload"}
       </button>
 
       {uploading && files.length > 0 && (
-        <div style={{ marginTop: "20px", textAlign: "left", display: "inline-block" }}>
+        <div
+          style={{
+            marginTop: "20px",
+            textAlign: "left",
+            display: "inline-block",
+            width: "100%",
+          }}
+        >
           <h3>Progress:</h3>
           {files.map((file) => {
-            const displayName = file.name.startsWith("PXL_") ? file.name.substring(4) : file.name;
+            const displayName = file.name.startsWith("PXL_")
+              ? file.name.substring(4)
+              : file.name;
             return (
-              <div key={file.name} style={{ marginBottom: "5px" }}>
-                <span style={{ fontSize: "0.8em" }}>{displayName}: </span>
-                <span> {progress[displayName] || 0}%</span>
+              <div key={file.name} style={{ marginBottom: "8px" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    fontSize: "0.9em",
+                    marginBottom: "4px",
+                  }}
+                >
+                  <span
+                    style={{
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                      maxWidth: "80%",
+                    }}
+                  >
+                    {displayName}
+                  </span>
+                  <span>{progress[displayName] || 0}%</span>
+                </div>
+                {/* Optional: Add a simple progress bar visual */}
+                <div
+                  style={{
+                    width: "100%",
+                    height: "4px",
+                    backgroundColor: "#333",
+                    borderRadius: "2px",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: `${progress[displayName] || 0}%`,
+                      height: "100%",
+                      backgroundColor: "#4CAF50",
+                      borderRadius: "2px",
+                      transition: "width 0.2s",
+                    }}
+                  ></div>
+                </div>
               </div>
             );
           })}
