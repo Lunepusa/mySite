@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth, apiFetch } from "./Auth";
 import { searchTags, TagSelect } from "./Tags";
 
+// ... (keep generateThumbnailBlob exactly the same as before) ...
 const generateThumbnailBlob = async (videoFile) => {
   return new Promise((resolve, reject) => {
     const video = document.createElement("video");
@@ -10,7 +11,6 @@ const generateThumbnailBlob = async (videoFile) => {
     video.preload = "metadata";
     video.playsInline = true;
 
-    // Create the URL once so we can revoke it later to prevent memory crashes
     const videoUrl = URL.createObjectURL(videoFile);
 
     video.onloadedmetadata = () => {
@@ -42,7 +42,6 @@ const generateThumbnailBlob = async (videoFile) => {
 
         canvas.toBlob(
           async (blob) => {
-            // Cleanup memory
             video.onerror = null;
             video.src = "";
             URL.revokeObjectURL(videoUrl);
@@ -102,7 +101,6 @@ const generateThumbnailBlob = async (videoFile) => {
       reject(new Error("Video load error"));
     };
 
-    // Trigger the load
     video.src = videoUrl;
   });
 };
@@ -114,13 +112,31 @@ const Upload = () => {
   const [initialTag, setInitialTag] = useState("");
   const [progress, setProgress] = useState({});
   const [thumbOnly, setThumbOnly] = useState(false);
-  const [isDragging, setIsDragging] = useState(false); // New state for drag UI
+  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
     const usernameLower = user?.username?.toLowerCase() || "lunepusa";
     const matchedTags = searchTags(usernameLower);
     setInitialTag(matchedTags.length > 0 ? matchedTags[0] : usernameLower);
   }, [user]);
+
+  // --- NEW: Helper function to append files without duplicates ---
+  const handleAddFiles = (newFilesList) => {
+    const incomingFiles = Array.from(newFilesList);
+
+    setFiles((prevFiles) => {
+      // Create a Set of existing file names + sizes to prevent duplicates
+      const existingIdentifiers = new Set(
+        prevFiles.map((f) => `${f.name}-${f.size}`),
+      );
+
+      const uniqueNewFiles = incomingFiles.filter(
+        (f) => !existingIdentifiers.has(`${f.name}-${f.size}`),
+      );
+
+      return [...prevFiles, ...uniqueNewFiles];
+    });
+  };
 
   // --- Drag and Drop Handlers ---
   const handleDragOver = (e) => {
@@ -148,7 +164,7 @@ const Upload = () => {
     if (uploading) return;
 
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      setFiles(Array.from(e.dataTransfer.files));
+      handleAddFiles(e.dataTransfer.files); // Use the new append function
     }
   };
   // ------------------------------
@@ -361,7 +377,6 @@ const Upload = () => {
 
       <h2>Upload</h2>
 
-      {/* DRAG AND DROP ZONE */}
       <div
         onDragOver={handleDragOver}
         onDragEnter={handleDragEnter}
@@ -399,25 +414,16 @@ const Upload = () => {
           </p>
         )}
 
-        {/* Hidden file input triggered by clicking the div */}
+        {/* Updated: Also use handleAddFiles when browsing manually */}
         <input
           id="hiddenFileInput"
           type="file"
           multiple
-          onChange={(e) => setFiles(Array.from(e.target.files))}
+          onChange={(e) => handleAddFiles(e.target.files)}
           disabled={uploading}
           style={{ display: "none" }}
         />
       </div>
-
-      {/* Show selected files count before upload */}
-      {!uploading && files.length > 0 && (
-        <div style={{ marginBottom: "15px", color: "#4CAF50" }}>
-          <strong>
-            {files.length} file{files.length === 1 ? "" : "s"} selected
-          </strong>
-        </div>
-      )}
 
       <div style={{ margin: "15px 0" }}>
         <TagSelect initialTags={initialTag} onSave={setInitialTag} />
@@ -471,7 +477,6 @@ const Upload = () => {
                   </span>
                   <span>{progress[displayName] || 0}%</span>
                 </div>
-                {/* Optional: Add a simple progress bar visual */}
                 <div
                   style={{
                     width: "100%",
