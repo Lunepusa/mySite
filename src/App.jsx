@@ -20,7 +20,7 @@ import AuthProvider from "./Auth.jsx";
 import { useAuth, apiFetch } from "./Auth";
 import Lounge from "./Lounge.jsx";
 import Profile from "./Profile.jsx";
-import ShareView from "./ShareView.jsx"
+import ShareView from "./ShareView.jsx";
 
 export default function App() {
   const location = useLocation();
