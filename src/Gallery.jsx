@@ -29,7 +29,7 @@ const Gallery = () => {
 };
 
   // Main list of loaded media items (photos + videos)
-  const [media, setMedia] = ]);
+  const [media, setMedia] = ([]);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
