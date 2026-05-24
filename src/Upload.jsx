@@ -133,32 +133,47 @@ const Upload = () => {
     });
   };
 
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
+const handleDragOver = (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+};
 
-  const handleDragEnter = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!uploading) setIsDragging(true);
-  };
+const handleDragEnter = (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  console.log("👉 Drag Enter detected. Is uploading?", uploading);
+  if (!uploading) setIsDragging(true);
+};
 
-  const handleDragLeave = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-  };
+const handleDragLeave = (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  console.log("👈 Drag Leave detected");
+  setIsDragging(false);
+};
 
-  const handleDrop = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-    if (uploading) return;
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      handleAddFiles(e.dataTransfer.files);
-    }
-  };
+const handleDrop = (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  console.log("📦 Drop event fired! Files:", e.dataTransfer?.files);
+  setIsDragging(false);
+
+  if (uploading) {
+    console.warn("Drop rejected: App thinks an upload is already in progress.");
+    return;
+  }
+
+  if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+    console.log(
+      `Sending ${e.dataTransfer.files.length} files to handleAddFiles`,
+    );
+    handleAddFiles(e.dataTransfer.files);
+  } else {
+    console.warn(
+      "Drop event fired, but no files were detected in dataTransfer.",
+    );
+  }
+};
 
   const handleUpload = async () => {
     if (files.length === 0) return;
@@ -394,7 +409,7 @@ const Upload = () => {
             ? "Uploading..."
             : isDragging
               ? "Drop here!"
-              : "Drag & drop files, or click"}
+              : "Drag & drop files, or click(${files.length} files)"}
         </p>
 
         <input
