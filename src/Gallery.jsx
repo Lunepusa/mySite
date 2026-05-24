@@ -60,32 +60,28 @@ const [selectedItems, setSelectedItems] = useState(() => new Set());
   // -------------------------------------------------------------------------
   // Effect: Sync URL hash ↔ search query + reset results on hash change
   // -------------------------------------------------------------------------
-  useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash.slice(1);
-      const rawQuery = hash ? decodeURIComponent(hash) : "";
+useEffect(() => {
+  const handleHashChange = () => {
+    const hash = window.location.hash.slice(1);
+    const rawQuery = hash ? decodeURIComponent(hash) : "";
 
-      // Always mirror hash in the input field
-      setSearchInput(rawQuery);
+    setSearchInput(rawQuery);
 
-      const normalized = normalizeSearchInput(rawQuery);
-      setActiveSearchQuery(normalized);
-      setDisplayedQuery(normalized || "(no terms)");
+    const normalized = normalizeSearchInput(rawQuery);
+    setActiveSearchQuery(normalized);
+    setDisplayedQuery(normalized || "(no terms)");
 
-      // Reset pagination and media when query changes via hash
-      setMedia([]);
-      setOffset(0);
-      setHasMore(true);
+    setMedia([]);
+    setOffset(0);
+    setHasMore(true);
 
-      loadMoreGroups(0, normalized, true);
-    };
+    loadMoreGroups(0, normalized, true);
+  };
 
-    // Run once on mount (handles initial hash or empty)
-    handleHashChange();
-
-    window.addEventListener("hashchange", handleHashChange);
-    return () => window.removeEventListener("hashchange", handleHashChange);
-  }, []);
+  handleHashChange();
+  window.addEventListener("hashchange", handleHashChange);
+  return () => window.removeEventListener("hashchange", handleHashChange);
+}, [loadMoreGroups]); // Add dependency
 
   // -------------------------------------------------------------------------
   // Effect: Initial load of first batch (runs once after mount)
@@ -112,8 +108,37 @@ const [selectedItems, setSelectedItems] = useState(() => new Set());
     fetchStats();
   }, []);
 
-l
-  
+const groups = useMemo(() => {
+  const groupsObj = {};
+
+  media.forEach((item) => {
+    const date = item.date || "Unknown";
+    if (!groupsObj[date]) {
+      groupsObj[date] = { items: [], commonTags: [] };
+    }
+    groupsObj[date].items.push(item);
+  });
+
+  Object.keys(groupsObj).forEach((date) => {
+    const items = groupsObj[date].items;
+    if (items.length === 0) return;
+
+    let common = new Set(getTagsArray(items[0].tags));
+    for (let i = 1; i < items.length; i++) {
+      const itemTags = new Set(getTagsArray(items[i].tags));
+      common = new Set([...common].filter((tag) => itemTags.has(tag)));
+    }
+    groupsObj[date].commonTags = [...common];
+  });
+
+  return groupsObj;
+}, [media]);
+
+const sortedDates = useMemo(() => {
+  return Object.keys(groups).sort((a, b) => b.localeCompare(a));
+}, [groups]);
+
+const firstDate = sortedDates[0];
   // -------------------------------------------------------------------------
   // Utility: Convert tag string or array into clean array
   // -------------------------------------------------------------------------
@@ -254,32 +279,6 @@ l
     return calculateMultiCommonTags();
   }, [selectedItems.size, media]);
 
-  // -------------------------------------------------------------------------
-  // Group media by date + compute common tags per date group
-  // -------------------------------------------------------------------------
-  const groups = {};
-  media.forEach((item) => {
-    const date = item.date || "Unknown";
-    if (!groups[date]) {
-      groups[date] = { items: [], commonTags: [] };
-    }
-    groups[date].items.push(item);
-  });
-
-  Object.keys(groups).forEach((date) => {
-    const items = groups[date].items;
-    if (items.length === 0) return;
-
-    let common = new Set(getTagsArray(items[0].tags));
-    for (let i = 1; i < items.length; i++) {
-      const itemTags = new Set(getTagsArray(items[i].tags));
-      common = new Set([...common].filter((tag) => itemTags.has(tag)));
-    }
-    groups[date].commonTags = [...common];
-  });
-
-  const sortedDates = Object.keys(groups).sort((a, b) => b.localeCompare(a));
-  const firstDate = sortedDates[0];
 
   if (loading && media.length === 0)
     return <p style={{ textAlign: "center", padding: "6px" }}>Loading gallery...</p>;
@@ -711,7 +710,7 @@ l
       }}
       style={{
         maxWidth: "100%",
-        maxHeight: "100DVH",
+        maxHeight: "100dvh",
         width: "auto",
         height: "auto",
         objectFit: "contain",
@@ -719,13 +718,13 @@ l
       }}
     />
   ) : (
-    // Fallback for unauthorized users
+    // Safe blurred fallback for unauthorized users on videos
     <img 
-      src={`${R2_PUBLIC_URL}/cdn-cgi/image/quality=85,format=auto,blur=50/${(fullscreenItem.key.replace(/\.[^/.]+$/, "") + "_thumb.jpg")}`}
+      src={`${R2_PUBLIC_URL}/cdn-cgi/image/quality=85,format=auto,blur=50/${fullscreenItem.key.replace(/\.[^/.]+$/, "")}_thumb.jpg`}
       alt="Preview restricted"
       style={{
         maxWidth: "100%",
-        maxHeight: "100DVH",
+        maxHeight: "100dvh",
         width: "auto",
         height: "auto",
         objectFit: "contain",
@@ -733,17 +732,12 @@ l
       }}
     />
   )
-
 ) : (
   <img
     src={
       hasAccessForDate(fullscreenItem?.date)
         ? `${R2_PUBLIC_URL}/${fullscreenItem.key}`
-        : (() => {
-            const relativeImgPath = fullscreenItem.key.startsWith('/') ? fullscreenItem.key : `/${fullscreenItem.key}`;
-            // Root relative pathing for unauthorized blurred image preview
-            return `${R2_PUBLIC_URL}/cdn-cgi/image/quality=85,format=auto,blur=200/${fullscreenItem.key}`;
-          })()
+        : `${R2_PUBLIC_URL}/cdn-cgi/image/quality=85,format=auto,blur=200/${fullscreenItem.key}`
     }
     alt=""
     onContextMenu={(e) => {
@@ -754,7 +748,7 @@ l
     }}
     style={{
       maxWidth: "100%",
-      maxHeight: "100DVH",
+      maxHeight: "100dvh",
       width: "auto",
       height: "auto",
       objectFit: "contain",
@@ -902,67 +896,57 @@ l
       border: "1px white solid",
     }}
   >
-    {(() => {
-      // 1. Determine if current user has access to this date
-      const hasAccess = isAdmin || isSubscriber || unlockedDates.includes(date);
+   {(() => {
+  const hasAccess = hasAccessForDate(date);
 
-let targetKey = item.key;
+  let targetKey = item.key;
   if (item.isVideo) {
-    // This perfectly matches your upload logic so .TS files don't break
     targetKey = item.key.replace(/\.[^/.]+$/, "") + "_thumb.jpg";
   }
 
-// 2. Ensure target key starts with a clean slash for root relative pathing
-  const relativeAssetPath = targetKey.startsWith('/') ? targetKey : `/${targetKey}`;
-
-  // 3. USE ROOT RELATIVE ROUTING. Cloudflare intercepts this instantly within your custom domain
-  // without needing a slow external DNS lookup to the full R2 domain.
   const cloudflareUrl = !hasAccess
     ? `${R2_PUBLIC_URL}/cdn-cgi/image/width=250,quality=80,format=auto,blur=20/${targetKey}`
-    : `${R2_PUBLIC_URL}/cdn-cgi/image/width=250,quality=80,format=auto/${targetKey}`
+    : `${R2_PUBLIC_URL}/cdn-cgi/image/width=250,quality=80,format=auto/${targetKey}`;
 
+  return (
+    <>
+      <img
+        src={cloudflareUrl}
+        alt={caption}
+        onContextMenu={(e) => e.preventDefault()}
+        style={{
+          maxHeight: "auto",
+          width: "100%",
+          objectFit: "contain",
+        }}
+      />
 
-      return (
-        <>
-          {/* Every item now renders a flat, fast optimized image in the grid */}
-          <img
-            src={cloudflareUrl}
-            alt={caption}
-            onContextMenu={(e) => e.preventDefault()}
-            style={{
-              maxHeight: "auto",
-              width: "100%",
-              objectFit: "contain",
-            }}
-          />
-
-          {/* If it's a video, add an overlay icon to distinguish it */}
-          {item.isVideo && (
-            <div
-              style={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                background: "rgba(0,0,0,0.5)",
-                borderRadius: "50%",
-                width: "30%",
-                height: "auto",
-                aspectRatio: "1/1",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                pointerEvents: "none",
-              }}
-            >
-              <span style={{ color: "#fff", fontSize: "1.2em" }}>
-                {hasAccess ? "▶" : "🔒"}
-              </span>
-            </div>
-          )}
-        </>
-      );
-    })()}
+      {item.isVideo && (
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            background: "rgba(0,0,0,0.5)",
+            borderRadius: "50%",
+            width: "30%",
+            height: "auto",
+            aspectRatio: "1/1",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            pointerEvents: "none",
+          }}
+        >
+          <span style={{ color: "#fff", fontSize: "1.2em" }}>
+            {hasAccess ? "▶" : "🔒"}
+          </span>
+        </div>
+      )}
+    </>
+  );
+})()}
   </div>
 
                           <div style={{ textAlign: "center" }}>
