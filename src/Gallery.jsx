@@ -641,27 +641,30 @@ useEffect(() => {
         }
 
         apiFetch("/bulk-update", {
-          method: "POST",
-          body: JSON.stringify(body),
-        }).then(res => {
-          if (res.ok) {
-            setMedia(prev => prev.map(item => {
-              if (keys.includes(item.key)) {
-                let current = getTagsArray(item.tags);
-                current = current.filter(t => !removed.includes(t));
-                current = [...new Set([...current, ...added])];
-                return { 
-                  ...item, 
-                  tags: current.join(", "),
-                  created_date: dateValue.length === 8 ? dateValue : item.created_date
-                };
-              }
-              return item;
-            }));
+  method: "POST",
+  headers: { "Content-Type": "application/json" }, // Add this
+  body: JSON.stringify(body),
+})..then(res => {
+  if (res.ok) {
+    setMedia(prev => prev.map(item => {
+      if (keys.includes(item.key)) {
+        let current = getTagsArray(item.tags);
+        current = current.filter(t => !removed.includes(t));
+        current = [...new Set([...current, ...added])];
+        return { 
+          ...item, 
+          tags: current.join(", "),
+          // Safely check dateValue using optional chaining
+          created_date: dateValue?.length === 8 ? dateValue : item.created_date
+        };
+      }
+      return item;
+    }));
 
-            // Deselect everything
-            setSelectedItems([]);
-          }
+    // Reset it back to an empty Set, not an Array
+    setSelectedItems(new Set());
+    setMultiSelectMode(false); // Optional: you probably want to turn off the mode too
+  }
         });
       }
     }}
