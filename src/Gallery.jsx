@@ -29,7 +29,7 @@ const Gallery = () => {
 };
 
   // Main list of loaded media items (photos + videos)
-  const [media, setMedia] = useState([]);
+  const [media, setMedia] = ]);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -44,8 +44,8 @@ const Gallery = () => {
   const [editingItem, setEditingItem] = useState(null);
 
   const [tempCaption, setTempCaption] = useState("");
-  const [tempTags, setTempTags] = useState([]);
-  const [originalTags, setOriginalTags] = useState([]);
+  const [tempTags, setTempTags] = ]);
+  const [originalTags, setOriginalTags] = ]);
 
   // Search input and active normalized query
   const [searchInput, setSearchInput] = useState("");
@@ -138,13 +138,9 @@ useEffect(() => {
     }
   };
 
-  document.addEventListener("touchstart", handleTouch, { passive: false });
-  document.addEventListener("touchmove", handleTouch, { passive: false });
   document.addEventListener("contextmenu", preventContextMenu, { passive: false });
 
   return () => {
-    document.removeEventListener("touchstart", handleTouch);
-    document.removeEventListener("touchmove", handleTouch);
     document.removeEventListener("contextmenu", preventContextMenu);
   };
 }, []);
@@ -513,6 +509,12 @@ useEffect(() => {
       console.error("Media share copy error:", err);
     }
   };
+  
+  console.log("RENDER CHECK:", {
+    isSet: selectedItems instanceof Set,
+    value: selectedItems,
+    mediaLength: media.length
+  });
 
   return (
     <>
