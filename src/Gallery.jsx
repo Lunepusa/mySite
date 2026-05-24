@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useAuth, apiFetch, R2_PUBLIC_URL } from "./Auth";
 import { TagSelect, searchTags, ClickableTags } from "./Tags";
 
@@ -153,7 +153,7 @@ const normalizeSearchInput = (input) => {
     return normalizedOrGroups.join('~');
   };
 
-const loadMoreGroups = async (
+const loadMoreGroups = useCallback(async (
     currentOffset = offset,
     queryToUse = activeSearchQuery,
     ignoreChecks = false
@@ -193,7 +193,8 @@ const loadMoreGroups = async (
     } finally {
       setLoading(false);
     }
-  };
+    // ... (your existing logic)
+  }, [offset, activeSearchQuery, loading, hasMore]); // Add dependencies here
 
 const triggerSearch = () => {
     const normalized = normalizeSearchInput(searchInput);
