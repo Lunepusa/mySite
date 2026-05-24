@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useAuth, apiFetch, R2_PUBLIC_URL } from "./Auth";
 import { TagSelect, searchTags, ClickableTags } from "./Tags";
 
@@ -31,8 +31,12 @@ const Gallery = () => {
   // Main list of loaded media items (photos + videos)
   const [media, setMedia] = useState([]);
   const [offset, setOffset] = useState(0);
+  
+  // Use these refs to prevent re-renders in your function
+  const loadingRef = useRef(false);
+  const hasMoreRef = useRef(true);
+  const [loading, setLoading] = useState(false); // Keep this for UI rendering
   const [hasMore, setHasMore] = useState(true);
-  const [loading, setLoading] = useState(false);
   const [fullscreenItem, setFullscreenItem] = useState(null);
 
   // Total counts displayed in header
@@ -113,10 +117,10 @@ const loadMoreGroups = useCallback(async (
     ignoreChecks = false
   ) => {
     if (!ignoreChecks) {
-      if (loading || !hasMore) return;
+      if (loadingRef.current || !hasMoreRef.current) return;
     }
 
-    setLoading(true);
+    loadingRef.current = true;     setLoading(true);
 
     try {
       const params = new URLSearchParams({
@@ -132,7 +136,7 @@ const loadMoreGroups = useCallback(async (
       const data = await res.json();
 
       if (data.media.length === 0) {
-        setHasMore(false);
+        hasMoreRef.current = false;       setHasMore(false);
         if (currentOffset === 0) setMedia([]);
         return;
       }
@@ -141,14 +145,14 @@ const loadMoreGroups = useCallback(async (
 
       setMedia((prev) => (currentOffset === 0 ? newMedia : [...prev, ...newMedia]));
       setOffset(currentOffset + newMedia.length);
-      setHasMore(data.media.length === ITEMS_PER_BATCH);
+      hasMoreRef.current = data.media.length === ITEMS_PER_BATCH;       setHasMore(data.media.length === ITEMS_PER_BATCH);
     } catch (err) {
       console.error("Load error:", err);
     } finally {
-      setLoading(false);
+      loadingRef.current = false;     setLoading(false);
     }
     // ... (your existing logic)
-  }, [offset, activeSearchQuery, loading, hasMore]); // Add dependencies here
+  }, [offset, activeSearchQuery]); // Add dependencies here
 
 const triggerSearch = () => {
     const normalized = normalizeSearchInput(searchInput);
@@ -157,7 +161,7 @@ const triggerSearch = () => {
 
     setMedia([]);
     setOffset(0);
-    setHasMore(true);
+    hasMoreRef.current = true;       setHasMore(true);
     loadMoreGroups(0, normalized, true);
 
     if (normalized) {
@@ -236,7 +240,7 @@ useEffect(() => {
 
     setMedia([]);
     setOffset(0);
-    setHasMore(true);
+    hasMoreRef.current = true;       setHasMore(true);
 
     loadMoreGroups(0, normalized, true);
   };
@@ -272,7 +276,7 @@ useEffect(() => {
   }, []);
 
 
-  if (loading && media.length === 0)
+  if (loadingRef.current && media.length === 0)
     return <p style={{ textAlign: "center", padding: "6px" }}>Loading gallery...</p>;
 
   if (media.length === 0)
@@ -288,7 +292,7 @@ useEffect(() => {
                 setDisplayedQuery("");
                 setMedia([]);
                 setOffset(0);
-                setHasMore(true);
+                hasMoreRef.current = true;       setHasMore(true);
                 loadMoreGroups(0, "", true);
                 window.history.pushState(null, "", window.location.pathname);
               }}
@@ -524,7 +528,7 @@ useEffect(() => {
                   setDisplayedQuery("");
                   setMedia([]);
                   setOffset(0);
-                  setHasMore(true);
+                  hasMoreRef.current = true;       setHasMore(true);
                   loadMoreGroups(0, "", true);
                   window.history.pushState(null, "", window.location.pathname);
                 }}
@@ -998,10 +1002,10 @@ useEffect(() => {
             );
           })}
 
-          {hasMore && (
+          {hasMoreRef.current && (
             <button
               onClick={() => loadMoreGroups()}
-              disabled={loading}
+              disabled={loadingRef.current}
               style={{
                 display: "block",
                 margin: "10px auto",
@@ -1009,7 +1013,7 @@ useEffect(() => {
                 fontSize: "1.1em",
               }}
             >
-              {loading ? "Loading..." : "Load More"}
+              {loadingRef.current ? "Loading..." : "Load More"}
             </button>
           )}
         </div>
