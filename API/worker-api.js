@@ -746,14 +746,17 @@ export default {
         }
         // Date/time update (unchanged)
         if (newDate) {
-          for (const key of keys) {
-            await db
-              .prepare("UPDATE media SET created_date = ? WHERE object_key = ?")
-              .bind(parseInt(newDate, 10), key)
-              .run();
-          }
-        }
-      } catch (err) {
+  for (const key of keys) {
+    await db
+      .prepare("UPDATE media SET created_date = ? WHERE object_key = ?")
+      .bind(parseInt(newDate, 10), key)
+      .run();
+  }
+}
+
+response = Response.json({ success: true });
+
+} catch (err) {
         console.error("Bulk update error:", err);
         response = new Response(
           JSON.stringify({
