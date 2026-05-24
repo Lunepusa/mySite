@@ -449,9 +449,9 @@ const Upload = () => {
               <div key={file.name} style={{ marginBottom: "4px" }}>
                 <div
                   style={{
-                    display: "flex",
+                    display: "inline-block",
                     justifyContent: "space-between",
-                    marginBottom: "2px",
+                    maxWidth: "20%",
                   }}
                 >
                   <span
@@ -459,7 +459,6 @@ const Upload = () => {
                       overflow: "hidden",
                       textOverflow: "ellipsis",
                       whiteSpace: "nowrap",
-                      maxWidth: "80%",
                     }}
                   >
                     {displayName}
