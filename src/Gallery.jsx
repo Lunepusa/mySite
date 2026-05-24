@@ -235,37 +235,6 @@ const triggerSearch = () => {
     return calculateMultiCommonTags();
   }, [selectedItems.size, media]);
 
-
-  if (loading && media.length === 0)
-    return <p style={{ textAlign: "center", padding: "6px" }}>Loading gallery...</p>;
-
-  if (media.length === 0)
-    return (
-      <div style={{ textAlign: "center", padding: "6px" }}>
-        {activeSearchQuery ? (
-          <>
-            <p>No results for: "{displayedQuery}"</p>
-            <button
-              onClick={() => {
-                setSearchInput("");
-                setActiveSearchQuery("");
-                setDisplayedQuery("");
-                setMedia([]);
-                setOffset(0);
-                setHasMore(true);
-                loadMoreGroups(0, "", true);
-                window.history.pushState(null, "", window.location.pathname);
-              }}
-            >
-              Clear search
-            </button>
-          </>
-        ) : (
-          "No media yet."
-        )}
-      </div>
-    );
-
 const groups = useMemo(() => {
   const groupsObj = {};
 
@@ -297,6 +266,39 @@ const sortedDates = useMemo(() => {
 }, [groups]);
 
 const firstDate = sortedDates[0];
+
+
+
+  if (loading && media.length === 0)
+    return <p style={{ textAlign: "center", padding: "6px" }}>Loading gallery...</p>;
+
+  if (media.length === 0)
+    return (
+      <div style={{ textAlign: "center", padding: "6px" }}>
+        {activeSearchQuery ? (
+          <>
+            <p>No results for: "{displayedQuery}"</p>
+            <button
+              onClick={() => {
+                setSearchInput("");
+                setActiveSearchQuery("");
+                setDisplayedQuery("");
+                setMedia([]);
+                setOffset(0);
+                setHasMore(true);
+                loadMoreGroups(0, "", true);
+                window.history.pushState(null, "", window.location.pathname);
+              }}
+            >
+              Clear search
+            </button>
+          </>
+        ) : (
+          "No media yet."
+        )}
+      </div>
+    );
+
 
   const openFullscreen = (item) => setFullscreenItem(item);
   const closeFullscreen = () => setFullscreenItem(null);
@@ -885,7 +887,7 @@ const firstDate = sortedDates[0];
     }}
   >
    {(() => {
-  const hasAccess = hasAccessForDate(date);
+  const hasAccess = hasAccessForDate(item.date || "Unknown");
 
   let targetKey = item.key;
   if (item.isVideo) {
