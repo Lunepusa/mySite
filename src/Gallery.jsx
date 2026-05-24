@@ -62,53 +62,7 @@ const [selectedItems, setSelectedItems] = useState(() => new Set());
   // -------------------------------------------------------------------------
   // Effect: Sync URL hash ↔ search query + reset results on hash change
   // -------------------------------------------------------------------------
-useEffect(() => {
-  const handleHashChange = () => {
-    const hash = window.location.hash.slice(1);
-    const rawQuery = hash ? decodeURIComponent(hash) : "";
 
-    setSearchInput(rawQuery);
-
-    const normalized = normalizeSearchInput(rawQuery);
-    setActiveSearchQuery(normalized);
-    setDisplayedQuery(normalized || "(no terms)");
-
-    setMedia([]);
-    setOffset(0);
-    setHasMore(true);
-
-    loadMoreGroups(0, normalized, true);
-  };
-
-  handleHashChange();
-  window.addEventListener("hashchange", handleHashChange);
-  return () => window.removeEventListener("hashchange", handleHashChange);
-}, [loadMoreGroups]); // Add dependency
-
-  // -------------------------------------------------------------------------
-  // Effect: Initial load of first batch (runs once after mount)
-  // -------------------------------------------------------------------------
-  useEffect(() => {
-    loadMoreGroups();
-  }, []);
-
-  // -------------------------------------------------------------------------
-  // Effect: Fetch total photo/video counts for header
-  // -------------------------------------------------------------------------
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const res = await apiFetch("/gallery-stats");
-        if (res.ok) {
-          const data = await res.json();
-          setStats(data);
-        }
-      } catch (err) {
-        // silent fail
-      }
-    };
-    fetchStats();
-  }, []);
 
   // -------------------------------------------------------------------------
   // Utility: Convert tag string or array into clean array
@@ -268,6 +222,54 @@ const sortedDates = useMemo(() => {
 
 const firstDate = sortedDates[0];
 
+
+useEffect(() => {
+  const handleHashChange = () => {
+    const hash = window.location.hash.slice(1);
+    const rawQuery = hash ? decodeURIComponent(hash) : "";
+
+    setSearchInput(rawQuery);
+
+    const normalized = normalizeSearchInput(rawQuery);
+    setActiveSearchQuery(normalized);
+    setDisplayedQuery(normalized || "(no terms)");
+
+    setMedia([]);
+    setOffset(0);
+    setHasMore(true);
+
+    loadMoreGroups(0, normalized, true);
+  };
+
+  handleHashChange();
+  window.addEventListener("hashchange", handleHashChange);
+  return () => window.removeEventListener("hashchange", handleHashChange);
+}, [loadMoreGroups]); // Add dependency
+
+  // -------------------------------------------------------------------------
+  // Effect: Initial load of first batch (runs once after mount)
+  // -------------------------------------------------------------------------
+  useEffect(() => {
+    loadMoreGroups();
+  }, []);
+
+  // -------------------------------------------------------------------------
+  // Effect: Fetch total photo/video counts for header
+  // -------------------------------------------------------------------------
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await apiFetch("/gallery-stats");
+        if (res.ok) {
+          const data = await res.json();
+          setStats(data);
+        }
+      } catch (err) {
+        // silent fail
+      }
+    };
+    fetchStats();
+  }, []);
 
 
   if (loading && media.length === 0)
