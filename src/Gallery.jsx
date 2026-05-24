@@ -935,7 +935,7 @@ useEffect(() => {
 
                           <div style={{ textAlign: "center" }}>
                             {editingItem === item.key ? (
-                                <TagSelect
+                              <> <TagSelect
                                   selected={tempTags}
                                   onChange={setTempTags}
                                                       />
@@ -950,7 +950,7 @@ useEffect(() => {
                                   Cancel
                                 </button>
                               </div>
-                            ) : (
+                          </>  ) : (
                               <>
                                 <p
                                   style={{
