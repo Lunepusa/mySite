@@ -110,7 +110,7 @@ useEffect(() => {
     fetchStats();
   }, []);
 
---------------------------------------
+  // -------------------------------------------------------------------------
   // Utility: Convert tag string or array into clean array
   // -------------------------------------------------------------------------
   const getTagsArray = (tagInput) => {
@@ -125,45 +125,7 @@ useEffect(() => {
     return [];
   };
 
-
-const groups = useMemo(() => {
-  const groupsObj = {};
-
-  media.forEach((item) => {
-    const date = item.date || "Unknown";
-    if (!groupsObj[date]) {
-      groupsObj[date] = { items: [], commonTags: [] };
-    }
-    groupsObj[date].items.push(item);
-  });
-
-  Object.keys(groupsObj).forEach((date) => {
-    const items = groupsObj[date].items;
-    if (items.length === 0) return;
-
-    let common = new Set(getTagsArray(items[0].tags));
-    for (let i = 1; i < items.length; i++) {
-      const itemTags = new Set(getTagsArray(items[i].tags));
-      common = new Set([...common].filter((tag) => itemTags.has(tag)));
-    }
-    groupsObj[date].commonTags = [...common];
-  });
-
-  return groupsObj;
-}, [media]);
-
-const sortedDates = useMemo(() => {
-  return Object.keys(groups).sort((a, b) => b.localeCompare(a));
-}, [groups]);
-
-const firstDate = sortedDates[0];
-  // -----------------------------------
-  // -------------------------------------------------------------------------
-  // Utility: Normalize search input into internal format
-  //   space = OR (~), + = AND, - = exclude
-  //   also replaces & with + and prefers known tags from searchTags
-  // -------------------------------------------------------------------------
-  const normalizeSearchInput = (input) => {
+const normalizeSearchInput = (input) => {
     if (!input.trim()) return "";
 
     input = input.replace(/&/g, '+');
@@ -191,11 +153,7 @@ const firstDate = sortedDates[0];
     return normalizedOrGroups.join('~');
   };
 
-  // -------------------------------------------------------------------------
-  // Core pagination loader — fetches next batch of media
-  // Supports search query and offset-based loading
-  // -------------------------------------------------------------------------
-  const loadMoreGroups = async (
+const loadMoreGroups = async (
     currentOffset = offset,
     queryToUse = activeSearchQuery,
     ignoreChecks = false
@@ -237,10 +195,7 @@ const firstDate = sortedDates[0];
     }
   };
 
-  // -------------------------------------------------------------------------
-  // Trigger new search: normalize, reset list, update URL hash
-  // -------------------------------------------------------------------------
-  const triggerSearch = () => {
+const triggerSearch = () => {
     const normalized = normalizeSearchInput(searchInput);
     setActiveSearchQuery(normalized);
     setDisplayedQuery(normalized || "(no terms)");
@@ -257,9 +212,6 @@ const firstDate = sortedDates[0];
     }
   };
 
-  // -------------------------------------------------------------------------
-  // Calculate tags common to ALL selected items (for multi-edit)
-  // -------------------------------------------------------------------------
   const calculateMultiCommonTags = () => {
     if (selectedItems.size === 0) return [];
 
@@ -313,6 +265,38 @@ const firstDate = sortedDates[0];
         )}
       </div>
     );
+
+const groups = useMemo(() => {
+  const groupsObj = {};
+
+  media.forEach((item) => {
+    const date = item.date || "Unknown";
+    if (!groupsObj[date]) {
+      groupsObj[date] = { items: [], commonTags: [] };
+    }
+    groupsObj[date].items.push(item);
+  });
+
+  Object.keys(groupsObj).forEach((date) => {
+    const items = groupsObj[date].items;
+    if (items.length === 0) return;
+
+    let common = new Set(getTagsArray(items[0].tags));
+    for (let i = 1; i < items.length; i++) {
+      const itemTags = new Set(getTagsArray(items[i].tags));
+      common = new Set([...common].filter((tag) => itemTags.has(tag)));
+    }
+    groupsObj[date].commonTags = [...common];
+  });
+
+  return groupsObj;
+}, [media]);
+
+const sortedDates = useMemo(() => {
+  return Object.keys(groups).sort((a, b) => b.localeCompare(a));
+}, [groups]);
+
+const firstDate = sortedDates[0];
 
   const openFullscreen = (item) => setFullscreenItem(item);
   const closeFullscreen = () => setFullscreenItem(null);
