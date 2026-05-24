@@ -44,8 +44,8 @@ const Gallery = () => {
   const [editingItem, setEditingItem] = useState(null);
 
   const [tempCaption, setTempCaption] = useState("");
-  const [tempTags, setTempTags] = ]);
-  const [originalTags, setOriginalTags] = ]);
+  const [tempTags, setTempTags] =([]);
+  const [originalTags, setOriginalTags] =([]);
 
   // Search input and active normalized query
   const [searchInput, setSearchInput] = useState("");
