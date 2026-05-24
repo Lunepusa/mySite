@@ -940,6 +940,7 @@ useEffect(() => {
                                   onChange={setTempTags}
                                 />
                               <button onClick={saveEdit}>Save</button>
+                              <button
                                   onClick={() => {
                                     setEditingItem(null);
                                     setTempTags([]);
