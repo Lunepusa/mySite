@@ -54,8 +54,7 @@ const Gallery = () => {
 
   // Multi-select mode (admin only)
   const [multiSelectMode, setMultiSelectMode] = useState(false);
-  const [selectedItems, setSelectedItems] = useState(new Set());
-
+const [selectedItems, setSelectedItems] = useState(() => new Set());
   const ITEMS_PER_BATCH = 50;
 
   // -------------------------------------------------------------------------
