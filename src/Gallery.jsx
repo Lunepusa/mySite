@@ -33,7 +33,9 @@ const Gallery = () => {
   const [offset, setOffset] = useState(0);
   
   // Use these refs to prevent re-renders in your function
-  const loadingRef = useRef(false);
+  
+const offsetRef = useRef(0);
+const loadingRef = useRef(false);
   const hasMoreRef = useRef(true);
   const [loading, setLoading] = useState(false); // Keep this for UI rendering
   const [hasMore, setHasMore] = useState(true);
@@ -111,48 +113,44 @@ const normalizeSearchInput = (input) => {
     return normalizedOrGroups.join('~');
   };
 
-const loadMoreGroups = useCallback(async (
-    currentOffset = offset,
-    queryToUse = activeSearchQuery,
-    ignoreChecks = false
-  ) => {
-    if (!ignoreChecks) {
-      if (loadingRef.current || !hasMoreRef.current) return;
-    }
 
-    loadingRef.current = true;     setLoading(true);
+
+// 2. STABLE CALLBACK (No 'offset' in dependency array)
+const loadMoreGroups = useCallback(async (
+    targetOffset, // Pass this in explicitly
+    queryToUse,
+    ignoreChecks = false
+) => {
+    // Check REFS instead of state
+    if (!ignoreChecks && (loadingRef.current || !hasMoreRef.current)) return;
+
+    loadingRef.current = true;
+    setLoading(true);
 
     try {
-      const params = new URLSearchParams({
-        offset: currentOffset.toString(),
-        limit: ITEMS_PER_BATCH.toString(),
-      });
+        const params = new URLSearchParams({
+            offset: targetOffset.toString(),
+            limit: ITEMS_PER_BATCH.toString(),
+        });
+        if (queryToUse?.trim()) params.append("q", queryToUse);
 
-      if (queryToUse.trim()) {
-        params.append("q", queryToUse);
-      }
+        const res = await apiFetch(`/media?${params.toString()}`);
+        const data = await res.json();
 
-      const res = await apiFetch(`/media?${params.toString()}`);
-      const data = await res.json();
+        // Update Refs
+        hasMoreRef.current = data.media.length === ITEMS_PER_BATCH;
+        offsetRef.current = targetOffset + data.media.length;
 
-      if (data.media.length === 0) {
-        hasMoreRef.current = false;       setHasMore(false);
-        if (currentOffset === 0) setMedia([]);
-        return;
-      }
-
-      const newMedia = data.media;
-
-      setMedia((prev) => (currentOffset === 0 ? newMedia : [...prev, ...newMedia]));
-      setOffset(currentOffset + newMedia.length);
-      hasMoreRef.current = data.media.length === ITEMS_PER_BATCH;       setHasMore(data.media.length === ITEMS_PER_BATCH);
+        // Update State
+        setMedia((prev) => (targetOffset === 0 ? data.media : [...prev, ...data.media]));
+        setHasMore(hasMoreRef.current);
     } catch (err) {
-      console.error("Load error:", err);
+        console.error("Load error:", err);
     } finally {
-      loadingRef.current = false;     setLoading(false);
+        loadingRef.current = false;
+        setLoading(false);
     }
-    // ... (your existing logic)
-  }, [offset, activeSearchQuery]); // Add dependencies here
+}, [activeSearchQuery]); // Only re-create if the search query actually changes
 
 const triggerSearch = () => {
     const normalized = normalizeSearchInput(searchInput);
@@ -228,34 +226,29 @@ const firstDate = sortedDates[0];
 
 
 useEffect(() => {
-  const handleHashChange = () => {
-    const hash = window.location.hash.slice(1);
-    const rawQuery = hash ? decodeURIComponent(hash) : "";
+    const handleHashChange = () => {
+        const hash = window.location.hash.slice(1);
+        const rawQuery = decodeURIComponent(hash || "");
+        const normalized = normalizeSearchInput(rawQuery);
 
-    setSearchInput(rawQuery);
+        // Reset
+        offsetRef.current = 0;
+        hasMoreRef.current = true;
+        setMedia([]);
+        setSearchInput(rawQuery);
+        setActiveSearchQuery(normalized);
+        setDisplayedQuery(normalized || "(no terms)");
+        setHasMore(true);
 
-    const normalized = normalizeSearchInput(rawQuery);
-    setActiveSearchQuery(normalized);
-    setDisplayedQuery(normalized || "(no terms)");
+        // Fetch
+        loadMoreGroups(0, normalized, true);
+    };
 
-    setMedia([]);
-    setOffset(0);
-    hasMoreRef.current = true;       setHasMore(true);
-
-    loadMoreGroups(0, normalized, true);
-  };
-
-  handleHashChange();
-  window.addEventListener("hashchange", handleHashChange);
-  return () => window.removeEventListener("hashchange", handleHashChange);
-}, [loadMoreGroups]); // Add dependency
-
-  // -------------------------------------------------------------------------
-  // Effect: Initial load of first batch (runs once after mount)
-  // -------------------------------------------------------------------------
-  useEffect(() => {
-    loadMoreGroups();
-  }, []);
+    // Run once on mount AND on hash change
+    handleHashChange(); 
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
+}, [loadMoreGroups]); // This is now safe and won't
 
   // -------------------------------------------------------------------------
   // Effect: Fetch total photo/video counts for header
