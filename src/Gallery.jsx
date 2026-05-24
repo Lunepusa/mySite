@@ -949,8 +949,7 @@ useEffect(() => {
                                 >
                                   Cancel
                                 </button>
-                              </div>
-                          </>  ) : (
+                              </> ) : (
                               <>
                                 <p
                                   style={{
