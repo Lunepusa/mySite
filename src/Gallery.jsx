@@ -29,7 +29,7 @@ const Gallery = () => {
 };
 
   // Main list of loaded media items (photos + videos)
-  const [media, setMedia] = ([]);
+  const [media, setMedia] = useState([]);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -44,8 +44,8 @@ const Gallery = () => {
   const [editingItem, setEditingItem] = useState(null);
 
   const [tempCaption, setTempCaption] = useState("");
-  const [tempTags, setTempTags] =([]);
-  const [originalTags, setOriginalTags] =([]);
+  const [tempTags, setTempTags] = useState([]);
+  const [originalTags, setOriginalTags] = useState([]);
 
   // Search input and active normalized query
   const [searchInput, setSearchInput] = useState("");
@@ -113,37 +113,7 @@ const Gallery = () => {
     fetchStats();
   }, []);
 
-useEffect(() => {
-  const handleTouch = (e) => {
-    const target = e.target;
-
-    // Only act on images and videos that are currently blurred
-    const isBlurred = 
-      target.style.filter && 
-      (target.style.filter.includes("blur") || 
-       getComputedStyle(target).filter.includes("blur"));
-
-    if ((target.tagName === "IMG" || target.tagName === "VIDEO") && isBlurred) {
-      // Only preventDefault on long-press gestures, not on normal taps
-      if (e.touches && e.touches.length > 1) {
-        e.preventDefault(); // multi-touch
-      }
-    }
-  };
-
-  // We still prevent the context menu
-  const preventContextMenu = (e) => {
-    if (e.target.tagName === "IMG" || e.target.tagName === "VIDEO") {
-      e.preventDefault();
-    }
-  };
-
-  document.addEventListener("contextmenu", preventContextMenu, { passive: false });
-
-  return () => {
-    document.removeEventListener("contextmenu", preventContextMenu);
-  };
-}, []);
+l
   
   // -------------------------------------------------------------------------
   // Utility: Convert tag string or array into clean array
@@ -509,12 +479,6 @@ useEffect(() => {
       console.error("Media share copy error:", err);
     }
   };
-  
-  console.log("RENDER CHECK:", {
-    isSet: selectedItems instanceof Set,
-    value: selectedItems,
-    mediaLength: media.length
-  });
 
   return (
     <>
