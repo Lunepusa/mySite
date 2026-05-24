@@ -56,6 +56,8 @@ const Gallery = () => {
   const [multiSelectMode, setMultiSelectMode] = useState(false);
 const [selectedItems, setSelectedItems] = useState(() => new Set());
   const ITEMS_PER_BATCH = 50;
+  
+  
 
   // -------------------------------------------------------------------------
   // Effect: Sync URL hash ↔ search query + reset results on hash change
@@ -108,6 +110,22 @@ useEffect(() => {
     fetchStats();
   }, []);
 
+--------------------------------------
+  // Utility: Convert tag string or array into clean array
+  // -------------------------------------------------------------------------
+  const getTagsArray = (tagInput) => {
+    if (!tagInput) return [];
+    if (Array.isArray(tagInput)) return tagInput;
+    if (typeof tagInput === "string") {
+      return tagInput
+        .split(",")
+        .map((t) => t.trim())
+        .filter((t) => t.length > 0);
+    }
+    return [];
+  };
+
+
 const groups = useMemo(() => {
   const groupsObj = {};
 
@@ -139,21 +157,7 @@ const sortedDates = useMemo(() => {
 }, [groups]);
 
 const firstDate = sortedDates[0];
-  // -------------------------------------------------------------------------
-  // Utility: Convert tag string or array into clean array
-  // -------------------------------------------------------------------------
-  const getTagsArray = (tagInput) => {
-    if (!tagInput) return [];
-    if (Array.isArray(tagInput)) return tagInput;
-    if (typeof tagInput === "string") {
-      return tagInput
-        .split(",")
-        .map((t) => t.trim())
-        .filter((t) => t.length > 0);
-    }
-    return [];
-  };
-
+  // -----------------------------------
   // -------------------------------------------------------------------------
   // Utility: Normalize search input into internal format
   //   space = OR (~), + = AND, - = exclude
