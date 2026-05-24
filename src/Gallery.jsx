@@ -424,7 +424,6 @@ useEffect(() => {
   const handleDateShareCopy = (date) => async (e) => {
     if (!isAdmin) return;
     e.preventDefault();
-    e.stopPropagation();
 
     try {
       const res = await apiFetch('/generate-share-token', {
@@ -449,7 +448,6 @@ useEffect(() => {
   const handleMediaShareCopy = (item) => async (e) => {
     if (!isAdmin) return;
     e.preventDefault();
-    e.stopPropagation();
 
     try {
       const res = await apiFetch('/generate-share-token', {
@@ -671,7 +669,6 @@ useEffect(() => {
                     zIndex:"10",
                   }}
                   onClick={(e) => {
-                    e.stopPropagation();
                     goPrev();
                   }}
                 >
@@ -681,7 +678,6 @@ useEffect(() => {
 
               <div
                 style={{ maxWidth: "100%", maxHeight: "100%" }}
-                onClick={(e) => e.stopPropagation()}
               >
                  {fullscreenItem.isVideo ? (
   hasAccessForDate(fullscreenItem?.date) ? (
@@ -760,7 +756,6 @@ useEffect(() => {
                     zIndex:"10",
                   }}
                   onClick={(e) => {
-                    e.stopPropagation();
                     goNext();
                   }}
                 >
@@ -859,7 +854,6 @@ useEffect(() => {
                           }}
                           onClick={(e) => {
                             if (multiSelectMode) {
-                              e.stopPropagation();
                               setSelectedItems((prev) => {
                                 const next = new Set(prev);
                                 if (next.has(item.key)) next.delete(item.key);
@@ -941,7 +935,6 @@ useEffect(() => {
 
                           <div style={{ textAlign: "center" }}>
                             {editingItem === item.key ? (
-                              <div onClick={(e) => e.stopPropagation()}>
                                 <TagSelect
                                   selected={tempTags}
                                   onChange={setTempTags}
