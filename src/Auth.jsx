@@ -126,94 +126,100 @@ export const Login = () => {
 // Root auth provider — manages user state, token, wallet, derived flags
 // Wrap your entire app with <AuthProvider> ... </AuthProvider>
 // ──────────────────────────────────────────────────────────────────────────────
+// ──────────────────────────────────────────────────────────────────────────────
+// Root auth provider — manages user state, token, wallet, derived flags
+// Wrap your entire app with <AuthProvider> ... </AuthProvider>
+// ──────────────────────────────────────────────────────────────────────────────
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [walletBalance, setWalletBalance] = useState("0.00");
+  const [savedPairs, setSavedPairs] = useState([]); // <-- 1. ADDED STATE
 
   // Core function: fetch current user data from /me endpoint
- const loadUser = async () => {
-   setLoading(true);
-   try {
-     const res = await apiFetch("/me");
-     if (res.ok) {
-       const data = await res.json();
-       const fetchedUser = data.user || null;
-       setUser(fetchedUser);
+  const loadUser = async () => {
+    setLoading(true);
+    try {
+      const res = await apiFetch("/me");
+      if (res.ok) {
+        const data = await res.json();
+        const fetchedUser = data.user || null;
+        setUser(fetchedUser);
 
-       // Parse wallet balance stored as JSON string in user.wallet
-       let balanceCents = 0;
-       if (fetchedUser?.wallet && fetchedUser.wallet.trim() !== "[]") {
-         try {
-           const walletData = JSON.parse(fetchedUser.wallet);
-           balanceCents = walletData.balance || 0;
-         } catch (e) {
-           console.error("Invalid wallet JSON:", e);
-         }
-       }
-       setWalletBalance((balanceCents / 100).toFixed(2));
+        // Parse wallet balance stored as JSON string in user.wallet
+        let balanceCents = 0;
+        if (fetchedUser?.wallet && fetchedUser.wallet.trim() !== '[]') {
+          try {
+            const walletData = JSON.parse(fetchedUser.wallet);
+            balanceCents = walletData.balance || 0;
+          } catch (e) {
+            console.error("Invalid wallet JSON:", e);
+          }
+        }
+        setWalletBalance((balanceCents / 100).toFixed(2));
 
-       // NEW: Fetch their saved platforms to check for 'Email'
-       try {
-         const pairsRes = await apiFetch("/saved-payment-pairs");
-         const pairsData = await pairsRes.json();
-         setSavedPairs(pairsData.pairs || []);
-       } catch (e) {
-         console.error("Failed to load saved platforms:", e);
-         setSavedPairs([]);
-       }
-     } else {
-       setUser(null);
-       setWalletBalance("0.00");
-       setSavedPairs([]);
-     }
-   } catch (err) {
-     console.error("Failed to load user:", err);
-     setUser(null);
-     setWalletBalance("0.00");
-     setSavedPairs([]);
-   } finally {
-     setLoading(false);
-   }
- };
+        // <-- 2. ADDED FETCH LOGIC FOR SAVED PAIRS
+        try {
+          const pairsRes = await apiFetch("/saved-payment-pairs");
+          const pairsData = await pairsRes.json();
+          setSavedPairs(pairsData.pairs || []);
+        } catch (e) {
+          console.error("Failed to load saved platforms:", e);
+          setSavedPairs([]);
+        }
 
- // Load user once on mount
- useEffect(() => {
-   loadUser();
- }, []);
+      } else {
+        setUser(null);
+        setWalletBalance("0.00");
+        setSavedPairs([]); // Clear on logout
+      }
+    } catch (err) {
+      console.error("Failed to load user:", err);
+      setUser(null);
+      setWalletBalance("0.00");
+      setSavedPairs([]); // Clear on error
+    } finally {
+      setLoading(false);
+    }
+  };
 
- // Alias so components can call refreshUser() after purchases/spends
- const refreshUser = loadUser;
+  // Load user once on mount
+  useEffect(() => {
+    loadUser();
+  }, []);
 
- // Derived boolean states
- const isLoggedIn = !!user;
- const isAdmin = user?.is_admin || false;
+  // Alias so components can call refreshUser() after purchases/spends
+  const refreshUser = loadUser;
 
- // Active subscription check (or admin override)
- const isSubscriber =
-   user?.subscription_expires > Math.floor(Date.now() / 1000) || isAdmin;
+  // Derived boolean states
+  const isLoggedIn = !!user;
+  const isAdmin = user?.is_admin || false;
 
- // Sorted list of purchased/unlocked dates (newest first)
- const unlockedDates = user?.purchased_dates
-   ? user.purchased_dates
-       .split(",")
-       .map((d) => d.trim())
-       .filter(Boolean)
-       .sort((a, b) => b.localeCompare(a)) // newest → oldest
-   : [];
+  // Active subscription check (or admin override)
+  const isSubscriber =
+    user?.subscription_expires > Math.floor(Date.now() / 1000) || isAdmin;
 
- const value = {
-   user,
-   loading,
-   loadUser: refreshUser,
-   isLoggedIn,
-   isAdmin,
-   unlockedDates,
-   isSubscriber,
-   walletBalance, // formatted string "XX.XX"
-   refreshUser, // convenience alias for loadUser
-   savedPairs, // <-- EXPORTED FOR MENU
- };
+  // Sorted list of purchased/unlocked dates (newest first)
+  const unlockedDates = user?.purchased_dates
+    ? user.purchased_dates
+        .split(',')
+        .map(d => d.trim())
+        .filter(Boolean)
+        .sort((a, b) => b.localeCompare(a)) // newest → oldest
+    : [];
+
+  const value = {
+    user,
+    loading,
+    loadUser: refreshUser,
+    isLoggedIn,
+    isAdmin,
+    unlockedDates,
+    isSubscriber,
+    walletBalance,           // formatted string "XX.XX"
+    refreshUser,             // convenience alias for loadUser
+    savedPairs,              // <-- 3. EXPORTED PROPERLY
+  };
 
   // Show loading state while first auth check is running
   if (loading) return <p>Loading auth...</p>;
