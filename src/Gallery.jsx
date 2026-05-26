@@ -519,7 +519,8 @@ useEffect(() => {
                   setDisplayedQuery("");
                   setMedia([]);
                   setOffset(0);
-                  hasMoreRef.current = true;       setHasMore(true);
+                  hasMoreRef.current = true;
+                  setHasMore(true);
                   loadMoreGroups(0, "", true);
                   window.history.pushState(null, "", window.location.pathname);
                 }}
@@ -528,8 +529,11 @@ useEffect(() => {
                 Clear
               </button>
               <p style={{ fontSize: ".8em", margin: "5px 0" }}>
-                Like a particular tag, or want to hide anything with a particular tag? You can add them to your{" "}
-                <a href="/Profile#collapse-favoritemutedtags">favorites or mute lists!</a>
+                Like a particular tag, or want to hide anything with a
+                particular tag? You can add them to your{" "}
+                <a href="/Profile#collapse-favoritemutedtags">
+                  favorites or mute lists!
+                </a>
               </p>
             </>
           )}
@@ -573,53 +577,68 @@ useEffect(() => {
 
             {multiSelectMode && selectedItems.size > 0 && (
               <div style={{ marginTop: "2px" }}>
-<TagSelect
-  initialTags={multiCommonTags.join(",")}
-  onSave={(tagsString, dateValue) => {
-    const newTags = getTagsArray(tagsString);
-    const added = newTags.filter(t => !multiCommonTags.includes(t));
-    const removed = multiCommonTags.filter(t => !newTags.includes(t));
+                <TagSelect
+                  initialTags={multiCommonTags.join(",")}
+                  onSave={(tagsString, dateValue) => {
+                    const newTags = getTagsArray(tagsString);
+                    const added = newTags.filter(
+                      (t) => !multiCommonTags.includes(t),
+                    );
+                    const removed = multiCommonTags.filter(
+                      (t) => !newTags.includes(t),
+                    );
 
-    // Safely check dateValue using optional chaining (?.)
-    if (added.length > 0 || removed.length > 0 || (dateValue?.length === 8)) {
-      const keys = Array.from(selectedItems);
-      const body = { keys };
+                    // Safely check dateValue using optional chaining (?.)
+                    if (
+                      added.length > 0 ||
+                      removed.length > 0 ||
+                      dateValue?.length === 8
+                    ) {
+                      const keys = Array.from(selectedItems);
+                      const body = { keys };
 
-      if (added.length > 0) body.addedTags = added;
-      if (removed.length > 0) body.removedTags = removed;
-      
-      if (dateValue?.length === 8) {
-        body.newDate = dateValue;
-      }
+                      if (added.length > 0) body.addedTags = added;
+                      if (removed.length > 0) body.removedTags = removed;
 
-      apiFetch("/bulk-update", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      }).then(res => {
-        if (res.ok) {
-          setMedia(prev => prev.map(item => {
-            if (keys.includes(item.key)) {
-              let current = getTagsArray(item.tags);
-              current = current.filter(t => !removed.includes(t));
-              current = [...new Set([...current, ...added])];
-              return { 
-                ...item, 
-                tags: current.join(", "),
-                created_date: dateValue?.length === 8 ? dateValue : item.created_date
-              };
-            }
-            return item;
-          }));
+                      if (dateValue?.length === 8) {
+                        body.newDate = dateValue;
+                      }
 
-          // Deselect everything using the correct Set format
-          setSelectedItems(new Set());
-        }
-      });
-    }
-  }}
-  placeholder="Edit tags (common shown)..."
-/>
+                      apiFetch("/bulk-update", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(body),
+                      }).then((res) => {
+                        if (res.ok) {
+                          setMedia((prev) =>
+                            prev.map((item) => {
+                              if (keys.includes(item.key)) {
+                                let current = getTagsArray(item.tags);
+                                current = current.filter(
+                                  (t) => !removed.includes(t),
+                                );
+                                current = [...new Set([...current, ...added])];
+                                return {
+                                  ...item,
+                                  tags: current.join(", "),
+                                  created_date:
+                                    dateValue?.length === 8
+                                      ? dateValue
+                                      : item.created_date,
+                                };
+                              }
+                              return item;
+                            }),
+                          );
+
+                          // Deselect everything using the correct Set format
+                          setSelectedItems(new Set());
+                        }
+                      });
+                    }
+                  }}
+                  placeholder="Edit tags (common shown)..."
+                />
               </div>
             )}
           </div>
@@ -652,7 +671,7 @@ useEffect(() => {
                   fontSize: "3em",
                   color: "#fff",
                   cursor: "pointer",
-                  zIndex:"10",
+                  zIndex: "10",
                 }}
                 onClick={closeFullscreen}
               >
@@ -666,7 +685,7 @@ useEffect(() => {
                     fontSize: "5em",
                     color: "#fff",
                     cursor: "pointer",
-                    zIndex:"10",
+                    zIndex: "10",
                   }}
                   onClick={(e) => {
                     goPrev();
@@ -676,72 +695,70 @@ useEffect(() => {
                 </div>
               )}
 
-              <div
-                style={{ maxWidth: "100%", maxHeight: "100%" }}
-              >
-                 {fullscreenItem.isVideo ? (
-  hasAccessForDate(fullscreenItem?.date) ? (
-    <video
-      src={`${R2_PUBLIC_URL}/${fullscreenItem.key}`}
-      controls
-      autoPlay
-      loop
-      muted
-      controlsList="nodownload"
-      onContextMenu={(e) => {
-        e.preventDefault();
-        if (user?.username?.toLowerCase() === "lunepusa") {
-          handleMediaShareCopy(fullscreenItem)(e);
-        }
-      }}
-      style={{
-        maxWidth: "100%",
-        maxHeight: "100dvh",
-        width: "auto",
-        height: "auto",
-        objectFit: "contain",
-        background: "#000",
-      }}
-    />
-  ) : (
-    // Safe blurred fallback for unauthorized users on videos
-    <img 
-      src={`${R2_PUBLIC_URL}/cdn-cgi/image/quality=85,format=auto,blur=50/${fullscreenItem.key.replace(/\.[^/.]+$/, "")}_thumb.jpg`}
-      alt="Preview restricted"
-      style={{
-        maxWidth: "100%",
-        maxHeight: "100dvh",
-        width: "auto",
-        height: "auto",
-        objectFit: "contain",
-        background: "#000",
-      }}
-    />
-  )
-) : (
-  <img
-    src={
-      hasAccessForDate(fullscreenItem?.date)
-        ? `${R2_PUBLIC_URL}/${fullscreenItem.key}`
-        : `${R2_PUBLIC_URL}/cdn-cgi/image/quality=85,format=auto,blur=200/${fullscreenItem.key}`
-    }
-    alt=""
-    onContextMenu={(e) => {
-      e.preventDefault();
-      if (user?.username?.toLowerCase() === "lunepusa") {
-        handleMediaShareCopy(fullscreenItem)(e);
-      }
-    }}
-    style={{
-      maxWidth: "100%",
-      maxHeight: "100dvh",
-      width: "auto",
-      height: "auto",
-      objectFit: "contain",
-      background: "#000",
-    }}
-  />
-)}
+              <div style={{ maxWidth: "100%", maxHeight: "100%" }}>
+                {fullscreenItem.isVideo ? (
+                  hasAccessForDate(fullscreenItem?.date) ? (
+                    <video
+                      src={`${R2_PUBLIC_URL}/${fullscreenItem.key}`}
+                      controls
+                      autoPlay
+                      loop
+                      muted
+                      controlsList="nodownload"
+                      onContextMenu={(e) => {
+                        e.preventDefault();
+                        if (user?.username?.toLowerCase() === "lunepusa") {
+                          handleMediaShareCopy(fullscreenItem)(e);
+                        }
+                      }}
+                      style={{
+                        maxWidth: "100%",
+                        maxHeight: "100dvh",
+                        width: "auto",
+                        height: "auto",
+                        objectFit: "contain",
+                        background: "#000",
+                      }}
+                    />
+                  ) : (
+                    // Safe blurred fallback for unauthorized users on videos
+                    <img
+                      src={`${R2_PUBLIC_URL}/cdn-cgi/image/quality=85,format=auto,blur=50/${fullscreenItem.key.replace(/\.[^/.]+$/, "")}_thumb.jpg`}
+                      alt="Preview restricted"
+                      style={{
+                        maxWidth: "100%",
+                        maxHeight: "100dvh",
+                        width: "auto",
+                        height: "auto",
+                        objectFit: "contain",
+                        background: "#000",
+                      }}
+                    />
+                  )
+                ) : (
+                  <img
+                    src={
+                      hasAccessForDate(fullscreenItem?.date)
+                        ? `${R2_PUBLIC_URL}/${fullscreenItem.key}`
+                        : `${R2_PUBLIC_URL}/cdn-cgi/image/quality=85,format=auto,blur=200/${fullscreenItem.key}`
+                    }
+                    alt=""
+                    onContextMenu={(e) => {
+                      e.preventDefault();
+                      if (user?.username?.toLowerCase() === "lunepusa") {
+                        handleMediaShareCopy(fullscreenItem)(e);
+                      }
+                    }}
+                    style={{
+                      maxWidth: "100%",
+                      maxHeight: "100dvh",
+                      width: "auto",
+                      height: "auto",
+                      objectFit: "contain",
+                      background: "#000",
+                    }}
+                  />
+                )}
               </div>
 
               {media.findIndex((m) => m.key === fullscreenItem.key) <
@@ -753,7 +770,7 @@ useEffect(() => {
                     fontSize: "5em",
                     color: "#fff",
                     cursor: "pointer",
-                    zIndex:"10",
+                    zIndex: "10",
                   }}
                   onClick={(e) => {
                     goNext();
@@ -779,7 +796,10 @@ useEffect(() => {
                 key={date}
                 style={{ marginBottom: "5px", border: "2px dashed white" }}
               >
-                <h2 style={{ textAlign: "center" }} onContextMenu={handleDateShareCopy(date)}>
+                <h2
+                  style={{ textAlign: "center" }}
+                  onContextMenu={handleDateShareCopy(date)}
+                >
                   {editingGroupCaption === date ? (
                     <div>
                       <input
@@ -829,7 +849,8 @@ useEffect(() => {
                     .sort((a, b) => {
                       const getTime = (key) => {
                         const filename = key.split("/").pop();
-                        const timePart = filename.split("_")[1]?.split(".")[0] || "000000000";
+                        const timePart =
+                          filename.split("_")[1]?.split(".")[0] || "000000000";
                         return timePart;
                       };
                       return getTime(b.key).localeCompare(getTime(a.key));
@@ -850,7 +871,10 @@ useEffect(() => {
                             margin: "0 3px 5px 3px",
                             cursor: "pointer",
                             position: "relative",
-                            border: multiSelectMode && selectedItems.has(item.key) ? "3px solid yellow" : "none",
+                            border:
+                              multiSelectMode && selectedItems.has(item.key)
+                                ? "3px solid yellow"
+                                : "none",
                           }}
                           onClick={(e) => {
                             if (multiSelectMode) {
@@ -864,83 +888,97 @@ useEffect(() => {
                               openFullscreen(item);
                             }
                           }}
-                          onContextMenu={(e) =>{ e.preventDefault();}}
+                          onContextMenu={(e) => {
+                            e.preventDefault();
+                          }}
                         >
                           <div
-    style={{
-      width: "95%",
-      height: "auto",
-      display: "inline-block",
-      alignItems: "center",
-      justifyContent: "center",
-      background: "#000",
-      borderRadius: "12px",
-      overflow: "hidden",
-      position: "relative",
-      border: "1px white solid",
-    }}
-  >
-   {(() => {
-  const hasAccess = hasAccessForDate(item.date || "Unknown");
+                            style={{
+                              width: "95%",
+                              height: "auto",
+                              display: "inline-block",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              background: "#000",
+                              borderRadius: "12px",
+                              overflow: "hidden",
+                              position: "relative",
+                              border: "1px white solid",
+                            }}
+                          >
+                            {(() => {
+                              const hasAccess = hasAccessForDate(
+                                item.date || "Unknown",
+                              );
 
-  let targetKey = item.key;
-  if (item.isVideo) {
-    targetKey = item.key.replace(/\.[^/.]+$/, "") + "_thumb.jpg";
-  }
+                              let targetKey = item.key;
+                              if (item.isVideo) {
+                                targetKey =
+                                  item.key.replace(/\.[^/.]+$/, "") +
+                                  "_thumb.jpg";
+                              }
 
-  const cloudflareUrl = !hasAccess
-    ? `${R2_PUBLIC_URL}/cdn-cgi/image/width=250,quality=80,format=auto,blur=20/${targetKey}`
-    : `${R2_PUBLIC_URL}/cdn-cgi/image/width=250,quality=80,format=auto/${targetKey}`;
+                              const cloudflareUrl = !hasAccess
+                                ? `${R2_PUBLIC_URL}/cdn-cgi/image/width=250,quality=80,format=auto,blur=20/${targetKey}`
+                                : `${R2_PUBLIC_URL}/cdn-cgi/image/width=250,quality=80,format=auto/${targetKey}`;
 
-  return (
-    <>
-      <img
-        src={cloudflareUrl}
-        alt={caption}
-        onContextMenu={(e) => e.preventDefault()}
-        style={{
-          maxHeight: "auto",
-          width: "100%",
-          objectFit: "contain",
-        }}
-      />
+                              return (
+                                <>
+                                  <img
+                                    src={cloudflareUrl}
+                                    alt={caption}
+                                    style={{
+                                      maxHeight: "auto",
+                                      width: "100%",
+                                      objectFit: "contain",
+                                      WebkitTouchCallout: "none",
+                                      WebkitUserSelect: "none",
+                                    }}
+                                  />
 
-      {item.isVideo && (
-        <div
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            background: "rgba(0,0,0,0.5)",
-            borderRadius: "50%",
-            width: "30%",
-            height: "auto",
-            aspectRatio: "1/1",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            pointerEvents: "none",
-          }}
-        >
-          <span style={{ color: "#fff", fontSize: "1.2em" }}>
-            {hasAccess ? "▶" : "🔒"}
-          </span>
-        </div>
-      )}
-    </>
-  );
-})()}
-  </div>
+                                  {item.isVideo && (
+                                    <div
+                                      style={{
+                                        position: "absolute",
+                                        top: "50%",
+                                        left: "50%",
+                                        transform: "translate(-50%, -50%)",
+                                        background: "rgba(0,0,0,0.5)",
+                                        borderRadius: "50%",
+                                        width: "30%",
+                                        height: "auto",
+                                        aspectRatio: "1/1",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        pointerEvents: "none",
+                                      }}
+                                    >
+                                      <span
+                                        style={{
+                                          color: "#fff",
+                                          fontSize: "1.2em",
+                                        }}
+                                      >
+                                        {hasAccess ? "▶" : "🔒"}
+                                      </span>
+                                    </div>
+                                  )}
+                                </>
+                              );
+                            })()}
+                          </div>
 
                           <div style={{ textAlign: "center" }}>
                             {editingItem === item.key ? (
-                              <> <TagSelect
+                              <>
+                                {" "}
+                                <TagSelect
                                   selected={tempTags}
                                   onChange={setTempTags}
-                                                      />
-                      <button onClick={saveEdit}>Save</button>
-                              <button
+                                />
+                                <button onClick={saveEdit}>Save</button>
+                                <button
                                   onClick={() => {
                                     setEditingItem(null);
                                     setTempTags([]);
@@ -949,7 +987,8 @@ useEffect(() => {
                                 >
                                   Cancel
                                 </button>
-                              </> ) : (
+                              </>
+                            ) : (
                               <>
                                 <p
                                   style={{
@@ -960,7 +999,11 @@ useEffect(() => {
                                 >
                                   Tags:{" "}
                                   {multiSelectMode ? (
-                                    itemTags.length > 0 ? itemTags.join(", ") : "none"
+                                    itemTags.length > 0 ? (
+                                      itemTags.join(", ")
+                                    ) : (
+                                      "none"
+                                    )
                                   ) : (
                                     <ClickableTags tags={item.tags} />
                                   )}
@@ -973,8 +1016,7 @@ useEffect(() => {
                                       color: "#ccc",
                                       margin: "2px 0",
                                     }}
-                                  >
-                                  </p>
+                                  ></p>
                                 )}
                               </>
                             )}
@@ -989,7 +1031,10 @@ useEffect(() => {
 
           {hasMoreRef.current && (
             <button
-              onClick={() => loadMoreGroups()}
+              onClick={() =>
+                loadMoreGroups(offsetRef.current, activeSearchQuery)
+              }
+              disabled={loadingRef.current}
               disabled={loadingRef.current}
               style={{
                 display: "block",
