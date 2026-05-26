@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "./Auth";
-import { ClickableTags } from "Tags.jsx";
+import { ClickableTags } from "./Tags";
 
 // ──────────────────────────────────────────────────────────────────────────────
 // 1. CONTROL PANEL (VARIABLES)
