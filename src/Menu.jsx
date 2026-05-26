@@ -1,6 +1,5 @@
 import React from "react";
 import "./styles.css";
-import Invoice from "./invoice";
 import Collapse from "./Utility";
 import loungepreview from "./Images/Preview/lounge.jpg";
 import dmpreview from "./Images/Preview/dm.jpg";
