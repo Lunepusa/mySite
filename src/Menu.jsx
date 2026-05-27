@@ -256,7 +256,7 @@ export default function Menu() {
             <img src={vidcallpreview} className="previewimg" />
           </div>
         </Collapse>
-
+{/*
         {/* Friend Experience */}
         <Collapse trigger={<h3>🗨️1 week Friend Experience ~ $25+🗨️ ⏬</h3>}>
           <div>
@@ -307,7 +307,7 @@ export default function Menu() {
           </div>
         </Collapse>
 
-        {/* Calgary meets */}
+      {/* Calgary meets */}
         <div>
           <Collapse
             trigger={<h2> 🛏️Calgary meets 🛏️⏬ NOT CURRENTLY ACTIVE</h2>}
@@ -331,7 +331,7 @@ export default function Menu() {
               <img src={meetpreview} className="previewimg" />
             </div>
           </Collapse>
-        </div>
+        </div> */}
       </div>
     </div>
   );
