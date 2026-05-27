@@ -123,7 +123,7 @@ export function Preferredlinks() {
           img={Throne}
           link="https://throne.com/lunepusa"
         />
-       {*/ <Link
+       {/* <Link
           name="Tryst"
           desc="Coming to Calgary? lets play~"
           img={tryst}
