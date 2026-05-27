@@ -397,7 +397,7 @@ function CustomQuiz() {
         <p style={{ fontSize: "1.05em", lineheight: "1" }}>
           Thanks for submitting! I use this box for inspiration. If I ever end up making this concept, you'll be the first to get an email notification!
         </p>
-        <div style={{ display: "inline-block" alignItems: "center" }}>
+        <div style={{ display: "inline-block", alignItems: "center" }}>
           <button className="btn-submit">Vote on other Suggestions</button>
           <div style={{ padding: "12px", width: "100%", background: "transparent", border: "1px dashed #fff", color: "#fff", boxSizing: "border-box" }}>
             <p style={{ margin: "10px", textTransform: "uppercase" }}>See what I already have with these tags:</p>
