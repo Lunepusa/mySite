@@ -315,15 +315,11 @@ tfoot td {
   transition: filter 0.3s ease;
 }
 
-/* ========================================= */
-/* PAGE & CONTAINER WRAPPERS                 */
-/* ========================================= */
 .menu-page-wrapper {
     background: #000;
     color: #fff;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    /* Replaced Flex with standard text-centering for inline elements */
+    text-align: center;
     box-sizing: border-box;
 }
 
@@ -331,23 +327,22 @@ tfoot td {
 .menu-page-wrapper h3 {
     letter-spacing: 1px;
     color: #fff;
+    margin: 10px 0;
 }
 
 .menu-page-wrapper p {
     line-height: 1;
     color: #fff;
     text-align: justify;
-    font-size: .8rem,;
+    font-size: 0.8rem; /* Fixed trailing comma typo */
 }
 
 /* Main Container for Side-by-Side */
 .main-container {
-    display: flex;
-    flex-direction: column;
-    gap: 1%;
+    /* Centering the container via margin auto */
+    margin: 0 auto;
     width: 95%;
     max-width: 1600px;
-    align-items: center;
     text-align: center;
 }
 
@@ -357,79 +352,105 @@ tfoot td {
     padding: 1%;
     box-sizing: border-box;
     width: 95%;
-    height:auto;
+    height: auto;
+    /* Default to stacking like blocks on mobile */
+    display: inline-block;
+    vertical-align: top;
+    margin-bottom: 2%; /* Replaces flex gap */
 }
 
 .menu-section {
     max-width: 620px;
-  height: auto;
-  max-height: 95vh;
+    height: auto;
+    max-height: 95vh;
+    overflow-y: auto; /* Required if content is taller than max-height */
 }
 
 .builder-box {
     max-width: 620px;
-height: auto;
-  max-height: 95vh;
+    height: auto;
+    max-height: 95vh;
+    overflow-y: auto;
 }
+
 /* ========================================= */
 /* MENU BLURBS SECTION                       */
 /* ========================================= */
-.menu-item {
+..menu-item {
     border: 1px dashed #fff;
     margin: 1% auto;
     width: 100%;
     box-sizing: border-box;
-    display: flex;
-    flex-direction: row;
     height: clamp(80px, 15vh, 200px);
+    display: block;
+    text-align: left;
+}
+
+.preview-img {
+    width: auto; /* Restored back to auto */
+    height: 100%; /* Inherit container height */
+    object-fit: cover; 
+    display: inline-block;
+    vertical-align: middle;
+    box-sizing: border-box;
+}
+
+.text-container {
+    display: inline-block;
+    vertical-align: middle;
+    width: auto; /* Restored back to auto */
+    padding: 0 5%;
+    box-sizing: border-box;
 }
 
 .menu-header {
     padding: 1%;
-    display: flex;
-    justify-content: space-between; 
-    align-items: center; 
     background: #222;
     width: 100%;
+    display: block;
+    box-sizing: border-box;
 }
 
 .summary-title {
     font-weight: bold;
     font-size: 1.2rem;
     text-transform: uppercase;
+    /* Side-by-side title/price */
+    display: inline-block;
+    vertical-align: middle;
+    width: 50%;
 }
 
 .summary-price {
-    text-align: right;
     font-size: 1.1rem;
+    /* Side-by-side title/price */
+    display: inline-block;
+    vertical-align: middle;
+    width: 50%;
+    text-align: right;
 }
 
 .menu-flex {
-    display: flex;
-    align-items: center;
+    /* Originally flex, now just standard block */
+    display: block;
     padding: 1%;
     text-align: center;
-    flex-direction: column;
 }
 
 .preview-img {
-    width: auto;
-    height: inherit; /* Forces a consistent portrait height */
-    object-fit: cover; /* Prevents stretching */
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: auto; /* Restored back to auto */
+    height: 100%; /* Inherit container height */
+    display: inline-block;
+    vertical-align: middle;
     box-sizing: border-box;
 }
 
 .text-container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 5%;
-    vertical-align: center;
+    display: inline-block;
+    vertical-align: middle;
+    width: auto; /* Restored back to auto */
+    padding: 0 5%;
+    box-sizing: border-box;
 }
 
 /* ========================================= */
@@ -472,15 +493,14 @@ input[type=range]::-webkit-slider-runnable-track {
 /* DESKTOP RESPONSIVE LAYOUT                 */
 /* ========================================= */
 @media (min-width: 1024px) {
-    .main-container {
-        flex-direction: row;
-        justify-content: center;
-        align-items: flex-start; /* Prevents columns from stretching to match each other's height */
-        gap: 1%;
+    .main-container section {
+        /* On desktop, allow them to sit side-by-side */
+        width: 48%;
+        margin-left: 0.5%;
+        margin-right: 0.5%;
     }
     
     .menu-section, .builder-box {
-        width: 48%;
         max-width: none;
     }
 }
