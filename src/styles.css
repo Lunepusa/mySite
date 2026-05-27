@@ -352,31 +352,25 @@ tfoot td {
     padding: 1%;
     box-sizing: border-box;
     width: 95%;
-    height: auto;
-    /* Default to stacking like blocks on mobile */
     display: inline-block;
     vertical-align: top;
-    margin-bottom: 2%; /* Replaces flex gap */
 }
 
 .menu-section {
     max-width: 620px;
     height: auto;
-    max-height: 95vh;
-    overflow-y: auto; /* Required if content is taller than max-height */
-}
+    max-height: 95vh;}
 
 .builder-box {
     max-width: 620px;
     height: auto;
     max-height: 95vh;
-    overflow-y: auto;
 }
 
 /* ========================================= */
 /* MENU BLURBS SECTION                       */
 /* ========================================= */
-..menu-item {
+.menu-item {
     border: 1px dashed #fff;
     margin: 1% auto;
     width: 100%;
@@ -388,11 +382,8 @@ tfoot td {
 
 .preview-img {
     width: auto; /* Restored back to auto */
-    height: 100%; /* Inherit container height */
-    object-fit: cover; 
+    height: 15%; /* Inherit container height */
     display: inline-block;
-    vertical-align: middle;
-    box-sizing: border-box;
 }
 
 .text-container {
@@ -407,8 +398,7 @@ tfoot td {
     padding: 1%;
     background: #222;
     width: 100%;
-    display: block;
-    box-sizing: border-box;
+    display: inline-block;
 }
 
 .summary-title {
@@ -432,26 +422,16 @@ tfoot td {
 
 .menu-flex {
     /* Originally flex, now just standard block */
-    display: block;
-    padding: 1%;
+    display: inline-block;
     text-align: center;
+    
 }
 
-.preview-img {
-    width: auto; /* Restored back to auto */
-    height: 100%; /* Inherit container height */
-    display: inline-block;
-    vertical-align: middle;
-    box-sizing: border-box;
-}
 
 .text-container {
     display: inline-block;
     vertical-align: middle;
-    width: auto; /* Restored back to auto */
-    padding: 0 5%;
-    box-sizing: border-box;
-}
+    width: auto; /* Restored back to auto */} 
 
 /* ========================================= */
 /* FORM / BUILDER ELEMENT OVERRIDES          */
