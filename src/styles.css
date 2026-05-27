@@ -357,16 +357,17 @@ tfoot td {
     padding: 1%;
     box-sizing: border-box;
     width: 100%;
+    height:auto
 }
 
 .menu-section {
     max-width: 620px;
-    max-height: 70vh;
+    min-height: max(70vh, 650px);
 }
 
 .builder-box {
     max-width: 620px;
-    max-height: 90vh;
+min-height: max(100vh, 850px);
 }
 
 /* ========================================= */
@@ -378,7 +379,8 @@ tfoot td {
     width: 100%;
     box-sizing: border-box;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    height: clamp(80px, 15vh, 200px);
 }
 
 .menu-header {
@@ -410,13 +412,12 @@ tfoot td {
 
 .preview-img {
     width: auto;
-    height: 15vh; /* Forces a consistent portrait height */
+    height: inherit; /* Forces a consistent portrait height */
     object-fit: cover; /* Prevents stretching */
     flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px dashed #fff;
     box-sizing: border-box;
 }
 

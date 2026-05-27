@@ -140,12 +140,19 @@ function PublicMessage() {
 
       {/* ITEM 1: CUSTOMS */}
       <div className="menu-item">
+        <img
+          src={customvidpreview}
+          alt="Customs Preview"
+          className="preview-img"
+        />
         <div className="menu-header">
           <span className="summary-title">Customs</span>
-          <span className="summary-price">pics: ${picMin} - ${picMax}<br /> vids: ${vidMin} - ${vidMax}</span>
+          <span className="summary-price">
+            pics: ${picMin} - ${picMax}
+            <br /> vids: ${vidMin} - ${vidMax}
+          </span>
         </div>
         <div className="menu-flex">
-          <img src={customvidpreview} alt="Customs Preview" className="preview-img" />
           <div className="text-container">
             <p>{BLURBS.CUSTOMS}</p>
           </div>
@@ -156,24 +163,30 @@ function PublicMessage() {
       <div className="menu-item">
         <div className="menu-header">
           <span className="summary-title">Ratings</span>
-          <span className="summary-price">text: ${txtRating}<br /> vid: ${vidRating}</span>
+          <span className="summary-price">
+            text: ${txtRating}
+            <br /> vid: ${vidRating}
+          </span>
         </div>
         <div className="menu-flex">
           <div className="text-container">
             <p>{BLURBS.RATING}</p>
           </div>
-          <img src={dmpreview} alt="Ratings Preview" className="preview-img" />
         </div>
+        <img src={dmpreview} alt="Ratings Preview" className="preview-img" />
       </div>
 
       {/* ITEM 3: LIVE */}
       <div className="menu-item">
+        <img src={vidratepreview} alt="Live Preview" className="preview-img" />
         <div className="menu-header">
           <span className="summary-title">Live</span>
-          <span className="summary-price">sexting: ${sextMin} - ${sextMax}<br /> calls: ${callMin} - ${callMax}+</span>
+          <span className="summary-price">
+            sexting: ${sextMin} - ${sextMax}
+            <br /> calls: ${callMin} - ${callMax}+
+          </span>
         </div>
         <div className="menu-flex">
-          <img src={vidratepreview} alt="Live Preview" className="preview-img" />
           <div className="text-container">
             <p>{BLURBS.LIVE}</p>
           </div>
@@ -208,14 +221,29 @@ function CustomQuiz() {
   const [showAllPrep, setShowAllPrep] = useState(false);
 
   const standardActivities = [
-    "Specific Toy", "Specific Outfit", "Roleplay", "Femdom (I Dominate)", "Doggystyle",
-    "Ramblefap", "Realistic Toy", "Fantasy Toy", "Vibrator", "Lingerie", "Day Clothes",
-    "Nude", "Submissive (I Submit)", "Humiliation", "Pegging / Strap-On", "Riding",
-    "Missionary", "Blowjob", "Tit Job", "Edging", "Teasing",
+    "Sex Toy",
+    "Specific Outfit",
+    "Roleplay",
+    "Femdom (I Dominate)",
+    "Doggystyle",
+    "Ramblefap",
+    "lovense(not x-machine)",
+    "Lingerie",
+    "Day Clothes",
+    "Nude",
+    "Submissive (I Submit)",
+    "Humiliation",
+    "Pegging / Strap-On",
+    "Riding",
+    "Missionary",
+    "Blowjob",
+    "Tit Job",
+    "Edging",
+    "Teasing",
   ];
 
   const prepActivities = [
-    "Extra Camera Angle", "Bondage", "Piss", "Anal", "Fake Cum", "oil",
+    "Extra Camera Angle", "self Bondage", "Piss", "Anal", "Fake Cum", "oil",
     "Editing", "Custom Editing", "Sex Machine",
   ];
 
@@ -256,13 +284,25 @@ function CustomQuiz() {
   };
 
   const getDynamicPlaceholder = () => {
-    let prompts = ["Describe your fantasy..."];
+    let prompts = ["Describe your fantasy... any preference on vertical or horizontal video?"];
     if (selectedStandard.includes("Specific Outfit")) prompts.push("What exact outfit are you picturing?");
-    if (selectedStandard.includes("Specific Toy")) prompts.push("Which specific toy should I use?");
+    if (selectedStandard.includes("Sex Toy")) prompts.push("Which toy or style of toy should I use? realistic, fantasy, vibrating");
     if (selectedStandard.includes("Roleplay")) prompts.push("What is the scenario/setting?");
-    if (selectedStandard.includes("Femdom (I Dominate)") || selectedStandard.includes("Humiliation"))
-      prompts.push("What rules or instructions do you want me to give you?");
-    if (prompts.length === 1) return "Describe your fantasy... What should I wear? What exactly do you want to happen?";
+    if (selectedStandard.includes("Femdom (I Dominate)"))
+      prompts.push("what are your top 3 kinks?(ex. sph) what are your hard limits?(ex. pegging)");
+     if (selectedStandard.includes("lovense(not x-machine)"))
+       prompts.push("any preference on which lovense? do you want to make me a custom pattern?");
+       if (selectedStandard.includes("Sex Machine"))
+         prompts.push(
+           "does NOT require 'lovense'Do you want to make me a custom pattern?",
+         );
+    if (selectedStandard.includes("Extra Camera Angle"))
+      prompts.push(
+        "Does NOT require 'custom editing'. Were you thinking a cut to a different angles, or having 2 angles on screen at once?",
+      );
+              if (selectedStandard.includes("Custom Editing"))
+                prompts.push("What sort of editing do you want to see? Voiceover, background music? greenscreen?(I dont have much experience with that one)");
+    if (prompts.length === 1) prompts.push("What should I wear? what should I use? What exactly do you want to happen?");
     return prompts.join(" ");
   };
 
@@ -325,7 +365,7 @@ function CustomQuiz() {
       <section className="builder-box" style={{ textAlign: "center" }}>
         <h2 style={{ margin: "10px", letterSpacing: "1px" }}>⚠️ Missing Email</h2>
         <p style={{ fontSize: "1.05em", lineheight: "1" }}>
-          You don't have an email associated with your account. While it's not required, it makes it much harder for me to notify you when your content is ready or if I have questions!
+          You don't have an email associated with your account. While it's not required, it may make it harder for me to notify you when your content is ready or if I have questions! it will mean I cant automatically notify you.
         </p>
         <div style={{  display: "flex", gap: "10px", justifyContent: "center" }}>
           <button onClick={confirmSubmit} className="btn-suggest" style={{ width: "auto" }}>Submit Anyway</button>
@@ -340,7 +380,7 @@ function CustomQuiz() {
       <section className="builder-box" style={{ textAlign: "center" }}>
         <h2 style={{ margin: "0 0 15px 0" }}>Request Sent!</h2>
         <p style={{ fontSize: "1.05em", lineheight: "1" }}>
-          Thanks! I’ve added this to my queue. I’ll reach out if I have questions, and send an invoice once it's done.
+          Thanks! I’ve added this to my queue. I’ll reach out when I accept it with any questions/pricing adjustment, and let you know once it's done!
         </p>
         <button onClick={() => setSubmitStatus("idle")} className="btn-suggest" style={{ width: "auto", }}>Back</button>
       </section>
