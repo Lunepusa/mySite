@@ -360,8 +360,7 @@ function CustomQuiz() {
           </div>
           <button
             onClick={() => { setSubmitStatus("idle"); setSelectedStandard([]); setSelectedPrep([]); }}
-            className="btn-suggest”
-          >
+            className="btn-suggest">
             Build Another Request
           </button>
         </div>
