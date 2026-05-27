@@ -369,7 +369,7 @@ function CustomQuiz() {
         <p style={{ fontSize: "1.05em", lineheight: "1" }}>
           You don't have an email associated with your account. While it's not required, it may make it harder for me to notify you when your content is ready or if I have questions! it will mean I cant automatically notify you.
         </p>
-        <div style={{  display: "flex", gap: "10px", justifyContent: "center" }}>
+        <div style={{ display:"inline-block" justifyContent: "center" }}>
           <button onClick={confirmSubmit} className="btn-suggest" style={{ width: "auto" }}>Submit Anyway</button>
           <button onClick={() => setShowEmailWarning(false)} className="btn-submit" style={{ width: "auto" }}>Go Back</button>
         </div>
@@ -397,7 +397,7 @@ function CustomQuiz() {
         <p style={{ fontSize: "1.05em", lineheight: "1" }}>
           Thanks for submitting! I use this box for inspiration. If I ever end up making this concept, you'll be the first to get an email notification!
         </p>
-        <div style={{ display: "flex", flexDirection: "column", gap: "10px",  alignItems: "center" }}>
+        <div style={{ display: "inline-block" alignItems: "center" }}>
           <button className="btn-submit">Vote on other Suggestions</button>
           <div style={{ padding: "12px", width: "100%", background: "transparent", border: "1px dashed #fff", color: "#fff", boxSizing: "border-box" }}>
             <p style={{ margin: "10px", textTransform: "uppercase" }}>See what I already have with these tags:</p>
@@ -418,17 +418,17 @@ function CustomQuiz() {
   // --- MAIN BUILDER RETURN ---
   return (
     <section className="builder-box">
-      <h3 style={{ textAlign: "center", textTransform: "uppercase", letterSpacing: "1px", margin: "0 0 20px 0" }}>Custom Builder</h3>
+      <h3 style={{ textAlign: "center", textTransform: "uppercase", letterSpacing: "1px" }}>Custom Builder</h3>
 
-      <div style={{ display: "flex", gap: "1%"}}>
+      <div style={{ display: "inline-block"}}>
         <TabButton active={category === "custom"} onClick={() => handleCategoryChange("custom")} label="Customs" />
         <TabButton active={category === "rating"} onClick={() => handleCategoryChange("rating")} label="Ratings" />
         <TabButton active={category === "live"} onClick={() => handleCategoryChange("live")} label="Live" />
       </div>
 
       <div >
-        <h4 style={{ margin: "10px", textTransform: "uppercase" }}>1. Format</h4>
-        <div style={{ display: "flex", gap: "1%", flexWrap: "wrap" }}>
+        <h4 style={{ margin: "10px", textTransform: "uppercase" }}></h4>
+        <div style={{ display: "inline-block" }}>
           {category === "custom" && (
             <>
               <SelectionButton active={subType === "video"} onClick={() => handleSubTypeChange("video", PRICING.VIDEO_MIN)} label="Video" />
@@ -462,7 +462,6 @@ function CustomQuiz() {
             step={subType === "call" ? 5 : subType === "sexting" ? 15 : 1}
             value={quantity}
             onChange={(e) => setQuantity(Number(e.target.value))}
-            style={{ flexGrow: 1, marginLeft: "10px",}}
           />
         </div>
       )}
@@ -567,7 +566,7 @@ function TabButton({ active, onClick, label }) {
     <button
       onClick={onClick}
       style={{
-        flex: 1, padding: "10px", background: active ? "#fff" : "#000", color: active ? "#000" : "#fff",
+       padding: "10px", background: active ? "#fff" : "#000", color: active ? "#000" : "#fff",
         border: "1px dashed #fff", cursor: "pointer", fontWeight: "bold", fontSize: "1rem", fontFamily: "inherit"
       }}
     >
@@ -580,8 +579,7 @@ function SelectionButton({ active, onClick, label }) {
   return (
     <button
       onClick={onClick}
-      style={{
-        flex: 1, padding: "8px 12px", background: active ? "#fff" : "#222", color: active ? "#000" : "#fff",
+      style={{ padding: "8px 12px", background: active ? "#fff" : "#222", color: active ? "#000" : "#fff",
         border: `1px dashed ${active ? "#fff" : "#444"}`, cursor: "pointer", fontWeight: "bold", fontSize: "0.9rem", fontFamily: "inherit"
       }}
     >
@@ -610,7 +608,7 @@ function ToggleRow({ active, onClick, label }) {
     <div
       onClick={onClick}
       style={{
-        display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px",
+        display: "inline-block", justifyContent: "space-between", alignItems: "center", padding: "12px",
         background: "#222", border: `1px dashed #444`, cursor: "pointer", margin: "2% 0"
       }}
     >

@@ -382,7 +382,7 @@ tfoot td {
 
 .preview-img {
     width: auto; /* Restored back to auto */
-    height: 15%; /* Inherit container height */
+    height: inherit; /* Inherit container height */
     display: inline-block;
 }
 
@@ -390,8 +390,6 @@ tfoot td {
     display: inline-block;
     vertical-align: middle;
     width: auto; /* Restored back to auto */
-    padding: 0 5%;
-    box-sizing: border-box;
 }
 
 .menu-header {
@@ -424,14 +422,10 @@ tfoot td {
     /* Originally flex, now just standard block */
     display: inline-block;
     text-align: center;
-    
+    height: inherit;
+    width: auto;
 }
 
-
-.text-container {
-    display: inline-block;
-    vertical-align: middle;
-    width: auto; /* Restored back to auto */} 
 
 /* ========================================= */
 /* FORM / BUILDER ELEMENT OVERRIDES          */
