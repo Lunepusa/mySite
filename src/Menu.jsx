@@ -145,6 +145,7 @@ function PublicMessage() {
           alt="Customs Preview"
           className="preview-img"
         />
+            <div className="menu-flex">
         <div className="menu-header">
           <span className="summary-title">Customs</span>
           <span className="summary-price">
@@ -152,7 +153,7 @@ function PublicMessage() {
             <br /> vids: ${vidMin} - ${vidMax}
           </span>
         </div>
-        <div className="menu-flex">
+    
           <div className="text-container">
             <p>{BLURBS.CUSTOMS}</p>
           </div>
@@ -161,6 +162,7 @@ function PublicMessage() {
 
       {/* ITEM 2: RATINGS */}
       <div className="menu-item">
+        <div className="menu-flex">
         <div className="menu-header">
           <span className="summary-title">Ratings</span>
           <span className="summary-price">
@@ -168,7 +170,7 @@ function PublicMessage() {
             <br /> vid: ${vidRating}
           </span>
         </div>
-        <div className="menu-flex">
+        
           <div className="text-container">
             <p>{BLURBS.RATING}</p>
           </div>
@@ -179,6 +181,7 @@ function PublicMessage() {
       {/* ITEM 3: LIVE */}
       <div className="menu-item">
         <img src={vidratepreview} alt="Live Preview" className="preview-img" />
+                <div className="menu-flex">
         <div className="menu-header">
           <span className="summary-title">Live</span>
           <span className="summary-price">
@@ -186,7 +189,6 @@ function PublicMessage() {
             <br /> calls: ${callMin} - ${callMax}+
           </span>
         </div>
-        <div className="menu-flex">
           <div className="text-container">
             <p>{BLURBS.LIVE}</p>
           </div>
