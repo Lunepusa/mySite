@@ -321,9 +321,6 @@ tfoot td {
 .menu-page-wrapper {
     background: #000;
     color: #fff;
-    font-family: "Julee", cursive;
-    padding: 3% 2.5%;
-    min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -333,41 +330,43 @@ tfoot td {
 .menu-page-wrapper h1, 
 .menu-page-wrapper h3 {
     letter-spacing: 1px;
-    margin: 2% 0;
     color: #fff;
 }
 
 .menu-page-wrapper p {
-    line-height: 1.4;
+    line-height: 1;
     color: #fff;
     text-align: justify;
-    margin: 2% 0;
+    font-size: .8rem,;
 }
 
 /* Main Container for Side-by-Side */
 .main-container {
     display: flex;
     flex-direction: column;
-    gap: 3%;
+    gap: 1%;
     width: 100%;
     max-width: 1600px;
     align-items: center;
+    text-align: center;
 }
 
 /* Sections */
 .main-container section {
     border: 1px dashed #fff;
-    padding: 2%;
+    padding: 1%;
     box-sizing: border-box;
     width: 100%;
 }
 
 .menu-section {
     max-width: 620px;
+    max-height: 70vh;
 }
 
 .builder-box {
     max-width: 620px;
+    max-height: 90vh;
 }
 
 /* ========================================= */
@@ -375,7 +374,7 @@ tfoot td {
 /* ========================================= */
 .menu-item {
     border: 1px dashed #fff;
-    margin: 4% auto;
+    margin: 1% auto;
     width: 100%;
     box-sizing: border-box;
     display: flex;
@@ -383,38 +382,36 @@ tfoot td {
 }
 
 .menu-header {
-    padding: 2%;
+    padding: 1%;
     display: flex;
     justify-content: space-between; 
     align-items: center; 
     background: #222;
-    border-bottom: 1px dashed #fff;
+    width: 100%;
 }
 
 .summary-title {
     font-weight: bold;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     text-transform: uppercase;
 }
 
 .summary-price {
     text-align: right;
-    font-size: 0.9rem;
+    font-size: 1.1rem;
 }
 
 .menu-flex {
     display: flex;
     align-items: center;
-    gap: 2%;
-    padding: 2%;
-    text-align: left;
+    padding: 1%;
+    text-align: center;
 }
 
 .preview-img {
-    width: 40%;
-    height: 150px; /* Forces a consistent portrait height */
+    width: auto;
+    height: 15vh; /* Forces a consistent portrait height */
     object-fit: cover; /* Prevents stretching */
-    background: #FFDAB9; 
     flex-shrink: 0;
     display: flex;
     align-items: center;
@@ -455,7 +452,7 @@ input[type=range]::-webkit-slider-thumb {
     border-radius: 50%;
     background: #fff;
     cursor: pointer;
-    margin-top: -6px; 
+    accent-color: white;
 }
 input[type=range]::-webkit-slider-runnable-track {
     width: 100%;
@@ -473,7 +470,7 @@ input[type=range]::-webkit-slider-runnable-track {
         flex-direction: row;
         justify-content: center;
         align-items: flex-start; /* Prevents columns from stretching to match each other's height */
-        gap: 3%;
+        gap: 1%;
     }
     
     .menu-section, .builder-box {
