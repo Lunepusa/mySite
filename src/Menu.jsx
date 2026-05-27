@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import "./styles.css"; // Your global styles untouched
-import "./Menu.css"; // Assuming you saved the new layout CSS here
 import Collapse from "./Utility";
 import loungepreview from "./Images/Preview/lounge.jpg";
 import dmpreview from "./Images/Preview/dm.jpg";
