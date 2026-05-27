@@ -323,7 +323,7 @@ function CustomQuiz() {
   if (showEmailWarning) {
     return (
       <section className="builder-box" style={{ textAlign: "center" }}>
-        <h2 style={{ margin: "10px" letterSpacing: "1px" }}>⚠️ Missing Email</h2>
+        <h2 style={{ margin: "10px", letterSpacing: "1px" }}>⚠️ Missing Email</h2>
         <p style={{ fontSize: "1.05em", lineheight: "1" }}>
           You don't have an email associated with your account. While it's not required, it makes it much harder for me to notify you when your content is ready or if I have questions!
         </p>
@@ -358,7 +358,7 @@ function CustomQuiz() {
         <div style={{ display: "flex", flexDirection: "column", gap: "10px",  alignItems: "center" }}>
           <button className="btn-submit">Vote on other Suggestions</button>
           <div style={{ padding: "12px", width: "100%", background: "transparent", border: "1px dashed #fff", color: "#fff", boxSizing: "border-box" }}>
-            <p style={{ margin: "10px" textTransform: "uppercase" }}>See what I already have with these tags:</p>
+            <p style={{ margin: "10px", textTransform: "uppercase" }}>See what I already have with these tags:</p>
             <ClickableTags tags={combinedTags} emptyText="No specific tags selected." />
           </div>
           <button
@@ -385,7 +385,7 @@ function CustomQuiz() {
       </div>
 
       <div >
-        <h4 style={{ margin: "10px" textTransform: "uppercase" }}>1. Format</h4>
+        <h4 style={{ margin: "10px", textTransform: "uppercase" }}>1. Format</h4>
         <div style={{ display: "flex", gap: "1%", flexWrap: "wrap" }}>
           {category === "custom" && (
             <>
@@ -420,16 +420,16 @@ function CustomQuiz() {
             step={subType === "call" ? 5 : subType === "sexting" ? 15 : 1}
             value={quantity}
             onChange={(e) => setQuantity(Number(e.target.value))}
-            style={{ flexGrow: 1, marginLeft: "10px" }}
+            style={{ flexGrow: 1, marginLeft: "10px",}}
           />
         </div>
       )}
 
       <div >
-        <h4 style={{ margin: "10px" textTransform: "uppercase" }}>2. Specifics & Tags</h4>
+        <h4 style={{ margin: "10px", textTransform: "uppercase" }}>2. Specifics & Tags</h4>
         <p style={{ fontSize: "0.8em", color: "#aaa", margin: "0 0 10px 0" }}>Select up to {maxKinks}. ({currentKinksCount}/{maxKinks} selected)</p>
 
-        <p style={{ margin: "10px" textTransform: "uppercase" }}>Standard (Included)</p>
+        <p style={{ margin: "10px", textTransform: "uppercase" }}>Standard (Included)</p>
         <div style={{ display: "inline-block",  }}>
           {visibleStandard.map((kink) => (
             <KinkPill
@@ -444,7 +444,7 @@ function CustomQuiz() {
           </button>
         </div>
 
-        <p style={{ margin: "10px" textTransform: "uppercase" }}>
+        <p style={{ margin: "10px", textTransform: "uppercase" }}>
           Extra Time/Setup (+${PRICING.EXTRA_PREP_TAG_MINS * (PRICING.PREPOST_HOURLY / 60)} each)
         </p>
         <div style={{ display: "inline-block", }}>
@@ -481,8 +481,8 @@ function CustomQuiz() {
       </div>
 
       <div style={{ borderTop: "1px dashed #fff", paddingTop: "4%", textAlign: "center" }}>
-        <p style={{ margin: "10px" textTransform: "uppercase" }}>Est. Total</p>
-        <h2 style={{ margin: "10px" fontSize: "2.5em" }}>${estimate.toFixed(0)}</h2>
+        <p style={{ margin: "10px", textTransform: "uppercase" }}>Est. Total</p>
+        <h2 style={{ margin: "10px", fontSize: "2.5em" }}>${estimate.toFixed(0)}</h2>
         <p style={{ fontSize: "0.75em", color: "#888", fontStyle: "italic", margin: "0 0 20px 0" }}>*Subject to review and final invoice.</p>
         
         {isLoggedIn ? (
@@ -502,13 +502,13 @@ function CustomQuiz() {
             >
               Add to Public Suggestion Box (Free)
             </button>
-            <p style={{ margin: "10px" fontStyle: "italic" }}>
+            <p style={{ margin: "10px", fontStyle: "italic" }}>
               *Submissions are temporarily disabled while I connect the new backend!
             </p>
           </>
         ) : (
           <div style={{ padding: "4%", border: "1px dashed #777", color: "#ccc" }}>
-            <p style={{ margin: "10px" fontSize: "0.9em" }}>Log in or create an account to submit requests and suggestions!</p>
+            <p style={{ margin: "10px", fontSize: "0.9em" }}>Log in or create an account to submit requests and suggestions!</p>
             <button className="btn-submit" style={{ width: "auto", padding: "2% 6%", margin: "0" }}>Sign In / Register</button>
           </div>
         )}
@@ -555,7 +555,7 @@ function KinkPill({ active, onClick, label, disabled }) {
       style={{
         padding: "4px 8px", background: active ? "#fff" : disabled ? "#484444" : "#000", color: active ? "#000" : "#fff",
         border: `1px dashed ${active ? "#fff" : disabled ? "red" : "#fff"}`, textDecoration: disabled ? "line-through red" : "none",
-        cursor: disabled ? "not-allowed" : "pointer", fontSize: "0.85rem", display: "inline-block", margin: "10px" fontFamily: "inherit"
+        cursor: disabled ? "not-allowed" : "pointer", fontSize: "0.85rem", display: "inline-block", margin: "10px", fontFamily: "inherit"
       }}
     >
       {label}
