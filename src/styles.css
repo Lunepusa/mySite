@@ -315,16 +315,9 @@ tfoot td {
   transition: filter 0.3s ease;
 }
 
-img, video {
-  -webkit-touch-callout: none;     /* iOS: disables long-press callout */
-  -webkit-user-select: none;       /* Prevents selection */
-  user-select: none;
-  pointer-events: auto;            /* Keep clicks/taps working */
-  touch-action: none;              /* Disables browser touch gestures like long-press menu in many cases */
-}
-
-/* Menu.css */
-
+/* ========================================= */
+/* PAGE & CONTAINER WRAPPERS                 */
+/* ========================================= */
 .menu-page-wrapper {
     background: #000;
     color: #fff;
@@ -334,6 +327,7 @@ img, video {
     display: flex;
     flex-direction: column;
     align-items: center;
+    box-sizing: border-box;
 }
 
 .menu-page-wrapper h1, 
@@ -376,108 +370,9 @@ img, video {
     max-width: 620px;
 }
 
-/* Generic Flex Classes */
-.flex-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1%;
-    margin: 2% 0;
-    width: 100%;
-}
-
-/* Builder Styles */
-.btn-cat {
-    flex: 1; 
-    border: 1px dashed #fff;
-    background: #000;
-    color: #fff;
-    padding: 2%;
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 1rem;
-    font-weight: bold;
-}
-
-.btn-cat.active {
-    background: #fff;
-    color: #000;
-}
-
-.btn-sub {
-    flex: 1;
-    border: 1px dashed #444;
-    background: #222;
-    color: #fff;
-    padding: 2%;
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 0.9rem;
-    font-weight: bold;
-}
-
-.btn-sub.active {
-    background: #fff;
-    color: #000;
-    border-color: #fff;
-}
-
-.range-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #111;
-    padding: 2%;
-    border: 1px dashed #444;
-    margin: 2% 0;
-}
-
-.pill {
-    border: 1px dashed #fff;
-    background: #000;
-    color: #fff;
-    display: inline-block;
-    padding: 1% 2%;
-    font-size: 0.85rem;
-    cursor: pointer;
-    margin: 1%;
-}
-
-.pill.selected {
-    background: #fff;
-    color: #000;
-    font-weight: bold;
-}
-
-.pill.capped {
-    border: 1px dashed red;
-    background-color: #484444;
-    text-decoration: line-through red;
-}
-
-.exclusive-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #222;
-    padding: 2%;
-    border: 1px dashed #444;
-    margin: 2% 0;
-    cursor: pointer;
-}
-
-.total-box {
-    border: 1px dashed #fff;
-    background: #fff;
-    color: #000;
-    padding: 2%;
-    margin: 4% auto 0 auto;
-    font-weight: bold;
-    width: fit-content;
-    font-size: 1.2rem;
-}
-
+/* ========================================= */
+/* MENU BLURBS SECTION                       */
+/* ========================================= */
 .menu-item {
     border: 1px dashed #fff;
     margin: 4% auto;
@@ -496,6 +391,17 @@ img, video {
     border-bottom: 1px dashed #fff;
 }
 
+.summary-title {
+    font-weight: bold;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+}
+
+.summary-price {
+    text-align: right;
+    font-size: 0.9rem;
+}
+
 .menu-flex {
     display: flex;
     align-items: center;
@@ -506,14 +412,15 @@ img, video {
 
 .preview-img {
     width: 40%;
-    min-height: 120px;
-    background: #444;
-    color: #fff;
+    height: 150px; /* Forces a consistent portrait height */
+    object-fit: cover; /* Prevents stretching */
+    background: #FFDAB9; 
     flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     border: 1px dashed #fff;
+    box-sizing: border-box;
 }
 
 .text-container {
@@ -523,13 +430,50 @@ img, video {
     justify-content: space-between;
 }
 
-/* Responsive Layout */
+/* ========================================= */
+/* FORM / BUILDER ELEMENT OVERRIDES          */
+/* ========================================= */
+textarea::-webkit-scrollbar {
+    width: 8px;
+}
+textarea::-webkit-scrollbar-track {
+    background: #111;
+    border-left: 1px dashed #444;
+}
+textarea::-webkit-scrollbar-thumb {
+    background: #444;
+}
+
+input[type=range] {
+    -webkit-appearance: none;
+    background: transparent;
+}
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    margin-top: -6px; 
+}
+input[type=range]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 4px;
+    cursor: pointer;
+    background: #444;
+    border-radius: 2px;
+}
+
+/* ========================================= */
+/* DESKTOP RESPONSIVE LAYOUT                 */
+/* ========================================= */
 @media (min-width: 1024px) {
     .main-container {
         flex-direction: row;
         justify-content: center;
+        align-items: flex-start; /* Prevents columns from stretching to match each other's height */
         gap: 3%;
-        align-items: flex-start; /* Prevents stretching */
     }
     
     .menu-section, .builder-box {
