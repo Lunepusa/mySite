@@ -123,13 +123,12 @@ export function Preferredlinks() {
           img={Throne}
           link="https://throne.com/lunepusa"
         />
-        <Link
+       {*/ <Link
           name="Tryst"
           desc="Coming to Calgary? lets play~"
           img={tryst}
           link="https://tryst.link/escort/lunepusa"
-          style={{display:"none"}}
-        />
+        />*/}
       </div>
     </div>
   );
