@@ -233,6 +233,9 @@ function CustomQuiz() {
     if (cat === "custom") { setSubType("video"); setQuantity(PRICING.VIDEO_MIN); }
     if (cat === "rating") { setSubType("text"); setQuantity(1); }
     if (cat === "live") { setSubType("call"); setQuantity(PRICING.CALL_MIN); }
+    setSelectedPrep([]);
+    setSelectedStandard([]);
+    setIsExclusive(false);
   };
 
   const handleSubTypeChange = (type, defaultQty) => {
@@ -320,11 +323,11 @@ function CustomQuiz() {
   if (showEmailWarning) {
     return (
       <section className="builder-box" style={{ textAlign: "center" }}>
-        <h2 style={{ letterSpacing: "1px" }}>⚠️ Missing Email</h2>
-        <p style={{ fontSize: "1.05em", lineHeight: "1" }}>
+        <h2 style={{ margin: "10px" letterSpacing: "1px" }}>⚠️ Missing Email</h2>
+        <p style={{ fontSize: "1.05em", lineheight: "1" }}>
           You don't have an email associated with your account. While it's not required, it makes it much harder for me to notify you when your content is ready or if I have questions!
         </p>
-        <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
+        <div style={{  display: "flex", gap: "10px", justifyContent: "center" }}>
           <button onClick={confirmSubmit} className="btn-suggest" style={{ width: "auto" }}>Submit Anyway</button>
           <button onClick={() => setShowEmailWarning(false)} className="btn-submit" style={{ width: "auto" }}>Go Back</button>
         </div>
@@ -335,11 +338,11 @@ function CustomQuiz() {
   if (submitStatus === "custom") {
     return (
       <section className="builder-box" style={{ textAlign: "center" }}>
-        <h2>Request Sent!</h2>
-        <p style={{ fontSize: "1.05em", lineHeight: "1" }}>
+        <h2 style={{ margin: "0 0 15px 0" }}>Request Sent!</h2>
+        <p style={{ fontSize: "1.05em", lineheight: "1" }}>
           Thanks! I’ve added this to my queue. I’ll reach out if I have questions, and send an invoice once it's done.
         </p>
-        <button onClick={() => setSubmitStatus("idle")} className="btn-suggest" style={{ width: "auto"}}>Back</button>
+        <button onClick={() => setSubmitStatus("idle")} className="btn-suggest" style={{ width: "auto", }}>Back</button>
       </section>
     );
   }
@@ -348,21 +351,23 @@ function CustomQuiz() {
     const combinedTags = [...selectedStandard, ...selectedPrep].join(",");
     return (
       <section className="builder-box" style={{ textAlign: "center" }}>
-        <h2>Suggestion Added!</h2>
-        <p style={{ fontSize: "1.05em", lineHeight: "1" }}>
+        <h2 style={{ margin: "0 0 15px 0" }}>Suggestion Added!</h2>
+        <p style={{ fontSize: "1.05em", lineheight: "1" }}>
           Thanks for submitting! I use this box for inspiration. If I ever end up making this concept, you'll be the first to get an email notification!
         </p>
         <div style={{ display: "flex", flexDirection: "column", gap: "10px",  alignItems: "center" }}>
           <button className="btn-submit">Vote on other Suggestions</button>
           <div style={{ padding: "12px", width: "100%", background: "transparent", border: "1px dashed #fff", color: "#fff", boxSizing: "border-box" }}>
-            <p style={{ fontSize: "0.85em", textTransform: "uppercase" }}>See what I already have with these tags:</p>
+            <p style={{ margin: "10px" textTransform: "uppercase" }}>See what I already have with these tags:</p>
             <ClickableTags tags={combinedTags} emptyText="No specific tags selected." />
           </div>
           <button
             onClick={() => { setSubmitStatus("idle"); setSelectedStandard([]); setSelectedPrep([]); }}
-            className="btn-suggest">
-          </button>
+            className="btn-suggest"
+            
+          >
             Build Another Request
+          </button>
         </div>
       </section>
     );
@@ -371,7 +376,7 @@ function CustomQuiz() {
   // --- MAIN BUILDER RETURN ---
   return (
     <section className="builder-box">
-      <h3 style={{ textAlign: "center", textTransform: "uppercase", letterSpacing: "1px" }}>Custom Builder</h3>
+      <h3 style={{ textAlign: "center", textTransform: "uppercase", letterSpacing: "1px", margin: "0 0 20px 0" }}>Custom Builder</h3>
 
       <div style={{ display: "flex", gap: "1%"}}>
         <TabButton active={category === "custom"} onClick={() => handleCategoryChange("custom")} label="Customs" />
@@ -379,8 +384,8 @@ function CustomQuiz() {
         <TabButton active={category === "live"} onClick={() => handleCategoryChange("live")} label="Live" />
       </div>
 
-      <div>
-        <h4 style={{ textTransform: "uppercase" }}>1. Format</h4>
+      <div >
+        <h4 style={{ margin: "10px" textTransform: "uppercase" }}>1. Format</h4>
         <div style={{ display: "flex", gap: "1%", flexWrap: "wrap" }}>
           {category === "custom" && (
             <>
@@ -415,15 +420,17 @@ function CustomQuiz() {
             step={subType === "call" ? 5 : subType === "sexting" ? 15 : 1}
             value={quantity}
             onChange={(e) => setQuantity(Number(e.target.value))}
-            style={{ flexGrow: 1,}}
+            style={{ flexGrow: 1, marginLeft: "10px" }}
           />
         </div>
       )}
 
-      <div>
-        <h4 style={{ textTransform: "uppercase" }}>Select up to {maxKinks}. ({currentKinksCount}/{maxKinks} selected</h4>
-        <p style={{ fontSize: "0.85em", textTransform: "uppercase" }}>Standard (Included)</p>
-        <div style={{ display: "inline-block", marginBottom: "10px" }}>
+      <div >
+        <h4 style={{ margin: "10px" textTransform: "uppercase" }}>2. Specifics & Tags</h4>
+        <p style={{ fontSize: "0.8em", color: "#aaa", margin: "0 0 10px 0" }}>Select up to {maxKinks}. ({currentKinksCount}/{maxKinks} selected)</p>
+
+        <p style={{ margin: "10px" textTransform: "uppercase" }}>Standard (Included)</p>
+        <div style={{ display: "inline-block",  }}>
           {visibleStandard.map((kink) => (
             <KinkPill
               key={kink} label={kink}
@@ -432,15 +439,15 @@ function CustomQuiz() {
               onClick={() => toggleKink(kink, "standard")}
             />
           ))}
-          <button onClick={() => setShowAllStandard(!showAllStandard)} className="btn-suggest" style={{ padding: "4px 4px", width: "auto", display: "inline-block", margin: "3px" }}>
+          <<button onClick={() => setShowAllStandard(!showAllStandard)} className="btn-suggest" style={{ padding: "4px 8px", width: "auto", display: "inline-block", margin: "3px" }}>
             {showAllStandard ? "Hide" : `All (${standardActivities.length})...`}
           </button>
         </div>
 
-        <p style={{ fontSize: "0.85em", textTransform: "uppercase" }}>
+        <p style={{ margin: "10px" textTransform: "uppercase" }}>
           Extra Time/Setup (+${PRICING.EXTRA_PREP_TAG_MINS * (PRICING.PREPOST_HOURLY / 60)} each)
         </p>
-        <div style={{ display: "inline-block" }}>
+        <div style={{ display: "inline-block", }}>
           {visiblePrep.map((kink) => (
             <KinkPill
               key={kink} label={kink}
@@ -449,12 +456,13 @@ function CustomQuiz() {
               onClick={() => toggleKink(kink, "prep")}
             />
           ))}
-          <button onClick={() => setShowAllPrep(!showAllPrep)} className="btn-suggest" style={{ padding: "4px 4px", width: "auto", display: "inline-block", margin: "3px" }}>
+          <button onClick={() => setShowAllPrep(!showAllPrep)} className="btn-suggest" style={{ padding: "4px 8px", width: "auto", display: "inline-block", margin: "3px" }}>
             {showAllPrep ? "Hide" : `All (${prepActivities.length})...`}
           </button>
         </div>
-        <label>{getDynamicPlaceholder()}</label>
+
         <textarea
+          placeholder={getDynamicPlaceholder()}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows="4"
@@ -472,10 +480,10 @@ function CustomQuiz() {
         </div>
       </div>
 
-      <div style={{ borderTop: "1px dashed #fff", textAlign: "center" }}>
-        <p style={{ margin: "0", fontSize: "0.9em", textTransform: "uppercase" }}>Est. Total</p>
-        <h2 style={{ fontSize: "2.5em" }}>${estimate.toFixed(0)}</h2>
-        <p style={{ fontSize: "0.75em", color: "white", fontStyle: "italic",}}>*Subject to review and final invoice.</p>
+      <div style={{ borderTop: "1px dashed #fff", paddingTop: "4%", textAlign: "center" }}>
+        <p style={{ margin: "10px" textTransform: "uppercase" }}>Est. Total</p>
+        <h2 style={{ margin: "10px" fontSize: "2.5em" }}>${estimate.toFixed(0)}</h2>
+        <p style={{ fontSize: "0.75em", color: "#888", fontStyle: "italic", margin: "0 0 20px 0" }}>*Subject to review and final invoice.</p>
         
         {isLoggedIn ? (
           <>
@@ -494,14 +502,14 @@ function CustomQuiz() {
             >
               Add to Public Suggestion Box (Free)
             </button>
-            <p style={{ fontSize: "0.85em", color: "red", fontStyle: "italic" }}>
+            <p style={{ margin: "10px" fontStyle: "italic" }}>
               *Submissions are temporarily disabled while I connect the new backend!
             </p>
           </>
         ) : (
-          <div style={{ padding: "4%", border: "1px dashed #777", color: "##ffffff"}}>
-            <p style={{  fontSize: "0.9em" }}>Log in or create an account to submit requests and suggestions!</p>
-            <button className="btn-submit" style={{ width: "auto", padding: "2%", margin: "0" }}>Sign In / Register</button>
+          <div style={{ padding: "4%", border: "1px dashed #777", color: "#ccc" }}>
+            <p style={{ margin: "10px" fontSize: "0.9em" }}>Log in or create an account to submit requests and suggestions!</p>
+            <button className="btn-submit" style={{ width: "auto", padding: "2% 6%", margin: "0" }}>Sign In / Register</button>
           </div>
         )}
       </div>
@@ -531,7 +539,7 @@ function SelectionButton({ active, onClick, label }) {
     <button
       onClick={onClick}
       style={{
-        flex: 1, padding: "8px 8px", background: active ? "#fff" : "#222", color: active ? "#000" : "#fff",
+        flex: 1, padding: "8px 12px", background: active ? "#fff" : "#222", color: active ? "#000" : "#fff",
         border: `1px dashed ${active ? "#fff" : "#444"}`, cursor: "pointer", fontWeight: "bold", fontSize: "0.9rem", fontFamily: "inherit"
       }}
     >
@@ -545,9 +553,9 @@ function KinkPill({ active, onClick, label, disabled }) {
     <button
       onClick={onClick} disabled={disabled}
       style={{
-        padding: "4px 4px", background: active ? "#fff" : disabled ? "#484444" : "#000", color: active ? "#000" : "#fff",
+        padding: "4px 8px", background: active ? "#fff" : disabled ? "#484444" : "#000", color: active ? "#000" : "#fff",
         border: `1px dashed ${active ? "#fff" : disabled ? "red" : "#fff"}`, textDecoration: disabled ? "line-through red" : "none",
-        cursor: disabled ? "not-allowed" : "pointer", fontSize: "0.85rem", display: "inline-block", margin: "3px", fontFamily: "inherit"
+        cursor: disabled ? "not-allowed" : "pointer", fontSize: "0.85rem", display: "inline-block", margin: "10px" fontFamily: "inherit"
       }}
     >
       {label}
@@ -561,7 +569,7 @@ function ToggleRow({ active, onClick, label }) {
       onClick={onClick}
       style={{
         display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px",
-        background: "#222", border: `1px dashed #444`, cursor: "pointer",
+        background: "#222", border: `1px dashed #444`, cursor: "pointer", margin: "2% 0"
       }}
     >
       <span style={{ color: "#fff", fontSize: "0.9rem" }}>{label}</span>
