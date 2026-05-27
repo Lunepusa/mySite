@@ -369,7 +369,7 @@ function CustomQuiz() {
         <p style={{ fontSize: "1.05em", lineheight: "1" }}>
           You don't have an email associated with your account. While it's not required, it may make it harder for me to notify you when your content is ready or if I have questions! it will mean I cant automatically notify you.
         </p>
-        <div style={{ display:"inline-block" justifyContent: "center" }}>
+        <div style={{ display:"inline-block", justifyContent: "center" }}>
           <button onClick={confirmSubmit} className="btn-suggest" style={{ width: "auto" }}>Submit Anyway</button>
           <button onClick={() => setShowEmailWarning(false)} className="btn-submit" style={{ width: "auto" }}>Go Back</button>
         </div>
