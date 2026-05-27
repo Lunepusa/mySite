@@ -256,9 +256,9 @@ export default function Menu() {
             <img src={vidcallpreview} className="previewimg" />
           </div>
         </Collapse>
-{/*
+
         {/* Friend Experience */}
-        <Collapse trigger={<h3>🗨️1 week Friend Experience ~ $25+🗨️ ⏬</h3>}>
+              {/* <Collapse trigger={<h3>🗨️1 week Friend Experience ~ $25+🗨️ ⏬</h3>>
           <div>
             <img src={fepreview} className="previewimg" />
             <p
@@ -271,10 +271,10 @@ export default function Menu() {
               have time <br /> online only
             </p>
           </div>
-        </Collapse>
+        </Collapse>*/}
 
         {/* Girlfriend Experience */}
-        <Collapse trigger={<h3>💋1 week Girfriend Experience ~ $95+💋⏬</h3>}>
+              {/* <Collapse trigger={<h3>💋1 week Girfriend Experience ~ $95+💋⏬</h3>}>
           <div>
             <p
               style={{
@@ -287,10 +287,10 @@ export default function Menu() {
             </p>
             <img src={gfepreview} className="previewimg" />
           </div>
-        </Collapse>
+        </Collapse>*/}
 
-        {/* Premium Girlfriend Experience */}
-        <Collapse
+        {/* Premium Girlfriend Experience*/}
+            {/*   <Collapse
           trigger={<h3>💍1 week Premium Girlfriend Experience ~ $495+💍⏬</h3>}
         >
           <div>
@@ -305,10 +305,10 @@ export default function Menu() {
               hours of customs or calls throughout the week <br /> online only
             </p>
           </div>
-        </Collapse>
+        </Collapse>*/}
 
-      {/* Calgary meets */}
-        <div>
+      {/* Calgary meets*/}
+            {/*   <div>
           <Collapse
             trigger={<h2> 🛏️Calgary meets 🛏️⏬ NOT CURRENTLY ACTIVE</h2>}
           >
