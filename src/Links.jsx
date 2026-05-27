@@ -128,6 +128,7 @@ export function Preferredlinks() {
           desc="Coming to Calgary? lets play~"
           img={tryst}
           link="https://tryst.link/escort/lunepusa"
+          style={{display:"none"}}
         />
       </div>
     </div>
