@@ -439,7 +439,7 @@ function CustomQuiz() {
               onClick={() => toggleKink(kink, "standard")}
             />
           ))}
-          <<button onClick={() => setShowAllStandard(!showAllStandard)} className="btn-suggest" style={{ padding: "4px 8px", width: "auto", display: "inline-block", margin: "3px" }}>
+          <button onClick={() => setShowAllStandard(!showAllStandard)} className="btn-suggest" style={{ padding: "4px 8px", width: "auto", display: "inline-block", margin: "3px" }}>
             {showAllStandard ? "Hide" : `All (${standardActivities.length})...`}
           </button>
         </div>
