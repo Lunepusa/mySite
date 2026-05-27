@@ -361,8 +361,8 @@ function CustomQuiz() {
           <button
             onClick={() => { setSubmitStatus("idle"); setSelectedStandard([]); setSelectedPrep([]); }}
             className="btn-suggest">
-            Build Another Request
           </button>
+            Build Another Request
         </div>
       </section>
     );
@@ -421,7 +421,7 @@ function CustomQuiz() {
       )}
 
       <div>
-        <h4 style={{ textTransform: "uppercase" }}>Select up to {mks}. ({currentKinksCount}/{maxKinks} selected</h4>
+        <h4 style={{ textTransform: "uppercase" }}>Select up to {maxKinks}. ({currentKinksCount}/{maxKinks} selected</h4>
         <p style={{ fontSize: "0.85em", textTransform: "uppercase" }}>Standard (Included)</p>
         <div style={{ display: "inline-block", marginBottom: "10px" }}>
           {visibleStandard.map((kink) => (
