@@ -445,7 +445,7 @@ function CustomQuiz() {
           )}
         </div><br />
       </div>
-
+<div>
       {category !== "rating" && (
         <div>
           <span>
@@ -461,7 +461,7 @@ function CustomQuiz() {
           />
         </div><br />
       )}
-
+</div>
       <div>
         <h3>Select up to {maxKinks} tags. ({currentKinksCount}/{maxKinks} selected)</h3>
 
