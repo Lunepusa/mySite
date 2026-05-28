@@ -137,9 +137,9 @@ function PublicMessage() {
       <p>{BLURBS.INTRO}</p>
 
       {/* ITEM 1: CUSTOMS */}
-      <section>
+      <div>
         <img className="tile" src={customvidpreview} alt="Customs Preview" />
-        <card-div>
+        <div className="card">
           <header-div>
             <span>
               <h2>Customs</h2>
@@ -152,12 +152,12 @@ function PublicMessage() {
             </span>
           </header-div>
           <p>{BLURBS.CUSTOMS}</p>
-        </card-div>
-      </section>
+        </div >
+      </div>
 
       {/* ITEM 2: RATINGS */}
-      <section>
-        <card-div>
+      <div>
+        <div className="card">
           <header-div>
             <span>
               <h2>Ratings</h2>
@@ -170,14 +170,14 @@ function PublicMessage() {
             </span>
           </header-div>
           <p>{BLURBS.RATING}</p>
-        </card-div>
+        </div>
         <img className="tile" src={dmpreview} alt="Ratings Preview" />
-      </section>
+      </div>
 
       {/* ITEM 3: LIVE */}
-      <section>
+      <div>
         <img className="tile" src={vidratepreview} alt="Live Preview" />
-        <card-div>
+        <div className="card">
           <header-div>
             <span>
               <h2>Live</h2>
@@ -190,8 +190,8 @@ function PublicMessage() {
             </span>
           </header-div>
           <p>{BLURBS.LIVE}</p>
-        </card-div>
-      </section>
+        </div>
+      </div>
       </section>
   );
 }

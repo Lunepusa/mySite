@@ -1035,7 +1035,6 @@ useEffect(() => {
                 loadMoreGroups(offsetRef.current, activeSearchQuery)
               }
               disabled={loadingRef.current}
-              disabled={loadingRef.current}
               style={{
                 display: "block",
                 margin: "10px auto",
