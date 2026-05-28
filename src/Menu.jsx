@@ -802,7 +802,7 @@ function CustomQuiz() {
 // ──────────────────────────────────────────────────────────────────────────────
 function TabButton({ active, onClick, label }) {
   return (
-    <button className={`button ${active ? "selected" : ""}`} onClick={onClick} style{{width:"30%"}}>
+    <button className={${active ? "selected" : ""}}  onClick={onClick} style{{width:"30%"}}>
       {label}
     </button>
   );
@@ -810,7 +810,7 @@ function TabButton({ active, onClick, label }) {
 
 function SelectionButton({ active, onClick, label }) {
   return (
-    <button className={`button ${active ? "selected" : ""}`} onClick={onClick} style={{backgroundColor:"grey", width:"45%"}}>
+   <button className={${active ? "selected" : ""}} onClick={onClick} style={{backgroundColor:"grey", width:"45%"}}>
       {label}
     </button>
   );
@@ -819,7 +819,7 @@ function SelectionButton({ active, onClick, label }) {
 function KinkPill({ active, onClick, label, disabled }) {
   return (
     <pill
-      className={`pill ${active ? "selected" : ""} ${disabled ? "disabled" : ""}`}
+      className={${active ? "selected" : ""} ${disabled ? "disabled" : ""}}
       onClick={onClick}
       disabled={disabled}
     >
@@ -830,7 +830,7 @@ function KinkPill({ active, onClick, label, disabled }) {
 
 function ToggleRow({ active, onClick, label }) {
   return (
-    <button className={`button ${active ? "selected" : ""}`} onClick={onClick}>
+    <button className={${active ? "selected" : ""}} onClick={onClick} style={{width:"90%"}}>
     {label}
     </button>
   );
