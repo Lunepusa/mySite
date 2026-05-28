@@ -42,12 +42,14 @@ Desktop (> 1024px):
   margin-right: auto;
   box-sizing: border-box;
   scrollbar-color: white black;
+  
 }
 
-html {
+html{
   background-color: black;
   width: 100%;
   align-content: center;
+  text-align: center;
   padding: 0px;
 }
 
@@ -421,7 +423,6 @@ max-width:98vw;
 }
 section{
   display:inline-block;
-  width:50%;
   min-width: 300px;
   max-width: 600px;
   border: 1px dashed white;

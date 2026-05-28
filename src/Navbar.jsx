@@ -17,7 +17,7 @@ function Navbar() {
       <div
         className="navbar"
         style={{
-          maxWidth: "90%",
+          maxWidth: "100%",
           margin: "auto",
           backgroundImage: `url(${headerimg})`,
           backgroundRepeat: "no-repeat",
