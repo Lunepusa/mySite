@@ -611,7 +611,7 @@ function CustomQuiz() {
         {category !== "rating" && (
           <>
             {" "}
-            <div><div style={{display:"block"}}><span style{{margins:"auto"}}>MINIMUM: {
+            <div><div style={{display:"block"}}><span style={{margins:"auto"}}>MINIMUM: {
                   subType === "photo"
                     ? PRICING.PHOTO_MIN
                     : subType === "video"
@@ -646,7 +646,7 @@ function CustomQuiz() {
                 onChange={(e) => setQuantity(Number(e.target.value))}
               />
               {subType === " photo" ? " pics" : " min"}
-             <span style{{margins:"auto"}}>MAXIMUM: {
+             <span style={{margins:"auto"}}>MAXIMUM: {
                   subType === "photo"
                     ? PRICING.PHOTO_MAX
                     : subType === "video"
