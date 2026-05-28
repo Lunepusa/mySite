@@ -814,7 +814,7 @@ function TabButton({ active, onClick, label }) {
 
 function SelectionButton({ active, onClick, label }) {
   return (
-   <button className={${active ? "selected" : ""}} onClick={onClick} style={{backgroundColor:"grey", width:"45%"}}>
+   <button className={active ? "selected" : ""} onClick={onClick} style={{backgroundColor:"grey", width:"45%"}}>
       {label}
     </button>
   );
@@ -834,7 +834,7 @@ function KinkPill({ active, onClick, label, disabled }) {
 
 function ToggleRow({ active, onClick, label }) {
   return (
-    <button className={${active ? "selected" : ""}} onClick={onClick} style={{width:"90%"}}>
+    <button className={active ? "selected" : ""} onClick={onClick} style={{width:"90%"}}>
     {label}
     </button>
   );
