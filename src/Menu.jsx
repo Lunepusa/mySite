@@ -823,7 +823,7 @@ function SelectionButton({ active, onClick, label }) {
 function KinkPill({ active, onClick, label, disabled }) {
   return (
     <pill
-      className={active ? "selected" : ""} {disabled ? "disabled" : ""}
+      className={`pill ${active ? "selected" : ""} ${disabled ? "disabled" : ""}`}
       onClick={onClick}
       disabled={disabled}
     >
