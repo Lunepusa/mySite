@@ -185,7 +185,7 @@ function PublicMessage() {
       <p>{BLURBS.INTRO}</p>
 
       {/* ITEM 1: CUSTOMS */}
-      <div style={{ height: "22%", border: "1px dashed white" }}>
+      <div style={{ height: "22vh", border: "1px dashed white" }}>
         <img
           style={{ height: "100%", width: "auto" }}
           src={customvidpreview}
@@ -204,7 +204,7 @@ function PublicMessage() {
       </div>
 
       {/* ITEM 2: RATINGS */}
-      <div style={{ height: "22%", border: "1px dashed white" }}>
+      <div style={{ height: "22vh", border: "1px dashed white" }}>
         <div style={{ height: "100%", width: "60%" }}>
           <header-div>
             <h3 style={{ textAlign: "left", width: "44%" }}>Ratings</h3>
@@ -219,7 +219,7 @@ function PublicMessage() {
       </div>
 
       {/* ITEM 3: LIVE */}
-      <div style={{ height: "22%", border: "1px dashed white" }}>
+      <div style={{ height: "22vh", border: "1px dashed white" }}>
         <img
           style={{ height: "100%", width: "auto" }}
           src={vidratepreview}
