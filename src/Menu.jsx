@@ -447,6 +447,7 @@ function CustomQuiz() {
       </div>
 <div>
       {category !== "rating" && (
+        <>
         <div>
           <span>
             {quantity} {subType === "photo" ? "pics" : "min"}
@@ -459,7 +460,7 @@ function CustomQuiz() {
             value={quantity}
             onChange={(e) => setQuantity(Number(e.target.value))}
           />
-        </div><br />
+        </div><br /><>
       )}
 </div>
       <div>
