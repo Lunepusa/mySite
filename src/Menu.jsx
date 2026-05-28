@@ -207,7 +207,7 @@ function PublicMessage() {
       <div style={{ height: "22vh", border: "1px dashed white", padding:"0%" }}>
         <div style={{ height: "100%", width: "60%" }}>
           <header-div>
-            <h3 style={{ textAlign: "left", width: "40%", display:"inline-block", margin:"auto",padding:"auto" }}>Ratings</h3>
+            <h3 style={{ textAlign: "left", width: "40%", display:"inline-block", margin:"auto",margin:"auto" }}>Ratings</h3>
             <h4 style={{ textAlign: "right", width: "55%", display:"inline-block", margin:"auto"}}>
               text: ${txtRating}
               <br /> vid: ${vidRating}
