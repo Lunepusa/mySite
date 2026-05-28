@@ -364,14 +364,14 @@ function CustomQuiz() {
   // --- SUBMISSION STATES ---
   if (showEmailWarning) {
     return (
-      <section  }}>
+      <section>
         <h2 >⚠️ Missing Email</h2>
         <p >
           You don't have an email associated with your account. While it's not required, it may make it harder for me to notify you when your content is ready or if I have questions! it will mean I cant automatically notify you.
         </p>
         <div >
-          <button onClick={confirmSubmit}  }}>Submit Anyway</button>
-          <button onClick={() => setShowEmailWarning(false)}  }}>Go Back</button>
+          <button onClick={confirmSubmit} >Submit Anyway</button>
+          <button onClick={() => setShowEmailWarning(false)}>Go Back</button>
         </div>
       </section>
     );
@@ -379,12 +379,12 @@ function CustomQuiz() {
 
   if (submitStatus === "custom") {
     return (
-      <section  }}>
+      <section  >
         <h2 >Request Sent!</h2>
         <p >
           Thanks! I’ve added this to my queue. I’ll reach out when I accept it with any questions/pricing adjustment, and let you know once it's done!
         </p>
-        <button onClick={() => setSubmitStatus("idle")} , }}>Back</button>
+        <button onClick={() => setSubmitStatus("idle")} , >Back</button>
       </section>
     );
   }
@@ -392,7 +392,7 @@ function CustomQuiz() {
   if (submitStatus === "suggestion") {
     const combinedTags = [...selectedStandard, ...selectedPrep].join(",");
     return (
-      <section  }}>
+      <section  >
         <h2 >Suggestion Added!</h2>
         <p >
           Thanks for submitting! I use this box for inspiration. If I ever end up making this concept, you'll be the first to get an email notification!
@@ -480,7 +480,7 @@ function CustomQuiz() {
               onClick={() => toggleKink(kink, "standard")}
             />
           ))}
-          <button onClick={() => setShowAllStandard(!showAllStandard)}  }}>
+          <button onClick={() => setShowAllStandard(!showAllStandard)}  >
             {showAllStandard ? "Hide" : `All (${standardActivities.length})...`}
           </button>
         </div>
@@ -497,7 +497,7 @@ function CustomQuiz() {
               onClick={() => toggleKink(kink, "prep")}
             />
           ))}
-          <button onClick={() => setShowAllPrep(!showAllPrep)}  }}>
+          <button onClick={() => setShowAllPrep(!showAllPrep)}  >
             {showAllPrep ? "Hide" : `All (${prepActivities.length})...`}
           </button>
         </div>
@@ -550,7 +550,7 @@ function CustomQuiz() {
         ) : (
           <div >
             <p >Log in or create an account to submit requests and suggestions!</p>
-            <button  }}>Sign In / Register</button>
+            <button  >Sign In / Register</button>
           </div>
         )}
       </div>
