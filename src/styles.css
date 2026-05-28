@@ -51,6 +51,7 @@ html{
   align-content: center;
   text-align: center;
   padding: 0px;
+  margin: 1%;
 }
 
 
@@ -178,15 +179,7 @@ a img {
    Buttons and interactive elements
    ========================================================================== */
 
-button {
-  background-color: black;
-  border: 1px double white;
-  font-size: 1em;
-}
 
-button:hover {
-  background-color: grey;
-}
 
 /* ==========================================================================
    Forms and inputs
@@ -382,27 +375,37 @@ input[type=range]::-webkit-slider-runnable-track {
 
 h1{
   font-size: 2.25em;
-  width: fit-content;
+  width: fit-content;margin: max(auto,1%);
+  padding:1%;
 }
 h2{
   font-size: 1.5em;
-  width: fit-content;
+  width: fit-content;margin: max(auto,1%);
+  padding:1%;
 }
 h3{
   font-size: 1.25em;
   width: fit-content;
+  margin: max(auto,1%);
+  padding:1%;
 }
 h4{
   font-size: 1.1em;
   width: fit-content;
+margin: max(auto,1%);
+  padding:1%;
 }
 p{
   font-size: .9em;
   width: fit-content;
+  margin: max(auto,1%);
+  padding:1%;
 }
 small{
   font-size: .875em;
   width: fit-content;
+  margin: max(auto,1%);
+  padding:1%;
 }
 strong {
   vertical-align: baseline;
@@ -419,11 +422,14 @@ h6 {
   font-weight: normal;
   font-style: normal;
   width: fit-content;
+  margin: max(auto,1%);
+  padding:1%;
 }
 
 /* DIVS*/
 div{
   display: inline-block;
+  margin: max(auto,1%);
 }
 span{
   display:inline-block;
@@ -447,6 +453,14 @@ header-div{
 button, .button{
   border: 1px solid white;
   display:inline-block;
+  margin: max(auto,1%);
+  padding:1%;
+  font-size: inherit;
+}
+
+
+button:hover {
+  background-color: grey;
 }
 
 pill{
@@ -455,6 +469,9 @@ pill{
   text-align: center;
   cursor: pointer;
   display: inline-block;
+  margin: max(auto,1%);
+  padding:1%;
+  font-size: inherit;
 }
 
 img{
