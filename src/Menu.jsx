@@ -185,37 +185,33 @@ function PublicMessage() {
       <p>{BLURBS.INTRO}</p>
 
       {/* ITEM 1: CUSTOMS */}
-      <div style={{ height: "22%", border: "1 px dashed white" }}>
+      <div style={{ height: "22%", border: "1px dashed white" }}>
         <img
-          style={{ height: "100%", width: "auto" }}
+          style={{ height: "100%", width: "60%" }}
           src={customvidpreview}
           alt="Customs Preview"
         />
         <div style={{ height: "100%", width: "auto" }}>
           <header-div>
-            <h2 style={{ textAlign: "left" }}>Customs</h2>
-            <h3 style={{ textAlign: "right" }}>
+            <h3 style={{ textAlign: "left", width: "49%" }}>Customs</h3>
+            <h4 style={{ textAlign: "right", width: "49%" }}>
               pics: ${picMin} - ${picMax}
               <br /> vids: ${vidMin} - ${vidMax}
-            </h3>
+            </h4>
           </header-div>
           <p>{BLURBS.CUSTOMS}</p>
         </div>
       </div>
 
       {/* ITEM 2: RATINGS */}
-      <div style={{ height: "22%", border: "1 px dashed white" }}>
-        <div style={{ height: "100%", width: "auto" }}>
+      <div style={{ height: "22%", border: "1px dashed white" }}>
+        <div style={{ height: "100%", width: "60%" }}>
           <header-div>
-            <span>
-              <h2>Ratings</h2>
-            </span>
-            <span>
-              <h3>
-                text: ${txtRating}
-                <br /> vid: ${vidRating}
-              </h3>
-            </span>
+            <h3 style={{ textAlign: "left", width: "49%" }}>Ratings</h3>
+            <h4 style={{ textAlign: "right", width: "49%" }}>
+              text: ${txtRating}
+              <br /> vid: ${vidRating}
+            </h4>
           </header-div>
           <p>{BLURBS.RATING}</p>
         </div>
@@ -223,23 +219,19 @@ function PublicMessage() {
       </div>
 
       {/* ITEM 3: LIVE */}
-      <div style={{ height: "22%", border: "1 px dashed white" }}>
+      <div style={{ height: "22%", border: "1px dashed white" }}>
         <img
           style={{ height: "100%", width: "auto" }}
           src={vidratepreview}
           alt="Live Preview"
         />
-        <div style={{ height: "100%", width: "auto" }}>
+        <div style={{ height: "100%", width: "60%" }}>
           <header-div>
-            <span>
-              <h2>Live</h2>
-            </span>
-            <span>
-              <h3>
-                sexting: ${sextMin} - ${sextMax}
-                <br /> calls: ${callMin} - ${callMax}+
-              </h3>
-            </span>
+            <h3 style={{ textAlign: "left", width: "49%" }}>Live</h3>
+            <h4 style={{ textAlign: "right", width: "49%" }}>
+              sexting: ${sextMin} - ${sextMax}
+              <br /> calls: ${callMin} - ${callMax}+
+            </h4>
           </header-div>
           <p>{BLURBS.LIVE}</p>
         </div>
@@ -794,8 +786,8 @@ function KinkPill({ active, onClick, label, disabled }) {
 
 function ToggleRow({ active, onClick, label }) {
   return (
-    <button className={`pill ${active ? "selected" : ""}`} onClick={onClick}>
+    <pill className={`pill ${active ? "selected" : ""}`} onClick={onClick}>
       <span>{label}</span>
-    </button>
+    </pill>
   );
 }
