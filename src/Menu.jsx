@@ -187,14 +187,14 @@ function PublicMessage() {
       {/* ITEM 1: CUSTOMS */}
       <div style={{ height: "22%", border: "1px dashed white" }}>
         <img
-          style={{ height: "100%", width: "60%" }}
+          style={{ height: "100%", width: "auto" }}
           src={customvidpreview}
           alt="Customs Preview"
         />
-        <div style={{ height: "100%", width: "auto" }}>
+        <div style={{ height: "100%", width: "60%" }}>
           <header-div>
-            <h3 style={{ textAlign: "left", width: "49%" }}>Customs</h3>
-            <h4 style={{ textAlign: "right", width: "49%" }}>
+            <h3 style={{ textAlign: "left", width: "44%" }}>Customs</h3>
+            <h4 style={{ textAlign: "right", width: "44%" }}>
               pics: ${picMin} - ${picMax}
               <br /> vids: ${vidMin} - ${vidMax}
             </h4>
@@ -207,15 +207,15 @@ function PublicMessage() {
       <div style={{ height: "22%", border: "1px dashed white" }}>
         <div style={{ height: "100%", width: "60%" }}>
           <header-div>
-            <h3 style={{ textAlign: "left", width: "49%" }}>Ratings</h3>
-            <h4 style={{ textAlign: "right", width: "49%" }}>
+            <h3 style={{ textAlign: "left", width: "44%" }}>Ratings</h3>
+            <h4 style={{ textAlign: "right", width: "44%" }}>
               text: ${txtRating}
               <br /> vid: ${vidRating}
             </h4>
           </header-div>
           <p>{BLURBS.RATING}</p>
         </div>
-        <img className="tile" src={dmpreview} alt="Ratings Preview" />
+        <img src={dmpreview} alt="Ratings Preview"style={{height:"100%", width:"auto"}} />
       </div>
 
       {/* ITEM 3: LIVE */}
@@ -227,8 +227,8 @@ function PublicMessage() {
         />
         <div style={{ height: "100%", width: "60%" }}>
           <header-div>
-            <h3 style={{ textAlign: "left", width: "49%" }}>Live</h3>
-            <h4 style={{ textAlign: "right", width: "49%" }}>
+            <h3 style={{ textAlign: "left", width: "44%" }}>Live</h3>
+            <h4 style={{ textAlign: "right", width: "44%" }}>
               sexting: ${sextMin} - ${sextMax}
               <br /> calls: ${callMin} - ${callMax}+
             </h4>
@@ -562,7 +562,7 @@ function CustomQuiz() {
                 active={subType === "photo"}
                 onClick={() => handleSubTypeChange("photo", PRICING.PHOTO_MIN)}
                 label="Photo Set"
-              />
+              /><br/>
             </>
           )}
           {category === "rating" && (
@@ -696,7 +696,6 @@ function CustomQuiz() {
           style={{ width: "100%", backgroundColor: "black" }}
         />
 
-        <pill>
           <div style={{ width: "100%" }}>
             {category === "custom" && (
               <ToggleRow
@@ -706,13 +705,11 @@ function CustomQuiz() {
               />
             )}
           </div>
-        </pill>
       </div>
 
       <div>
         <p>Est. Total:</p>
         <h2>${estimate.toFixed(0)}</h2>
-        <br />
         <p>*Subject to review and final invoice.</p> <br />
         {isLoggedIn ? (
           <>
@@ -787,7 +784,7 @@ function KinkPill({ active, onClick, label, disabled }) {
 function ToggleRow({ active, onClick, label }) {
   return (
     <pill className={`pill ${active ? "selected" : ""}`} onClick={onClick}>
-      <span>{label}</span>
+    {label}
     </pill>
   );
 }

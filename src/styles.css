@@ -359,7 +359,7 @@ input[type=range]::-webkit-slider-runnable-track {
 
 /* CLASSES AND STATES */
 
-.selected{
+.selected, .active{
   background-color: white;
   color: black;
 }
