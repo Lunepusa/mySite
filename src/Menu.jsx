@@ -598,14 +598,54 @@ function CustomQuiz() {
         </div>
         <br />
       </div>
-      <div style={{display:"block" width: "80%"}}>
+      <div style={{display:"block", width: "80%"}}>
         {category !== "rating" && (
           <>
             {" "}
-            <div>
-              <span>
-                {quantity} {subType === "photo" ? "pics" : "min"}
-              </span>
+            <div><div style={{display:"block"}}><span>MINIMUM: {
+                  subType === "photo"
+                    ? PRICING.PHOTO_MIN
+                    : subType === "video"
+                      ? PRICING.VIDEO_MIN
+                      : subType === "call"
+                        ? PRICING.CALL_MIN
+                        : PRICING.SEXTING_MIN
+                }</span>
+              <input
+              style={{width: "fit-content"}}
+                type="number"
+                min={
+                  subType === "photo"
+                    ? PRICING.PHOTO_MIN
+                    : subType === "video"
+                      ? PRICING.VIDEO_MIN
+                      : subType === "call"
+                        ? PRICING.CALL_MIN
+                        : PRICING.SEXTING_MIN
+                }
+                max={
+                  subType === "photo"
+                    ? PRICING.PHOTO_MAX
+                    : subType === "video"
+                      ? PRICING.VIDEO_MAX
+                      : subType === "call"
+                        ? PRICING.CALL_MAX
+                        : PRICING.SEXTING_MAX
+                }
+                step={subType === "call" ? 5 : subType === "sexting" ? 15 : 1}
+                value={quantity}
+                onChange={(e) => setQuantity(Number(e.target.value))}
+              />
+               <span>{subType === " photo" ? " pics" : " min"}
+              </span><span>MAXIMUM: {
+                  subType === "photo"
+                    ? PRICING.PHOTO_MAX
+                    : subType === "video"
+                      ? PRICING.VIDEO_MAX
+                      : subType === "call"
+                        ? PRICING.CALL_MAX
+                        : PRICING.SEXTING_MAX
+                }</span></div>
               <input
                 type="range"
                 min={
