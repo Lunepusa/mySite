@@ -185,13 +185,13 @@ function PublicMessage() {
       <p>{BLURBS.INTRO}</p>
 
       {/* ITEM 1: CUSTOMS */}
-      <div style={{ height: "22vh", border: "1px dashed white", padding:"0%"}}>
+      <div style={{ height: "22vh", border: "1px dashed white", padding:"0%", width:"95%"}}>
         <img
           style={{ height: "100%", width: "auto" }}
           src={customvidpreview}
           alt="Customs Preview"
         />
-        <div style={{ height: "100%", width: "60%" }}>
+        <div style={{ height: "100%", width: "65%", margin:"0%",padding:"0%" }}>
           <header-div>
             <h3 style={{ textAlign: "left", width: "40%",  display:"inline-block", margin:"auto"}}>Customs</h3>
             <h4 style={{ textAlign: "right", width: "55%", display:"inline-block", margin:"auto"}}>
@@ -551,9 +551,8 @@ function CustomQuiz() {
       </div>
       <br />
 
-      <div style={{width:"90%"}}>
-        <h4></h4>
-        <div>
+      <div>
+        <div style={{width:"90%"}}>
           {category === "custom" && (
             <>
               <SelectionButton
@@ -610,8 +609,7 @@ function CustomQuiz() {
       <div style={{display:"block", width: "80%"}}>
         {category !== "rating" && (
           <>
-            {" "}
-            <div><div style={{display:"block"}}><span style={{margins:"auto"}}>MINIMUM: {
+            <div style={{width:"90%"}}><div style={{display:"block"}}><span style={{margins:"auto", width:"30%", textAlign:"left"}}>MINIMUM: {
                   subType === "photo"
                     ? PRICING.PHOTO_MIN
                     : subType === "video"
@@ -621,7 +619,7 @@ function CustomQuiz() {
                         : PRICING.SEXTING_MIN
                 }</span>
               <input
-              style={{width: "fit-content" , margins:"auto"}}
+              style={{width: "30%" , margins:"auto"}}
                 type="number"
                 min={
                   subType === "photo"
@@ -646,7 +644,7 @@ function CustomQuiz() {
                 onChange={(e) => setQuantity(Number(e.target.value))}
               />
               {subType === " photo" ? " pics" : " min"}
-             <span style={{margins:"auto"}}>MAXIMUM: {
+             <span style={{margins:"auto", width:"30%", textAlign:"right"}}>MAXIMUM: {
                   subType === "photo"
                     ? PRICING.PHOTO_MAX
                     : subType === "video"
@@ -804,7 +802,7 @@ function CustomQuiz() {
 // ──────────────────────────────────────────────────────────────────────────────
 function TabButton({ active, onClick, label }) {
   return (
-    <button className={`button ${active ? "selected" : ""}`} onClick={onClick}>
+    <button className={`button ${active ? "selected" : ""}`} onClick={onClick} style{{width:"30%"}}>
       {label}
     </button>
   );
@@ -812,7 +810,7 @@ function TabButton({ active, onClick, label }) {
 
 function SelectionButton({ active, onClick, label }) {
   return (
-    <button className={`button ${active ? "selected" : ""}`} onClick={onClick} style={{backgroundColor:"grey"}}>
+    <button className={`button ${active ? "selected" : ""}`} onClick={onClick} style={{backgroundColor:"grey", width:"45%"}}>
       {label}
     </button>
   );
