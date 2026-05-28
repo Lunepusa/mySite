@@ -525,7 +525,7 @@ function CustomQuiz() {
 
   // --- MAIN BUILDER RETURN ---
   return (
-    <section style{{width:"95%", maxWidth:"550px"}}>
+    <section style={{width:"95%", maxWidth:"550px"}}>
       <h2>Custom Builder</h2>
       <br />
 
