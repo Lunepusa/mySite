@@ -498,7 +498,7 @@ function CustomQuiz() {
             {showAllPrep ? "Hide" : `All (${prepActivities.length})...`}
           </button>
         </div>
-<p> {getDynamicPlaceholder()}</>
+<p> {getDynamicPlaceholder()}</p>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
