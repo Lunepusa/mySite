@@ -193,8 +193,8 @@ function PublicMessage() {
         />
         <div style={{ height: "100%", width: "60%" }}>
           <header-div>
-            <h3 style={{ textAlign: "left", width: "fit-content",  display:"inline-block", margin:"auto",padding:"auto" }}>Customs</h3>
-            <h4 style={{ textAlign: "right", width: "fit-content", display:"inline-block", margin:"auto",padding:"auto" }}>
+            <h3 style={{ textAlign: "left", width: "40%",  display:"inline-block", margin:"auto"}}>Customs</h3>
+            <h4 style={{ textAlign: "right", width: "55%", display:"inline-block", margin:"auto"}}>
               pics: ${picMin} - ${picMax}
               <br /> vids: ${vidMin} - ${vidMax}
             </h4>
@@ -207,8 +207,8 @@ function PublicMessage() {
       <div style={{ height: "22vh", border: "1px dashed white" }}>
         <div style={{ height: "100%", width: "60%" }}>
           <header-div>
-            <h3 style={{ textAlign: "left", width: "fit-content", display:"inline-block", margin:"auto",padding:"auto" }}>Ratings</h3>
-            <h4 style={{ textAlign: "right", width: "fit-content", display:"inline-block", margin:"auto",padding:"auto" }}>
+            <h3 style={{ textAlign: "left", width: "40%", display:"inline-block", margin:"auto",padding:"auto" }}>Ratings</h3>
+            <h4 style={{ textAlign: "right", width: "55%", display:"inline-block", margin:"auto"}}>
               text: ${txtRating}
               <br /> vid: ${vidRating}
             </h4>
@@ -227,8 +227,8 @@ function PublicMessage() {
         />
         <div style={{ height: "100%", width: "60%" }}>
           <header-div>
-            <h3 style={{ textAlign: "left", width: "fit-content", display:"inline-block", margin:"auto",padding:"auto" }}>Live</h3>
-            <h4 style={{ textAlign: "right", width: "fit-content", display:"inline-block", margin:"auto", padding:"auto"}}>
+            <h3 style={{ textAlign: "left", width: "40%", display:"inline-block", margin:"auto",padding:"auto" }}>Live</h3>
+            <h4 style={{ textAlign: "right", width: "55%", display:"inline-block", margin:"auto", }}>
               sexting: ${sextMin} - ${sextMax}
               <br /> calls: ${callMin} - ${callMax}+
             </h4>
@@ -727,7 +727,7 @@ function CustomQuiz() {
             {showAllPrep ? "Hide" : `All (${prepActivities.length})...`}
           </button>
         </div>
-        <div style={{ width: "100%" }}>
+        <div style={{ width: "95%" }}>
             {category === "custom" && (
               <ToggleRow
                 label={`Exclusive Content (+${PRICING.MARKUP_RATE * 100}% Markup, Name use is free)`}
@@ -741,7 +741,7 @@ function CustomQuiz() {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows="4"
-          style={{ width: "100%", backgroundColor: "black", display:"block" }}
+          style={{ width: "95%", backgroundColor: "black", display:"block" }}
         />
 
           
