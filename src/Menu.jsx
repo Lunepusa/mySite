@@ -384,7 +384,7 @@ function CustomQuiz() {
         <p >
           Thanks! I’ve added this to my queue. I’ll reach out when I accept it with any questions/pricing adjustment, and let you know once it's done!
         </p>
-        <button onClick={() => setSubmitStatus("idle")} , >Back</button>
+        <button onClick={() => setSubmitStatus("idle")} >Back</button>
       </section>
     );
   }
