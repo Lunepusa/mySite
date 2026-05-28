@@ -193,8 +193,8 @@ function PublicMessage() {
         />
         <div style={{ height: "100%", width: "60%" }}>
           <header-div>
-            <h3 style={{ textAlign: "left", width: "fit-content",  display:"inline-block" }}>Customs</h3>
-            <h4 style={{ textAlign: "right", width: "fit-content", display:"inline-block" }}>
+            <h3 style={{ textAlign: "left", width: "fit-content",  display:"inline-block", margin:"auto",padding:"auto" }}>Customs</h3>
+            <h4 style={{ textAlign: "right", width: "fit-content", display:"inline-block", margin:"auto",padding:"auto" }}>
               pics: ${picMin} - ${picMax}
               <br /> vids: ${vidMin} - ${vidMax}
             </h4>
@@ -207,8 +207,8 @@ function PublicMessage() {
       <div style={{ height: "22vh", border: "1px dashed white" }}>
         <div style={{ height: "100%", width: "60%" }}>
           <header-div>
-            <h3 style={{ textAlign: "left", width: "fit-content", display:"inline-block" }}>Ratings</h3>
-            <h4 style={{ textAlign: "right", width: "fit-content", display:"inline-block" }}>
+            <h3 style={{ textAlign: "left", width: "fit-content", display:"inline-block", margin:"auto",padding:"auto" }}>Ratings</h3>
+            <h4 style={{ textAlign: "right", width: "fit-content", display:"inline-block", margin:"auto",padding:"auto" }}>
               text: ${txtRating}
               <br /> vid: ${vidRating}
             </h4>
@@ -227,8 +227,8 @@ function PublicMessage() {
         />
         <div style={{ height: "100%", width: "60%" }}>
           <header-div>
-            <h3 style={{ textAlign: "left", width: "fit-content", display:"inline-block" }}>Live</h3>
-            <h4 style={{ textAlign: "right", width: "fit-content", display:"inline-block" }}>
+            <h3 style={{ textAlign: "left", width: "fit-content", display:"inline-block", margin:"auto",padding:"auto" }}>Live</h3>
+            <h4 style={{ textAlign: "right", width: "fit-content", display:"inline-block", margin:"auto", padding:"auto"}}>
               sexting: ${sextMin} - ${sextMax}
               <br /> calls: ${callMin} - ${callMax}+
             </h4>
