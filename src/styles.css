@@ -430,6 +430,7 @@ h6 {
 div{
   display: inline-block;
   margin: auto;
+  padding: 0%;
 }
 span{
   display:inline-block;
@@ -437,16 +438,17 @@ span{
 }
 main{
 max-width:98vw;
+padding:0%;
 }
 section{
   display:inline-block;
-  min-width: 300px;
-  max-width: 600px;
+  width:95%;
   border: 1px dashed white;
+  padding: 0%;
 }
 header-div{
   display:block;
-  width: 100%;
+  width: 95%;
   height:fit-content;
   background-color: #444;
 }
@@ -456,6 +458,8 @@ button, .button{
   margin: auto;
   padding:1%;
   font-size: inherit;
+  background: black;
+  color:white;
 }
 
 
@@ -472,6 +476,8 @@ pill{
   margin: auto;
   padding:1%;
   font-size: inherit;
+  background: black;
+  color: white;
 }
 
 img{
