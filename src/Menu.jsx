@@ -102,8 +102,8 @@ export default function MenuPage() {
   const { isAdmin } = useAuth();
 
   return (
-    <div className="menu-page-wrapper">
-      <div className="main-container">
+    <div >
+      <div >
         {/* Left Side: Blurbs */}
         <PublicMessage />
         
@@ -134,62 +134,62 @@ function PublicMessage() {
   const callMax = calculatePrice({ discussionQty: 0, prePostQty: PRICING.BASE_SETUP_CALL + maxExtraPrepTime, contentQty: PRICING.CALL_MAX, markupQty: 1 });
 
   return (
-    <section className="menu-section">
+    <section >
       <h1>Menu</h1>
       <p>{BLURBS.INTRO}</p>
 
       {/* ITEM 1: CUSTOMS */}
-      <div className="menu-item">
+      <div >
         <img
           src={customvidpreview}
           alt="Customs Preview"
-          className="preview-img"
+          
         />
-            <div className="menu-flex">
-        <div className="menu-header">
-          <span className="summary-title">Customs</span>
-          <span className="summary-price">
+            <div >
+        <div >
+          <span >Customs</span>
+          <span >
             pics: ${picMin} - ${picMax}
             <br /> vids: ${vidMin} - ${vidMax}
           </span>
         </div>
     
-          <div className="text-container">
+          <div >
             <p>{BLURBS.CUSTOMS}</p>
           </div>
         </div>
       </div>
 
       {/* ITEM 2: RATINGS */}
-      <div className="menu-item">
-        <div className="menu-flex">
-        <div className="menu-header">
-          <span className="summary-title">Ratings</span>
-          <span className="summary-price">
+      <div >
+        <div >
+        <div >
+          <span >Ratings</span>
+          <span >
             text: ${txtRating}
             <br /> vid: ${vidRating}
           </span>
         </div>
         
-          <div className="text-container">
+          <div >
             <p>{BLURBS.RATING}</p>
           </div>
         </div>
-        <img src={dmpreview} alt="Ratings Preview" className="preview-img" />
+        <img src={dmpreview} alt="Ratings Preview"  />
       </div>
 
       {/* ITEM 3: LIVE */}
-      <div className="menu-item">
-        <img src={vidratepreview} alt="Live Preview" className="preview-img" />
-                <div className="menu-flex">
-        <div className="menu-header">
-          <span className="summary-title">Live</span>
-          <span className="summary-price">
+      <div >
+        <img src={vidratepreview} alt="Live Preview"  />
+                <div >
+        <div >
+          <span >Live</span>
+          <span >
             sexting: ${sextMin} - ${sextMax}
             <br /> calls: ${callMin} - ${callMax}+
           </span>
         </div>
-          <div className="text-container">
+          <div >
             <p>{BLURBS.LIVE}</p>
           </div>
         </div>
@@ -364,14 +364,14 @@ function CustomQuiz() {
   // --- SUBMISSION STATES ---
   if (showEmailWarning) {
     return (
-      <section className="builder-box" style={{ textAlign: "center" }}>
-        <h2 style={{ margin: "10px", letterSpacing: "1px" }}>⚠️ Missing Email</h2>
-        <p style={{ fontSize: "1.05em", lineheight: "1" }}>
+      <section  }}>
+        <h2 >⚠️ Missing Email</h2>
+        <p >
           You don't have an email associated with your account. While it's not required, it may make it harder for me to notify you when your content is ready or if I have questions! it will mean I cant automatically notify you.
         </p>
-        <div style={{ display:"inline-block", justifyContent: "center" }}>
-          <button onClick={confirmSubmit} className="btn-suggest" style={{ width: "auto" }}>Submit Anyway</button>
-          <button onClick={() => setShowEmailWarning(false)} className="btn-submit" style={{ width: "auto" }}>Go Back</button>
+        <div >
+          <button onClick={confirmSubmit}  }}>Submit Anyway</button>
+          <button onClick={() => setShowEmailWarning(false)}  }}>Go Back</button>
         </div>
       </section>
     );
@@ -379,12 +379,12 @@ function CustomQuiz() {
 
   if (submitStatus === "custom") {
     return (
-      <section className="builder-box" style={{ textAlign: "center" }}>
-        <h2 style={{ margin: "0 0 15px 0" }}>Request Sent!</h2>
-        <p style={{ fontSize: "1.05em", lineheight: "1" }}>
+      <section  }}>
+        <h2 >Request Sent!</h2>
+        <p >
           Thanks! I’ve added this to my queue. I’ll reach out when I accept it with any questions/pricing adjustment, and let you know once it's done!
         </p>
-        <button onClick={() => setSubmitStatus("idle")} className="btn-suggest" style={{ width: "auto", }}>Back</button>
+        <button onClick={() => setSubmitStatus("idle")} , }}>Back</button>
       </section>
     );
   }
@@ -392,20 +392,20 @@ function CustomQuiz() {
   if (submitStatus === "suggestion") {
     const combinedTags = [...selectedStandard, ...selectedPrep].join(",");
     return (
-      <section className="builder-box" style={{ textAlign: "center" }}>
-        <h2 style={{ margin: "0 0 15px 0" }}>Suggestion Added!</h2>
-        <p style={{ fontSize: "1.05em", lineheight: "1" }}>
+      <section  }}>
+        <h2 >Suggestion Added!</h2>
+        <p >
           Thanks for submitting! I use this box for inspiration. If I ever end up making this concept, you'll be the first to get an email notification!
         </p>
-        <div style={{ display: "inline-block", alignItems: "center" }}>
-          <button className="btn-submit">Vote on other Suggestions</button>
-          <div style={{ padding: "12px", width: "100%", background: "transparent", border: "1px dashed #fff", color: "#fff", boxSizing: "border-box" }}>
-            <p style={{ margin: "10px", textTransform: "uppercase" }}>See what I already have with these tags:</p>
+        <div >
+          <button >Vote on other Suggestions</button>
+          <div >
+            <p >See what I already have with these tags:</p>
             <ClickableTags tags={combinedTags} emptyText="No specific tags selected." />
           </div>
           <button
             onClick={() => { setSubmitStatus("idle"); setSelectedStandard([]); setSelectedPrep([]); }}
-            className="btn-suggest"
+            
             
           >
             Build Another Request
@@ -417,18 +417,18 @@ function CustomQuiz() {
 
   // --- MAIN BUILDER RETURN ---
   return (
-    <section className="builder-box">
-      <h3 style={{ textAlign: "center", textTransform: "uppercase", letterSpacing: "1px" }}>Custom Builder</h3>
+    <section >
+      <h3 >Custom Builder</h3>
 
-      <div style={{ display: "inline-block"}}>
+      <div >
         <TabButton active={category === "custom"} onClick={() => handleCategoryChange("custom")} label="Customs" />
         <TabButton active={category === "rating"} onClick={() => handleCategoryChange("rating")} label="Ratings" />
         <TabButton active={category === "live"} onClick={() => handleCategoryChange("live")} label="Live" />
       </div>
 
       <div >
-        <h4 style={{ margin: "10px", textTransform: "uppercase" }}></h4>
-        <div style={{ display: "inline-block" }}>
+        <h4 ></h4>
+        <div >
           {category === "custom" && (
             <>
               <SelectionButton active={subType === "video"} onClick={() => handleSubTypeChange("video", PRICING.VIDEO_MIN)} label="Video" />
@@ -451,8 +451,8 @@ function CustomQuiz() {
       </div>
 
       {category !== "rating" && (
-        <div className="range-row">
-          <span style={{ fontWeight: "bold", minWidth: "60px", color: "#fff" }}>
+        <div >
+          <span >
             {quantity} {subType === "photo" ? "pics" : "min"}
           </span>
           <input
@@ -467,11 +467,11 @@ function CustomQuiz() {
       )}
 
       <div >
-        <h4 style={{ margin: "10px", textTransform: "uppercase" }}>2. Specifics & Tags</h4>
-        <p style={{ fontSize: "0.8em", color: "#aaa", margin: "0 0 10px 0" }}>Select up to {maxKinks}. ({currentKinksCount}/{maxKinks} selected)</p>
+        <h4 >2. Specifics & Tags</h4>
+        <p >Select up to {maxKinks}. ({currentKinksCount}/{maxKinks} selected)</p>
 
-        <p style={{ margin: "10px", textTransform: "uppercase" }}>Standard (Included)</p>
-        <div style={{ display: "inline-block",  }}>
+        <p >Standard (Included)</p>
+        <div >
           {visibleStandard.map((kink) => (
             <KinkPill
               key={kink} label={kink}
@@ -480,15 +480,15 @@ function CustomQuiz() {
               onClick={() => toggleKink(kink, "standard")}
             />
           ))}
-          <button onClick={() => setShowAllStandard(!showAllStandard)} className="btn-suggest" style={{ padding: "4px 8px", width: "auto", display: "inline-block", margin: "3px" }}>
+          <button onClick={() => setShowAllStandard(!showAllStandard)}  }}>
             {showAllStandard ? "Hide" : `All (${standardActivities.length})...`}
           </button>
         </div>
 
-        <p style={{ margin: "10px", textTransform: "uppercase" }}>
+        <p >
           Extra Time/Setup (+${PRICING.EXTRA_PREP_TAG_MINS * (PRICING.PREPOST_HOURLY / 60)} each)
         </p>
-        <div style={{ display: "inline-block", }}>
+        <div >
           {visiblePrep.map((kink) => (
             <KinkPill
               key={kink} label={kink}
@@ -497,7 +497,7 @@ function CustomQuiz() {
               onClick={() => toggleKink(kink, "prep")}
             />
           ))}
-          <button onClick={() => setShowAllPrep(!showAllPrep)} className="btn-suggest" style={{ padding: "4px 8px", width: "auto", display: "inline-block", margin: "3px" }}>
+          <button onClick={() => setShowAllPrep(!showAllPrep)}  }}>
             {showAllPrep ? "Hide" : `All (${prepActivities.length})...`}
           </button>
         </div>
@@ -507,7 +507,7 @@ function CustomQuiz() {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows="4"
-          style={{ width: "100%", padding: "2%", background: "#111", color: "#fff", border: "1px dashed #444", resize: "vertical", boxSizing: "border-box", fontSize: "0.9em", fontFamily: "inherit" }}
+          
         />
 
         <div>
@@ -521,36 +521,36 @@ function CustomQuiz() {
         </div>
       </div>
 
-      <div style={{ borderTop: "1px dashed #fff", paddingTop: "4%", textAlign: "center" }}>
-        <p style={{ margin: "10px", textTransform: "uppercase" }}>Est. Total</p>
-        <h2 style={{ margin: "10px", fontSize: "2.5em" }}>${estimate.toFixed(0)}</h2>
-        <p style={{ fontSize: "0.75em", color: "#888", fontStyle: "italic", margin: "0 0 20px 0" }}>*Subject to review and final invoice.</p>
+      <div >
+        <p >Est. Total</p>
+        <h2 >${estimate.toFixed(0)}</h2>
+        <p >*Subject to review and final invoice.</p>
         
         {isLoggedIn ? (
           <>
             <button 
               disabled={true} 
-              className="btn-submit"
+              
               onClick={() => handleAttemptSubmit("custom")} 
-              style={category === "live" ? { background: "transparent", color: "#fff" } : {}}
+              
             >
               {category === "live" ? "Join Priority Waitlist" : "Request this Custom"}
             </button>
             <button 
               disabled={true} 
-              className="btn-suggest"
+              
               onClick={() => handleAttemptSubmit("suggestion")} 
             >
               Add to Public Suggestion Box (Free)
             </button>
-            <p style={{ margin: "10px", fontStyle: "italic" }}>
+            <p >
               *Submissions are temporarily disabled while I connect the new backend!
             </p>
           </>
         ) : (
-          <div style={{ padding: "4%", border: "1px dashed #777", color: "#ccc" }}>
-            <p style={{ margin: "10px", fontSize: "0.9em" }}>Log in or create an account to submit requests and suggestions!</p>
-            <button className="btn-submit" style={{ width: "auto", padding: "2% 6%", margin: "0" }}>Sign In / Register</button>
+          <div >
+            <p >Log in or create an account to submit requests and suggestions!</p>
+            <button  }}>Sign In / Register</button>
           </div>
         )}
       </div>
@@ -565,10 +565,7 @@ function TabButton({ active, onClick, label }) {
   return (
     <button
       onClick={onClick}
-      style={{
-       padding: "10px", background: active ? "#fff" : "#000", color: active ? "#000" : "#fff",
-        border: "1px dashed #fff", cursor: "pointer", fontWeight: "bold", fontSize: "1rem", fontFamily: "inherit"
-      }}
+
     >
       {label}
     </button>
@@ -579,9 +576,7 @@ function SelectionButton({ active, onClick, label }) {
   return (
     <button
       onClick={onClick}
-      style={{ padding: "8px 12px", background: active ? "#fff" : "#222", color: active ? "#000" : "#fff",
-        border: `1px dashed ${active ? "#fff" : "#444"}`, cursor: "pointer", fontWeight: "bold", fontSize: "0.9rem", fontFamily: "inherit"
-      }}
+
     >
       {label}
     </button>
@@ -607,14 +602,11 @@ function ToggleRow({ active, onClick, label }) {
   return (
     <div
       onClick={onClick}
-      style={{
-        display: "inline-block", justifyContent: "space-between", alignItems: "center", padding: "12px",
-        background: "#222", border: `1px dashed #444`, cursor: "pointer", margin: "2% 0"
-      }}
+      
     >
-      <span style={{ color: "#fff", fontSize: "0.9rem" }}>{label}</span>
-      <div style={{ width: "36px", height: "18px", background: active ? "#fff" : "#333", border: "1px solid #fff", position: "relative" }}>
-        <div style={{ position: "absolute", top: "1px", left: active ? "19px" : "1px", width: "14px", height: "14px", background: active ? "#000" : "#aaa", transition: "all 0.2s" }}></div>
+      <span >{label}</span>
+      <div >
+        <div ></div>
       </div>
     </div>
   );

@@ -315,118 +315,6 @@ tfoot td {
   transition: filter 0.3s ease;
 }
 
-.menu-page-wrapper {
-    background: #000;
-    color: #fff;
-    /* Replaced Flex with standard text-centering for inline elements */
-    text-align: center;
-    box-sizing: border-box;
-}
-
-.menu-page-wrapper h1, 
-.menu-page-wrapper h3 {
-    letter-spacing: 1px;
-    color: #fff;
-    margin: 10px 0;
-}
-
-.menu-page-wrapper p {
-    line-height: 1;
-    color: #fff;
-    text-align: justify;
-    font-size: 0.8rem; /* Fixed trailing comma typo */
-}
-
-/* Main Container for Side-by-Side */
-.main-container {
-    /* Centering the container via margin auto */
-    margin: 0 auto;
-    width: 95%;
-    max-width: 1600px;
-    text-align: center;
-}
-
-/* Sections */
-.main-container section {
-    border: 1px dashed #fff;
-    padding: 1%;
-    box-sizing: border-box;
-    width: 95%;
-    display: inline-block;
-    vertical-align: top;
-}
-
-.menu-section {
-    max-width: 620px;
-    height: auto;
-    max-height: 95vh;}
-
-.builder-box {
-    max-width: 620px;
-    height: auto;
-    max-height: 95vh;
-}
-
-/* ========================================= */
-/* MENU BLURBS SECTION                       */
-/* ========================================= */
-.menu-item {
-    border: 1px dashed #fff;
-    margin: 1% auto;
-    width: 100%;
-    box-sizing: border-box;
-    height: clamp(80px, 15vh, 200px);
-    display: block;
-    text-align: left;
-}
-
-.preview-img {
-    width: auto; /* Restored back to auto */
-    height: inherit; /* Inherit container height */
-    display: inline-block;
-}
-
-.text-container {
-    display: inline-block;
-    vertical-align: middle;
-    width: auto; /* Restored back to auto */
-}
-
-.menu-header {
-    padding: 1%;
-    background: #222;
-    width: 100%;
-    display: inline-block;
-}
-
-.summary-title {
-    font-weight: bold;
-    font-size: 1.2rem;
-    text-transform: uppercase;
-    /* Side-by-side title/price */
-    display: inline-block;
-    vertical-align: middle;
-    width: 50%;
-}
-
-.summary-price {
-    font-size: 1.1rem;
-    /* Side-by-side title/price */
-    display: inline-block;
-    vertical-align: middle;
-    width: 50%;
-    text-align: right;
-}
-
-.menu-flex {
-    /* Originally flex, now just standard block */
-    display: inline-block;
-    text-align: center;
-    height: inherit;
-    width: auto;
-}
-
-
 /* ========================================= */
 /* FORM / BUILDER ELEMENT OVERRIDES          */
 /* ========================================= */
@@ -467,14 +355,7 @@ input[type=range]::-webkit-slider-runnable-track {
 /* DESKTOP RESPONSIVE LAYOUT                 */
 /* ========================================= */
 @media (min-width: 1024px) {
-    .main-container section {
-        /* On desktop, allow them to sit side-by-side */
-        width: 48%;
-        margin-left: 0.5%;
-        margin-right: 0.5%;
-    }
+/*put main elements here, eventually*/
     
-    .menu-section, .builder-box {
-        max-width: none;
-    }
+   
 }
