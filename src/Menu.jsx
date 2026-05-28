@@ -529,7 +529,7 @@ function CustomQuiz() {
       <h2>Custom Builder</h2>
       <br />
 
-      <div>
+      <div style={{width:"90%"}}>
         <TabButton
           active={category === "custom"}
           onClick={() => handleCategoryChange("custom")}
@@ -551,7 +551,7 @@ function CustomQuiz() {
       </div>
       <br />
 
-      <div>
+      <div style={{width:"90%"}}>
         <h4></h4>
         <div>
           {category === "custom" && (
@@ -812,7 +812,7 @@ function TabButton({ active, onClick, label }) {
 
 function SelectionButton({ active, onClick, label }) {
   return (
-    <button className={`button ${active ? "selected" : ""}`} onClick={onClick}>
+    <button className={`button ${active ? "selected" : ""}`} onClick={onClick} style={{backgroundColor:"grey"}}>
       {label}
     </button>
   );
