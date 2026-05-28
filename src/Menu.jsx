@@ -193,8 +193,8 @@ function PublicMessage() {
         />
         <div style={{ height: "100%", width: "60%" }}>
           <header-div>
-            <h3 style={{ textAlign: "left", width: "44%" }}>Customs</h3>
-            <h4 style={{ textAlign: "right", width: "44%" }}>
+            <h3 style={{ textAlign: "left", width: "fit-content",  display:"inline-block" }}>Customs</h3>
+            <h4 style={{ textAlign: "right", width: "fit-content", display:"inline-block" }}>
               pics: ${picMin} - ${picMax}
               <br /> vids: ${vidMin} - ${vidMax}
             </h4>
@@ -207,8 +207,8 @@ function PublicMessage() {
       <div style={{ height: "22vh", border: "1px dashed white" }}>
         <div style={{ height: "100%", width: "60%" }}>
           <header-div>
-            <h3 style={{ textAlign: "left", width: "44%" }}>Ratings</h3>
-            <h4 style={{ textAlign: "right", width: "44%" }}>
+            <h3 style={{ textAlign: "left", width: "fit-content", display:"inline-block" }}>Ratings</h3>
+            <h4 style={{ textAlign: "right", width: "fit-content", display:"inline-block" }}>
               text: ${txtRating}
               <br /> vid: ${vidRating}
             </h4>
@@ -227,8 +227,8 @@ function PublicMessage() {
         />
         <div style={{ height: "100%", width: "60%" }}>
           <header-div>
-            <h3 style={{ textAlign: "left", width: "44%" }}>Live</h3>
-            <h4 style={{ textAlign: "right", width: "44%" }}>
+            <h3 style={{ textAlign: "left", width: "fit-content", display:"inline-block" }}>Live</h3>
+            <h4 style={{ textAlign: "right", width: "fit-content", display:"inline-block" }}>
               sexting: ${sextMin} - ${sextMax}
               <br /> calls: ${callMin} - ${callMax}+
             </h4>
@@ -598,7 +598,7 @@ function CustomQuiz() {
         </div>
         <br />
       </div>
-      <div>
+      <div style={{display:"block" width: "80%"}}>
         {category !== "rating" && (
           <>
             {" "}
@@ -687,16 +687,7 @@ function CustomQuiz() {
             {showAllPrep ? "Hide" : `All (${prepActivities.length})...`}
           </button>
         </div>
-        <br />
-        <p> {getDynamicPlaceholder()}</p>
-        <textarea
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          rows="4"
-          style={{ width: "100%", backgroundColor: "black" }}
-        />
-
-          <div style={{ width: "100%" }}>
+        <div style={{ width: "100%" }}>
             {category === "custom" && (
               <ToggleRow
                 label={`Exclusive Content (+${PRICING.MARKUP_RATE * 100}% Markup, Name use is free)`}
@@ -705,6 +696,15 @@ function CustomQuiz() {
               />
             )}
           </div>
+        <p> {getDynamicPlaceholder()}</p>
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          rows="4"
+          style={{ width: "100%", backgroundColor: "black", display:"block" }}
+        />
+
+          
       </div>
 
       <div>
@@ -771,20 +771,20 @@ function SelectionButton({ active, onClick, label }) {
 
 function KinkPill({ active, onClick, label, disabled }) {
   return (
-    <button
+    <pill
       className={`pill ${active ? "selected" : ""} ${disabled ? "disabled" : ""}`}
       onClick={onClick}
       disabled={disabled}
     >
       {label}
-    </button>
+    </pill>
   );
 }
 
 function ToggleRow({ active, onClick, label }) {
   return (
-    <pill className={`pill ${active ? "selected" : ""}`} onClick={onClick}>
+    <button className={`button ${active ? "selected" : ""}`} onClick={onClick}>
     {label}
-    </pill>
+    </button>
   );
 }
