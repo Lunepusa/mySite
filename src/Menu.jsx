@@ -137,27 +137,27 @@ function PublicMessage() {
       <p>{BLURBS.INTRO}</p>
 
       {/* ITEM 1: CUSTOMS */}
-      <div>
-        <img className="tile" src={customvidpreview} alt="Customs Preview" />
-        <div className="card">
+      <div style={{ height: "22%", border: "1 px dashed white" }}>
+        <img
+          style={{ height: "100%", width: "auto" }}
+          src={customvidpreview}
+          alt="Customs Preview"
+        />
+        <div style={{ height: "100%", width: "auto" }}>
           <header-div>
-            <span>
-              <h2>Customs</h2>
-            </span>
-            <span>
-              <h3>
-                pics: ${picMin} - ${picMax}
-                <br /> vids: ${vidMin} - ${vidMax}
-              </h3>
-            </span>
+            <h2 style={{ textAlign: "left" }}>Customs</h2>
+            <h3 style={{ textAlign: "right" }}>
+              pics: ${picMin} - ${picMax}
+              <br /> vids: ${vidMin} - ${vidMax}
+            </h3>
           </header-div>
           <p>{BLURBS.CUSTOMS}</p>
-        </div >
+        </div>
       </div>
 
       {/* ITEM 2: RATINGS */}
-      <div>
-        <div className="card">
+      <div style={{ height: "22%", border: "1 px dashed white" }}>
+        <div style={{ height: "100%", width: "auto" }}>
           <header-div>
             <span>
               <h2>Ratings</h2>
@@ -175,9 +175,13 @@ function PublicMessage() {
       </div>
 
       {/* ITEM 3: LIVE */}
-      <div>
-        <img className="tile" src={vidratepreview} alt="Live Preview" />
-        <div className="card">
+      <div style={{ height: "22%", border: "1 px dashed white" }}>
+        <img
+          style={{ height: "100%", width: "auto" }}
+          src={vidratepreview}
+          alt="Live Preview"
+        />
+        <div style={{ height: "100%", width: "auto" }}>
           <header-div>
             <span>
               <h2>Live</h2>
@@ -192,7 +196,7 @@ function PublicMessage() {
           <p>{BLURBS.LIVE}</p>
         </div>
       </div>
-      </section>
+    </section>
   );
 }
 
@@ -258,19 +262,14 @@ function CustomQuiz() {
 
   const handleCategoryChange = (cat) => {
     setCategory(cat);
-    if (cat === "custom") { setSubType("video"); setQuantity(PRICING.VIDEO_MIN); }
+    if (cat === "custom") { setSubType("video"); }
     if (cat === "rating") { setSubType("text"); setQuantity(1); }
-    if (cat === "live") { setSubType("call"); setQuantity(PRICING.CALL_MIN); }
-    setSelectedPrep([]);
-    setSelectedStandard([]);
+    if (cat === "live") { setSubType("call"); }
     setIsExclusive(false);
   };
 
   const handleSubTypeChange = (type, defaultQty) => {
     setSubType(type);
-    setQuantity(defaultQty);
-    setSelectedPrep([]);
-    setSelectedStandard([]);
   };
 
   const toggleKink = (kink, type) => {
@@ -415,13 +414,13 @@ function CustomQuiz() {
   // --- MAIN BUILDER RETURN ---
   return (
     <section>
-      <h3>Custom Builder</h3>
+      <h2>Custom Builder</h2><br />
 
       <div>
         <TabButton active={category === "custom"} onClick={() => handleCategoryChange("custom")} label="Customs" />
         <TabButton active={category === "rating"} onClick={() => handleCategoryChange("rating")} label="Ratings" />
         <TabButton active={category === "live"} onClick={() => handleCategoryChange("live")} label="Live" />
-      </div>
+      </div><br />
 
       <div>
         <h4></h4>
@@ -444,7 +443,7 @@ function CustomQuiz() {
               <SelectionButton active={subType === "sexting"} onClick={() => handleSubTypeChange("sexting", PRICING.SEXTING_MIN)} label="Sexting" />
             </>
           )}
-        </div>
+        </div><br />
       </div>
 
       {category !== "rating" && (
@@ -460,12 +459,11 @@ function CustomQuiz() {
             value={quantity}
             onChange={(e) => setQuantity(Number(e.target.value))}
           />
-        </div>
+        </div><br />
       )}
 
       <div>
-        <h4>Specifics & Tags</h4>
-        <p>Select up to {maxKinks}. ({currentKinksCount}/{maxKinks} selected)</p>
+        <h3>Select up to {maxKinks} tags. ({currentKinksCount}/{maxKinks} selected)</h3>
 
         <p>Standard (Free!)</p>
         <div>
@@ -480,7 +478,7 @@ function CustomQuiz() {
           <button className="button" onClick={() => setShowAllStandard(!showAllStandard)}>
             {showAllStandard ? "Hide" : `All (${standardActivities.length})...`}
           </button>
-        </div>
+        </div><br/>
 
         <p>
           Extra Time/Setup Needed (+${PRICING.EXTRA_PREP_TAG_MINS * (PRICING.PREPOST_HOURLY / 60)} each)
@@ -497,15 +495,16 @@ function CustomQuiz() {
           <button className="button" onClick={() => setShowAllPrep(!showAllPrep)}>
             {showAllPrep ? "Hide" : `All (${prepActivities.length})...`}
           </button>
-        </div>
+        </div><br />
 <p> {getDynamicPlaceholder()}</p>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows="4"
+          style={{width:"100%", backgroundColor:"black"}}
         />
 
-        <div>
+        <pill><div style={{width:"100%"}}>
           {category === "custom" && (
             <ToggleRow
               label={`Exclusive Content (+${PRICING.MARKUP_RATE * 100}% Markup, Name use is free)`}
@@ -513,13 +512,13 @@ function CustomQuiz() {
               onClick={() => setIsExclusive(!isExclusive)}
             />
           )}
-        </div>
+        </div></pill>
       </div>
 
       <div>
-        <p>Est. Total</p>
-        <h2>${estimate.toFixed(0)}</h2>
-        <p>*Subject to review and final invoice.</p>
+        <p>Est. Total:</p>
+        <h2>${estimate.toFixed(0)}</h2><br />
+        <p>*Subject to review and final invoice.</p> <br ?
         
         {isLoggedIn ? (
           <>
@@ -536,14 +535,14 @@ function CustomQuiz() {
               onClick={() => handleAttemptSubmit("suggestion")} 
             >
               Add to Public Suggestion Box (Free)
-            </button>
+            </button><br />
             <p className="notice">
               *Submissions are temporarily disabled while I connect the new backend!
             </p>
-          </>
+          </><br />
         ) : (
           <div>
-            <p>Log in or create an account to submit requests and suggestions!</p>
+            <p>Log in or create an account to submit requests and suggestions!</p><br />
             <button className="button">Sign In / Register</button>
           </div>
         )}
@@ -591,14 +590,13 @@ function KinkPill({ active, onClick, label, disabled }) {
 
 function ToggleRow({ active, onClick, label }) {
   return (
-    <div
+    <button
+    className={`pill ${active ? 'selected' : ''}`}
       onClick={onClick}
       
     >
       <span >{label}</span>
-      <div >
-        <div ></div>
-      </div>
-    </div>
+
+    </button>
   );
 }
