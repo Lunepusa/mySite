@@ -51,7 +51,7 @@ html{
   align-content: center;
   text-align: center;
   padding: 0px;
-  margin: 1%;
+  margin: auto%;
 }
 
 
@@ -386,7 +386,7 @@ h2{
 h3{
   font-size: 1.25em;
   width: fit-content;
-  margin: max(auto,1%);
+  margin: auto;
   padding:1%;
 }
 h4{
@@ -398,13 +398,13 @@ margin: max(auto,1%);
 p{
   font-size: .9em;
   width: fit-content;
-  margin: max(auto,1%);
+  margin: auto;
   padding:1%;
 }
 small{
   font-size: .875em;
   width: fit-content;
-  margin: max(auto,1%);
+  margin: auto;
   padding:1%;
 }
 strong {
@@ -422,14 +422,14 @@ h6 {
   font-weight: normal;
   font-style: normal;
   width: fit-content;
-  margin: max(auto,1%);
+  margin: auto;
   padding:1%;
 }
 
 /* DIVS*/
 div{
   display: inline-block;
-  margin: max(auto,1%);
+  margin: auto;
 }
 span{
   display:inline-block;
@@ -453,7 +453,7 @@ header-div{
 button, .button{
   border: 1px solid white;
   display:inline-block;
-  margin: max(auto,1%);
+  margin: auto;
   padding:1%;
   font-size: inherit;
 }
@@ -469,7 +469,7 @@ pill{
   text-align: center;
   cursor: pointer;
   display: inline-block;
-  margin: max(auto,1%);
+  margin: auto;
   padding:1%;
   font-size: inherit;
 }
