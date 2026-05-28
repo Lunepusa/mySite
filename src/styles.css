@@ -2,14 +2,42 @@
    Global resets and base styles
    ========================================================================== */
 
+
+   /*
+Element,Recommended Size,Typical Use on Your Site
+h1,2.25rem – 2.5rem (36–40px),"Page titles (""LunePusa's Lewd Lounge"", ""Gallery"")"
+h2,1.5rem (24px),"Major sections (Menu, About, Profile, Date groups)"
+h3,1.25rem (20px),"Sub-sections (SFW Loves, Payment Methods)"
+h4,1.1rem (17.6px),Rare deep sub-headings
+p,1rem (16px),"Body text, descriptions, pricing"
+small,0.875rem (14px),"Disclaimers, gallery stats, fine print"
+summary,1.1rem – 1.25rem (18–20px),Collapsible headings (Loves and Limits)
+figcaption,0.95rem (15px),Inside gallery figures
+time,0.875rem (14px),Gallery dates
+"aside, footer",0.9rem – 0.95rem (14.4–15.2px),"Supporting blocks (payments, wishlists)"
+
+Type,Recommended Size,Best Use on Your Site,Notes
+Hero / Feature Image,600px – 800px wide,"Top banner area, large About Me photo",Max-height ~400px
+Standard Cards,250px – 350px wide,"Menu pricing items, Profile boxes",Your most common card size
+Gallery Thumbnails,180px – 240px square or 16:9,Individual media items in grid,Responsive grid
+Small Tiles / Icons,150px – 200px,"Preferred Links icons, Gift cards",Dense areas
+Avatars / Profile Icons,40px – 120px,"Small user silhouette, profile pictures",48px minimum for touch
+Large Gallery Preview,400px – 600px,Lightbox / expanded view,When user clicks thumbnail
+
+LONGER SIDE PXS
+Mobile (< 640px):
+Tablet (640px – 1024px):
+Desktop (> 1024px):
+
+   */
 @import url("https://fonts.googleapis.com/css2?family=Julee&display=swap");
 
 * {
   color: white;
   font-family: Julee !important;
   vertical-align: middle;
-  margin-top: 0%;
-  margin-bottom: 0%;
+  margin-top: 1%;
+  margin-bottom: 1%;
   margin-left: auto;
   margin-right: auto;
   box-sizing: border-box;
@@ -20,34 +48,9 @@ html {
   background-color: black;
   width: 100%;
   align-content: center;
-  margin: 0px;
   padding: 0px;
 }
 
-/* ==========================================================================
-   Text and placeholder styling
-   ========================================================================== */
-
-::placeholder {
-  color: rgb(42, 42, 42);
-}
-
-strong {
-  vertical-align: baseline;
-}
-
-u,
-a {
-  vertical-align: baseline;
-  display: inline-block;
-  height: 100%;
-}
-
-h5,
-h6 {
-  font-weight: normal;
-  font-style: normal;
-}
 
 /* ==========================================================================
    Links and navigation items
@@ -351,11 +354,164 @@ input[type=range]::-webkit-slider-runnable-track {
     color: grey;
 }
 
+
+/* CLASSES AND STATES */
+
+.selected{
+  background-color: white;
+  color: black;
+}
+.disabled{
+  color: red;
+  text-decoration: line-through red;
+  border-color: red;
+}
+.notice{
+  color: red;
+}
+
+::placeholder {
+  color: rgb(42, 42, 42);
+}
+
+
+/* STANDARD SIZES*/
+
+
+h1{
+  font-size: 2em;
+}
+h2{
+  font-size: 1.5em;
+}
+h3{
+  font-size: 1.25em;
+}
+h4{
+  font-size: 1.1em;
+}
+p{
+  font-size: 1em;
+}
+small{
+  font-size: .875em;
+}
+strong {
+  vertical-align: baseline;
+}
+u,
+a {
+  vertical-align: baseline;
+  display: inline-block;
+  height: 100%;
+}
+
+h5,
+h6 {
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* DIVS*/
+div{
+  display: inline-block;
+}
+main{
+max-width:98vw;
+}
+section{
+  display:inline-block;
+  width:50%;
+  min-width: 300px;
+  max-width: 600px;
+  border: 1px dashed white;
+}
+header-div{
+  display:block;
+  width: 100%;
+  height:fit-content;
+  background-color: #444;
+}
+button, .button{
+  border: 1px solid white;
+  display:inline-block;
+}
+
+pill{
+  border: 1px dashed white;
+  border-radius: 12px;
+  text-align: center;
+  cursor: pointer;
+  display: inline-block;
+}
+
+img{
+  max-width: 100%;
+  max-height: 100vh;
+  height:auto;
+  height:auto;
+}
+
+.card{
+   display:inline-block;
+  width:30%;
+
+}
+.tile{
+  display:inline-block;
+  width:16%;
+}
+.icon{
+  display:inline-block;
+  width:10%;
+}
+
+card-div{
+   display:inline-block;
+  width:30%;
+  min-width: 100px;
+  max-width: 400px;
+}
+tile-div{
+  display:inline-block;
+  width:16%;
+  min-width: 70px;
+  max-width: 100px;
+}
+icon-div{
+  display:inline-block;
+  width:10%;
+  min-width: 30px;
+  max-width: 50px;
+}
+
+card-gallery{
+ display: inline-block;
+  height:fit-content;}
+
+card-gallery img, card-gallery video {
+  display: block;
+  /* clamp(MIN-height, PREFERRED-height, MAX-height) */
+  height: clamp(150px, 35vh, 400px); 
+}
+
+tile-gallery img, tile-gallery video{
+  display: block;
+  height: clamp(70px, 15vh, 120px);
+}
+
+icon-gallery img, icon-gallery video{
+  display: block;
+  height: clamp(30px, 8vh, 50px);
+}
+
+
+
 /* ========================================= */
 /* DESKTOP RESPONSIVE LAYOUT                 */
 /* ========================================= */
-@media (min-width: 1024px) {
-/*put main elements here, eventually*/
+@media (orientation: landscape) {
+
     
    
 }

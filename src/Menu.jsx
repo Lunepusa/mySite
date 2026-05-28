@@ -102,15 +102,13 @@ export default function MenuPage() {
   const { isAdmin } = useAuth();
 
   return (
-    <div >
-      <div >
+    <main>
         {/* Left Side: Blurbs */}
         <PublicMessage />
         
         {/* Right Side: Builder */}
         <CustomQuiz />
-      </div>
-    </div>
+    </main>
   );
 }
 
@@ -134,67 +132,67 @@ function PublicMessage() {
   const callMax = calculatePrice({ discussionQty: 0, prePostQty: PRICING.BASE_SETUP_CALL + maxExtraPrepTime, contentQty: PRICING.CALL_MAX, markupQty: 1 });
 
   return (
-    <section >
+    <section>
       <h1>Menu</h1>
       <p>{BLURBS.INTRO}</p>
 
       {/* ITEM 1: CUSTOMS */}
-      <div >
-        <img
-          src={customvidpreview}
-          alt="Customs Preview"
-          
-        />
-            <div >
-        <div >
-          <span >Customs</span>
-          <span >
-            pics: ${picMin} - ${picMax}
-            <br /> vids: ${vidMin} - ${vidMax}
-          </span>
-        </div>
-    
-          <div >
-            <p>{BLURBS.CUSTOMS}</p>
-          </div>
-        </div>
-      </div>
+      <section>
+        <img className="tile" src={customvidpreview} alt="Customs Preview" />
+        <card-div>
+          <header-div>
+            <span>
+              <h2>Customs</h2>
+            </span>
+            <span>
+              <h3>
+                pics: ${picMin} - ${picMax}
+                <br /> vids: ${vidMin} - ${vidMax}
+              </h3>
+            </span>
+          </header-div>
+          <p>{BLURBS.CUSTOMS}</p>
+        </card-div>
+      </section>
 
       {/* ITEM 2: RATINGS */}
-      <div >
-        <div >
-        <div >
-          <span >Ratings</span>
-          <span >
-            text: ${txtRating}
-            <br /> vid: ${vidRating}
-          </span>
-        </div>
-        
-          <div >
-            <p>{BLURBS.RATING}</p>
-          </div>
-        </div>
-        <img src={dmpreview} alt="Ratings Preview"  />
-      </div>
+      <section>
+        <card-div>
+          <header-div>
+            <span>
+              <h2>Ratings</h2>
+            </span>
+            <span>
+              <h3>
+                text: ${txtRating}
+                <br /> vid: ${vidRating}
+              </h3>
+            </span>
+          </header-div>
+          <p>{BLURBS.RATING}</p>
+        </card-div>
+        <img className="tile" src={dmpreview} alt="Ratings Preview" />
+      </section>
 
       {/* ITEM 3: LIVE */}
-      <div >
-        <img src={vidratepreview} alt="Live Preview"  />
-                <div >
-        <div >
-          <span >Live</span>
-          <span >
-            sexting: ${sextMin} - ${sextMax}
-            <br /> calls: ${callMin} - ${callMax}+
-          </span>
-        </div>
-          <div >
-            <p>{BLURBS.LIVE}</p>
-          </div>
-        </div>
-      </div>
-    </section>
+      <section>
+        <img className="tile" src={vidratepreview} alt="Live Preview" />
+        <card-div>
+          <header-div>
+            <span>
+              <h2>Live</h2>
+            </span>
+            <span>
+              <h3>
+                sexting: ${sextMin} - ${sextMax}
+                <br /> calls: ${callMin} - ${callMax}+
+              </h3>
+            </span>
+          </header-div>
+          <p>{BLURBS.LIVE}</p>
+        </card-div>
+      </section>
+      </section>
   );
 }
 
@@ -365,13 +363,13 @@ function CustomQuiz() {
   if (showEmailWarning) {
     return (
       <section>
-        <h2 >⚠️ Missing Email</h2>
-        <p >
-          You don't have an email associated with your account. While it's not required, it may make it harder for me to notify you when your content is ready or if I have questions! it will mean I cant automatically notify you.
+        <h2 className="notice">⚠️ Missing Email</h2>
+        <p>
+          You don't have an email associated with your account. While it's not required, it may make it harder for me to notify you when your content is ready or if I have questions! It will mean I can't automatically notify you.
         </p>
-        <div >
-          <button onClick={confirmSubmit} >Submit Anyway</button>
-          <button onClick={() => setShowEmailWarning(false)}>Go Back</button>
+        <div>
+          <button className="button" onClick={confirmSubmit}>Submit Anyway</button>
+          <button className="button" onClick={() => setShowEmailWarning(false)}>Go Back</button>
         </div>
       </section>
     );
@@ -379,12 +377,12 @@ function CustomQuiz() {
 
   if (submitStatus === "custom") {
     return (
-      <section  >
-        <h2 >Request Sent!</h2>
-        <p >
+      <section>
+        <h2>Request Sent!</h2>
+        <p>
           Thanks! I’ve added this to my queue. I’ll reach out when I accept it with any questions/pricing adjustment, and let you know once it's done!
         </p>
-        <button onClick={() => setSubmitStatus("idle")} >Back</button>
+        <button className="button" onClick={() => setSubmitStatus("idle")}>Back</button>
       </section>
     );
   }
@@ -392,21 +390,20 @@ function CustomQuiz() {
   if (submitStatus === "suggestion") {
     const combinedTags = [...selectedStandard, ...selectedPrep].join(",");
     return (
-      <section  >
-        <h2 >Suggestion Added!</h2>
-        <p >
+      <section>
+        <h2>Suggestion Added!</h2>
+        <p>
           Thanks for submitting! I use this box for inspiration. If I ever end up making this concept, you'll be the first to get an email notification!
         </p>
-        <div >
-          <button >Vote on other Suggestions</button>
-          <div >
-            <p >See what I already have with these tags:</p>
+        <div>
+          <button className="button">Vote on other Suggestions</button>
+          <div>
+            <p>See what I already have with these tags:</p>
             <ClickableTags tags={combinedTags} emptyText="No specific tags selected." />
           </div>
           <button
+            className="button"
             onClick={() => { setSubmitStatus("idle"); setSelectedStandard([]); setSelectedPrep([]); }}
-            
-            
           >
             Build Another Request
           </button>
@@ -417,18 +414,18 @@ function CustomQuiz() {
 
   // --- MAIN BUILDER RETURN ---
   return (
-    <section >
-      <h3 >Custom Builder</h3>
+    <section>
+      <h3>Custom Builder</h3>
 
-      <div >
+      <div>
         <TabButton active={category === "custom"} onClick={() => handleCategoryChange("custom")} label="Customs" />
         <TabButton active={category === "rating"} onClick={() => handleCategoryChange("rating")} label="Ratings" />
         <TabButton active={category === "live"} onClick={() => handleCategoryChange("live")} label="Live" />
       </div>
 
-      <div >
-        <h4 ></h4>
-        <div >
+      <div>
+        <h4></h4>
+        <div>
           {category === "custom" && (
             <>
               <SelectionButton active={subType === "video"} onClick={() => handleSubTypeChange("video", PRICING.VIDEO_MIN)} label="Video" />
@@ -451,8 +448,8 @@ function CustomQuiz() {
       </div>
 
       {category !== "rating" && (
-        <div >
-          <span >
+        <div>
+          <span>
             {quantity} {subType === "photo" ? "pics" : "min"}
           </span>
           <input
@@ -466,12 +463,12 @@ function CustomQuiz() {
         </div>
       )}
 
-      <div >
-        <h4 >2. Specifics & Tags</h4>
-        <p >Select up to {maxKinks}. ({currentKinksCount}/{maxKinks} selected)</p>
+      <div>
+        <h4>Specifics & Tags</h4>
+        <p>Select up to {maxKinks}. ({currentKinksCount}/{maxKinks} selected)</p>
 
-        <p >Standard (Included)</p>
-        <div >
+        <p>Standard (Free!)</p>
+        <div>
           {visibleStandard.map((kink) => (
             <KinkPill
               key={kink} label={kink}
@@ -480,15 +477,15 @@ function CustomQuiz() {
               onClick={() => toggleKink(kink, "standard")}
             />
           ))}
-          <button onClick={() => setShowAllStandard(!showAllStandard)}  >
+          <button className="button" onClick={() => setShowAllStandard(!showAllStandard)}>
             {showAllStandard ? "Hide" : `All (${standardActivities.length})...`}
           </button>
         </div>
 
-        <p >
-          Extra Time/Setup (+${PRICING.EXTRA_PREP_TAG_MINS * (PRICING.PREPOST_HOURLY / 60)} each)
+        <p>
+          Extra Time/Setup Needed (+${PRICING.EXTRA_PREP_TAG_MINS * (PRICING.PREPOST_HOURLY / 60)} each)
         </p>
-        <div >
+        <div>
           {visiblePrep.map((kink) => (
             <KinkPill
               key={kink} label={kink}
@@ -497,7 +494,7 @@ function CustomQuiz() {
               onClick={() => toggleKink(kink, "prep")}
             />
           ))}
-          <button onClick={() => setShowAllPrep(!showAllPrep)}  >
+          <button className="button" onClick={() => setShowAllPrep(!showAllPrep)}>
             {showAllPrep ? "Hide" : `All (${prepActivities.length})...`}
           </button>
         </div>
@@ -507,13 +504,12 @@ function CustomQuiz() {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows="4"
-          
         />
 
         <div>
           {category === "custom" && (
             <ToggleRow
-              label={`Exclusive Content (+${PRICING.MARKUP_RATE * 100}% Markup, Includes Name Use)`}
+              label={`Exclusive Content (+${PRICING.MARKUP_RATE * 100}% Markup, Name use is free)`}
               active={isExclusive}
               onClick={() => setIsExclusive(!isExclusive)}
             />
@@ -521,36 +517,35 @@ function CustomQuiz() {
         </div>
       </div>
 
-      <div >
-        <p >Est. Total</p>
-        <h2 >${estimate.toFixed(0)}</h2>
-        <p >*Subject to review and final invoice.</p>
+      <div>
+        <p>Est. Total</p>
+        <h2>${estimate.toFixed(0)}</h2>
+        <p>*Subject to review and final invoice.</p>
         
         {isLoggedIn ? (
           <>
             <button 
+              className="button disabled"
               disabled={true} 
-              
               onClick={() => handleAttemptSubmit("custom")} 
-              
             >
               {category === "live" ? "Join Priority Waitlist" : "Request this Custom"}
             </button>
             <button 
+              className="button disabled"
               disabled={true} 
-              
               onClick={() => handleAttemptSubmit("suggestion")} 
             >
               Add to Public Suggestion Box (Free)
             </button>
-            <p >
+            <p className="notice">
               *Submissions are temporarily disabled while I connect the new backend!
             </p>
           </>
         ) : (
-          <div >
-            <p >Log in or create an account to submit requests and suggestions!</p>
-            <button  >Sign In / Register</button>
+          <div>
+            <p>Log in or create an account to submit requests and suggestions!</p>
+            <button className="button">Sign In / Register</button>
           </div>
         )}
       </div>
@@ -564,8 +559,8 @@ function CustomQuiz() {
 function TabButton({ active, onClick, label }) {
   return (
     <button
+      className={`button ${active ? 'selected' : ''}`}
       onClick={onClick}
-
     >
       {label}
     </button>
@@ -575,8 +570,8 @@ function TabButton({ active, onClick, label }) {
 function SelectionButton({ active, onClick, label }) {
   return (
     <button
+      className={`button ${active ? 'selected' : ''}`}
       onClick={onClick}
-
     >
       {label}
     </button>
@@ -586,12 +581,9 @@ function SelectionButton({ active, onClick, label }) {
 function KinkPill({ active, onClick, label, disabled }) {
   return (
     <button
-      onClick={onClick} disabled={disabled}
-      style={{
-        padding: "4px 8px", background: active ? "#fff" : disabled ? "#484444" : "#000", color: active ? "#000" : "#fff",
-        border: `1px dashed ${active ? "#fff" : disabled ? "red" : "#fff"}`, textDecoration: disabled ? "line-through red" : "none",
-        cursor: disabled ? "not-allowed" : "pointer", fontSize: "0.85rem", display: "inline-block", margin: "10px", fontFamily: "inherit"
-      }}
+      className={`pill ${active ? 'selected' : ''} ${disabled ? 'disabled' : ''}`}
+      onClick={onClick}
+      disabled={disabled}
     >
       {label}
     </button>
