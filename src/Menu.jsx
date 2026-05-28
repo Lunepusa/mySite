@@ -185,7 +185,7 @@ function PublicMessage() {
       <p>{BLURBS.INTRO}</p>
 
       {/* ITEM 1: CUSTOMS */}
-      <div style={{ height: "22vh", border: "1px dashed white" }}>
+      <div style={{ height: "22vh", border: "1px dashed white", padding:"0%"}}>
         <img
           style={{ height: "100%", width: "auto" }}
           src={customvidpreview}
@@ -204,7 +204,7 @@ function PublicMessage() {
       </div>
 
       {/* ITEM 2: RATINGS */}
-      <div style={{ height: "22vh", border: "1px dashed white" }}>
+      <div style={{ height: "22vh", border: "1px dashed white", padding:"0%" }}>
         <div style={{ height: "100%", width: "60%" }}>
           <header-div>
             <h3 style={{ textAlign: "left", width: "40%", display:"inline-block", margin:"auto",padding:"auto" }}>Ratings</h3>
@@ -219,7 +219,7 @@ function PublicMessage() {
       </div>
 
       {/* ITEM 3: LIVE */}
-      <div style={{ height: "22vh", border: "1px dashed white" }}>
+      <div style={{ height: "22vh", border: "1px dashed white", padding:"0%" }}>
         <img
           style={{ height: "100%", width: "auto" }}
           src={vidratepreview}
@@ -525,7 +525,7 @@ function CustomQuiz() {
 
   // --- MAIN BUILDER RETURN ---
   return (
-    <section>
+    <section style{{width:"95%", maxWidth:"550px"}}>
       <h2>Custom Builder</h2>
       <br />
 
@@ -534,16 +534,19 @@ function CustomQuiz() {
           active={category === "custom"}
           onClick={() => handleCategoryChange("custom")}
           label="Customs"
+          style={{margins:"auto"}}
         />
         <TabButton
           active={category === "rating"}
           onClick={() => handleCategoryChange("rating")}
           label="Ratings"
+          style={{margins:"auto"}}
         />
         <TabButton
           active={category === "live"}
           onClick={() => handleCategoryChange("live")}
           label="Live"
+          style={{margins:"auto"}}
         />
       </div>
       <br />
@@ -557,11 +560,13 @@ function CustomQuiz() {
                 active={subType === "video"}
                 onClick={() => handleSubTypeChange("video", PRICING.VIDEO_MIN)}
                 label="Video"
+                style={{margins:"auto"}}
               />
               <SelectionButton
                 active={subType === "photo"}
                 onClick={() => handleSubTypeChange("photo", PRICING.PHOTO_MIN)}
                 label="Photo Set"
+                style={{margins:"auto"}}
               /><br/>
             </>
           )}
@@ -571,11 +576,13 @@ function CustomQuiz() {
                 active={subType === "text"}
                 onClick={() => handleSubTypeChange("text", 1)}
                 label="Text Rating"
+                style={{margins:"auto"}}
               />
               <SelectionButton
                 active={subType === "vid_rating"}
                 onClick={() => handleSubTypeChange("vid_rating", 1)}
                 label="Video Rating"
+                style={{margins:"auto"}}
               />
             </>
           )}
@@ -585,6 +592,7 @@ function CustomQuiz() {
                 active={subType === "call"}
                 onClick={() => handleSubTypeChange("call", PRICING.CALL_MIN)}
                 label="Video Call"
+                style={{margins:"auto"}}
               />
               <SelectionButton
                 active={subType === "sexting"}
@@ -592,6 +600,7 @@ function CustomQuiz() {
                   handleSubTypeChange("sexting", PRICING.SEXTING_MIN)
                 }
                 label="Sexting"
+                style={{margins:"auto"}}
               />
             </>
           )}
@@ -602,7 +611,7 @@ function CustomQuiz() {
         {category !== "rating" && (
           <>
             {" "}
-            <div><div style={{display:"block"}}><span>MINIMUM: {
+            <div><div style={{display:"block"}}><span style{{margins:"auto"}}>MINIMUM: {
                   subType === "photo"
                     ? PRICING.PHOTO_MIN
                     : subType === "video"
@@ -612,7 +621,7 @@ function CustomQuiz() {
                         : PRICING.SEXTING_MIN
                 }</span>
               <input
-              style={{width: "fit-content"}}
+              style={{width: "fit-content" , margins:"auto"}}
                 type="number"
                 min={
                   subType === "photo"
@@ -636,8 +645,8 @@ function CustomQuiz() {
                 value={quantity}
                 onChange={(e) => setQuantity(Number(e.target.value))}
               />
-               <span>{subType === " photo" ? " pics" : " min"}
-              </span><span>MAXIMUM: {
+              {subType === " photo" ? " pics" : " min"}
+             <span style{{margins:"auto"}}>MAXIMUM: {
                   subType === "photo"
                     ? PRICING.PHOTO_MAX
                     : subType === "video"
