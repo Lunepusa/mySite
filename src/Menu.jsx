@@ -804,7 +804,7 @@ function TabButton({ active, onClick, label }) {
   return (
     <button 
     className=
-    ${active ? "selected" : ""}
+    {active ? "selected" : ""}
     onClick={onClick} 
     style={{width:"30%"}}>
       {label}
@@ -823,7 +823,7 @@ function SelectionButton({ active, onClick, label }) {
 function KinkPill({ active, onClick, label, disabled }) {
   return (
     <pill
-      className=${active ? "selected" : ""} ${disabled ? "disabled" : ""}
+      className={active ? "selected" : ""} {disabled ? "disabled" : ""}
       onClick={onClick}
       disabled={disabled}
     >
