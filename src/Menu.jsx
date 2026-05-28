@@ -22,10 +22,10 @@ import { ClickableTags } from "./Tags";
 // 1. CONTROL PANEL (VARIABLES)
 // ──────────────────────────────────────────────────────────────────────────────
 export const PRICING = {
-  CONTENT_PERMINUTE: 3.0, 
-  PREPOST_HOURLY: 20.0, 
-  DISCUSSION_HOURLY: 10.0, 
-  EDITING_HOURLY: 20.0, 
+  CONTENT_PERMINUTE: 3.0,
+  PREPOST_HOURLY: 20.0,
+  DISCUSSION_HOURLY: 10.0,
+  EDITING_HOURLY: 20.0,
   LUBE_COST: 2.0,
   CONDOM_COST: 1.0,
   PANTYHOSE_COST: 5.0,
@@ -39,21 +39,24 @@ export const PRICING = {
   CALL_MAX: 30,
   SEXTING_MIN: 15,
   SEXTING_MAX: 60,
-  BASE_DISCUSSION: 15, 
-  BASE_SETUP_VID: 30, 
-  BASE_SETUP_PIC: 15, 
-  BASE_SETUP_CALL: 60, 
-  BASE_SETUP_SEXT: 0, 
-  BASE_SETUP_VID_RATING: 15, 
-  BASE_DISC_TEXT_RATING: 30, 
-  EXTRA_PREP_TAG_MINS: 30, 
+  BASE_DISCUSSION: 15,
+  BASE_SETUP_VID: 30,
+  BASE_SETUP_PIC: 15,
+  BASE_SETUP_CALL: 60,
+  BASE_SETUP_SEXT: 0,
+  BASE_SETUP_VID_RATING: 15,
+  BASE_DISC_TEXT_RATING: 30,
+  EXTRA_PREP_TAG_MINS: 30,
 };
 
 export const BLURBS = {
-  INTRO: "My content is raw, unedited, and feels like you just asked your girlfriend to do a thing for you to enjoy. No studio polish: just me, my phone, and way too many toys and lingerie.",
-  CUSTOMS: "Use the builder below or DM me your fantasy. I film when the mood strikes, so there’s no set schedule or upfront payment*. I'll message you when it’s done; pay then, and then I’ll send the files, plus anything else I made if I got inspired~",
+  INTRO:
+    "My content is raw, unedited, and feels like you just asked your girlfriend to do a thing for you to enjoy. No studio polish: just me, my phone, and way too many toys and lingerie.",
+  CUSTOMS:
+    "Use the builder below or DM me your fantasy. I film when the mood strikes, so there’s no set schedule or upfront payment*. I'll message you when it’s done; pay then, and then I’ll send the files, plus anything else I made if I got inspired~",
   LIVE: "I only do live calls and sexting when I can give you my full attention and really have fun. Join my VIP mailer to catch me when I'm in the mood. Payment required upfront.",
-  RATING: "Detailed ratings, same-day turnaround typically. message me first to confirm. Payment required upfront.",
+  RATING:
+    "Detailed ratings, same-day turnaround typically. message me first to confirm. Payment required upfront.",
 };
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -103,11 +106,11 @@ export default function MenuPage() {
 
   return (
     <main>
-        {/* Left Side: Blurbs */}
-        <PublicMessage />
-        
-        {/* Right Side: Builder */}
-        <CustomQuiz />
+      {/* Left Side: Blurbs */}
+      <PublicMessage />
+
+      {/* Right Side: Builder */}
+      <CustomQuiz />
     </main>
   );
 }
@@ -117,19 +120,64 @@ export default function MenuPage() {
 // ──────────────────────────────────────────────────────────────────────────────
 function PublicMessage() {
   // Min Calculations
-  const picMin = calculatePrice({ discussionQty: PRICING.BASE_DISCUSSION, prePostQty: PRICING.BASE_SETUP_PIC, contentQty: PRICING.PHOTO_MIN * 0.5 });
-  const vidMin = calculatePrice({ discussionQty: PRICING.BASE_DISCUSSION, prePostQty: PRICING.BASE_SETUP_VID, contentQty: PRICING.VIDEO_MIN });
-  const sextMin = calculatePrice({ discussionQty: PRICING.SEXTING_MIN * 0.5, prePostQty: PRICING.BASE_SETUP_SEXT, contentQty: PRICING.SEXTING_MIN * 0.5 });
-  const callMin = calculatePrice({ discussionQty: 0, prePostQty: PRICING.BASE_SETUP_CALL, contentQty: PRICING.CALL_MIN, markupQty: 1 });
-  const txtRating = calculatePrice({ discussionQty: PRICING.BASE_DISC_TEXT_RATING });
-  const vidRating = calculatePrice({ discussionQty: PRICING.BASE_DISCUSSION, prePostQty: PRICING.BASE_SETUP_VID_RATING, contentQty: 5, markupQty: 1, discountQty: 1 });
+  const picMin = calculatePrice({
+    discussionQty: PRICING.BASE_DISCUSSION,
+    prePostQty: PRICING.BASE_SETUP_PIC,
+    contentQty: PRICING.PHOTO_MIN * 0.5,
+  });
+  const vidMin = calculatePrice({
+    discussionQty: PRICING.BASE_DISCUSSION,
+    prePostQty: PRICING.BASE_SETUP_VID,
+    contentQty: PRICING.VIDEO_MIN,
+  });
+  const sextMin = calculatePrice({
+    discussionQty: PRICING.SEXTING_MIN * 0.5,
+    prePostQty: PRICING.BASE_SETUP_SEXT,
+    contentQty: PRICING.SEXTING_MIN * 0.5,
+  });
+  const callMin = calculatePrice({
+    discussionQty: 0,
+    prePostQty: PRICING.BASE_SETUP_CALL,
+    contentQty: PRICING.CALL_MIN,
+    markupQty: 1,
+  });
+  const txtRating = calculatePrice({
+    discussionQty: PRICING.BASE_DISC_TEXT_RATING,
+  });
+  const vidRating = calculatePrice({
+    discussionQty: PRICING.BASE_DISCUSSION,
+    prePostQty: PRICING.BASE_SETUP_VID_RATING,
+    contentQty: 5,
+    markupQty: 1,
+    discountQty: 1,
+  });
 
   // Max Calculations (Assuming max of 2 extra prep tags for calculation purposes)
   const maxExtraPrepTime = 2 * PRICING.EXTRA_PREP_TAG_MINS;
-  const picMax = calculatePrice({ discussionQty: PRICING.BASE_DISCUSSION, prePostQty: PRICING.BASE_SETUP_PIC + maxExtraPrepTime, contentQty: PRICING.PHOTO_MAX * 0.5, markupQty: 1 });
-  const vidMax = calculatePrice({ discussionQty: PRICING.BASE_DISCUSSION, prePostQty: PRICING.BASE_SETUP_VID + maxExtraPrepTime, contentQty: PRICING.VIDEO_MAX, markupQty: 1 });
-  const sextMax = calculatePrice({ discussionQty: PRICING.SEXTING_MIN * 0.5, prePostQty: PRICING.BASE_SETUP_SEXT + maxExtraPrepTime, contentQty: PRICING.SEXTING_MAX * 0.5, markupQty: 1 });
-  const callMax = calculatePrice({ discussionQty: 0, prePostQty: PRICING.BASE_SETUP_CALL + maxExtraPrepTime, contentQty: PRICING.CALL_MAX, markupQty: 1 });
+  const picMax = calculatePrice({
+    discussionQty: PRICING.BASE_DISCUSSION,
+    prePostQty: PRICING.BASE_SETUP_PIC + maxExtraPrepTime,
+    contentQty: PRICING.PHOTO_MAX * 0.5,
+    markupQty: 1,
+  });
+  const vidMax = calculatePrice({
+    discussionQty: PRICING.BASE_DISCUSSION,
+    prePostQty: PRICING.BASE_SETUP_VID + maxExtraPrepTime,
+    contentQty: PRICING.VIDEO_MAX,
+    markupQty: 1,
+  });
+  const sextMax = calculatePrice({
+    discussionQty: PRICING.SEXTING_MIN * 0.5,
+    prePostQty: PRICING.BASE_SETUP_SEXT + maxExtraPrepTime,
+    contentQty: PRICING.SEXTING_MAX * 0.5,
+    markupQty: 1,
+  });
+  const callMax = calculatePrice({
+    discussionQty: 0,
+    prePostQty: PRICING.BASE_SETUP_CALL + maxExtraPrepTime,
+    contentQty: PRICING.CALL_MAX,
+    markupQty: 1,
+  });
 
   return (
     <section>
@@ -205,7 +253,11 @@ function PublicMessage() {
 // ──────────────────────────────────────────────────────────────────────────────
 function CustomQuiz() {
   const { isLoggedIn, savedPairs } = useAuth();
-  const hasEmail = savedPairs && savedPairs.some((pair) => pair.platform && pair.platform.toLowerCase() === "email");
+  const hasEmail =
+    savedPairs &&
+    savedPairs.some(
+      (pair) => pair.platform && pair.platform.toLowerCase() === "email",
+    );
 
   const [submitStatus, setSubmitStatus] = useState("idle");
   const [showEmailWarning, setShowEmailWarning] = useState(false);
@@ -247,8 +299,15 @@ function CustomQuiz() {
   ];
 
   const prepActivities = [
-    "Extra Camera Angle", "self Bondage", "Piss", "Anal", "Fake Cum", "oil",
-    "Editing", "Custom Editing", "Sex Machine",
+    "Extra Camera Angle",
+    "self Bondage",
+    "Piss",
+    "Anal",
+    "Fake Cum",
+    "oil",
+    "Editing",
+    "Custom Editing",
+    "Sex Machine",
   ];
 
   // --- DYNAMIC CONTENT LIMITS ---
@@ -262,9 +321,16 @@ function CustomQuiz() {
 
   const handleCategoryChange = (cat) => {
     setCategory(cat);
-    if (cat === "custom") { setSubType("video"); }
-    if (cat === "rating") { setSubType("text"); setQuantity(1); }
-    if (cat === "live") { setSubType("call"); }
+    if (cat === "custom") {
+      setSubType("video");
+    }
+    if (cat === "rating") {
+      setSubType("text");
+      setQuantity(1);
+    }
+    if (cat === "live") {
+      setSubType("call");
+    }
     setIsExclusive(false);
   };
 
@@ -283,25 +349,41 @@ function CustomQuiz() {
   };
 
   const getDynamicPlaceholder = () => {
-    let prompts = ["Describe your fantasy... any preference on vertical or horizontal video?"];
-    if (selectedStandard.includes("Specific Outfit")) prompts.push("What exact outfit are you picturing?");
-    if (selectedStandard.includes("Sex Toy")) prompts.push("Which toy or style of toy should I use? realistic, fantasy, vibrating");
-    if (selectedStandard.includes("Roleplay")) prompts.push("What is the scenario/setting?");
+    let prompts = [
+      "Describe your fantasy... any preference on vertical or horizontal video?",
+    ];
+    if (selectedStandard.includes("Specific Outfit"))
+      prompts.push("What exact outfit are you picturing?");
+    if (selectedStandard.includes("Sex Toy"))
+      prompts.push(
+        "Which toy or style of toy should I use? realistic, fantasy, vibrating",
+      );
+    if (selectedStandard.includes("Roleplay"))
+      prompts.push("What is the scenario/setting?");
     if (selectedStandard.includes("Femdom (I Dominate)"))
-      prompts.push("what are your top 3 kinks?(ex. sph) what are your hard limits?(ex. pegging)");
-     if (selectedStandard.includes("lovense(not x-machine)"))
-       prompts.push("any preference on which lovense? do you want to make me a custom pattern?");
-       if (selectedStandard.includes("Sex Machine"))
-         prompts.push(
-           "does NOT require 'lovense'Do you want to make me a custom pattern?",
-         );
+      prompts.push(
+        "what are your top 3 kinks?(ex. sph) what are your hard limits?(ex. pegging)",
+      );
+    if (selectedStandard.includes("lovense(not x-machine)"))
+      prompts.push(
+        "any preference on which lovense? do you want to make me a custom pattern?",
+      );
+    if (selectedStandard.includes("Sex Machine"))
+      prompts.push(
+        "does NOT require 'lovense'Do you want to make me a custom pattern?",
+      );
     if (selectedStandard.includes("Extra Camera Angle"))
       prompts.push(
         "Does NOT require 'custom editing'. Were you thinking a cut to a different angles, or having 2 angles on screen at once?",
       );
-              if (selectedStandard.includes("Custom Editing"))
-                prompts.push("What sort of editing do you want to see? Voiceover, background music? greenscreen?(I dont have much experience with that one)");
-    if (prompts.length === 1) prompts.push("What should I wear? what should I use? What exactly do you want to happen?");
+    if (selectedStandard.includes("Custom Editing"))
+      prompts.push(
+        "What sort of editing do you want to see? Voiceover, background music? greenscreen?(I dont have much experience with that one)",
+      );
+    if (prompts.length === 1)
+      prompts.push(
+        "What should I wear? what should I use? What exactly do you want to happen?",
+      );
     return prompts.join(" ");
   };
 
@@ -330,32 +412,50 @@ function CustomQuiz() {
 
     if (category === "rating") {
       if (subType === "text") {
-        discussion = PRICING.BASE_DISC_TEXT_RATING; setup = 0; content = 0;
+        discussion = PRICING.BASE_DISC_TEXT_RATING;
+        setup = 0;
+        content = 0;
       } else if (subType === "vid_rating") {
-        discussion = PRICING.BASE_DISCUSSION; setup = PRICING.BASE_SETUP_VID_RATING;
-        content = 5; markups = 1; discounts = 1; 
+        discussion = PRICING.BASE_DISCUSSION;
+        setup = PRICING.BASE_SETUP_VID_RATING;
+        content = 5;
+        markups = 1;
+        discounts = 1;
       }
     } else if (category === "live") {
       if (subType === "call") {
-        discussion = 0; setup = PRICING.BASE_SETUP_CALL; content = quantity; markups = 1;
+        discussion = 0;
+        setup = PRICING.BASE_SETUP_CALL;
+        content = quantity;
+        markups = 1;
       } else if (subType === "sexting") {
-        discussion = quantity * 0.5; setup = PRICING.BASE_SETUP_SEXT; content = quantity * 0.5;
+        discussion = quantity * 0.5;
+        setup = PRICING.BASE_SETUP_SEXT;
+        content = quantity * 0.5;
       }
     } else {
-      if (subType === "photo") { setup = PRICING.BASE_SETUP_PIC; content = quantity * 0.5; }
+      if (subType === "photo") {
+        setup = PRICING.BASE_SETUP_PIC;
+        content = quantity * 0.5;
+      }
       if (isExclusive) markups += 1;
     }
 
     setup += selectedPrep.length * PRICING.EXTRA_PREP_TAG_MINS;
 
     const finalEstimate = calculatePrice({
-      discussionQty: discussion, prePostQty: setup, contentQty: content,
-      markupQty: markups, discountQty: discounts,
+      discussionQty: discussion,
+      prePostQty: setup,
+      contentQty: content,
+      markupQty: markups,
+      discountQty: discounts,
     });
     setEstimate(finalEstimate);
   }, [category, subType, quantity, isExclusive, selectedPrep.length]);
 
-  const visibleStandard = showAllStandard ? standardActivities : standardActivities.slice(0, 5);
+  const visibleStandard = showAllStandard
+    ? standardActivities
+    : standardActivities.slice(0, 5);
   const visiblePrep = showAllPrep ? prepActivities : prepActivities.slice(0, 5);
 
   // --- SUBMISSION STATES ---
@@ -364,11 +464,18 @@ function CustomQuiz() {
       <section>
         <h2 className="notice">⚠️ Missing Email</h2>
         <p>
-          You don't have an email associated with your account. While it's not required, it may make it harder for me to notify you when your content is ready or if I have questions! It will mean I can't automatically notify you.
+          You don't have an email associated with your account. While it's not
+          required, it may make it harder for me to notify you when your content
+          is ready or if I have questions! It will mean I can't automatically
+          notify you.
         </p>
         <div>
-          <button className="button" onClick={confirmSubmit}>Submit Anyway</button>
-          <button className="button" onClick={() => setShowEmailWarning(false)}>Go Back</button>
+          <button className="button" onClick={confirmSubmit}>
+            Submit Anyway
+          </button>
+          <button className="button" onClick={() => setShowEmailWarning(false)}>
+            Go Back
+          </button>
         </div>
       </section>
     );
@@ -379,9 +486,13 @@ function CustomQuiz() {
       <section>
         <h2>Request Sent!</h2>
         <p>
-          Thanks! I’ve added this to my queue. I’ll reach out when I accept it with any questions/pricing adjustment, and let you know once it's done!
+          Thanks! I’ve added this to my queue. I’ll reach out when I accept it
+          with any questions/pricing adjustment, and let you know once it's
+          done!
         </p>
-        <button className="button" onClick={() => setSubmitStatus("idle")}>Back</button>
+        <button className="button" onClick={() => setSubmitStatus("idle")}>
+          Back
+        </button>
       </section>
     );
   }
@@ -392,17 +503,26 @@ function CustomQuiz() {
       <section>
         <h2>Suggestion Added!</h2>
         <p>
-          Thanks for submitting! I use this box for inspiration. If I ever end up making this concept, you'll be the first to get an email notification!
+          Thanks for submitting! I use this box for inspiration. If I ever end
+          up making this concept, you'll be the first to get an email
+          notification!
         </p>
         <div>
           <button className="button">Vote on other Suggestions</button>
           <div>
             <p>See what I already have with these tags:</p>
-            <ClickableTags tags={combinedTags} emptyText="No specific tags selected." />
+            <ClickableTags
+              tags={combinedTags}
+              emptyText="No specific tags selected."
+            />
           </div>
           <button
             className="button"
-            onClick={() => { setSubmitStatus("idle"); setSelectedStandard([]); setSelectedPrep([]); }}
+            onClick={() => {
+              setSubmitStatus("idle");
+              setSelectedStandard([]);
+              setSelectedPrep([]);
+            }}
           >
             Build Another Request
           </button>
@@ -414,37 +534,80 @@ function CustomQuiz() {
   // --- MAIN BUILDER RETURN ---
   return (
     <section>
-      <h2>Custom Builder</h2><br />
+      <h2>Custom Builder</h2>
+      <br />
 
       <div>
-        <TabButton active={category === "custom"} onClick={() => handleCategoryChange("custom")} label="Customs" />
-        <TabButton active={category === "rating"} onClick={() => handleCategoryChange("rating")} label="Ratings" />
-        <TabButton active={category === "live"} onClick={() => handleCategoryChange("live")} label="Live" />
-      </div><br />
+        <TabButton
+          active={category === "custom"}
+          onClick={() => handleCategoryChange("custom")}
+          label="Customs"
+        />
+        <TabButton
+          active={category === "rating"}
+          onClick={() => handleCategoryChange("rating")}
+          label="Ratings"
+        />
+        <TabButton
+          active={category === "live"}
+          onClick={() => handleCategoryChange("live")}
+          label="Live"
+        />
+      </div>
+      <br />
 
       <div>
         <h4></h4>
         <div>
           {category === "custom" && (
             <>
-              <SelectionButton active={subType === "video"} onClick={() => handleSubTypeChange("video", PRICING.VIDEO_MIN)} label="Video" />
-              <SelectionButton active={subType === "photo"} onClick={() => handleSubTypeChange("photo", PRICING.PHOTO_MIN)} label="Photo Set" />
+              <SelectionButton
+                active={subType === "video"}
+                onClick={() => handleSubTypeChange("video", PRICING.VIDEO_MIN)}
+                label="Video"
+              />
+              <SelectionButton
+                active={subType === "photo"}
+                onClick={() => handleSubTypeChange("photo", PRICING.PHOTO_MIN)}
+                label="Photo Set"
+              />
             </>
           )}
           {category === "rating" && (
             <>
-              <SelectionButton active={subType === "text"} onClick={() => handleSubTypeChange("text", 1)} label="Text Rating" />
-              <SelectionButton active={subType === "vid_rating"} onClick={() => handleSubTypeChange("vid_rating", 1)} label="Video Rating" />
+              <SelectionButton
+                active={subType === "text"}
+                onClick={() => handleSubTypeChange("text", 1)}
+                label="Text Rating"
+              />
+              <SelectionButton
+                active={subType === "vid_rating"}
+                onClick={() => handleSubTypeChange("vid_rating", 1)}
+                label="Video Rating"
+              />
             </>
           )}
           {category === "live" && (
             <>
-              <SelectionButton active={subType === "call"} onClick={() => handleSubTypeChange("call", PRICING.CALL_MIN)} label="Video Call" />
-              <SelectionButton active={subType === "sexting"} onClick={() => handleSubTypeChange("sexting", PRICING.SEXTING_MIN)} label="Sexting" />
+              <SelectionButton
+                active={subType === "call"}
+                onClick={() => handleSubTypeChange("call", PRICING.CALL_MIN)}
+                label="Video Call"
+              />
+              <SelectionButton
+                active={subType === "sexting"}
+                onClick={() =>
+                  handleSubTypeChange("sexting", PRICING.SEXTING_MIN)
+                }
+                label="Sexting"
+              />
             </>
           )}
-        </div><br />
+        </div>
+        <br />
       </div>
+<<<<<<< HEAD
+=======
 <div>
       {category !== "rating" && (
         <>
@@ -463,87 +626,154 @@ function CustomQuiz() {
         </div><br /><>
       )}
 </div>
+>>>>>>> ce38dbaeeee0f7907033c6164d418e7a428d91b6
       <div>
-        <h3>Select up to {maxKinks} tags. ({currentKinksCount}/{maxKinks} selected)</h3>
+        {category !== "rating" && (
+          <>
+            {" "}
+            <div>
+              <span>
+                {quantity} {subType === "photo" ? "pics" : "min"}
+              </span>
+              <input
+                type="range"
+                min={
+                  subType === "photo"
+                    ? PRICING.PHOTO_MIN
+                    : subType === "video"
+                      ? PRICING.VIDEO_MIN
+                      : subType === "call"
+                        ? PRICING.CALL_MIN
+                        : PRICING.SEXTING_MIN
+                }
+                max={
+                  subType === "photo"
+                    ? PRICING.PHOTO_MAX
+                    : subType === "video"
+                      ? PRICING.VIDEO_MAX
+                      : subType === "call"
+                        ? PRICING.CALL_MAX
+                        : PRICING.SEXTING_MAX
+                }
+                step={subType === "call" ? 5 : subType === "sexting" ? 15 : 1}
+                value={quantity}
+                onChange={(e) => setQuantity(Number(e.target.value))}
+              />
+            </div>
+            <br />
+          </>
+        )}
+      </div>
+      <div>
+        <h3>
+          Select up to {maxKinks} tags. ({currentKinksCount}/{maxKinks}{" "}
+          selected)
+        </h3>
 
         <p>Standard (Free!)</p>
         <div>
           {visibleStandard.map((kink) => (
             <KinkPill
-              key={kink} label={kink}
+              key={kink}
+              label={kink}
               active={selectedStandard.includes(kink)}
-              disabled={!selectedStandard.includes(kink) && currentKinksCount >= maxKinks}
+              disabled={
+                !selectedStandard.includes(kink) &&
+                currentKinksCount >= maxKinks
+              }
               onClick={() => toggleKink(kink, "standard")}
             />
           ))}
-          <button className="button" onClick={() => setShowAllStandard(!showAllStandard)}>
+          <button
+            className="button"
+            onClick={() => setShowAllStandard(!showAllStandard)}
+          >
             {showAllStandard ? "Hide" : `All (${standardActivities.length})...`}
           </button>
-        </div><br/>
+        </div>
+        <br />
 
         <p>
-          Extra Time/Setup Needed (+${PRICING.EXTRA_PREP_TAG_MINS * (PRICING.PREPOST_HOURLY / 60)} each)
+          Extra Time/Setup Needed (+$
+          {PRICING.EXTRA_PREP_TAG_MINS * (PRICING.PREPOST_HOURLY / 60)} each)
         </p>
         <div>
           {visiblePrep.map((kink) => (
             <KinkPill
-              key={kink} label={kink}
+              key={kink}
+              label={kink}
               active={selectedPrep.includes(kink)}
-              disabled={!selectedPrep.includes(kink) && currentKinksCount >= maxKinks}
+              disabled={
+                !selectedPrep.includes(kink) && currentKinksCount >= maxKinks
+              }
               onClick={() => toggleKink(kink, "prep")}
             />
           ))}
-          <button className="button" onClick={() => setShowAllPrep(!showAllPrep)}>
+          <button
+            className="button"
+            onClick={() => setShowAllPrep(!showAllPrep)}
+          >
             {showAllPrep ? "Hide" : `All (${prepActivities.length})...`}
           </button>
-        </div><br />
-<p> {getDynamicPlaceholder()}</p>
+        </div>
+        <br />
+        <p> {getDynamicPlaceholder()}</p>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows="4"
-          style={{width:"100%", backgroundColor:"black"}}
+          style={{ width: "100%", backgroundColor: "black" }}
         />
 
-        <pill><div style={{width:"100%"}}>
-          {category === "custom" && (
-            <ToggleRow
-              label={`Exclusive Content (+${PRICING.MARKUP_RATE * 100}% Markup, Name use is free)`}
-              active={isExclusive}
-              onClick={() => setIsExclusive(!isExclusive)}
-            />
-          )}
-        </div></pill>
+        <pill>
+          <div style={{ width: "100%" }}>
+            {category === "custom" && (
+              <ToggleRow
+                label={`Exclusive Content (+${PRICING.MARKUP_RATE * 100}% Markup, Name use is free)`}
+                active={isExclusive}
+                onClick={() => setIsExclusive(!isExclusive)}
+              />
+            )}
+          </div>
+        </pill>
       </div>
 
       <div>
         <p>Est. Total:</p>
-        <h2>${estimate.toFixed(0)}</h2><br />
-        <p>*Subject to review and final invoice.</p> <br ?
-        
+        <h2>${estimate.toFixed(0)}</h2>
+        <br />
+        <p>*Subject to review and final invoice.</p> <br />
         {isLoggedIn ? (
           <>
-            <button 
+            <button
               className="button disabled"
-              disabled={true} 
-              onClick={() => handleAttemptSubmit("custom")} 
+              disabled={true}
+              onClick={() => handleAttemptSubmit("custom")}
             >
-              {category === "live" ? "Join Priority Waitlist" : "Request this Custom"}
+              {category === "live"
+                ? "Join Priority Waitlist"
+                : "Request this Custom"}
             </button>
-            <button 
+            <button
               className="button disabled"
-              disabled={true} 
-              onClick={() => handleAttemptSubmit("suggestion")} 
+              disabled={true}
+              onClick={() => handleAttemptSubmit("suggestion")}
             >
               Add to Public Suggestion Box (Free)
-            </button><br />
+            </button>
+            <br />
             <p className="notice">
-              *Submissions are temporarily disabled while I connect the new backend!
+              *Submissions are temporarily disabled while I connect the new
+              backend!
             </p>
-          </><br />
+            <br />
+          </>
         ) : (
           <div>
-            <p>Log in or create an account to submit requests and suggestions!</p><br />
+            <p>
+              Log in or create an account to submit requests and suggestions!
+            </p>
+            <br />
             <button className="button">Sign In / Register</button>
           </div>
         )}
@@ -557,10 +787,7 @@ function CustomQuiz() {
 // ──────────────────────────────────────────────────────────────────────────────
 function TabButton({ active, onClick, label }) {
   return (
-    <button
-      className={`button ${active ? 'selected' : ''}`}
-      onClick={onClick}
-    >
+    <button className={`button ${active ? "selected" : ""}`} onClick={onClick}>
       {label}
     </button>
   );
@@ -568,10 +795,7 @@ function TabButton({ active, onClick, label }) {
 
 function SelectionButton({ active, onClick, label }) {
   return (
-    <button
-      className={`button ${active ? 'selected' : ''}`}
-      onClick={onClick}
-    >
+    <button className={`button ${active ? "selected" : ""}`} onClick={onClick}>
       {label}
     </button>
   );
@@ -580,7 +804,7 @@ function SelectionButton({ active, onClick, label }) {
 function KinkPill({ active, onClick, label, disabled }) {
   return (
     <button
-      className={`pill ${active ? 'selected' : ''} ${disabled ? 'disabled' : ''}`}
+      className={`pill ${active ? "selected" : ""} ${disabled ? "disabled" : ""}`}
       onClick={onClick}
       disabled={disabled}
     >
@@ -591,13 +815,8 @@ function KinkPill({ active, onClick, label, disabled }) {
 
 function ToggleRow({ active, onClick, label }) {
   return (
-    <button
-    className={`pill ${active ? 'selected' : ''}`}
-      onClick={onClick}
-      
-    >
-      <span >{label}</span>
-
+    <button className={`pill ${active ? "selected" : ""}`} onClick={onClick}>
+      <span>{label}</span>
     </button>
   );
 }
