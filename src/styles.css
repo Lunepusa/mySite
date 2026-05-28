@@ -420,20 +420,24 @@ div{
   display: inline-block;
   margin: auto;
   padding: 0%;
+  container-type: size;
 }
 span{
   display:inline-block;
   width: fit-content;
+  container-type: size;
 }
 main{
 max-width:98vw;
 padding:0%;
+container-type: size;
 }
 section{
   display:inline-block;
   width:95%;
   border: 1px dashed white;
   padding: 0%;
+  container-type: size;
 }
 header-div{
   display:block;
@@ -441,6 +445,7 @@ header-div{
   height:fit-content;
   background-color: #444;
   margin: 0%;
+  container-type: size;
 }
 button, .button{
   border: 1px solid white;
@@ -450,6 +455,7 @@ button, .button{
   font-size: inherit;
   background: black;
   color:white;
+  container-type: size;
 }
 
 
@@ -468,6 +474,7 @@ pill{
   font-size: inherit;
   background: black;
   color: white;
+  container-type: size;
 }
 
 img{
@@ -514,7 +521,9 @@ icon-div{
 
 card-gallery{
  display: inline-block;
-  height:fit-content;}
+  height:fit-content;
+  container-type: size;
+}
 
 card-gallery img, card-gallery video {
   display: block;
@@ -537,8 +546,14 @@ icon-gallery img, icon-gallery video{
 /* ========================================= */
 /* DESKTOP RESPONSIVE LAYOUT                 */
 /* ========================================= */
-@media (orientation: landscape) {
-
+@media (width:600px) {
+section{
+  display:inline-block;
+  width:45%;
+  border: 1px dashed white;
+  padding: 0%;
+  container-type: size;
+}
     
    
 }
