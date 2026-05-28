@@ -606,27 +606,6 @@ function CustomQuiz() {
         </div>
         <br />
       </div>
-<<<<<<< HEAD
-=======
-<div>
-      {category !== "rating" && (
-        <>
-        <div>
-          <span>
-            {quantity} {subType === "photo" ? "pics" : "min"}
-          </span>
-          <input
-            type="range"
-            min={subType === "photo" ? PRICING.PHOTO_MIN : subType === "video" ? PRICING.VIDEO_MIN : subType === "call" ? PRICING.CALL_MIN : PRICING.SEXTING_MIN}
-            max={subType === "photo" ? PRICING.PHOTO_MAX : subType === "video" ? PRICING.VIDEO_MAX : subType === "call" ? PRICING.CALL_MAX : PRICING.SEXTING_MAX}
-            step={subType === "call" ? 5 : subType === "sexting" ? 15 : 1}
-            value={quantity}
-            onChange={(e) => setQuantity(Number(e.target.value))}
-          />
-        </div><br /><>
-      )}
-</div>
->>>>>>> ce38dbaeeee0f7907033c6164d418e7a428d91b6
       <div>
         {category !== "rating" && (
           <>
