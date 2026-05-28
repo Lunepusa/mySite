@@ -51,7 +51,7 @@ html{
   align-content: center;
   text-align: center;
   padding: 0px;
-  margin: auto%;
+  margin: auto;
 }
 
 
@@ -364,12 +364,13 @@ input[type=range] {
 
 h1{
   font-size: 2.25em;
-  width: fit-content;margin: max(auto,1%);
+  width: fit-content;
+  margin:auto;
   padding:1%;
 }
 h2{
   font-size: 1.5em;
-  width: fit-content;margin: max(auto,1%);
+  width: fit-content;margin: auto;
   padding:1%;
 }
 h3{
@@ -381,7 +382,7 @@ h3{
 h4{
   font-size: 1.1em;
   width: fit-content;
-margin: max(auto,1%);
+margin: auto;
   padding:1%;
 }
 p{
@@ -546,7 +547,7 @@ icon-gallery img, icon-gallery video{
 /* ========================================= */
 /* DESKTOP RESPONSIVE LAYOUT                 */
 /* ========================================= */
-@media (width:600px) {
+@media (min-width: 600px) {
 section{
   display:inline-block;
   width:45%;
