@@ -429,7 +429,7 @@ span{
   container-type: inline-size;
 }
 main{
-max-width:98vw;
+width:98vw;
 padding:0%;
 container-type: inline-size;
 }
@@ -442,7 +442,7 @@ section{
 }
 header-div{
   display:block;
-  width: 95%;
+  width: 100%;
   height:fit-content;
   background-color: #444;
   margin: 0%;
@@ -547,7 +547,7 @@ icon-gallery img, icon-gallery video{
 /* ========================================= */
 /* DESKTOP RESPONSIVE LAYOUT                 */
 /* ========================================= */
-@media (min-width: 600px) {
+@media (min-width: 800px) {
 section{
   display:inline-block;
   width:45%;
