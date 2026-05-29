@@ -427,24 +427,24 @@ div{
   display: inline-block;
   margin: auto;
   padding: 0%;
-  container-type: inline-size;
+  
 }
 span{
   display:inline-block;
   
-  container-type: inline-size;
+  
 }
 main{
 width:98vw;
 padding:0%;
-container-type: inline-size;
+
 }
 section{
   display:inline-block;
   width:95%;
   border: 1px dashed white;
   padding: 0%;
-  container-type: inline-size;
+  
 }
 header-div{
   display:block;
@@ -452,7 +452,7 @@ header-div{
   height:fit-content;
   background-color: #444;
   margin: 0%;
-  container-type: inline-size;
+  
 }
 button, .button{
   border: 1px solid white;
@@ -462,7 +462,7 @@ button, .button{
   font-size: inherit;
   background: black;
   color:white;
-  container-type: inline-size;
+  
 }
 
 
@@ -481,7 +481,7 @@ pill{
   font-size: inherit;
   background: black;
   color: white;
-  container-type: inline-size;
+  
 }
 
 img{
@@ -529,7 +529,7 @@ icon-div{
 card-gallery{
  display: inline-block;
   height:fit-content;
-  container-type: inline-size;
+  
 }
 
 card-gallery img, card-gallery video {
@@ -559,7 +559,7 @@ section{
   width:45%;
   border: 1px dashed white;
   padding: 0%;
-  container-type: inline-size;
+  
 }
     
    
