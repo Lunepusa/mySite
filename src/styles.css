@@ -47,7 +47,7 @@ Desktop (> 1024px):
 
 html{
   background-color: black;
-  width: 100%;
+  width: 100vw;
   align-content: center;
   text-align: center;
   padding: 0px;
@@ -364,36 +364,36 @@ input[type=range] {
 
 h1{
   font-size: 2.25em;
-  width: fit-content;
+  
   margin:auto;
   padding:1%;
 }
 h2{
   font-size: 1.5em;
-  width: fit-content;margin: auto;
+  margin: auto;
   padding:1%;
 }
 h3{
   font-size: 1.25em;
-  width: fit-content;
+  
   margin: auto;
   padding:1%;
 }
 h4{
   font-size: 1.1em;
-  width: fit-content;
+  
 margin: auto;
   padding:1%;
 }
 p{
   font-size: .9em;
-  width: fit-content;
+  
   margin: auto;
   padding:1%;
 }
 small{
   font-size: .875em;
-  width: fit-content;
+  
   margin: auto;
   padding:1%;
 }
@@ -411,7 +411,7 @@ h5,
 h6 {
   font-weight: normal;
   font-style: normal;
-  width: fit-content;
+  
   margin: auto;
   padding:1%;
 }
@@ -425,7 +425,7 @@ div{
 }
 span{
   display:inline-block;
-  width: fit-content;
+  
   container-type: inline-size;
 }
 main{
