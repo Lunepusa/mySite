@@ -197,9 +197,9 @@ function PublicMessage() {
             <h4 style={{ textAlign: "right", width: "55%", display:"inline-block", margin:"auto"}}>
               pics: ${picMin} - ${picMax}
               <br /> vids: ${vidMin} - ${vidMax}
-            </h4>
+            </h4>      <p>{BLURBS.CUSTOMS}</p>
           </header-div>
-          <p>{BLURBS.CUSTOMS}</p>
+    
         </div>
       </div>
 
