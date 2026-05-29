@@ -185,27 +185,27 @@ function PublicMessage() {
       <p>{BLURBS.INTRO}</p>
 
       {/* ITEM 1: CUSTOMS */}
-      <div style={{ height: "22vh", border: "1px dashed white", padding:"0%", width:"95%"}}>
+      <div style={{ height: "22vh", border: "1px dashed white", padding:"0%", width:"100%"}}>
         <img
-          style={{ height: "100%", width: "auto" }}
+          style={{ height: "22vh", width: "auto" }}
           src={customvidpreview}
           alt="Customs Preview"
         />
-        <div style={{ height: "100%", width: "65%", margin:"0%",padding:"0%" }}>
+        <div style={{ height: "22vh", width: "65%", margin:"0%",padding:"0%" }}>
           <header-div>
             <h3 style={{ textAlign: "left", width: "40%",  display:"inline-block", margin:"auto"}}>Customs</h3>
             <h4 style={{ textAlign: "right", width: "55%", display:"inline-block", margin:"auto"}}>
               pics: ${picMin} - ${picMax}
               <br /> vids: ${vidMin} - ${vidMax}
-            </h4>      <p>{BLURBS.CUSTOMS}</p>
+            </h4>     
           </header-div>
-    
+     <p>{BLURBS.CUSTOMS}</p>
         </div>
       </div>
 
       {/* ITEM 2: RATINGS */}
       <div style={{ height: "22vh", border: "1px dashed white", padding:"0%" }}>
-        <div style={{ height: "100%", width: "60%" }}>
+        <div style={{ height: "22vh", width: "60%" }}>
           <header-div>
             <h3 style={{ textAlign: "left", width: "40%", display:"inline-block", margin:"auto",margin:"auto" }}>Ratings</h3>
             <h4 style={{ textAlign: "right", width: "55%", display:"inline-block", margin:"auto"}}>
@@ -215,17 +215,17 @@ function PublicMessage() {
           </header-div>
           <p>{BLURBS.RATING}</p>
         </div>
-        <img src={dmpreview} alt="Ratings Preview"style={{height:"100%", width:"auto"}} />
+        <img src={dmpreview} alt="Ratings Preview"style={{height:"22vh", width:"auto"}} />
       </div>
 
       {/* ITEM 3: LIVE */}
       <div style={{ height: "22vh", border: "1px dashed white", padding:"0%" }}>
         <img
-          style={{ height: "100%", width: "auto" }}
+          style={{ height: "22vh", width: "auto" }}
           src={vidratepreview}
           alt="Live Preview"
         />
-        <div style={{ height: "100%", width: "60%" }}>
+        <div style={{ height: "22vh", width: "60%" }}>
           <header-div>
             <h3 style={{ textAlign: "left", width: "40%", display:"inline-block", margin:"auto",padding:"auto" }}>Live</h3>
             <h4 style={{ textAlign: "right", width: "55%", display:"inline-block", margin:"auto", }}>
