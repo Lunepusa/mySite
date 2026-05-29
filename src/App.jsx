@@ -77,7 +77,7 @@ export default function App() {
   }, [location]);
 
   return (
-    <div style={{ backgroundColor: "black" }}>
+    <div style={{ backgroundColor: "black", width:"100vw" }}>
       <ConfirmationBox
         isOpen={showConfirmation}
         onAgree={handleAgree}
@@ -106,9 +106,7 @@ export default function App() {
         <MailingFooter />
         <div style={{ textAlign: "center", fontSize: ".8em" }}>
           {" "}
-          this page is and always will be a work in progress. If you would like
-          to see what I have not implemented, but want to try to add you can do
-          so <a href="/WIP">here </a>
+          this site is and always will be a work in progress. wanna see a specific feature? let me know!
         </div>
       </div>
     </div>
