@@ -45,6 +45,10 @@ Desktop (> 1024px):
   
 }
 
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 html{
   background-color: black;
   align-content: center;
@@ -437,7 +441,7 @@ span{
 main{
 width:98vw;
 padding:0%;
-
+margin: 0%;
 }
 section{
   display:inline-block;
