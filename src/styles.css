@@ -47,13 +47,19 @@ Desktop (> 1024px):
 
 html{
   background-color: black;
-  width: 100vw;
   align-content: center;
   text-align: center;
   padding: 0px;
   margin: auto;
 }
-
+body{
+  background-color: black;
+  width: 100vw;
+  align-content: center;
+  text-align: center;
+  padding: 0px;
+  margin: 0px;
+}
 
 /* ==========================================================================
    Links and navigation items
