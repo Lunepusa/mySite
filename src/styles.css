@@ -557,12 +557,9 @@ icon-gallery img, icon-gallery video{
 /* ========================================= */
 /* DESKTOP RESPONSIVE LAYOUT                 */
 /* ========================================= */
-@media (min-width: 800px) {
+@media (min-width: 1000px) {
 section{
-  display:inline-block;
-  width:45%;
-  border: 1px dashed white;
-  padding: 0%;
+  width:40vw;
   
 }
     
