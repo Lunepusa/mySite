@@ -26,7 +26,7 @@ function Navbar() {
           backgroundPosition: "right top",
           textAlign: "left",
           width: "100%",
-          width:"100%",
+          height:"100%",
         }} 
       >
         <br />
@@ -34,7 +34,6 @@ function Navbar() {
           style={{
             listStyleType: "none",
             width: "fit-content",
-            height: "fit-content",
             padding: "0px",
             textAlign: "left",
             margin: "0px",
@@ -58,21 +57,18 @@ function Navbar() {
           
 
         </ul>
-        <br />
-        <p
+        <h1
           style={{
             textAlign: "left",
             fontSize: "2em",
-            display: "inline-block",
+            display: "block",
             backgroundColor: "rgba(0, 0, 0, 0.5)",
           }}
         >
           <Link to="/" style={{ textDecoration: "none" }}>
             LunePusa's Lewd Lounge
           </Link>
-        </p>
-        <br />
-        <br />
+        </h1>
       </div>
     </div>
   );
