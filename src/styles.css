@@ -291,7 +291,7 @@ tfoot td {
 .previewimg {
   max-width: 25%;
   max-height: 50vh;
-  object-fit: cover;
+  object-fit: contain;
   display: inline-block;
   border: 0.5em double rgba(255, 255, 255, 0.8);
 }
@@ -453,7 +453,6 @@ section{
 header-div{
   display:block;
   width: 100%;
-  height:fit-content;
   background-color: #444;
   margin: 0%;
   
@@ -495,6 +494,8 @@ img{
   height:auto;
   margin: 0%;
   padding:0%;
+  object-fit:contain;
+  
 }
 
 .card{
@@ -532,7 +533,6 @@ icon-div{
 
 card-gallery{
  display: inline-block;
-  height:fit-content;
   
 }
 
