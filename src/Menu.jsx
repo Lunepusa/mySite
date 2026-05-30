@@ -609,7 +609,7 @@ function CustomQuiz() {
       <div style={{display:"block", width: "80%"}}>
         {category !== "rating" && (
           <>
-            <div style={{width:"90%"}}><div style={{display:"block"}}><span style={{margins:"auto", width:"30%", textAlign:"left"}}>MINIMUM: {
+            <div style={{width:"90%"}}><div style={{display:"block"}}><span style={{margins:"auto", width:"20%", textAlign:"left"}}>MINIMUM: {
                   subType === "photo"
                     ? PRICING.PHOTO_MIN
                     : subType === "video"
@@ -619,7 +619,7 @@ function CustomQuiz() {
                         : PRICING.SEXTING_MIN
                 }</span>
               <input
-              style={{width: "30%" , margins:"auto"}}
+              style={{width: "20%" , margins:"auto"}}
                 type="number"
                 min={
                   subType === "photo"
@@ -644,7 +644,7 @@ function CustomQuiz() {
                 onChange={(e) => setQuantity(Number(e.target.value))}
               />
               {subType === " photo" ? " pics" : " min"}
-             <span style={{margins:"auto", width:"30%", textAlign:"right"}}>MAXIMUM: {
+             <span style={{margins:"auto", width:"20%", textAlign:"right"}}>MAXIMUM: {
                   subType === "photo"
                     ? PRICING.PHOTO_MAX
                     : subType === "video"
