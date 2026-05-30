@@ -461,7 +461,7 @@ header-div{
 button, .button{
   border: 1px solid white;
   display:inline-block;
-  margin: auto;
+  margin: 1%;
   padding:1%;
   font-size: inherit;
   background: black;
@@ -480,8 +480,8 @@ pill{
   text-align: center;
   cursor: pointer;
   display: inline-block;
-  margin: auto;
   padding:1%;
+  margin:1%;
   font-size: inherit;
   background: black;
   color: white;
@@ -489,8 +489,8 @@ pill{
 }
 
 img{
-  max-width: 100%;
-  max-height: 100vh;
+  max-width: 90%;
+  max-height: 90vh;
   height:auto;
   height:auto;
   margin: 0%;
