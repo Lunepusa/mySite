@@ -185,13 +185,13 @@ function PublicMessage() {
       <p>{BLURBS.INTRO}</p>
 
       {/* ITEM 1: CUSTOMS */}
-      <div style={{ height: "22vh", border: "1px dashed white", padding:"0%", width:"100%"}}>
+      <div style={{ height: "20vh", border: "1px dashed white", padding:"0%", width:"100%"}}>
         <img
-          style={{ height: "22vh", width: "auto" }}
+          style={{ height: "19vh", width: "auto" }}
           src={customvidpreview}
           alt="Customs Preview"
         />
-        <div style={{ height: "22vh", width: "65%", margin:"0%",padding:"0%" }}>
+        <div style={{ height: "20vh", width: "65%", margin:"0%",padding:"0%" }}>
           <header-div>
             <h3 style={{ textAlign: "left", width: "40%",  display:"inline-block", margin:"auto"}}>Customs</h3>
             <h4 style={{ textAlign: "right", width: "55%", display:"inline-block", margin:"auto"}}>
@@ -204,8 +204,8 @@ function PublicMessage() {
       </div>
 
       {/* ITEM 2: RATINGS */}
-      <div style={{ height: "22vh", border: "1px dashed white", padding:"0%" }}>
-        <div style={{ height: "22vh", width: "60%" }}>
+      <div style={{ height: "20vh", border: "1px dashed white", padding:"0%" }}>
+        <div style={{ height: "20vh", width: "60%" }}>
           <header-div>
             <h3 style={{ textAlign: "left", width: "40%", display:"inline-block", margin:"auto",margin:"auto" }}>Ratings</h3>
             <h4 style={{ textAlign: "right", width: "55%", display:"inline-block", margin:"auto"}}>
@@ -215,17 +215,17 @@ function PublicMessage() {
           </header-div>
           <p>{BLURBS.RATING}</p>
         </div>
-        <img src={dmpreview} alt="Ratings Preview"style={{height:"22vh", width:"auto"}} />
+        <img src={dmpreview} alt="Ratings Preview"style={{height:"19vh", width:"auto"}} />
       </div>
 
       {/* ITEM 3: LIVE */}
-      <div style={{ height: "22vh", border: "1px dashed white", padding:"0%" }}>
+      <div style={{ height: "20vh", border: "1px dashed white", padding:"0%" }}>
         <img
-          style={{ height: "22vh", width: "auto" }}
+          style={{ height: "19vh", width: "auto" }}
           src={vidratepreview}
           alt="Live Preview"
         />
-        <div style={{ height: "22vh", width: "60%" }}>
+        <div style={{ height: "20vh", width: "60%" }}>
           <header-div>
             <h3 style={{ textAlign: "left", width: "40%", display:"inline-block", margin:"auto",padding:"auto" }}>Live</h3>
             <h4 style={{ textAlign: "right", width: "55%", display:"inline-block", margin:"auto", }}>
@@ -609,7 +609,7 @@ function CustomQuiz() {
       <div style={{display:"block", width: "80%"}}>
         {category !== "rating" && (
           <>
-            <div style={{width:"90%"}}><div style={{display:"block"}}><span style={{margins:"auto", width:"20%", textAlign:"left"}}>MINIMUM: {
+            <div style={{width:"90%"}}><div style={{display:"block"}}><span style={{margins:"auto", width:"30%", textAlign:"left"}}>MINIMUM: {
                   subType === "photo"
                     ? PRICING.PHOTO_MIN
                     : subType === "video"
@@ -619,7 +619,7 @@ function CustomQuiz() {
                         : PRICING.SEXTING_MIN
                 }</span>
               <input
-              style={{width: "20%" , margins:"auto"}}
+              style={{width: "30%" , margins:"auto"}}
                 type="number"
                 min={
                   subType === "photo"
@@ -644,7 +644,7 @@ function CustomQuiz() {
                 onChange={(e) => setQuantity(Number(e.target.value))}
               />
               {subType === " photo" ? " pics" : " min"}
-             <span style={{margins:"auto", width:"20%", textAlign:"right"}}>MAXIMUM: {
+             <span style={{margins:"auto", width:"30%", textAlign:"right"}}>MAXIMUM: {
                   subType === "photo"
                     ? PRICING.PHOTO_MAX
                     : subType === "video"
