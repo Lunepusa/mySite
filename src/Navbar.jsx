@@ -11,8 +11,7 @@ function Navbar() {
         width: "100vw",
         borderBottom: "2px solid white",
         textAlign: "left",
-        alignContent: "left",
-        maxHeight:"12vh",
+        margin:"2%"
       }}
     >
       <div
@@ -26,10 +25,15 @@ function Navbar() {
           backgroundPosition: "right top",
           textAlign: "left",
           width: "100%",
-          height:"100%",
+          height:"fit-content",
         }} 
-      >
-        <br />
+      ><div style={{textAlign: "left",
+        display:"inline-block",
+        marginTop:"3vh",
+        marginLect:"3vw",
+        width:"fit-content",
+
+      }}>
         <ul
           style={{
             listStyleType: "none",
@@ -37,6 +41,7 @@ function Navbar() {
             padding: "0px",
             textAlign: "left",
             margin: "0px",
+            display:"block",
           }}
         >
           <li>
@@ -54,8 +59,6 @@ function Navbar() {
           <li>
             <Link to="/Profile">Profile</Link>
           </li>
-          
-
         </ul>
         <h1
           style={{
@@ -63,12 +66,14 @@ function Navbar() {
             fontSize: "2em",
             display: "block",
             backgroundColor: "rgba(0, 0, 0, 0.5)",
+             width:"fit-content",
           }}
         >
-          <Link to="/" style={{ textDecoration: "none" }}>
+          <Link to="/" style={{ textDecoration: "none", padding:"0", margin:"0",display:"block",  width:"fit-content",}}>
             LunePusa's Lewd Lounge
           </Link>
         </h1>
+        </div>
       </div>
     </div>
   );

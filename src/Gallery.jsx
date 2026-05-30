@@ -796,7 +796,7 @@ useEffect(() => {
                 key={date}
                 style={{ marginBottom: "5px", border: "2px dashed white" }}
               >
-                <h2
+                <h3
                   style={{ textAlign: "center" }}
                   onContextMenu={handleDateShareCopy(date)}
                 >
@@ -829,7 +829,7 @@ useEffect(() => {
                       )}
                     </>
                   )}
-                </h2>
+                </h3>
 
                 <h4
                   style={{
@@ -930,7 +930,7 @@ useEffect(() => {
                                     style={{
                                       maxHeight: "auto",
                                       width: "100%",
-                                      objectFit: "contain",
+                                      objectFit: "cover",
                                       WebkitTouchCallout: "none",
                                       WebkitUserSelect: "none",
                                     }}
@@ -992,7 +992,6 @@ useEffect(() => {
                               <>
                                 <p
                                   style={{
-                                    fontSize: "0.5em",
                                     color: "#ccc",
                                     margin: "2px 0",
                                   }}
