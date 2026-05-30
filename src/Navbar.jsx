@@ -8,10 +8,11 @@ function Navbar() {
   return (
     <div
       style={{
-        width: "100%",
+        width: "100vw",
         borderBottom: "2px solid white",
         textAlign: "left",
         alignContent: "left",
+        maxHeight:"12vh",
       }}
     >
       <div
@@ -24,7 +25,8 @@ function Navbar() {
           backgroundSize: "contain",
           backgroundPosition: "right top",
           textAlign: "left",
-        }}
+          width: "100%"
+        }} 
       >
         <br />
         <ul
