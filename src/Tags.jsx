@@ -813,7 +813,7 @@ export const ClickableTags = ({ tags = "", emptyText = "None set" }) => {
           >
             {tag} ({counts[tag] || 0})
           </a></small>
-          {i < tagArray.length - 1 && <amall style={{ color: "#666" }}>, </small>}
+          {i < tagArray.length - 1 && <small style={{ color: "#666" }}>, </small>}
         </React.Fragment>
       ))}
     </pill>
