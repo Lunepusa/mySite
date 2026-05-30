@@ -25,7 +25,8 @@ function Navbar() {
           backgroundSize: "contain",
           backgroundPosition: "right top",
           textAlign: "left",
-          width: "100%"
+          width: "100%",
+          width:"100%",
         }} 
       >
         <br />
