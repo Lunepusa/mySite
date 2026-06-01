@@ -688,7 +688,7 @@ subType === "photo"
 ? `${ QTY.VIDEO_MAX} (${vidvanMax} mins)`
 : subType === "call"
 ? `${ QTY.CALL_MAX} (${callvanMax} mins)`
-: `${ QTY.SEXTING_MAX} (${sextvanMax} mins)`</span>
+: `${ QTY.SEXTING_MAX} (${sextvanMax} mins)`}</span>
 </div>
 <input
 type="range"
