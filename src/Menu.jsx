@@ -72,10 +72,10 @@ markupQty = 0,
 discountQty = 0,
 }) => {
 const base =
-discussionQty * (PRICING.DISCUSSION_HOURLY / 60) +
-prePostQty * (PRICING.PREPOST_HOURLY / 60) +
+discussionQty * (QTY.DISCUSSION_HOURLY / 60) +
+prePostQty * (QTY.PREPOST_HOURLY / 60) +
 contentQty *  QTY.CONTENT_PERMINUTE +
-editingQty * (PRICING.EDITING_HOURLY / 60) +
+editingQty * (QTY.EDITING_HOURLY / 60) +
 consumables;
 
 let currentMarkupBase = base;
@@ -752,7 +752,7 @@ onClick={()=> setShowAllStandard(!showAllStandard)}
 
 <p>
 Extra Time/Setup Needed (+$
-{PRICING.EXTRA_PREP_TAG_MINS * (PRICING.PREPOST_HOURLY / 60)} each)
+{QTY.EXTRA_PREP_TAG_MINS * (QTY.PREPOST_HOURLY / 60)} each)
 </p>
 <div>
 {visiblePrep.map((kink) => (
@@ -776,7 +776,7 @@ onClick={()=> setShowAllPrep(!showAllPrep)}
 <div style={{ width: "95%" }}>
 {category === "custom" && (
 <ToggleRow
-label={`Exclusive Content (+${PRICING.MARKUP_RATE * 100}% Markup, Name use is free)`}
+label={`Exclusive Content (+${QTY.MARKUP_RATE * 100}% Markup, Name use is free)`}
 active={isExclusive}
 onClick={()=> setIsExclusive(!isExclusive)}
 />
