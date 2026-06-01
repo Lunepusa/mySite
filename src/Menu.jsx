@@ -185,14 +185,14 @@ function PublicMessage() {
       <p>{BLURBS.INTRO}</p>
 
       {/* ITEM 1: CUSTOMS */}
-      <div style={{ border: "1px dashed white", padding:"0%", width:"100%", whiteSpace:"nowrap"}}>
+      <div style={{ border: "1px dashed white", padding:"0%", width:"100%"}}>
         <img
           style={{ height: "19vh", width: "auto" }}
           src={customvidpreview}
           alt="Customs Preview"
         />
-        <div style={{ margin:"0%",padding:"0%" }}>
-          <header-div style={{whiteSpace:"nowrap"}}>
+        <div style={{margin:"0%",padding:"0%" }}>
+          <header-div style={{}}>
             <h3 style={{ textAlign: "left", width: "40%",  display:"inline-block", margin:"auto"}}>Customs</h3>
             <h4 style={{ textAlign: "right", width: "55%", display:"inline-block", margin:"auto"}}>
               pics: ${picMin} - ${picMax}
@@ -204,9 +204,9 @@ function PublicMessage() {
       </div>
 
       {/* ITEM 2: RATINGS */}
-      <div style={{ whiteSpace:"nowrap", border: "1px dashed white", padding:"0%" }}>
+      <div style={{ border: "1px dashed white", padding:"0%" }}>
         <div style={{ width: "60%" }}>
-          <header-div style={{whiteSpace:"nowrap"}}>
+          <header-div style={{}}>
             <h3 style={{ textAlign: "left", width: "40%", display:"inline-block", margin:"auto",margin:"auto" }}>Ratings</h3>
             <h4 style={{ textAlign: "right", width: "55%", display:"inline-block", margin:"auto"}}>
               text: ${txtRating}
@@ -219,14 +219,14 @@ function PublicMessage() {
       </div>
 
       {/* ITEM 3: LIVE */}
-      <div style={{ whiteSpace:"nowrap", border: "1px dashed white", padding:"0%" }}>
+      <div style={{ border: "1px dashed white", padding:"0%" }}>
         <img
           style={{ height: "19vh", width: "auto" }}
           src={vidratepreview}
           alt="Live Preview"
         />
         <div style={{ width: "60%" }}>
-          <header-div style={{whiteSpace:"nowrap"}}>
+          <header-div style={{}}>
             <h3 style={{ textAlign: "left", width: "40%", display:"inline-block", margin:"auto",padding:"auto" }}>Live</h3>
             <h4 style={{ textAlign: "right", width: "55%", display:"inline-block", margin:"auto", }}>
               sexting: ${sextMin} - ${sextMax}
@@ -529,7 +529,7 @@ function CustomQuiz() {
       <h2>Custom Builder</h2>
       <br />
 
-      <div style={{width:"90%", whiteSpace:"nowrap"}}>
+      <div style={{width:"90%"}}>
         <TabButton
           active={category === "custom"}
           onClick={() => handleCategoryChange("custom")}
@@ -552,7 +552,7 @@ function CustomQuiz() {
       <br />
 
       <div>
-        <div style={{width:"90%", whiteSpace:"nowrap"}}>
+        <div style={{width:"90%"}}>
           {category === "custom" && (
             <>
               <SelectionButton
@@ -606,7 +606,7 @@ function CustomQuiz() {
         </div>
         <br />
       </div>
-      <div style={{display:"block", width: "80%", whiteSpace:"nowrap"}}>
+      <div style={{display:"block", width: "80%"}}>
         {category !== "rating" && (
           <>
             <div style={{width:"90%"}}><div style={{display:"block"}}><span style={{margins:"auto", width:"30%", textAlign:"left"}}>MINIMUM: {
