@@ -795,8 +795,8 @@ export const ClickableTags = ({ tags = "", emptyText = "None set" }) => {
 
   return (
     <div style={{ margin: "0.5% 0" }}>
-      <span .map((tag, i) => (
-        <reactkey={tag} style={{padding:"0", margin:"2%", display:"inline-block"}}>
+      {tagArray.map((tag, i) => (
+        <span key={tag} style={{padding:"0", margin:"2%", display:"inline-block"}}>
           <small>
           <a
             href={`/lounge#${encodeURIComponent(tag)}`}
