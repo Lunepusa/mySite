@@ -204,7 +204,7 @@ for (let i = 0; i < markupQty; i++) {
     markupQty: 1,
     });
 function PublicMessage() {
-    return (
+return (
     <section>
       <h1>Menu</h1>
       <p>
@@ -212,67 +212,75 @@ function PublicMessage() {
       </p>
 
       {/* ITEM 1: CUSTOMS */}
-      <div style={{ border: "1px dashed white", padding:"0%", width:"100%", display:"inline-flex"}}>
+      <div style={{ border: "1px dashed white", padding: "1%", width: "98%", display: "block", marginBottom: "2%" }}>
         <img
-        style={{ height: "auto", flex:"1 1 30%"}}
-        src={customvidpreview}
-        alt="Customs Preview"
+          style={{ width: "30%", height: "auto", display: "inline-block", verticalAlign: "top" }}
+          src={customvidpreview}
+          alt="Customs Preview"
         />
-      <div style={{margin:"0%",padding:"0%", flex:"1 1 80%" }}>
-        <header-div style={{display:"inline-flex"}}>
-          <h3 style={{ textAlign: "left", width: "40%", display:"inline-block", margin:"auto", flex:"1 1 30%"}}>Customs</h3>
-          <h4 style={{ textAlign: "right", width: "55%", display:"inline-block", margin:"auto", flex:"1 1 70%"}}>
-            pics:${ QTY.PHOTO_MIN}-${ QTY.PHOTO_MAX}
-            (${picMin} - ${picMax})
-            <br /> vids: ${ QTY.VIDEO_MIN}-${ QTY.VIDEO_MAX} (${vidMin} - ${vidMax})
-        </h4>
-      </header-div>
-      <p>
-        {BLURBS.CUSTOMS}
-      </p>
-    </div>
-  </div>
+        <div style={{ margin: "0%", padding: "0%", width: "68%", display: "inline-block", verticalAlign: "top" }}>
+          <header-div style={{ display: "block", width: "100%" }}>
+            <h3 style={{ textAlign: "left", width: "40%", display: "inline-block", margin: "0%", verticalAlign: "top" }}>
+              Customs
+            </h3>
+            <h4 style={{ textAlign: "right", width: "55%", display: "inline-block", margin: "0%", verticalAlign: "top" }}>
+              pics:${QTY.PHOTO_MIN}-${QTY.PHOTO_MAX} ({picMin} - {picMax})
+              <br /> vids: ${QTY.VIDEO_MIN}-${QTY.VIDEO_MAX} ({vidMin} - {vidMax})
+            </h4>
+          </header-div>
+          <p style={{ margin: "0%", paddingTop: "1%" }}>
+            {BLURBS.CUSTOMS}
+          </p>
+        </div>
+      </div>
 
-  {/* ITEM 2: RATINGS */}
-  <div style={{ border: "1px dashed white", padding:"0%", display:"inline-flex" }}>
-    <div style={{ flex:"1 1 70%", margin:"0%", padding:"0%"}}>
-      <header-div style={{display:"inline-flex"}}>
-        <h3 style={{ textAlign: "left", width: "40%", display:"inline-block",margin:"auto", flex:"1 1 30%" }}>Ratings</h3>
-        <h4 style={{ textAlign: "right", width: "55%", display:"inline-block", margin:"auto", flex:"1 1 70%"}}>
-          text: ${txtRating}
-          <br /> vid: ${vidRating}
-      </h4>
-    </header-div>
-    <p>
-      {BLURBS.RATING}
-    </p>
-  </div>
-  <img src={dmpreview} alt="Ratings Preview"style={{ height:"auto", flex:"1 1 30%"}} />
-</div>
+      {/* ITEM 2: RATINGS */}
+      <div style={{ border: "1px dashed white", padding: "1%", width: "98%", display: "block", marginBottom: "2%" }}>
+        <div style={{ width: "68%", margin: "0%", padding: "0%", display: "inline-block", verticalAlign: "top" }}>
+          <header-div style={{ display: "block", width: "100%" }}>
+            <h3 style={{ textAlign: "left", width: "40%", display: "inline-block", margin: "0%", verticalAlign: "top" }}>
+              Ratings
+            </h3>
+            <h4 style={{ textAlign: "right", width: "55%", display: "inline-block", margin: "0%", verticalAlign: "top" }}>
+              text: ${txtRating}
+              <br /> vid: ${vidRating}
+            </h4>
+          </header-div>
+          <p style={{ margin: "0%", paddingTop: "1%" }}>
+            {BLURBS.RATING}
+          </p>
+        </div>
+        <img
+          src={dmpreview}
+          alt="Ratings Preview"
+          style={{ width: "30%", height: "auto", display: "inline-block", verticalAlign: "top" }}
+        />
+      </div>
 
-{/* ITEM 3: LIVE */}
-<div style={{ border: "1px dashed white", padding:"0%", display:"inline-flex" }}>
-<img
-style={{ height: "auto" , flex:"1 1 30%"}}
-src={vidratepreview}
-alt="Live Preview"
-/>
-<div style={{ flex:"1 1 60%", margin:"0%", padding:"0%"}}>
-<header-div style={{display:"inline-flex"}}>
-<h3 style={{ textAlign: "left", width: "40%", display:"inline-block", margin:"auto",padding:"auto" , flex:"1 1 30%"}}>Live</h3>
-<h4 style={{ textAlign: "right", width: "55%", display:"inline-block", margin:"auto", flex:"1 1 70%"}}>
-sexting: ${ QTY.SEXTING_MIN}-${ QTY.SEXTING_MAX} (${sextMin} - ${sextMax})
-<br /> calls: ${ QTY.CALL_MIN}-${ QTY.CALL_MAX} (${callMin} - ${callMax})
-</h4>
-</header-div>
-<p>
-{BLURBS.LIVE}
-</p>
-</div>
-</div>
-</section>
-);
-}
+      {/* ITEM 3: LIVE */}
+      <div style={{ border: "1px dashed white", padding: "1%", width: "98%", display: "block" }}>
+        <img
+          style={{ width: "30%", height: "auto", display: "inline-block", verticalAlign: "top" }}
+          src={vidratepreview}
+          alt="Live Preview"
+        />
+        <div style={{ width: "68%", margin: "0%", padding: "0%", display: "inline-block", verticalAlign: "top" }}>
+          <header-div style={{ display: "block", width: "100%" }}>
+            <h3 style={{ textAlign: "left", width: "40%", display: "inline-block", margin: "0%", verticalAlign: "top" }}>
+              Live
+            </h3>
+            <h4 style={{ textAlign: "right", width: "55%", display: "inline-block", margin: "0%", verticalAlign: "top" }}>
+              sexting: ${QTY.SEXTING_MIN}-${QTY.SEXTING_MAX} ({sextMin} - {sextMax})
+              <br /> calls: ${QTY.CALL_MIN}-${QTY.CALL_MAX} ({callMin} - {callMax})
+            </h4>
+          </header-div>
+          <p style={{ margin: "0%", paddingTop: "1%" }}>
+            {BLURBS.LIVE}
+          </p>
+        </div>
+      </div>
+    </section>
+  );
 
 // ──────────────────────────────────────────────────────────────────────────────
 // 5. THE BUILDER QUIZ
@@ -569,19 +577,19 @@ return (
 active={category==="custom"}
 onClick={()=> handleCategoryChange("custom")}
 label="Customs"
-style={{margins:"auto"}}
+style={{margin:"auto"}}
 />
 <TabButton
 active={category==="rating"}
 onClick={()=> handleCategoryChange("rating")}
 label="Ratings"
-style={{margins:"auto"}}
+style={{margin:"auto"}}
 />
 <TabButton
 active={category==="live"}
 onClick={()=> handleCategoryChange("live")}
 label="Live"
-style={{margins:"auto"}}
+style={{margin:"auto"}}
 />
 </div>
 <br />
@@ -594,13 +602,13 @@ style={{margins:"auto"}}
 active={subType==="video"}
 onClick={()=> handleSubTypeChange("video", QTY.VIDEO_MIN)}
 label="Video"
-style={{margins:"auto"}}
+style={{margin:"auto"}}
 />
 <SelectionButton
 active={subType==="photo"}
 onClick={()=> handleSubTypeChange("photo", QTY.PHOTO_MIN)}
 label="Photo Set"
-style={{margins:"auto"}}
+style={{margin:"auto"}}
 /><br />
 </>
 )}
@@ -610,13 +618,13 @@ style={{margins:"auto"}}
 active={subType==="text"}
 onClick={()=> handleSubTypeChange("text", 1)}
 label="Text Rating"
-style={{margins:"auto"}}
+style={{margin:"auto"}}
 />
 <SelectionButton
 active={subType==="vid_rating"}
 onClick={()=> handleSubTypeChange("vid_rating", 1)}
 label="Video Rating"
-style={{margins:"auto"}}
+style={{margin:"auto"}}
 />
 </>
 )}
@@ -626,7 +634,7 @@ style={{margins:"auto"}}
 active={subType==="call"}
 onClick={()=> handleSubTypeChange("call", QTY.CALL_MIN)}
 label="Video Call"
-style={{margins:"auto"}}
+style={{margin:"auto"}}
 />
 <SelectionButton
 active={subType==="sexting"}
@@ -634,7 +642,7 @@ onClick={()=>
 handleSubTypeChange("sexting", QTY.SEXTING_MIN)
 }
 label="Sexting"
-style={{margins:"auto"}}
+style={{margin:"auto"}}
 />
 </>
 )}
@@ -646,17 +654,16 @@ style={{margins:"auto"}}
 <>
 <div style={{width:"90%"}}>
 <div style={{display:"block"}}>
-<span style={{margins:"auto", width:"30%", textAlign:"left"}}>MINIMUM: {
+<span style={{margin:"auto", width:"30%", textAlign:"left"}}>MINIMUM: {
 subType === "photo"
-? `${ QTY.PHOTO_MIN} (${picMin} pics)`
+? `${ QTY.PHOTO_MIN} ($${picMin})`
 : subType === "video"
-? `${ QTY.VIDEO_MIN} (${vidMin} mins)`
+? `${ QTY.VIDEO_MIN} ($${vidMin})`
 : subType === "call"
-? `${ QTY.CALL_MIN} (${callMin} mins)`
-: `${ QTY.SEXTING_MIN} (${sextMin} mins)`
-}</span>
+? `${ QTY.CALL_MIN} ($${callMin})`
+: `${ QTY.SEXTING_MIN} ($${sextMin})`}</span>
 <input
-style={{width: "30%" , margins:"auto"}}
+style={{width: "30%" , margin:"auto"}}
 type="number"
 min={
 subType==="photo"
@@ -680,15 +687,41 @@ step={subType==="call" ? 5 : subType==="sexting" ? 15 : 1}
 value={quantity}
 onChange={(e)=> setQuantity(Number(e.target.value))}
 />
-{subType === " photo" ? " pics" : " min"}
-<span style={{margins:"auto", width:"30%", textAlign:"right"}}>MAXIMUM: {
-subType === "photo"
-? `${ QTY.PHOTO_MAX} (${picvanMax} pics)`
+{subType === "photo"
+? `pics ($${calculatePrice({
+    discussionQty: QTY.BASE_DISCUSSION,
+    prePostQty: QTY.BASE_SETUP_PIC + Math.max(2, Math.floor( QTY.PHOTO_MAX * 0.5 / 2.5)),
+    contentQty: quantity * 0.5,
+    markupQty: 0,
+    })})`
 : subType === "video"
-? `${ QTY.VIDEO_MAX} (${vidvanMax} mins)`
+? `minutes ($${calculatePrice({
+    discussionQty: QTY.BASE_DISCUSSION,
+    prePostQty: QTY.BASE_SETUP_VID,
+    contentQty: quantity,
+    markupQty: 0,
+    })})`
 : subType === "call"
-? `${ QTY.CALL_MAX} (${callvanMax} mins)`
-: `${ QTY.SEXTING_MAX} (${sextvanMax} mins)`}</span>
+? `minutes ($${calculatePrice({
+    discussionQty: QTY.BASE_DISCUSSION,
+    prePostQty: QTY.BASE_SETUP_CALL,
+    contentQty: quantity,
+    markupQty: 1,
+    })})`
+: `minutes ($${calculatePrice({
+    discussionQty: quantity * .5,
+    prePostQty: QTY.BASE_SETUP_SEXTING * .5,
+    contentQty: quantity * 0.5,
+    markupQty: 0,
+    })})`}
+<span style={{margin:"auto", width:"30%", textAlign:"right"}}>MAXIMUM: {
+subType === "photo"
+? `${ QTY.PHOTO_MAX} ($${picMax})`
+: subType === "video"
+? `${ QTY.VIDEO_MAX} ($${vidMax})`
+: subType === "call"
+? `${ QTY.CALL_MAX} ($${callMax})`
+: `${ QTY.SEXTING_MAX} ($${sextMax})`}</span>
 </div>
 <input
 type="range"
@@ -719,15 +752,15 @@ onChange={(e)=> setQuantity(Number(e.target.value))}
 </>
 )}
 </div>
-<div>
-<h4>
+<div style={{border:"1px white dashed",borderRadius:"5%"}}>
+<h3>
 Select up to {maxKinks} tags. ({currentKinksCount}/{maxKinks}{" "}
 selected)
-</h4>
+</h3>
 
-<p>
+<h4>
 Standard (Free!)
-</p>
+</h4>
 <div>
 {visibleStandard.map((kink) => (
 <KinkPill
@@ -750,10 +783,10 @@ onClick={()=> setShowAllStandard(!showAllStandard)}
 </div>
 <br />
 
-<p>
-Extra Time/Setup Needed (+$
+<h4>
+Extra Set up or Clean up Needed (+$
 {QTY.EXTRA_PREP_TAG_MINS * (QTY.PREPOST_HOURLY / 60)} each)
-</p>
+</h4>
 <div>
 {visiblePrep.map((kink) => (
 <KinkPill
@@ -860,7 +893,7 @@ style={{width:"30%"}}>
 
 function SelectionButton({ active, onClick, label }) {
 return (
-<button className={active ? "selected" : ""} onClick={onClick} style={{backgroundColor:"grey", width:"45%"}}>
+<button className={active ? "selected" : ""} onClick={onClick} style={{width:"45%", border:"1px dashed white"}}>
 {label}
 </button>
 );
