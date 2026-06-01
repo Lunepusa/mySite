@@ -21,7 +21,7 @@ import { ClickableTags } from "./Tags";
 // ──────────────────────────────────────────────────────────────────────────────
 // 1. CONTROL PANEL (VARIABLES)
 // ──────────────────────────────────────────────────────────────────────────────
-export constQTY = {
+export const QTY = {
   CONTENT_PERMINUTE: 3.0,
   PREPOST_HOURLY: 20.0,
   DISCUSSION_HOURLY: 10.0,
@@ -60,7 +60,7 @@ export const BLURBS = {
 };
 
 // ──────────────────────────────────────────────────────────────────────────────
-// 2. THEQTY ENGINE
+// 2. THE  QTY ENGINE
 // ──────────────────────────────────────────────────────────────────────────────
 export const calculatePrice = ({
   discussionQty = 0,
@@ -74,14 +74,14 @@ export const calculatePrice = ({
   const base =
     discussionQty * (PRICING.DISCUSSION_HOURLY / 60) +
     prePostQty * (PRICING.PREPOST_HOURLY / 60) +
-    contentQty *QTY.CONTENT_PERMINUTE +
+    contentQty *  QTY.CONTENT_PERMINUTE +
     editingQty * (PRICING.EDITING_HOURLY / 60) +
     consumables;
 
   let currentMarkupBase = base;
   let totalMarkup = 0;
   for (let i = 0; i < markupQty; i++) {
-    const amt = currentMarkupBase *QTY.MARKUP_RATE;
+    const amt = currentMarkupBase * QTY.MARKUP_RATE;
     totalMarkup += amt;
     currentMarkupBase += amt;
   }
@@ -89,7 +89,7 @@ export const calculatePrice = ({
   let currentDiscountBase = base;
   let totalDiscount = 0;
   for (let i = 0; i < discountQty; i++) {
-    const amt = currentDiscountBase *QTY.DISCOUNT_RATE;
+    const amt = currentDiscountBase *  QTY.DISCOUNT_RATE;
     totalDiscount += amt;
     currentDiscountBase -= amt;
   }
@@ -121,86 +121,86 @@ export default function MenuPage() {
 function PublicMessage() {
   // Min Calculations
   export const picMin = calculatePrice({
-    discussionQty:QTY.BASE_DISCUSSION,
-    prePostQty:QTY.BASE_SETUP_PIC,
-    contentQty:QTY.PHOTO_MIN * 0.5,
+    discussionQty: QTY.BASE_DISCUSSION,
+    prePostQty: QTY.BASE_SETUP_PIC,
+    contentQty: QTY.PHOTO_MIN * 0.5,
   });
   export const vidMin = calculatePrice({
-    discussionQty:QTY.BASE_DISCUSSION,
-    prePostQty:QTY.BASE_SETUP_VID,
-    contentQty:QTY.VIDEO_MIN,
+    discussionQty: QTY.BASE_DISCUSSION,
+    prePostQty: QTY.BASE_SETUP_VID,
+    contentQty: QTY.VIDEO_MIN,
   });
   export const sextMin = calculatePrice({
     discussionQty:QTY.SEXTING_MIN * 0.5,
-    prePostQty:QTY.BASE_SETUP_SEXT,
-    contentQty:QTY.SEXTING_MIN * 0.5,
+    prePostQty: QTY.BASE_SETUP_SEXT,
+    contentQty: QTY.SEXTING_MIN * 0.5,
   });
   export const callMin = calculatePrice({
     discussionQty: 0,
-    prePostQty:QTY.BASE_SETUP_CALL,
-    contentQty:QTY.CALL_MIN,
+    prePostQty: QTY.BASE_SETUP_CALL,
+    contentQty: QTY.CALL_MIN,
     markupQty: 1,
   });
   export const txtRating = calculatePrice({
-    discussionQty:QTY.BASE_DISC_TEXT_RATING,
+    discussionQty: QTY.BASE_DISC_TEXT_RATING,
   });
   export const vidRating = calculatePrice({
-    discussionQty:QTY.BASE_DISCUSSION,
-    prePostQty:QTY.BASE_SETUP_VID_RATING,
+    discussionQty: QTY.BASE_DISCUSSION,
+    prePostQty: QTY.BASE_SETUP_VID_RATING,
     contentQty: 5,
     markupQty: 1,
     discountQty: 1,
   });
 
   // Max Calculations (Assuming max of 2 extra prep tags for calculation purposes)
-  export const maxExtraPrepTime = 2 *QTY.EXTRA_PREP_TAG_MINS;
+  export const maxExtraPrepTime = 2 * QTY.EXTRA_PREP_TAG_MINS;
   export const picMax = calculatePrice({
-    discussionQty:QTY.BASE_DISCUSSION,
-    prePostQty:QTY.BASE_SETUP_PIC + maxExtraPrepTime,
-    contentQty:QTY.PHOTO_MAX * 0.5,
+    discussionQty: QTY.BASE_DISCUSSION,
+    prePostQty: QTY.BASE_SETUP_PIC + maxExtraPrepTime,
+    contentQty: QTY.PHOTO_MAX * 0.5,
     markupQty: 1,
   });
   export const vidMax = calculatePrice({
-    discussionQty:QTY.BASE_DISCUSSION,
-    prePostQty:QTY.BASE_SETUP_VID + maxExtraPrepTime,
-    contentQty:QTY.VIDEO_MAX,
+    discussionQty: QTY.BASE_DISCUSSION,
+    prePostQty: QTY.BASE_SETUP_VID + maxExtraPrepTime,
+    contentQty: QTY.VIDEO_MAX,
     markupQty: 1,
   });
   export const sextMax = calculatePrice({
-    discussionQty:QTY.SEXTING_MIN * 0.5,
-    prePostQty:QTY.BASE_SETUP_SEXT + maxExtraPrepTime,
-    contentQty:QTY.SEXTING_MAX * 0.5,
+    discussionQty: QTY.SEXTING_MIN * 0.5,
+    prePostQty: QTY.BASE_SETUP_SEXT + maxExtraPrepTime,
+    contentQty: QTY.SEXTING_MAX * 0.5,
     markupQty: 1,
   });
   export const callMax = calculatePrice({
     discussionQty: 0,
-    prePostQty:QTY.BASE_SETUP_CALL + maxExtraPrepTime,
-    contentQty:QTY.CALL_MAX,
+    prePostQty: QTY.BASE_SETUP_CALL + maxExtraPrepTime,
+    contentQty: QTY.CALL_MAX,
     markupQty: 1,
   });
     // Max no extra prep time Calculations
   export const picvanMax = calculatePrice({
-    discussionQty:QTY.BASE_DISCUSSION,
-    prePostQty:QTY.BASE_SETUP_PIC,
-    contentQty:QTY.PHOTO_MAX * 0.5,
+    discussionQty: QTY.BASE_DISCUSSION,
+    prePostQty: QTY.BASE_SETUP_PIC,
+    contentQty: QTY.PHOTO_MAX * 0.5,
     markupQty: 0,
   });
   export const vidvanMax = calculatePrice({
-    discussionQty:QTY.BASE_DISCUSSION,
-    prePostQty:QTY.BASE_SETUP_VID,
-    contentQty:QTY.VIDEO_MAX,
+    discussionQty: QTY.BASE_DISCUSSION,
+    prePostQty: QTY.BASE_SETUP_VID,
+    contentQty: QTY.VIDEO_MAX,
     markupQty: 0,
   });
   export const sextvanMax = calculatePrice({
-    discussionQty:QTY.SEXTING_MIN * 0.5,
-    prePostQty:QTY.BASE_SETUP_SEXT,
-    contentQty:QTY.SEXTING_MAX * 0.5,
+    discussionQty: QTY.SEXTING_MIN * 0.5,
+    prePostQty: QTY.BASE_SETUP_SEXT,
+    contentQty: QTY.SEXTING_MAX * 0.5,
     markupQty: 0,
   });
   export const callvanMax = calculatePrice({
     discussionQty: 0,
-    prePostQty:QTY.BASE_SETUP_CALL,
-    contentQty:QTY.CALL_MAX,
+    prePostQty: QTY.BASE_SETUP_CALL,
+    contentQty: QTY.CALL_MAX,
     markupQty: 1,
   });
 
@@ -220,9 +220,9 @@ function PublicMessage() {
           <header-div style={{display:"inline-flex"}}>
             <h3 style={{ textAlign: "left", width: "40%",  display:"inline-block", margin:"auto", flex:"1 1 30%"}}>Customs</h3>
             <h4 style={{ textAlign: "right", width: "55%", display:"inline-block", margin:"auto", flex:"1 1 70%"}}>
-              pics:${QTY.PHOTO_MIN}-${QTY.PHOTO_MAX}
+              pics:${ QTY.PHOTO_MIN}-${ QTY.PHOTO_MAX}
               (${picMin} - ${picMax})
-              <br /> vids: ${QTY.VIDEO_MIN}-${QTY.VIDEO_MAX} (${vidMin} - ${vidMax})
+              <br /> vids: ${ QTY.VIDEO_MIN}-${ QTY.VIDEO_MAX} (${vidMin} - ${vidMax})
             </h4>     
           </header-div>
      <p>{BLURBS.CUSTOMS}</p>
@@ -255,8 +255,8 @@ function PublicMessage() {
           <header-div style={{display:"inline-flex"}}>
             <h3 style={{ textAlign: "left", width: "40%", display:"inline-block", margin:"auto",padding:"auto" , flex:"1 1 30%"}}>Live</h3>
             <h4 style={{ textAlign: "right", width: "55%", display:"inline-block", margin:"auto", flex:"1 1 70%"}}>
-              sexting: ${QTY.SEXTING_MIN}-${QTY.SEXTING_MAX} (${sextMin} - ${sextMax})
-              <br /> calls: ${QTY.CALL_MIN}-${QTY.CALL_MAX} (${callMin} - ${callMax})
+              sexting: ${ QTY.SEXTING_MIN}-${ QTY.SEXTING_MAX} (${sextMin} - ${sextMax})
+              <br /> calls: ${ QTY.CALL_MIN}-${ QTY.CALL_MAX} (${callMin} - ${callMax})
             </h4>
           </header-div>
           <p>{BLURBS.LIVE}</p>
@@ -422,20 +422,20 @@ function CustomQuiz() {
 
   // --- FEED THE ENGINE ---
   useEffect(() => {
-    let discussion =QTY.BASE_DISCUSSION;
-    let setup =QTY.BASE_SETUP_VID;
+    let discussion = QTY.BASE_DISCUSSION;
+    let setup = QTY.BASE_SETUP_VID;
     let content = quantity;
     let markups = 0;
     let discounts = 0;
 
     if (category === "rating") {
       if (subType === "text") {
-        discussion =QTY.BASE_DISC_TEXT_RATING;
+        discussion = QTY.BASE_DISC_TEXT_RATING;
         setup = 0;
         content = 0;
       } else if (subType === "vid_rating") {
-        discussion =QTY.BASE_DISCUSSION;
-        setup =QTY.BASE_SETUP_VID_RATING;
+        discussion = QTY.BASE_DISCUSSION;
+        setup = QTY.BASE_SETUP_VID_RATING;
         content = 5;
         markups = 1;
         discounts = 1;
@@ -443,23 +443,23 @@ function CustomQuiz() {
     } else if (category === "live") {
       if (subType === "call") {
         discussion = 0;
-        setup =QTY.BASE_SETUP_CALL;
+        setup = QTY.BASE_SETUP_CALL;
         content = quantity;
         markups = 1;
       } else if (subType === "sexting") {
         discussion = quantity * 0.5;
-        setup =QTY.BASE_SETUP_SEXT;
+        setup = QTY.BASE_SETUP_SEXT;
         content = quantity * 0.5;
       }
     } else {
       if (subType === "photo") {
-        setup =QTY.BASE_SETUP_PIC;
+        setup = QTY.BASE_SETUP_PIC;
         content = quantity * 0.5;
       }
       if (isExclusive) markups += 1;
     }
 
-    setup += selectedPrep.length *QTY.EXTRA_PREP_TAG_MINS;
+    setup += selectedPrep.length * QTY.EXTRA_PREP_TAG_MINS;
 
     const finalEstimate = calculatePrice({
       discussionQty: discussion,
@@ -582,13 +582,13 @@ function CustomQuiz() {
             <>
               <SelectionButton
                 active={subType === "video"}
-                onClick={() => handleSubTypeChange("video",QTY.VIDEO_MIN)}
+                onClick={() => handleSubTypeChange("video", QTY.VIDEO_MIN)}
                 label="Video"
                 style={{margins:"auto"}}
               />
               <SelectionButton
                 active={subType === "photo"}
-                onClick={() => handleSubTypeChange("photo",QTY.PHOTO_MIN)}
+                onClick={() => handleSubTypeChange("photo", QTY.PHOTO_MIN)}
                 label="Photo Set"
                 style={{margins:"auto"}}
               /><br/>
@@ -614,14 +614,14 @@ function CustomQuiz() {
             <>
               <SelectionButton
                 active={subType === "call"}
-                onClick={() => handleSubTypeChange("call",QTY.CALL_MIN)}
+                onClick={() => handleSubTypeChange("call", QTY.CALL_MIN)}
                 label="Video Call"
                 style={{margins:"auto"}}
               />
               <SelectionButton
                 active={subType === "sexting"}
                 onClick={() =>
-                  handleSubTypeChange("sexting",QTY.SEXTING_MIN)
+                  handleSubTypeChange("sexting", QTY.SEXTING_MIN)
                 }
                 label="Sexting"
                 style={{margins:"auto"}}
@@ -636,33 +636,33 @@ function CustomQuiz() {
           <>
             <div style={{width:"90%"}}><div style={{display:"block"}}><span style={{margins:"auto", width:"30%", textAlign:"left"}}>MINIMUM: {
   subType === "photo"
-    ? `${QTY.PHOTO_MIN} (${picMin} pics)`
+    ? `${ QTY.PHOTO_MIN} (${picMin} pics)`
     : subType === "video"
-      ? `${QTY.VIDEO_MIN} (${vidMin} mins)`
+      ? `${ QTY.VIDEO_MIN} (${vidMin} mins)`
       : subType === "call"
-        ? `${QTY.CALL_MIN} (${callMin} mins)`
-        : `${QTY.SEXTING_MIN} (${sextMin} mins)`
+        ? `${ QTY.CALL_MIN} (${callMin} mins)`
+        : `${ QTY.SEXTING_MIN} (${sextMin} mins)`
                 }}</span>
               <input
               style={{width: "30%" , margins:"auto"}}
                 type="number"
                 min={
                   subType === "photo"
-                    ?QTY.PHOTO_MIN
+                    ? QTY.PHOTO_MIN
                     : subType === "video"
-                      ?QTY.VIDEO_MIN
+                      ? QTY.VIDEO_MIN
                       : subType === "call"
-                        ?QTY.CALL_MIN
-                        :QTY.SEXTING_MIN
+                        ? QTY.CALL_MIN
+                        : QTY.SEXTING_MIN
                 }
                 max={
                   subType === "photo"
-                    ?QTY.PHOTO_MAX
+                    ? QTY.PHOTO_MAX
                     : subType === "video"
-                      ?QTY.VIDEO_MAX
+                      ? QTY.VIDEO_MAX
                       : subType === "call"
-                        ?QTY.CALL_MAX
-                        :QTY.SEXTING_MAX
+                        ? QTY.CALL_MAX
+                        : QTY.SEXTING_MAX
                 }
                 step={subType === "call" ? 5 : subType === "sexting" ? 15 : 1}
                 value={quantity}
@@ -671,31 +671,31 @@ function CustomQuiz() {
               {subType === " photo" ? " pics" : " min"}
              <span style={{margins:"auto", width:"30%", textAlign:"right"}}>MAXIMUM: {
                   subType === "photo"
-    ? `${QTY.PHOTO_MAX} (${picvanMax} pics)`
+    ? `${ QTY.PHOTO_MAX} (${picvanMax} pics)`
     : subType === "video"
-      ? `${QTY.VIDEO_MAX} (${vidvanMax} mins)`
+      ? `${ QTY.VIDEO_MAX} (${vidvanMax} mins)`
       : subType === "call"
-        ? `${QTY.CALL_MAX} (${callvanMax} mins)`
-        : `${QTY.SEXTING_MAX} (${sextvanMax} mins)`</span></div>
+        ? `${ QTY.CALL_MAX} (${callvanMax} mins)`
+        : `${ QTY.SEXTING_MAX} (${sextvanMax} mins)`</span></div>
               <input
                 type="range"
                 min={
                   subType === "photo"
-                    ?QTY.PHOTO_MIN
+                    ? QTY.PHOTO_MIN
                     : subType === "video"
-                      ?QTY.VIDEO_MIN
+                      ? QTY.VIDEO_MIN
                       : subType === "call"
-                        ?QTY.CALL_MIN
-                        :QTY.SEXTING_MIN
+                        ? QTY.CALL_MIN
+                        : QTY.SEXTING_MIN
                 }
                 max={
                   subType === "photo"
-                    ?QTY.PHOTO_MAX
+                    ? QTY.PHOTO_MAX
                     : subType === "video"
-                      ?QTY.VIDEO_MAX
+                      ? QTY.VIDEO_MAX
                       : subType === "call"
-                        ?QTY.CALL_MAX
-                        :QTY.SEXTING_MAX
+                        ? QTY.CALL_MAX
+                        : QTY.SEXTING_MAX
                 }
                 step={subType === "call" ? 5 : subType === "sexting" ? 15 : 1}
                 value={quantity}
