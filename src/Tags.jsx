@@ -795,8 +795,8 @@ export const ClickableTags = ({ tags = "", emptyText = "None set" }) => {
 
   return (
     <div style={{ margin: "0.5% 0" }}>
-      {tagArray.map((tag, i) => (
-        <pill key={tag} style={{padding:"0", margin:"2%", display:"inline-block"}}>
+      <span .map((tag, i) => (
+        <reactkey={tag} style={{padding:"0", margin:"2%", display:"inline-block"}}>
           <small>
           <a
             href={`/lounge#${encodeURIComponent(tag)}`}
@@ -812,7 +812,7 @@ export const ClickableTags = ({ tags = "", emptyText = "None set" }) => {
           >
             {tag} ({counts[tag] || 0})
           </a></small>
-        </pill>
+        </span>
       ))}
     </div>
   );
