@@ -654,7 +654,7 @@ subType === "photo"
 : subType === "call"
 ? `${ QTY.CALL_MIN} (${callMin} mins)`
 : `${ QTY.SEXTING_MIN} (${sextMin} mins)`
-}}</span>
+}</span>
 <input
 style={{width: "30%" , margins:"auto"}}
 type="number"

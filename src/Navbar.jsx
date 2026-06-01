@@ -29,11 +29,23 @@ function Navbar() {
         }} 
       ><div style={{textAlign: "left",
         display:"inline-block",
-        marginTop:"3vh",
-        marginLect:"3vw",
+        marginTop:"2vh",
         width:"fit-content",
 
       }}>
+                <h1
+          style={{
+            textAlign: "left",
+            display: "block",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+             width:"fit-content",
+          }}
+        >
+          <Link to="/" style={{ textDecoration: "none", padding:"0", margin:"0",display:"block",  width:"fit-content",}}>
+            LunePusa's Lewd Lounge
+          </Link>
+        </h1>
+        <h2>
         <ul
           style={{
             listStyleType: "none",
@@ -60,19 +72,7 @@ function Navbar() {
             <Link to="/Profile">Profile</Link>
           </li>
         </ul>
-        <h1
-          style={{
-            textAlign: "left",
-            fontSize: "2em",
-            display: "block",
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-             width:"fit-content",
-          }}
-        >
-          <Link to="/" style={{ textDecoration: "none", padding:"0", margin:"0",display:"block",  width:"fit-content",}}>
-            LunePusa's Lewd Lounge
-          </Link>
-        </h1>
+        </h2>
         </div>
       </div>
     </div>
