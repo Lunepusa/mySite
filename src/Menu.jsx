@@ -571,7 +571,6 @@ Build Another Request
 return (
 <section>
 <h2>Custom Builder</h2>
-<br />
 <div style={{width:"90%"}}>
 <TabButton
 active={category==="custom"}
@@ -663,7 +662,7 @@ subType === "photo"
 ? `${ QTY.CALL_MIN} ($${callMin})`
 : `${ QTY.SEXTING_MIN} ($${sextMin})`}</span>
 <input
-style={{width: "30%" , margin:"auto"}}
+style={{ , margin:"auto"}}
 type="number"
 min={
 subType==="photo"

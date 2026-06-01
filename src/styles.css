@@ -73,7 +73,7 @@ li {
   display: inline-block;
   background-color: #111111;
   border: 1px solid grey;
-  margin: 1%;
+  margin: .3rem;  padding: .5rem
 }
 
 li a {
