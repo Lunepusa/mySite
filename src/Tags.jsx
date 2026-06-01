@@ -794,9 +794,9 @@ export const ClickableTags = ({ tags = "", emptyText = "None set" }) => {
   }
 
   return (
-    <pill style={{ margin: "0.5% 0" }}>
+    <div style={{ margin: "0.5% 0" }}>
       {tagArray.map((tag, i) => (
-        <React.Fragment key={tag}>
+        <pill key={tag}>
           <small>
           <a
             href={`/lounge#${encodeURIComponent(tag)}`}
@@ -814,8 +814,8 @@ export const ClickableTags = ({ tags = "", emptyText = "None set" }) => {
             {tag} ({counts[tag] || 0})
           </a></small>
           {i < tagArray.length - 1 && <small style={{ color: "#666" }}>, </small>}
-        </React.Fragment>
+        </pillr>
       ))}
-    </pill>
+    </div>
   );
 };
