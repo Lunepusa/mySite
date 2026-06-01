@@ -811,7 +811,7 @@ export const ClickableTags = ({ tags = "", emptyText = "None set" }) => {
             }}
           >
             {tag} ({counts[tag] || 0})
-          </a></smsll>
+          </a></small>
         </pill>
       ))}
     </div>
