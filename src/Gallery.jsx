@@ -991,7 +991,7 @@ useEffect(() => {
                               </>
                             ) : (
                               <>
-                                <small
+                                <div
                                   style={{
                                     color: "#ccc",
                                   }}
@@ -1004,8 +1004,8 @@ useEffect(() => {
                                       "none"
                                     )
                                   ) : (
-                                    <ClickableTags tags={item.tags} />
-                                  )}
+                                    <ClickableTags tags={item.tags} className="small"/>
+                                  )}</Collapse> 
                               
 
                                 {!!isAdmin && (
@@ -1017,7 +1017,7 @@ useEffect(() => {
                                     }}
                                   ></p>
                                 )}
-                            </Collapse>   </small>
+                              </div>
                               </>
                             )}
                           </div>

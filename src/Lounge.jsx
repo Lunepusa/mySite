@@ -9,7 +9,7 @@ const Lounge = () => {
 
   return (
   <div  style={{ textAlign: "center" }}>
-    <p class="notice" style={{width:"100%"}}>
+    <p className="notice" style={{width:"100%"}}>
     this is area is a work in progress, but has more of .y cobtent then anywhere else. send me a $10 tip and your username here and i will give you access for a month. </p>,
     {!user ? (
       <div style={{ fontSize: "1.3em", textAlign: "center" }}>
