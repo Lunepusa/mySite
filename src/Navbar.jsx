@@ -55,6 +55,9 @@ function Navbar() {
             display:"block",
           }}
         >
+           <li>
+            <Link to="/Lounge">Private Lounge</Link>
+          </li>
           <li>
             <Link to="/">Links</Link>
           </li>
@@ -64,9 +67,7 @@ function Navbar() {
           <li>
             <Link to="/about">About</Link>
           </li>
-          <li>
-            <Link to="/Lounge">Private Lounge</Link>
-          </li>
+
           <li>
             <Link to="/Profile">Profile</Link>
           </li>
