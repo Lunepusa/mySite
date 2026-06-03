@@ -864,11 +864,11 @@ useEffect(() => {
                           key={item.key}
                           style={{
                             display: "inline-block",
-                            height: "auto",
+                            width: "auto",
                             verticalAlign: "top",
-                            minWidth: "50px",
-                            width: "100px",
-                            maxWidth: "23dvw",
+                            minheight: "100px",
+                            height: "200px",
+                            maxheight: "23dvh",
                             margin: "0 3px 5px 3px",
                             cursor: "pointer",
                             position: "relative",
@@ -877,7 +877,20 @@ useEffect(() => {
                                 ? "3px solid yellow"
                                 : "none",
                           }}
-                          onClick={(e) => {
+
+                        >
+                          <div
+                            style={{
+                              display: "inline-block",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              background: "#000",
+                              borderRadius: "12px",
+                              overflow: "hidden",
+                              position: "relative",
+                              border: "1px white solid",
+                            }}
+                                                      onClick={(e) => {
                             if (multiSelectMode) {
                               setSelectedItems((prev) => {
                                 const next = new Set(prev);
@@ -892,20 +905,6 @@ useEffect(() => {
                           onContextMenu={(e) => {
                             e.preventDefault();
                           }}
-                        >
-                          <div
-                            style={{
-                              width: "95%",
-                              height: "auto",
-                              display: "inline-block",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              background: "#000",
-                              borderRadius: "12px",
-                              overflow: "hidden",
-                              position: "relative",
-                              border: "1px white solid",
-                            }}
                           >
                             {(() => {
                               const hasAccess = hasAccessForDate(
@@ -929,8 +928,6 @@ useEffect(() => {
                                     src={cloudflareUrl}
                                     alt={caption}
                                     style={{
-                                      maxHeight: "auto",
-                                      width: "100%",
                                       objectFit: "cover",
                                       WebkitTouchCallout: "none",
                                       WebkitUserSelect: "none",
@@ -946,8 +943,8 @@ useEffect(() => {
                                         transform: "translate(-50%, -50%)",
                                         background: "rgba(0,0,0,0.5)",
                                         borderRadius: "50%",
-                                        width: "30%",
-                                        height: "auto",
+                                        height: "30%",
+                                        width: "auto",
                                         aspectRatio: "1/1",
                                         display: "flex",
                                         alignItems: "center",
