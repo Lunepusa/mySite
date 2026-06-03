@@ -864,7 +864,7 @@ useEffect(() => {
                           key={item.key}
                           style={{
                             display: "inline-block",
-                            width: "auto",
+                            width: "fit-content",
                             verticalAlign: "top",
                             minheight: "100px",
                             height: "200px",
@@ -881,6 +881,7 @@ useEffect(() => {
                         >
                           <div
                             style={{
+                              width:"fit-content",
                               display: "inline-block",
                               alignItems: "center",
                               justifyContent: "center",
@@ -965,7 +966,7 @@ useEffect(() => {
                                 </>
                               );
                             })()}
-                          </div>
+                          </div><br />
 
                           <div style={{ textAlign: "center" }}>
                             {editingItem === item.key ? (
