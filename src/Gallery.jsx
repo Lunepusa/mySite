@@ -996,7 +996,7 @@ useEffect(() => {
                                     color: "#ccc",
                                   }}
                                 >
-                                  <Collapse trigge={<p> Tags:</p>}>
+                                  <Collapse trigger={<p> Tags:</p>}>
                                   {multiSelectMode ? (
                                     itemTags.length > 0 ? (
                                       itemTags.join(", ")
