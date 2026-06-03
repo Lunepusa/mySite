@@ -30,9 +30,7 @@ const Lounge = () => {
         <Login /></p>
             {/* Upload section only for admin */}
       {user?.is_admin && (
-          <Collapse trigger={<h4>Upload New Content</h4>}>
             <Upload />
-          </Collapse>
         </div>
       )}
     )}
