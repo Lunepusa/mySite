@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useAuth, apiFetch, R2_PUBLIC_URL } from "./Auth";
 import { TagSelect, searchTags, ClickableTags } from "./Tags";
+import Collapse from "./Utility";
 
 // /media path
 // const media = mediaList.results.map(row => ({
@@ -990,13 +991,12 @@ useEffect(() => {
                               </>
                             ) : (
                               <>
-                                <p
+                                <small
                                   style={{
                                     color: "#ccc",
-                                    margin: "2px 0",
                                   }}
                                 >
-                                  Tags:{" "}
+                                  <Collapse trigger={<small> Tags:{" "}</small>}>
                                   {multiSelectMode ? (
                                     itemTags.length > 0 ? (
                                       itemTags.join(", ")
@@ -1006,7 +1006,7 @@ useEffect(() => {
                                   ) : (
                                     <ClickableTags tags={item.tags} />
                                   )}
-                                </p>
+                                </small></Collapse>
 
                                 {!!isAdmin && (
                                   <p
