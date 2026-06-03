@@ -34,7 +34,7 @@ const Lounge = () => {
             </Collapse>
       )}
        </div>
-    )}</p>
+    )}
       <Gallery />
     </div>
   );
