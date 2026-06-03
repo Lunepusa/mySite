@@ -996,7 +996,7 @@ useEffect(() => {
                                     color: "#ccc",
                                   }}
                                 >
-                                  <Collapse trigger={<small> Tags:{" "}</small>}>
+                                  <Collapse trigge={<p> Tags:</p>}>
                                   {multiSelectMode ? (
                                     itemTags.length > 0 ? (
                                       itemTags.join(", ")
@@ -1006,7 +1006,7 @@ useEffect(() => {
                                   ) : (
                                     <ClickableTags tags={item.tags} />
                                   )}
-                                </small></Collapse>
+                              
 
                                 {!!isAdmin && (
                                   <p
@@ -1017,6 +1017,7 @@ useEffect(() => {
                                     }}
                                   ></p>
                                 )}
+                            </Collapse>   </small>
                               </>
                             )}
                           </div>
