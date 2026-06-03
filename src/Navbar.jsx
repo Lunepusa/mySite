@@ -11,7 +11,6 @@ function Navbar() {
         width: "100vw",
         borderBottom: "2px solid white",
         textAlign: "left",
-        margin:"2%"
       }}
     >
       <div
@@ -41,11 +40,11 @@ function Navbar() {
              width:"fit-content",
           }}
         >
-          <Link to="/" style={{ textDecoration: "none", padding:"0", margin:"0",display:"block",  width:"fit-content",}}>
+          <Link to="/" style={{ textDecoration: "none", padding:"0", margin:"0",display:"block",  width:"fit-content", textAlign:"left"}}>
             LunePusa's Lewd Lounge
           </Link>
         </h1>
-        <h2>
+        <h2 className="h3">
         <ul
           style={{
             listStyleType: "none",
