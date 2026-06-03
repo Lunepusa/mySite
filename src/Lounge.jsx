@@ -8,9 +8,10 @@ const Lounge = () => {
     const { isSubscriber, isLoggedIn, isAdmin, user, walletBalance } = useAuth();
 
   return (
-  <div style={{ textAlign: "center" }}>
-    this is area is a work in progress where eventually it should be where you
-    can view all of my content. <br />
+  <div  style={{ textAlign: "center" }}>
+    <h4 class="notice" style={{width:"100%"}}>
+    this is area is a work in progress, but has more of .y cobtent then anywhere else. send me a $10 tip and your username here and i will give you access for a month. </h4>,
+    
     {!user ? (
       <div style={{ fontSize: "1.3em", textAlign: "center" }}>
         This is a private area. Log in below and subscribe to remove the blurring.
@@ -25,18 +26,17 @@ const Lounge = () => {
       </div>
     ) : (
       <div style={{ fontSize: "1em", textAlign: "center" }}>
-        Welcome back, <a href="/Profile">{user.username}!</a> Enjoy the exclusive content.
-        <Login />
-      </div>
-    )}
-      {/* Upload section only for admin */}
+       <p>Welcome back, <a href="/Profile">{user.username}!</a> Enjoy the exclusive content.
+        <Login /></p>
+            {/* Upload section only for admin */}
       {user?.is_admin && (
-        <div style={{}}>
-          <Collapse trigger={<h2>Upload New Content</h2>}>
+          <Collapse trigger={<h4>Upload New Content</h4>}>
             <Upload />
           </Collapse>
         </div>
       )}
+    )}
+
       <Gallery />
     </div>
   );
