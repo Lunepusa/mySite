@@ -31,10 +31,9 @@ const Lounge = () => {
             {/* Upload section only for admin */}
       {user?.is_admin && (
             <Upload />
-        </div>
       )}
+       </div>
     )}
-
       <Gallery />
     </div>
   );
