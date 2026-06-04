@@ -484,6 +484,33 @@ const SYNONYM_MAP = {
 };
 
 // ──────────────────────────────────────────────────────────────────────────────
+// Cached tag usage counts (fetched once)
+// ──────────────────────────────────────────────────────────────────────────────
+let cachedTagCounts = null;
+let tagCountsPromise = null;
+
+const fetchTagCountsOnce = async () => {
+  if (cachedTagCounts) return cachedTagCounts;
+  if (tagCountsPromise) return tagCountsPromise;
+
+  tagCountsPromise = apiFetch("/tag-stats")
+    .then(res => {
+      if (!res.ok) throw new Error("Failed to fetch tag counts");
+      return res.json();
+    })
+    .then(data => {
+      cachedTagCounts = data;
+      return data;
+    })
+    .catch(err => {
+      console.error(err);
+      return {};
+    });
+
+  return tagCountsPromise;
+};
+
+// ──────────────────────────────────────────────────────────────────────────────
 // Fast lowercase lookup: synonym or canonical → canonical tag
 // ──────────────────────────────────────────────────────────────────────────────
 const LOWERCASE_MAP = {};
@@ -625,9 +652,9 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
   };
 
   return (
-    <div style={{ margin: "10px 0" }}>
+    <div style={{ }}>
       {/* Currently selected tags (removable pills) */}
-      <div style={{ minHeight: "32px", marginBottom: "8px",width:"30%" }}>
+      <div style={{ window:"fitContent" }}>
         {localTags.map((tag) => (
           <span
             key={tag}
@@ -635,15 +662,12 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
               display: "inline-block",
               background: "#333",
               color: "#fff",
-              padding: "4px 10px",
-              margin: "2px 4px 2px 0",
-              borderRadius: "16px",
+              borderRadius: "10%",
             }}
           >
             {tag}
             <span
               style={{
-                marginLeft: "8px",
                 cursor: "pointer",
                 fontWeight: "bold",
               }}
@@ -656,40 +680,23 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
       </div>
 
       {/* Input field */}
-      tagsearch<input
+      <input
         type="text"
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder={placeholder}
+        placeholder="Tag Search"
         style={{
           width: "100%",
-          padding: "8px",
+          padding: ".5%",
           background: "#222",
           border: "1px solid #444",
           color: "#fff",
-          borderRadius: "4px",
+          borderRadius: "4%",
         }}
       />
 
-      {/* New: Date Input field */}
-      date<input
-        type="text"
-        inputMode="numeric"
-        maxLength={8}
-        value={dateValue}
-        onChange={handleDateChange}
-        placeholder="YYYYMMDD (Optional)"
-        style={{
-          width: "100%",
-          padding: "8px",
-          marginTop: "10px",
-          background: "#222",
-          border: "1px solid #444",
-          color: "#fff",
-          borderRadius: "4px",
-        }}
-      />
+
 
       {/* Suggestion dropdown */}
       {filteredSuggestions.length > 0 && (
@@ -700,36 +707,54 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
             background: "#222",
             border: "1px solid #444",
             borderTop: "none",
-            borderRadius: "0 0 4px 4px",
+            borderRadius: "4%",
+            
           }}
         >
           {filteredSuggestions.map((tag) => (
             <div
               key={tag}
               style={{
-                padding: "8px 12px",
+                padding: "1%",
                 cursor: "pointer",
                 background: "#333",
               }}
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => addTag(tag)}
             >
-              {tag}
+              {tag}({counts[tag] || 0})
             </div>
           ))}
         </div>
       )}
-
+      {/* New: Date Input field */}
+      <input
+        type="text"
+        inputMode="numeric"
+        maxLength={8}
+        value={dateValue}
+        onChange={handleDateChange}
+        placeholder="YYYYMMDD"
+        style={{
+          width: "100%",
+          padding: ".5%",
+          marginTop: "1%",
+          background: "#222",
+          border: "1px solid #444",
+          color: "#fff",
+          borderRadius: "4%",
+        }}
+      />
       {/* Save button */}
       <button
         onClick={handleSave}
         style={{
-          marginTop: "10px",
-          padding: "8px 16px",
+          marginTop: "1%",
+          padding: "1%",
           background: "#0066cc",
           color: "white",
           border: "none",
-          borderRadius: "4px",
+          borderRadius: "4%",
           cursor: "pointer",
         }}
       >
@@ -751,32 +776,7 @@ export const getTagsArray = (tagInput) => {
   return [];
 };
 
-// ──────────────────────────────────────────────────────────────────────────────
-// Cached tag usage counts (fetched once)
-// ──────────────────────────────────────────────────────────────────────────────
-let cachedTagCounts = null;
-let tagCountsPromise = null;
 
-const fetchTagCountsOnce = async () => {
-  if (cachedTagCounts) return cachedTagCounts;
-  if (tagCountsPromise) return tagCountsPromise;
-
-  tagCountsPromise = apiFetch("/tag-stats")
-    .then(res => {
-      if (!res.ok) throw new Error("Failed to fetch tag counts");
-      return res.json();
-    })
-    .then(data => {
-      cachedTagCounts = data;
-      return data;
-    })
-    .catch(err => {
-      console.error(err);
-      return {};
-    });
-
-  return tagCountsPromise;
-};
 
 /**
  * Clickable tag list with usage counts + lounge search links
@@ -796,7 +796,7 @@ export const ClickableTags = ({ tags = "", emptyText = "None set" }) => {
   return (
     <div style={{ margin:"0%"}}>
       {tagArray.map((tag, i) => (
-        <span key={tag} style={{padding:"0", margin:"2%", display:"inline-block"}}>
+        <span key={tag} style={{padding:"0", margin:".5%", display:"inline-block"}}>
           <small>
           <a
             href={`/lounge#${encodeURIComponent(tag)}`}
