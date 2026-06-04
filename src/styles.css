@@ -48,6 +48,12 @@ Desktop (> 1024px):
 *, *::before, *::after {
   box-sizing: border-box;
 }
+input::placeholder,
+textarea::placeholder {
+  color: white; /* Replace with your desired color */
+  opacity: .8;    /* Ensures Firefox displays the exact color without fading */
+}
+
 
 html{
   background-color: black;
