@@ -902,8 +902,10 @@ const Gallery = () => {
 								}}
 							>
 								<h3
+								class="h4"
 									style={{ textAlign: "center" }}
 									onContextMenu={handleDateShareCopy(date)}
+									
 								>
 									{editingGroupCaption === date ? (
 										<div>
@@ -1016,8 +1018,8 @@ const Gallery = () => {
 																"inline-block", // Reverted back to inline-block
 															textAlign: "center", // Centers the image horizontally
 															minHeight: "100px", // Heights moved to this container
-															height: "200px",
-															maxHeight: "23dvh",
+															height: "150px",
+															maxHeight: "20dvh",
 															width: "fit-content",
 															background: "#000",
 															borderRadius:
