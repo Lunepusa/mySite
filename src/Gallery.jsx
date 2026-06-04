@@ -860,114 +860,110 @@ useEffect(() => {
                       const itemTags = getTagsArray(item.tags);
 
                       return (
-                        <div
-                          key={item.key}
-                          style={{
-                            display: "inline-block",
-                            width: "fit-content",
-                            verticalAlign: "top",
-                            minheight: "100px",
-                            height: "200px",
-                            maxheight: "23dvh",
-                            margin: "0 3px 5px 3px",
-                            cursor: "pointer",
-                            position: "relative",
-                            border:
-                              multiSelectMode && selectedItems.has(item.key)
-                                ? "3px solid yellow"
-                                : "none",
-                          }}
+  <div
+    key={item.key}
+    style={{
+      display: "inline-block",
+      verticalAlign: "top",
+      minHeight: "100px", // Corrected to camelCase
+      height: "200px",
+      maxHeight: "23dvh", // Corrected to camelCase
+      margin: "0 3px 5px 3px",
+      cursor: "pointer",
+      position: "relative",
+      border:
+        multiSelectMode && selectedItems.has(item.key)
+          ? "3px solid yellow"
+          : "none",
+    }}
+  >
+    <div
+      style={{
+        display: "flex", // Changed from inline-block to allow flex centering
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100%", // Inherit the 200px height from the parent
+        width: "fit-content", 
+        background: "#000",
+        borderRadius: "12px",
+        overflow: "hidden",
+        position: "relative",
+        border: "1px white solid",
+      }}
+      onClick={(e) => {
+        if (multiSelectMode) {
+          setSelectedItems((prev) => {
+            const next = new Set(prev);
+            if (next.has(item.key)) next.delete(item.key);
+            else next.add(item.key);
+            return next;
+          });
+        } else {
+          openFullscreen(item);
+        }
+      }}
+      onContextMenu={(e) => {
+        e.preventDefault();
+      }}
+    >
+      {(() => {
+        const hasAccess = hasAccessForDate(item.date || "Unknown");
 
-                        >
-                          <div
-                            style={{
-                              width:"fit-content",
-                              display: "inline-block",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              background: "#000",
-                              borderRadius: "12px",
-                              overflow: "hidden",
-                              position: "relative",
-                              border: "1px white solid",
-                            }}
-                                                      onClick={(e) => {
-                            if (multiSelectMode) {
-                              setSelectedItems((prev) => {
-                                const next = new Set(prev);
-                                if (next.has(item.key)) next.delete(item.key);
-                                else next.add(item.key);
-                                return next;
-                              });
-                            } else {
-                              openFullscreen(item);
-                            }
-                          }}
-                          onContextMenu={(e) => {
-                            e.preventDefault();
-                          }}
-                          >
-                            {(() => {
-                              const hasAccess = hasAccessForDate(
-                                item.date || "Unknown",
-                              );
+        let targetKey = item.key;
+        if (item.isVideo) {
+          targetKey = item.key.replace(/\.[^/.]+$/, "") + "_thumb.jpg";
+        }
 
-                              let targetKey = item.key;
-                              if (item.isVideo) {
-                                targetKey =
-                                  item.key.replace(/\.[^/.]+$/, "") +
-                                  "_thumb.jpg";
-                              }
+        const cloudflareUrl = !hasAccess
+          ? `${R2_PUBLIC_URL}/cdn-cgi/image/width=250,quality=80,format=auto,blur=20/${targetKey}`
+          : `${R2_PUBLIC_URL}/cdn-cgi/image/width=250,quality=80,format=auto/${targetKey}`;
 
-                              const cloudflareUrl = !hasAccess
-                                ? `${R2_PUBLIC_URL}/cdn-cgi/image/width=250,quality=80,format=auto,blur=20/${targetKey}`
-                                : `${R2_PUBLIC_URL}/cdn-cgi/image/width=250,quality=80,format=auto/${targetKey}`;
+        return (
+          <>
+            <img
+              src={cloudflareUrl}
+              alt={caption}
+              style={{
+                height: "100%", // Force image to match the container's standard height
+                width: "auto", // Maintain aspect ratio
+                objectFit: "contain", // Use 'cover' if you want a strict uniform grid, 'contain' to avoid cropping
+                WebkitTouchCallout: "none",
+                WebkitUserSelect: "none",
+              }}
+            />
 
-                              return (
-                                <>
-                                  <img
-                                    src={cloudflareUrl}
-                                    alt={caption}
-                                    style={{
-                                      objectFit: "cover",
-                                      WebkitTouchCallout: "none",
-                                      WebkitUserSelect: "none",
-                                    }}
-                                  />
-
-                                  {item.isVideo && (
-                                    <div
-                                      style={{
-                                        position: "absolute",
-                                        top: "50%",
-                                        left: "50%",
-                                        transform: "translate(-50%, -50%)",
-                                        background: "rgba(0,0,0,0.5)",
-                                        borderRadius: "50%",
-                                        height: "30%",
-                                        width: "auto",
-                                        aspectRatio: "1/1",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        pointerEvents: "none",
-                                      }}
-                                    >
-                                      <span
-                                        style={{
-                                          color: "#fff",
-                                          fontSize: "1.2em",
-                                        }}
-                                      >
-                                        {hasAccess ? "▶" : "🔒"}
-                                      </span>
-                                    </div>
-                                  )}
-                                </>
-                              );
-                            })()}
-                          </div><br />
-
+            {item.isVideo && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  background: "rgba(0,0,0,0.5)",
+                  borderRadius: "50%",
+                  height: "30%",
+                  width: "auto",
+                  aspectRatio: "1/1",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  pointerEvents: "none",
+                }}
+              >
+                <span
+                  style={{
+                    color: "#fff",
+                    fontSize: "1.2em",
+                  }}
+                >
+                  {hasAccess ? "▶" : "🔒"}
+                </span>
+              </div>
+            )}
+          </>
+        );
+      })()}
+</div><br />
                           <div style={{ textAlign: "center" }}>
                             {editingItem === item.key ? (
                               <>
