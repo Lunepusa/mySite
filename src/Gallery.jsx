@@ -512,9 +512,6 @@ const Gallery = () => {
 					padding: "5px",
 					textAlign: "center",
 					background: "#111",
-					position: "sticky",
-					top: 0,
-					zIndex: 10
 				}}
 			>
 				<h1 style={{ marginBottom: "1px" }}>Gallery</h1>
@@ -604,8 +601,8 @@ const Gallery = () => {
 					<div
 						style={{
 							position: "fixed",
-							bottom: "5px",
-							right: "5px",
+							top: "2%",
+							right: "2%",
 							background: "#333",
 							padding: "1px",
 							borderRadius: "1px",
@@ -898,7 +895,7 @@ const Gallery = () => {
 								key={date}
 								style={{
 									marginBottom: "5px",
-									border: "2px dashed white"
+									border: "1px dashed white"
 								}}
 							>
 								<h3
