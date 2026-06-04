@@ -488,6 +488,7 @@ const SYNONYM_MAP = {
 // ──────────────────────────────────────────────────────────────────────────────
 let cachedTagCounts = null;
 let tagCountsPromise = null;
+const [counts, setCounts] = useState({});
 
 const fetchTagCountsOnce = async () => {
   if (cachedTagCounts) return cachedTagCounts;
@@ -665,7 +666,7 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
               borderRadius: "10%",
             }}
           >
-            {tag}
+            {tag} 
             <span
               style={{
                 cursor: "pointer",
@@ -673,7 +674,7 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
               }}
               onClick={() => removeTag(tag)}
             >
-              ×
+              
             </span>
           </span>
         ))}
@@ -702,7 +703,7 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
       {filteredSuggestions.length > 0 && (
         <div
           style={{
-            maxHeight: "150px",
+            maxHeight: "20vh",
             overflowY: "auto",
             background: "#222",
             border: "1px solid #444",
@@ -722,7 +723,7 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => addTag(tag)}
             >
-              {tag}({counts[tag] || 0})
+              {tag}({counts[tag] || 0}) 
             </div>
           ))}
         </div>
@@ -782,7 +783,7 @@ export const getTagsArray = (tagInput) => {
  * Clickable tag list with usage counts + lounge search links
  */
 export const ClickableTags = ({ tags = "", emptyText = "None set" }) => {
-  const [counts, setCounts] = useState({});
+  
   const tagArray = getTagsArray(tags);
 
   useEffect(() => {
