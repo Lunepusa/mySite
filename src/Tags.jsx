@@ -488,7 +488,7 @@ const SYNONYM_MAP = {
 // ──────────────────────────────────────────────────────────────────────────────
 let cachedTagCounts = null;
 let tagCountsPromise = null;
-const [counts, setCounts] = useState({});
+
 
 const fetchTagCountsOnce = async () => {
   if (cachedTagCounts) return cachedTagCounts;
@@ -595,6 +595,7 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
   const [dateValue, setDateValue] = useState("");
   const [inputValue, setInputValue] = useState("");
   const [filteredSuggestions, setFilteredSuggestions] = useState([]);
+  const [counts, setCounts] = useState({});
 
   // Sync local state when initialTags changes (important for edit reuse)
   useEffect(() => {
@@ -785,6 +786,7 @@ export const getTagsArray = (tagInput) => {
 export const ClickableTags = ({ tags = "", emptyText = "None set" }) => {
   
   const tagArray = getTagsArray(tags);
+  const [counts, setCounts] = useState({});
 
   useEffect(() => {
     fetchTagCountsOnce().then(setCounts);
