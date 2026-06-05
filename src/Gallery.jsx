@@ -388,97 +388,58 @@ useEffect(() => {
 	// Uses optimistic update on success
 	// -------------------------------------------------------------------------
 	const saveEdit = async () => {
-		const body = {};
+	// 1. Ensure we are actually editing a caption
+	if (!editingGroupCaption) {
+		setEditingGroupCaption(null);
+		return;
+	}
 
-		let cleanGroupKey = null;
+	const cleanGroupKey = editingGroupCaption.toString().replace(".0", "");
 
-		if (editingGroupCaption) {
-			cleanGroupKey = editingGroupCaption.toString().replace(".0", "");
-			body.caption = tempCaption;
-			body.groupKey = cleanGroupKey;
+	// 2. Since /bulk-update expects an array of 'keys', we gather all keys in this group
+	const keysToUpdate = media
+		.filter(item => item.date.toString().replace(".0", "") === cleanGroupKey)
+		.map(item => item.key);
+
+	if (keysToUpdate.length === 0) {
+		setEditingGroupCaption(null);
+		return;
+	}
+
+	try {
+		// 3. Post to the new bulk-update endpoint
+		const res = await apiFetch("/bulk-update", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				keys: keysToUpdate,
+				newCaption: tempCaption 
+			})
+		});
+
+		if (!res.ok) {
+			const errText = await res.text();
+			throw new Error(`Save failed: ${res.status} ${errText}`);
 		}
 
-		let added = [];
-		let removed = [];
-
-		if (editingGroupTags || editingItem) {
-			added = tempTags.filter(tag => !originalTags.includes(tag));
-			removed = originalTags.filter(tag => !tempTags.includes(tag));
-
-			if (editingGroupTags) {
-				cleanGroupKey = editingGroupTags.toString().replace(".0", "");
-				body.addedTags = added.length ? added : undefined;
-				body.removedTags = removed.length ? removed : undefined;
-				body.groupKey = cleanGroupKey;
-			} else if (editingItem) {
-				body.addedTags = added.length ? added : undefined;
-				body.removedTags = removed.length ? removed : undefined;
-				body.key = editingItem;
-			}
-		}
-
-		if (Object.keys(body).length === 0) {
-			setEditingGroupCaption(null);
-			setEditingGroupTags(null);
-			setEditingItem(null);
-			return;
-		}
-
-		try {
-			const res = await apiFetch("/update-media", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(body)
+		// 4. Update the local React state based on the keys array
+		setMedia(prev => {
+			return prev.map(item => {
+				if (keysToUpdate.includes(item.key)) {
+					return { ...item, caption: tempCaption };
+				}
+				return item;
 			});
+		});
 
-			if (!res.ok) {
-				const errText = await res.text();
-				throw new Error(`Save failed: ${res.status} ${errText}`);
-			}
-
-			setMedia(prev => {
-				return prev.map(item => {
-					let updated = { ...item };
-
-					if (
-						cleanGroupKey &&
-						item.date.toString().replace(".0", "") === cleanGroupKey
-					) {
-						if (body.caption !== undefined) {
-							updated.caption = tempCaption;
-						}
-						if (body.addedTags || body.removedTags) {
-							let currentTags = getTagsArray(item.tags);
-							const set = new Set(currentTags);
-							removed.forEach(t => set.delete(t));
-							added.forEach(t => set.add(t));
-							updated.tags = [...set].join(", ");
-						}
-					}
-
-					if (editingItem && item.key === editingItem) {
-						let currentTags = getTagsArray(item.tags);
-						const set = new Set(currentTags);
-						removed.forEach(t => set.delete(t));
-						added.forEach(t => set.add(t));
-						updated.tags = [...set].join(", ");
-					}
-
-					return updated;
-				});
-			});
-
-			setEditingGroupCaption(null);
-			setEditingGroupTags(null);
-			setEditingItem(null);
-			setTempCaption("");
-			setTempTags([]);
-			setOriginalTags([]);
-		} catch (err) {
-			console.error("Save error:", err);
-			alert("Save failed — changes not applied: " + err.message);
-		}
-	};
+		// 5. Reset states
+		setEditingGroupCaption(null);
+		setTempCaption("");
+	} catch (err) {
+		console.error("Save error:", err);
+		alert("Save failed — changes not applied: " + err.message);
+	}
+};
 
 	// -------------------------------------------------------------------------
 	// Admin: Right-click date header → copy share link for whole date
