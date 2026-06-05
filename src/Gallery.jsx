@@ -196,7 +196,7 @@ useEffect(() => {
 			observer.unobserve(loadMoreButtonRef.current);
 		}
 	};
-}, [activeSearchQuery, loadMoreGroups])l;
+}, [activeSearchQuery, loadMoreGroups]);
 
 
 	const triggerSearch = () => {
