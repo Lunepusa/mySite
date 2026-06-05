@@ -163,42 +163,33 @@ const Gallery = () => {
 		[activeSearchQuery]
 	); // Only re-create if the search query actually changes
 
+// 1. A ref to hold the observer instance so we can clean it up
+const observer = useRef();
 
-	// 1. Create a ref to attach to our button wrapper
-	const loadMoreButtonRef = useRef(null);
+// 2. The Callback Ref that attaches to your div
+const loadMoreButtonRef = useCallback(node => {
+	// If we are currently fetching, don't re-attach yet
+	if (loadingRef.current) return;
 
-	// 2. Set up the Intersection Observer
-	useEffect(() => {
-		const observer = new IntersectionObserver(
-		(entries) => {
-			const target = entries[0];
-			
-			// ADD THIS LOG:
-			console.log("Observer check:", {
-				isIntersecting: target.isIntersecting,
-				loading: loadingRef.current,
-				hasMore: hasMoreRef.current
-			});
-			
-			if (target.isIntersecting && !loadingRef.current && hasMoreRef.current) {
-				loadMoreGroups(offsetRef.current, activeSearchQuery);
-			}
-		},
-		{ root: null, rootMargin: "0px", threshold: 0.5 }
-		);
+	// Disconnect the previous observer to prevent duplicate firing
+	if (observer.current) observer.current.disconnect();
 
-		// Start observing
-		if (loadMoreButtonRef.current) {
-			observer.observe(loadMoreButtonRef.current);
+	// Set up the new observer
+	observer.current = new IntersectionObserver(entries => {
+		if (entries[0].isIntersecting && hasMoreRef.current) {
+			console.log("Observer fired! Auto-loading next batch.");
+			loadMoreGroups(offsetRef.current, activeSearchQuery);
 		}
+	}, {
+		root: null,
+		rootMargin: "0px 0px 200px 0px", // Keeping your generous margin
+		threshold: 0.1 
+	});
 
-		// Cleanup on unmount
-		return () => {
-			if (loadMoreButtonRef.current) {
-				observer.unobserve(loadMoreButtonRef.current);
-			}
-		};
-	}, [activeSearchQuery, loadMoreGroups]);
+	// If the node (div) exists in the DOM, start observing it
+	if (node) observer.current.observe(node);
+
+}, [activeSearchQuery, loadMoreGroups]);
 
 
 	const triggerSearch = () => {
@@ -1231,27 +1222,27 @@ const Gallery = () => {
 						);
 					})}
 
-					{hasMoreRef.current && (
-						<div ref={loadMoreButtonRef} style={{ width: "100%" }}>
-							<button
-								onClick={() =>
-									loadMoreGroups(
-										offsetRef.current,
-										activeSearchQuery
-									)
-								}
-								disabled={loadingRef.current}
-								style={{
-									display: "block",
-									margin: "10px auto",
-									padding: "2px 5px",
-									fontSize: "1.1em"
-								}}
-							>
-								{loadingRef.current ? "Loading..." : "Load More"}
-							</button>
-						</div>
-					)}
+{hasMoreRef.current && (
+	<div ref={loadMoreButtonRef} style={{ width: "100%" }}>
+		<button
+			onClick={() =>
+				loadMoreGroups(
+					offsetRef.current,
+					activeSearchQuery
+				)
+			}
+			disabled={loadingRef.current}
+			style={{
+				display: "block",
+				margin: "10px auto",
+				padding: "2px 5px",
+				fontSize: "1.1em"
+			}}
+		>
+			{loadingRef.current ? "Loading..." : "Load More"}
+		</button>
+	</div>
+)}
 				</div>
 			</div>
 		</>
