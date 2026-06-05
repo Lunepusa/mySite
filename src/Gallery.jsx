@@ -185,7 +185,6 @@ const Gallery = () => {
 			}
 		},
 		{ root: null, rootMargin: "0px", threshold: 0.5 }
-	);}
 		);
 
 		// Start observing
@@ -1022,12 +1021,10 @@ const Gallery = () => {
 															maxHeight: "20dvh",
 															width: "fit-content",
 															background: "#000",
-															borderRadius:
-																"12px",
+															borderRadius:"12px",
 															overflow: "hidden",
-															position:
-																"relative",
-															border: "1px white solid"
+															position: "relative",
+															border: "1px white solid",
 														}}
 														onClick={e => {
 															if (
