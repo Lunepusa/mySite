@@ -182,7 +182,7 @@ const loadMoreButtonRef = useCallback(node => {
 		}
 	}, {
 		root: null,
-		rootMargin: "0px 0px 200px 0px", // Keeping your generous margin
+		rootMargin: "0px 0px 400px 0px", 
 		threshold: 0.1 
 	});
 
@@ -765,6 +765,7 @@ const loadMoreButtonRef = useCallback(node => {
 										}}
 										onClick={e => {
 											goPrev();
+											e.stopPropagation();
 										}}
 									>
 										‹-
@@ -772,11 +773,17 @@ const loadMoreButtonRef = useCallback(node => {
 								)}
 
 							<div
+
 								style={{ maxWidth: "100%", maxHeight: "100%" }}
+								onContextMenu={e => {
+															e.preventDefault();
+														}}
+														
 							>
 								{fullscreenItem.isVideo ? (
 									hasAccessForDate(fullscreenItem?.date) ? (
 										<video
+																	onClick={e=>{e.stopPropagation();}}
 											src={`${R2_PUBLIC_URL}/${fullscreenItem.key}`}
 											controls
 											autoPlay
@@ -806,6 +813,7 @@ const loadMoreButtonRef = useCallback(node => {
 									) : (
 										// Safe blurred fallback for unauthorized users on videos
 										<img
+																	onClick={e=>{e.stopPropagation();}}
 											src={`${R2_PUBLIC_URL}/cdn-cgi/image/quality=85,format=auto,blur=50/${fullscreenItem.key.replace(/\.[^/.]+$/, "")}_thumb.jpg`}
 											alt="Preview restricted"
 											style={{
@@ -828,6 +836,7 @@ const loadMoreButtonRef = useCallback(node => {
 												: `${R2_PUBLIC_URL}/cdn-cgi/image/quality=85,format=auto,blur=200/${fullscreenItem.key}`
 										}
 										alt=""
+																	onClick={e=>{e.stopPropagation();}}
 										onContextMenu={e => {
 											e.preventDefault();
 											if (
@@ -866,6 +875,7 @@ const loadMoreButtonRef = useCallback(node => {
 										}}
 										onClick={e => {
 											goNext();
+										e.stopPropagation();
 										}}
 									>
 										-›
@@ -984,6 +994,9 @@ const loadMoreButtonRef = useCallback(node => {
 
 											return (
 												<div
+												onContextMenu={e => {
+															e.preventDefault();
+														}}
 													key={item.key}
 													style={{
 														display: "inline-block",
@@ -1003,6 +1016,9 @@ const loadMoreButtonRef = useCallback(node => {
 												>
 													{/* INNER MEDIA CONTAINER */}
 													<div
+													onContextMenu={e => {
+															e.preventDefault();
+														}}
 														style={{
 															display:
 																"inline-block", // Reverted back to inline-block
@@ -1078,6 +1094,9 @@ const loadMoreButtonRef = useCallback(node => {
 															return (
 																<>
 																	<img
+																	onContextMenu={e => {
+															e.preventDefault();
+														}}
 																		src={
 																			cloudflareUrl
 																		}
