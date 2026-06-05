@@ -56,6 +56,7 @@ export const CANONICAL_TAGS = [
   "swimsuit",
   "latex",
   "leather",
+  "Wet_look",
   "uniform",
   "cosplay_outfit",
 
@@ -65,6 +66,7 @@ export const CANONICAL_TAGS = [
   "vibrator",
   "realistic_dildo",
   "squirting_dildo",
+  "large_dildo",
   "lovense",
   "nipple_clamps",
   "suction_toy",
@@ -93,6 +95,7 @@ export const CANONICAL_TAGS = [
   "69",
   "from_below",
   "close_up",
+  "top_down",
 
   // Actions
   "vaginal_penetration",
@@ -147,7 +150,7 @@ export const CANONICAL_TAGS = [
   "breathplay",
   "hypno",
   "somno",
-  "monster_dildo",
+  "fantasy_dildo",
   "knotted_dildo",
   "tentacle",
   "werewolf",
@@ -285,6 +288,8 @@ const SYNONYM_MAP = {
   "nipple piercing": "body_jewelry",
   "belly ring": "body_jewelry",
   "body chains": "body_jewelry",
+  "pleather":"wet_look",
+   "faux latex":"wet_look",
 
   // Toys
   "sex toy": "toys",
@@ -296,6 +301,8 @@ const SYNONYM_MAP = {
   "buzz toy": "vibrator",
   massager: "vibrator",
   "realistic penis": "realistic_dildo",
+  "giant dildo":"large_dildo",
+  "monster dildo":"large_dildo",
   "ejaculating dildo": "squirting_dildo",
   "cum dildo": "squirting_dildo",
   "squirting toy": "squirting_dildo",
@@ -423,16 +430,16 @@ const SYNONYM_MAP = {
   "sleep play": "somno",
   unconscious: "somno",
   Taboo9: "monster_dildo",
-  "fantasy dildo": "monster_dildo",
-  "dragon dildo": "monster_dildo",
-  "alien dildo": "monster_dildo",
+  "monster": "fantasy_dildo",
+  "dragon dildo": "fantasy_dildo",
+  "alien dildo": "fantasy_dildo",
   "knot dildo": "knotted_dildo",
   taboo10: "knotted_dildo",
   "werewolf dildo": "knotted_dildo",
-  knotted_dildo: "monster_dildo",
+  knotted_dildo: "fantasy_dildo",
   "tentacle toy": "tentacle",
   "hentai toy": "tentacle",
-  tentacle: "monster_dildo",
+  tentacle: "fantasy_dildo",
   "octopus dildo": "tentacle",
 
   // Participants
