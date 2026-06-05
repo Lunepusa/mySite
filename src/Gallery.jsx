@@ -170,19 +170,22 @@ const Gallery = () => {
 	// 2. Set up the Intersection Observer
 	useEffect(() => {
 		const observer = new IntersectionObserver(
-			(entries) => {
-				const target = entries[0];
-
-				// Trigger only if the button is fully visible, not already loading, and there are more items
-				if (target.isIntersecting && !loadingRef.current && hasMoreRef.current) {
-					loadMoreGroups(offsetRef.current, activeSearchQuery);
-				}
-			},
-			{
-				root: null,
-				rootMargin: "0px 0px 200px 0px",
-			threshold: 0.1,
+		(entries) => {
+			const target = entries[0];
+			
+			// ADD THIS LOG:
+			console.log("Observer check:", {
+				isIntersecting: target.isIntersecting,
+				loading: loadingRef.current,
+				hasMore: hasMoreRef.current
+			});
+			
+			if (target.isIntersecting && !loadingRef.current && hasMoreRef.current) {
+				loadMoreGroups(offsetRef.current, activeSearchQuery);
 			}
+		},
+		{ root: null, rootMargin: "0px", threshold: 0.5 }
+	);}
 		);
 
 		// Start observing
