@@ -620,7 +620,7 @@ const Gallery = () => {
 									if (!e.target.checked)
 										setSelectedItems(new Set());
 								}}
-								style={(width:"fitContent")}
+								style={{width:"fitContent"}}
 							/>
 							Multi-select ({selectedItems.size} selected)
 						</label>
