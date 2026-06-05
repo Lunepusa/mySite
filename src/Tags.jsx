@@ -723,7 +723,7 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
               key={tag}
               style={{
                 padding: "1%",
-                margin: "1%".
+                margin: "1%",
                 cursor: "pointer",
                 background: "#333",
               }}
