@@ -162,6 +162,42 @@ const Gallery = () => {
 		},
 		[activeSearchQuery]
 	); // Only re-create if the search query actually changes
+	
+	
+// 1. Create a ref to attach to our button wrapper
+const loadMoreButtonRef = useRef(null);
+
+// 2. Set up the Intersection Observer
+useEffect(() => {
+	const observer = new IntersectionObserver(
+		(entries) => {
+			const target = entries[0];
+			
+			// Trigger only if the button is fully visible, not already loading, and there are more items
+			if (target.isIntersecting && !loadingRef.current && hasMoreRef.current) {
+				loadMoreGroups(offsetRef.current, activeSearchQuery);
+			}
+		},
+		{
+			root: null, 
+			rootMargin: "0px",
+			threshold: 1.0, // 1.0 means 100% of the element must be on screen
+		}
+	);
+
+	// Start observing
+	if (loadMoreButtonRef.current) {
+		observer.observe(loadMoreButtonRef.current);
+	}
+
+	// Cleanup on unmount
+	return () => {
+		if (loadMoreButtonRef.current) {
+			observer.unobserve(loadMoreButtonRef.current);
+		}
+	};
+}, [activeSearchQuery, loadMoreGroups])l;
+
 
 	const triggerSearch = () => {
 		const normalized = normalizeSearchInput(searchInput);
@@ -512,6 +548,8 @@ const Gallery = () => {
 					padding: "5px",
 					textAlign: "center",
 					background: "#111",
+					width: "100%",
+					maxWidth: "600px",
 				}}
 			>
 				<h1 style={{ marginBottom: "1px" }}>Gallery</h1>
@@ -519,7 +557,7 @@ const Gallery = () => {
 					Total: {stats.photos} photos • {stats.videos} videos
 				</h2>
 
-				<div style={{ margin: "5px 0" }}>
+				<div style={{ margin: "5px 0", width:"95%"}}>
 					<input
 						type="text"
 						placeholder="Search, Ex. tits+ass, tits -ass, tits ass,   space=OR, +=AND, -exclude)"
@@ -1095,7 +1133,7 @@ const Gallery = () => {
 																			caption
 																		}
 																		style={{
-																			height: "100%", // Forces image to match the container's 200px height
+																			height: "100%", // Forces image to match the containers 200px height
 																			width: "auto",
 																			objectFit:
 																				"contain",
@@ -1233,24 +1271,26 @@ const Gallery = () => {
 					})}
 
 					{hasMoreRef.current && (
-						<button
-							onClick={() =>
-								loadMoreGroups(
-									offsetRef.current,
-									activeSearchQuery
-								)
-							}
-							disabled={loadingRef.current}
-							style={{
-								display: "block",
-								margin: "10px auto",
-								padding: "2px 5px",
-								fontSize: "1.1em"
-							}}
-						>
-							{loadingRef.current ? "Loading..." : "Load More"}
-						</button>
-					)}
+	<div ref={loadMoreButtonRef} style={{ width: "100%" }}>
+		<button
+			onClick={() =>
+				loadMoreGroups(
+					offsetRef.current,
+					activeSearchQuery
+				)
+			}
+			disabled={loadingRef.current}
+			style={{
+				display: "block",
+				margin: "10px auto",
+				padding: "2px 5px",
+				fontSize: "1.1em"
+			}}
+		>
+			{loadingRef.current ? "Loading..." : "Load More"}
+		</button>
+	</div>
+)}
 				</div>
 			</div>
 		</>
