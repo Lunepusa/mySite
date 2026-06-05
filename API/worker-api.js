@@ -715,8 +715,18 @@ export default {
           addedTags = [],
           removedTags = [],
           newDate,
+          newCaption
         } = await request.json();
         // Tag update
+        if (newCaption !== undefined) {
+            for (const key of keys) {
+                await db
+                    .prepare("UPDATE media SET caption = ? WHERE object_key = ?")
+                    .bind(newCaption, key)
+                    .run();
+            }
+        }
+        
         if (addedTags.length > 0 || removedTags.length > 0) {
           for (const key of keys) {
             const item = await db
