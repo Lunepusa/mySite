@@ -180,8 +180,8 @@ useEffect(() => {
 		},
 		{
 			root: null, 
-			rootMargin: "0px",
-			threshold: 1.0, // 1.0 means 100% of the element must be on screen
+			rootMargin: "0px 0px 20dvh 0px",
+			threshold: 0.1, 
 		}
 	);
 
