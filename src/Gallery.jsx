@@ -180,7 +180,7 @@ const Gallery = () => {
 			},
 			{
 				root: null,
-				rootMargin: "0px 0px 20dvh 0px",
+				rootMargin: "0px 0px 200px 0px",
 			threshold: 0.1,
 			}
 		);
