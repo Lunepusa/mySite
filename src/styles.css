@@ -182,7 +182,7 @@ a img {
 .collapse.expanded {
   max-height: auto;
   display: inline-block;
-  border-bottom: 2px dashed white;
+  border: 2px dashed white;
 }
 
 .collapsible-trigger {
@@ -374,40 +374,39 @@ input[type=range] {
 
 
 /* STANDARD SIZES*/
-
 h1, .h1 {
-  /* Min: 1.8rem | Engine: 5vw + 1rem | Max: 2.5rem */
-  font-size: clamp(1.8rem, 5vw + 1rem, 2.5rem);
+  /* Min: 1.5rem (24px) | Engine: 3vw + 0.8rem | Max: 2.2rem (35px) */
+  font-size: clamp(1.5rem, 3vw + 0.8rem, 2.2rem);
   margin: auto;
 }
 
-h2, .h2{
-  /* Min: 1.5rem | Engine: 4vw + 1rem | Max: 2rem */
-  font-size: clamp(1.5rem, 4vw + 1rem, 2rem);
+h2, .h2 {
+  /* Min: 1.3rem (21px) | Engine: 2.5vw + 0.8rem | Max: 1.8rem (29px) */
+  font-size: clamp(1.3rem, 2.5vw + 0.8rem, 1.8rem);
   margin: auto;
 }
 
 h3, .h3 {
-  /* Min: 1.2rem | Engine: 3vw + 1rem | Max: 1.75rem */
-  font-size: clamp(1.2rem, 3vw + 1rem, 1.75rem);
+  /* Min: 1.1rem (18px) | Engine: 2vw + 0.6rem | Max: 1.5rem (24px) */
+  font-size: clamp(1.1rem, 2vw + 0.6rem, 1.5rem);
   margin: auto;
 }
 
 h4, .h4 {
-  /* Min: 1.1rem | Engine: 2vw + 0.8rem | Max: 1.5rem */
-  font-size: clamp(1.1rem, 2vw + 0.8rem, 1.5rem);
+  /* Min: 1rem (16px) | Engine: 1.5vw + 0.6rem | Max: 1.25rem (20px) */
+  font-size: clamp(1rem, 1.5vw + 0.6rem, 1.25rem);
   margin: auto;
 }
 
 p, .p {
-  /* Min: 1rem (16px) | Engine: 1vw + 0.8rem | Max: 1.125rem (18px) */
-  font-size: clamp(1rem, 1vw + 0.8rem, 1.125rem);
+  /* Min: 0.9rem (14px) | Engine: 1vw + 0.5rem | Max: 1.05rem (17px) */
+  font-size: clamp(0.9rem, 1vw + 0.5rem, 1.05rem);
   margin: auto;
 }
 
 small, .small {
-  /* Min: 0.875rem (14px) | Engine: 0.5vw + 0.7rem | Max: 1rem (16px) */
-  font-size: clamp(0.875rem, 0.5vw + 0.7rem, 1rem);
+  /* Min: 0.75rem (12px) | Engine: 0.5vw + 0.5rem | Max: 0.9rem (14px) */
+  font-size: clamp(0.75rem, 0.5vw + 0.5rem, 0.9rem);
   margin: auto;
   padding: 1%;
 }

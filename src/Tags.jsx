@@ -658,7 +658,7 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
   };
 
   return (
-    <div style={{maxWidth:"500" }}>
+    <div style={{maxWidth:"500px" }}>
       {/* Currently selected tags (removable pills) */}
       <div style={{ window:"fitContent" }}>
         {localTags.map((tag) => (
@@ -670,9 +670,10 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
               color: "#fff",
               margin:"1%",
               borderRadius: "10%",
+              width: "fitContent",
             }}
           >
-            {tag}" "
+            {tag}
             <span
               style={{
                 cursor: "pointer",

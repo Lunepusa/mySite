@@ -7,84 +7,81 @@ import { LocalTimeSchedule } from "./Utility";
 
 export function LoveandLimits() {
   return (
-    <div>
-      <Collapse trigger={<h1>Loves and Limits ⏬</h1>}>
-        <h3 style={{ opacity: ".8" }}>
+    <div style={{display:"block"}}>
+      <Collapse trigger={<h2>Loves and Limits ⏬</h2>}>
+        <h3 style={{}}>
           These are not complete lists! if it isnt mentioned: ASK
         </h3>
-        <Collapse trigger={<h2>SFW loves ⏬</h2>}>
-          <div style={{ columnCount: "3", columnFill: "balance-all" }}>
+        <Collapse trigger={<h3>SFW loves ⏬</h3>}>
+          <p style={{}}>
             Animals
-            <br /> Spreadsheets
-            <br /> Google suite
-            <br /> Troubleshooting
-            <br /> Making
-            <br /> Coding
-            <br /> Sewing
-            <br /> Book binding
-            <br /> Dancing
-            <br /> Singing
-            <br /> Watching YouTube
-            <br />
-            <br />
+            ,  Spreadsheets
+            ,  Google suite
+            ,  Troubleshooting
+            ,  Making
+            ,  Coding
+            ,  Sewing
+            ,  Book binding
+            ,  Dancing
+            ,  Singing
+            ,  Watching YouTube
+            , 
             Video games(survival, farming, life sim, and visual novel are my
             favorite genres, bonus points to a porn game in these genres)
-          </div>
+          </p>
         </Collapse>
-        <Collapse trigger={<h2>NSFW loves ⏬</h2>}>
-          <div style={{ columnCount: "3", columnFill: "balance-all" }}>
+        <Collapse trigger={<h3>NSFW loves ⏬</h3>}>
+          <p style={{}}>
             Pet play
-            <br /> deep throating
-            <br /> begging
-            <br /> teasing
-            <br /> overstim
-            <br /> edging
-            <br /> lingerie
-            <br /> sex toys
-            <br /> heels
-            <br /> hentai/animated porn
-            <br /> audio porn
-            <br /> furries
-          </div>
+            ,  deep throating
+            ,  begging
+            ,  teasing
+            ,  overstim
+            ,  edging
+            ,  lingerie
+            ,  sex toys
+            ,  heels
+            ,  hentai/animated porn
+            ,  audio porn
+            ,  furries
+          </p>
         </Collapse>
-        <Collapse trigger={<h2>Soft Limits ⏬</h2>}>
-          <h3 style={{ opacity: ".8" }}>
-            {" "}
+        <Collapse trigger={<h3>Soft Limits ⏬</h3>}>
+          <h3 style={{}}>
             These are things I may be willing to do, but will likely upcharge
             for and CANNOT disscuss it on official adult platforms.
           </h3>
-          <div style={{ columnCount: "3", columnFill: "balance-all" }}>
+          <p style={{}}>
             Cnc rp
-            <br /> blackmail rp
-            <br /> choking/breath play
-            <br /> drinking piss
-            <br /> scat discussions or into toilet
-            <br /> menstrual blood
-            <br /> fake blood
-            <br /> incest rp
-            <br /> age play rp
-            <br />
+            ,  blackmail rp
+            ,  choking/breath play
+            ,  drinking piss
+            ,  menstrual blood
+            ,  fake blood
+            ,  incest rp
+            ,  age play rp
+            , 
             light race play(BBC/BNWO)
-            <br />
+            , 
             religion play
-            <br /> low risk public play
-            <br /> light sadism/masochism(no bruising or further)
-          </div>
+            ,  low risk public play
+            ,  light sadism/masochism(no bruising or further)
+          </p>
         </Collapse>
-        <Collapse trigger={<h2>Hard Limits ⏬</h2>}>
-          <h3 style={{ opacity: ".8" }}>These are things I will not do ever</h3>
-          <div style={{ columnCount: "3", columnFill: "balance-all", textSize:"small" }}>
-            Anything illegal or that I will get in trouble for <br />
+        <Collapse trigger={<h3>Hard Limits ⏬</h3>}>
+          <h3 style={{}} className="notice">These are things I will not do ever</h3>
+          <p style={{}}>
+            Anything illegal or that I will get in trouble for , 
             vomit
-            <br /> tickle torture
-            <br /> 
+            ,  tickle torture
+            ,  
             heavy sadism or masochism
-            <br />
+            , 
             high risk public content
-            <br />
+            , 
             most scat
-            <br />
-          </div>
+            , 
+          </p>
         </Collapse>
       </Collapse>
     </div>
@@ -92,8 +89,8 @@ export function LoveandLimits() {
 }
 export function Availability() {
   return (
-    <div>
-      <Collapse trigger={<h1>Availability ⏬</h1>}>
+    <div style={{display:"block"}}>
+      <Collapse trigger={<h2>Availability ⏬</h2>}>
         <h3 style={{ opacity: ".8" }}>
           When I tend to be available. no guarentee without discussion.
           <br />
@@ -130,8 +127,8 @@ export function Availability() {
 
 export function Cashapp() {
   return (
-    <div>
-      <Collapse trigger={<h1>What is my CashApp? PayPal? Bank? Ect? ⏬</h1>}>
+    <div style={{display:"block"}}>
+      <Collapse trigger={<h2>What is my CashApp or PayPal? ⏬</h2>}><p>
         Cashapp, venmo, apple pay, and other simmilar platforms are not a thing
         in Canada so I cannot use them.
         <br />
@@ -150,36 +147,33 @@ export function Cashapp() {
           has so little respect for me and what I say
         </h6>
         TLDR: I dont use anything not
-        <a href="/#collapse-allpaymentmethods"> already linked</a>
+        <a href="/#collapse-allpaymentmethods"> already linked</a></p>
       </Collapse>
     </div>
   );
 }
 export function Collab() {
   return (
-    <div>
-      <Collapse trigger={<h1>Do I need a cock to collab with? ⏬</h1>}>
+    <div style={{display:"block"}}>
+      <Collapse trigger={<h2>Collabs?⏬</h2>}><p>
         I am currently not interested in having non solo content on any of my
         pages, however below is what I require to guest star on your profiles.
-        <br />~ You will be required to pay my
-        <a href="/menu#collapse-calgarymeets"> escorting rates</a>, however you
+        <br />~ You will be required to pay my escorting rates, however you
         will get full rights to the content we create together and get to
         monetize it however you want and keep all earnings.
         <br />
         ~ Properly tag or credit me <br />
         ~ You have to come to Calgary, AB Canada
         <br />
-        ~ Condoms are required for everything
-        <br />
-        <br />~ TLDR: No I dont.
+        ~ Condoms are required for everything</p>
       </Collapse>
     </div>
   );
 }
 export default function About() {
   return (
-    <div style={{ textAlign: "center", width: "95%", margin: "auto" }}>
-      <h1>A Bit About Me!</h1>
+    <div style={{ textAlign: "center", display:"block", margin: "auto" }}>
+      <h2>A Bit About Me!</h2>
       <h4>
         ~25 aromantic pansexual canadian
         <br />
@@ -196,7 +190,6 @@ export default function About() {
         anything to do with you, I am not quitting Sex work, and I am ok.
       </h4>
       <LoveandLimits />
-      <Availability />
       <Cashapp />
       <Collab />
     </div>

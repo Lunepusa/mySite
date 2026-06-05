@@ -610,8 +610,9 @@ const Gallery = () => {
 							color: "#fff",
 						}}
 					>
-						<label>
+						<label style={{display:"block"}}>
 							<input
+							
 								type="checkbox"
 								checked={multiSelectMode}
 								onChange={e => {
@@ -619,6 +620,7 @@ const Gallery = () => {
 									if (!e.target.checked)
 										setSelectedItems(new Set());
 								}}
+								style={(width:"fitContent")}
 							/>
 							Multi-select ({selectedItems.size} selected)
 						</label>
@@ -899,7 +901,7 @@ const Gallery = () => {
 							>
 								<h3
 								class="h4"
-									style={{ textAlign: "center" }}
+									style={{ textAlign: "center", maxWidth:"500px" }}
 									onContextMenu={handleDateShareCopy(date)}
 									
 								>
@@ -1204,7 +1206,7 @@ const Gallery = () => {
   </p>
 ) : (
   // Normal view: Clickable tags safely tucked inside the Collapse component
-  <Collapse trigger={<p style={{ margin: "2px 0", cursor: "pointer" }}> Tags:</p>}>
+  <Collapse trigger={<p style={{ margin: "2px 0", cursor: "pointer" }}> Tags⏬</p>}>
     <ClickableTags tags={item.tags} className="small" />
   </Collapse>
 )}
