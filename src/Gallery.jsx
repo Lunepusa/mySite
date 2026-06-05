@@ -600,15 +600,15 @@ const Gallery = () => {
 				{!!isAdmin && (
 					<div
 						style={{
-							position: "fixed",
+							position: "sticky",
 							top: "2%",
-							right: "2%",
 							background: "#333",
 							padding: "1px",
 							borderRadius: "1px",
 							zIndex: 100,
 							boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
 							color: "#fff"
+							textAlign:""
 						}}
 					>
 						<label>
@@ -1198,32 +1198,17 @@ const Gallery = () => {
 																	color: "#ccc"
 																}}
 															>
-																<Collapse
-																	trigger={
-																		<p>
-																			{" "}
-																			Tags:
-																		</p>
-																	}
-																>
-																	{multiSelectMode ? (
-																		itemTags.length >
-																		0 ? (
-																			itemTags.join(
-																				", "
-																			)
-																		) : (
-																			"none"
-																		)
-																	) : (
-																		<ClickableTags
-																			tags={
-																				item.tags
-																			}
-																			className="small"
-																		/>
-																	)}
-																</Collapse>
+																{multiSelectMode ? (
+
+  <p style={{ margin: "2px 0", color: "#ccc", fontSize: "0.9em" }}>
+    Tags:<br /> {itemTags.length > 0 ? itemTags.join(", ") : "none"}
+  </p>
+) : (
+  // Normal view: Clickable tags safely tucked inside the Collapse component
+  <Collapse trigger={<p style={{ margin: "2px 0", cursor: "pointer" }}> Tags:</p>}>
+    <ClickableTags tags={item.tags} className="small" />
+  </Collapse>
+)}
 
 																{!!isAdmin && (
 																	<p

@@ -597,6 +597,10 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
   const [filteredSuggestions, setFilteredSuggestions] = useState([]);
   const [counts, setCounts] = useState({});
 
+    useEffect(() => {
+    fetchTagCountsOnce().then(setCounts);
+  }, []);
+
   // Sync local state when initialTags changes (important for edit reuse)
   useEffect(() => {
     const freshTags = initialTags
@@ -654,7 +658,7 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
   };
 
   return (
-    <div style={{ }}>
+    <div style={{maxWidth:"500" }}>
       {/* Currently selected tags (removable pills) */}
       <div style={{ window:"fitContent" }}>
         {localTags.map((tag) => (
@@ -662,12 +666,13 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
             key={tag}
             style={{
               display: "inline-block",
-              background: "#333",
+              background: "#000000",
               color: "#fff",
+              margin:"1%"
               borderRadius: "10%",
             }}
           >
-            {tag} 
+            {tag}" "
             <span
               style={{
                 cursor: "pointer",
@@ -675,7 +680,7 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
               }}
               onClick={() => removeTag(tag)}
             >
-              
+             x 
             </span>
           </span>
         ))}
@@ -704,7 +709,7 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
       {filteredSuggestions.length > 0 && (
         <div
           style={{
-            maxHeight: "20vh",
+            maxHeight: "10vh",
             overflowY: "auto",
             background: "#222",
             border: "1px solid #444",
@@ -718,6 +723,7 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
               key={tag}
               style={{
                 padding: "1%",
+                margin: "1%".
                 cursor: "pointer",
                 background: "#333",
               }}
