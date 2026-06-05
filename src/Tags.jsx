@@ -668,7 +668,7 @@ export const TagSelect = ({ initialTags = "", onSave, placeholder = "Type to add
               display: "inline-block",
               background: "#000000",
               color: "#fff",
-              margin:"1%"
+              margin:"1%",
               borderRadius: "10%",
             }}
           >

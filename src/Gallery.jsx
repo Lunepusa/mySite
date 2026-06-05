@@ -607,8 +607,7 @@ const Gallery = () => {
 							borderRadius: "1px",
 							zIndex: 100,
 							boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
-							color: "#fff"
-							textAlign:""
+							color: "#fff",
 						}}
 					>
 						<label>
