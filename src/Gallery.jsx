@@ -162,41 +162,41 @@ const Gallery = () => {
 		},
 		[activeSearchQuery]
 	); // Only re-create if the search query actually changes
-	
-	
-// 1. Create a ref to attach to our button wrapper
-const loadMoreButtonRef = useRef(null);
 
-// 2. Set up the Intersection Observer
-useEffect(() => {
-	const observer = new IntersectionObserver(
-		(entries) => {
-			const target = entries[0];
-			
-			// Trigger only if the button is fully visible, not already loading, and there are more items
-			if (target.isIntersecting && !loadingRef.current && hasMoreRef.current) {
-				loadMoreGroups(offsetRef.current, activeSearchQuery);
+
+	// 1. Create a ref to attach to our button wrapper
+	const loadMoreButtonRef = useRef(null);
+
+	// 2. Set up the Intersection Observer
+	useEffect(() => {
+		const observer = new IntersectionObserver(
+			(entries) => {
+				const target = entries[0];
+
+				// Trigger only if the button is fully visible, not already loading, and there are more items
+				if (target.isIntersecting && !loadingRef.current && hasMoreRef.current) {
+					loadMoreGroups(offsetRef.current, activeSearchQuery);
+				}
+			},
+			{
+				root: null,
+				rootMargin: "0px 0px 20dvh 0px",
+			threshold: 0.1,
 			}
-		},
-		{
-			root: null, 
-			rootMargin: "0px 0px 20dvh 0px”,
-			threshold: 0.1, 
-		}
-	);
+		);
 
-	// Start observing
-	if (loadMoreButtonRef.current) {
-		observer.observe(loadMoreButtonRef.current);
-	}
-
-	// Cleanup on unmount
-	return () => {
+		// Start observing
 		if (loadMoreButtonRef.current) {
-			observer.unobserve(loadMoreButtonRef.current);
+			observer.observe(loadMoreButtonRef.current);
 		}
-	};
-}, [activeSearchQuery, loadMoreGroups]);
+
+		// Cleanup on unmount
+		return () => {
+			if (loadMoreButtonRef.current) {
+				observer.unobserve(loadMoreButtonRef.current);
+			}
+		};
+	}, [activeSearchQuery, loadMoreGroups]);
 
 
 	const triggerSearch = () => {
@@ -388,58 +388,58 @@ useEffect(() => {
 	// Uses optimistic update on success
 	// -------------------------------------------------------------------------
 	const saveEdit = async () => {
-	// 1. Ensure we are actually editing a caption
-	if (!editingGroupCaption) {
-		setEditingGroupCaption(null);
-		return;
-	}
-
-	const cleanGroupKey = editingGroupCaption.toString().replace(".0", "");
-
-	// 2. Since /bulk-update expects an array of 'keys', we gather all keys in this group
-	const keysToUpdate = media
-		.filter(item => item.date.toString().replace(".0", "") === cleanGroupKey)
-		.map(item => item.key);
-
-	if (keysToUpdate.length === 0) {
-		setEditingGroupCaption(null);
-		return;
-	}
-
-	try {
-		// 3. Post to the new bulk-update endpoint
-		const res = await apiFetch("/bulk-update", {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({
-				keys: keysToUpdate,
-				newCaption: tempCaption 
-			})
-		});
-
-		if (!res.ok) {
-			const errText = await res.text();
-			throw new Error(`Save failed: ${res.status} ${errText}`);
+		// 1. Ensure we are actually editing a caption
+		if (!editingGroupCaption) {
+			setEditingGroupCaption(null);
+			return;
 		}
 
-		// 4. Update the local React state based on the keys array
-		setMedia(prev => {
-			return prev.map(item => {
-				if (keysToUpdate.includes(item.key)) {
-					return { ...item, caption: tempCaption };
-				}
-				return item;
-			});
-		});
+		const cleanGroupKey = editingGroupCaption.toString().replace(".0", "");
 
-		// 5. Reset states
-		setEditingGroupCaption(null);
-		setTempCaption("");
-	} catch (err) {
-		console.error("Save error:", err);
-		alert("Save failed — changes not applied: " + err.message);
-	}
-};
+		// 2. Since /bulk-update expects an array of 'keys', we gather all keys in this group
+		const keysToUpdate = media
+			.filter(item => item.date.toString().replace(".0", "") === cleanGroupKey)
+			.map(item => item.key);
+
+		if (keysToUpdate.length === 0) {
+			setEditingGroupCaption(null);
+			return;
+		}
+
+		try {
+			// 3. Post to the new bulk-update endpoint
+			const res = await apiFetch("/bulk-update", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					keys: keysToUpdate,
+					newCaption: tempCaption
+				})
+			});
+
+			if (!res.ok) {
+				const errText = await res.text();
+				throw new Error(`Save failed: ${res.status} ${errText}`);
+			}
+
+			// 4. Update the local React state based on the keys array
+			setMedia(prev => {
+				return prev.map(item => {
+					if (keysToUpdate.includes(item.key)) {
+						return { ...item, caption: tempCaption };
+					}
+					return item;
+				});
+			});
+
+			// 5. Reset states
+			setEditingGroupCaption(null);
+			setTempCaption("");
+		} catch (err) {
+			console.error("Save error:", err);
+			alert("Save failed — changes not applied: " + err.message);
+		}
+	};
 
 	// -------------------------------------------------------------------------
 	// Admin: Right-click date header → copy share link for whole date
@@ -518,7 +518,7 @@ useEffect(() => {
 					Total: {stats.photos} photos • {stats.videos} videos
 				</h2>
 
-				<div style={{ margin: "5px 0", width:"95%"}}>
+				<div style={{ margin: "5px 0", width: "95%" }}>
 					<input
 						type="text"
 						placeholder="Search, Ex. tits+ass, tits -ass, tits ass,   space=OR, +=AND, -exclude)"
@@ -609,9 +609,9 @@ useEffect(() => {
 							color: "#fff",
 						}}
 					>
-						<label style={{display:"block"}}>
+						<label style={{ display: "block" }}>
 							<input
-							
+
 								type="checkbox"
 								checked={multiSelectMode}
 								onChange={e => {
@@ -619,7 +619,7 @@ useEffect(() => {
 									if (!e.target.checked)
 										setSelectedItems(new Set());
 								}}
-								style={{width:"fitContent"}}
+								style={{ width: "fitContent" }}
 							/>
 							Multi-select ({selectedItems.size} selected)
 						</label>
@@ -697,7 +697,7 @@ useEffect(() => {
 																	),
 																	created_date:
 																		dateValue?.length ===
-																		8
+																			8
 																			? dateValue
 																			: item.created_date
 																};
@@ -761,22 +761,22 @@ useEffect(() => {
 							{media.findIndex(
 								m => m.key === fullscreenItem.key
 							) > 0 && (
-								<div
-									style={{
-										position: "absolute",
-										left: "2%",
-										fontSize: "5em",
-										color: "#fff",
-										cursor: "pointer",
-										zIndex: "10"
-									}}
-									onClick={e => {
-										goPrev();
-									}}
-								>
-									‹-
-								</div>
-							)}
+									<div
+										style={{
+											position: "absolute",
+											left: "2%",
+											fontSize: "5em",
+											color: "#fff",
+											cursor: "pointer",
+											zIndex: "10"
+										}}
+										onClick={e => {
+											goPrev();
+										}}
+									>
+										‹-
+									</div>
+								)}
 
 							<div
 								style={{ maxWidth: "100%", maxHeight: "100%" }}
@@ -862,22 +862,22 @@ useEffect(() => {
 								m => m.key === fullscreenItem.key
 							) <
 								media.length - 1 && (
-								<div
-									style={{
-										position: "absolute",
-										right: "2%",
-										fontSize: "5em",
-										color: "#fff",
-										cursor: "pointer",
-										zIndex: "10"
-									}}
-									onClick={e => {
-										goNext();
-									}}
-								>
-									-›
-								</div>
-							)}
+									<div
+										style={{
+											position: "absolute",
+											right: "2%",
+											fontSize: "5em",
+											color: "#fff",
+											cursor: "pointer",
+											zIndex: "10"
+										}}
+										onClick={e => {
+											goNext();
+										}}
+									>
+										-›
+									</div>
+								)}
 						</div>
 					)}
 
@@ -899,10 +899,10 @@ useEffect(() => {
 								}}
 							>
 								<h3
-								class="h4"
-									style={{ textAlign: "center", maxWidth:"500px" }}
+									class="h4"
+									style={{ textAlign: "center", maxWidth: "500px" }}
 									onContextMenu={handleDateShareCopy(date)}
-									
+
 								>
 									{editingGroupCaption === date ? (
 										<div>
@@ -1001,9 +1001,9 @@ useEffect(() => {
 														position: "relative",
 														border:
 															multiSelectMode &&
-															selectedItems.has(
-																item.key
-															)
+																selectedItems.has(
+																	item.key
+																)
 																? "3px solid yellow"
 																: "none"
 													}}
@@ -1065,7 +1065,7 @@ useEffect(() => {
 															const hasAccess =
 																hasAccessForDate(
 																	item.date ||
-																		"Unknown"
+																	"Unknown"
 																);
 
 															let targetKey =
@@ -1159,7 +1159,7 @@ useEffect(() => {
 														}}
 													>
 														{editingItem ===
-														item.key ? (
+															item.key ? (
 															<>
 																<TagSelect
 																	selected={
@@ -1200,15 +1200,15 @@ useEffect(() => {
 															>
 																{multiSelectMode ? (
 
-  <p style={{ margin: "2px 0", color: "#ccc", fontSize: "0.9em" }}>
-    Tags:<br /> {itemTags.length > 0 ? itemTags.join(", ") : "none"}
-  </p>
-) : (
-  // Normal view: Clickable tags safely tucked inside the Collapse component
-  <Collapse trigger={<p style={{ margin: "2px 0", cursor: "pointer" }}> Tags⏬</p>}>
-    <ClickableTags tags={item.tags} className="small" />
-  </Collapse>
-)}
+																	<p style={{ margin: "2px 0", color: "#ccc", fontSize: "0.9em" }}>
+																		Tags:<br /> {itemTags.length > 0 ? itemTags.join(", ") : "none"}
+																	</p>
+																) : (
+																	// Normal view: Clickable tags safely tucked inside the Collapse component
+																	<Collapse trigger={<p style={{ margin: "2px 0", cursor: "pointer" }}> Tags⏬</p>}>
+																		<ClickableTags tags={item.tags} className="small" />
+																	</Collapse>
+																)}
 
 																{!!isAdmin && (
 																	<p
@@ -1232,26 +1232,26 @@ useEffect(() => {
 					})}
 
 					{hasMoreRef.current && (
-	<div ref={loadMoreButtonRef} style={{ width: "100%" }}>
-		<button
-			onClick={() =>
-				loadMoreGroups(
-					offsetRef.current,
-					activeSearchQuery
-				)
-			}
-			disabled={loadingRef.current}
-			style={{
-				display: "block",
-				margin: "10px auto",
-				padding: "2px 5px",
-				fontSize: "1.1em"
-			}}
-		>
-			{loadingRef.current ? "Loading..." : "Load More"}
-		</button>
-	</div>
-)}
+						<div ref={loadMoreButtonRef} style={{ width: "100%" }}>
+							<button
+								onClick={() =>
+									loadMoreGroups(
+										offsetRef.current,
+										activeSearchQuery
+									)
+								}
+								disabled={loadingRef.current}
+								style={{
+									display: "block",
+									margin: "10px auto",
+									padding: "2px 5px",
+									fontSize: "1.1em"
+								}}
+							>
+								{loadingRef.current ? "Loading..." : "Load More"}
+							</button>
+						</div>
+					)}
 				</div>
 			</div>
 		</>
