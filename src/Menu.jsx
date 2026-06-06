@@ -662,7 +662,7 @@ subType === "photo"
 ? `${ QTY.CALL_MIN} ($${callMin})`
 : `${ QTY.SEXTING_MIN} ($${sextMin})`}</span>
 <input
-style={{margin:"auto", width:"fitContent"}}
+style={{margin:"auto", width:"5%"}}
 type="number"
 min={
 subType==="photo"
@@ -715,12 +715,12 @@ onChange={(e)=> setQuantity(Number(e.target.value))}
     })})`}
 <span style={{margin:"auto", width:"30%", textAlign:"right"}}>MAXIMUM: {
 subType === "photo"
-? `${ QTY.PHOTO_MAX} ($${picMax})`
+? `${ QTY.PHOTO_MAX} ($${picvanMax})`
 : subType === "video"
-? `${ QTY.VIDEO_MAX} ($${vidMax})`
+? `${ QTY.VIDEO_MAX} ($${vidvanMax})`
 : subType === "call"
-? `${ QTY.CALL_MAX} ($${callMax})`
-: `${ QTY.SEXTING_MAX} ($${sextMax})`}</span>
+? `${ QTY.CALL_MAX} ($${callvanMax})`
+: `${ QTY.SEXTING_MAX} ($${sextvanMax})`}</span>
 </div>
 <input
 type="range"
