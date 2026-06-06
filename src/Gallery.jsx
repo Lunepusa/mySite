@@ -898,7 +898,9 @@ const loadMoreButtonRef = useCallback(node => {
 								key={date}
 								style={{
 									marginBottom: "5px",
-									border: "1px dashed white"
+									border: "1px dashed white",
+									width:"fit-content",
+									maxWidth:"90%",
 								}}
 							>
 								<h3
