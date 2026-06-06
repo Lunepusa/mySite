@@ -106,17 +106,17 @@ export function Preferredlinks() {
 
       <div id="preferredlinks">
         <Link
-          name="Sheer"
-          desc="hard fetish friendly subscription platform. I am considering making this my main"
-          img={Sheer}
-          link="https://www.sheer.com/LunePusa"
-        />
-        <Link
           name="Fansly"
-          desc="4000+pics &500+vids for $5 a month"
+          desc="recognized and trusted"
           img={Fansly}
           link="https://fansly.com/Lunepusa"
         />
+        <Link
+            name="MintStars"
+            desc="express checkout"
+            img={Mintstars}
+            link="https://mintstars.com/tip/lunepusa"
+          />
         <Link
           name="Throne"
           desc="Give me a gift"
@@ -164,6 +164,12 @@ export function Paymentlinks() {
             desc="4000+pics &500+vids for $5 a month"
             img={Fansly}
             link="https://fansly.com/Lunepusa"
+          />
+           <Link
+            name="MintStars"
+            desc=""
+            img={Mintstars}
+            link="https://mintstars.com/lunepusa"
           />
           <Link
             name="Sheer"
