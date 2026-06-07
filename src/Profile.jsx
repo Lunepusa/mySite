@@ -24,7 +24,7 @@ export const PaymentChecker = () => {
     const loadData = async () => {
       try {
         // Saved pairs
-        const pairsRes = await apiFetch("/saved-payment-pairs");
+        const pairsRes = await apiFetch("/get-payment-pairs");
         const pairsData = await pairsRes.json();
         setSavedPairs(pairsData.pairs || []);
 
@@ -359,7 +359,7 @@ const expiration = !user?.subscription_expires
       const fetchUsers = async () => {
         setUsersLoading(true);
         try {
-          const res = await apiFetch("/admin-users");
+          const res = await apiFetch("/get-users");
           if (!res.ok) throw new Error("Failed");
           const data = await res.json();
           setAllUsers(data.users);

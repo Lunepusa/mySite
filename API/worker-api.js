@@ -8,16 +8,6 @@ const ALLOWED_ORIGINS = [
   "https://lunepusa.com",
 ];
 
-// Simple SHA-256 hash (working version)
-async function hashPassword(password) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(password);
-  const hash = await crypto.subtle.digest("SHA-256", data);
-  return Array.from(new Uint8Array(hash))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-}
-
 function withCors(response, request) {
   const origin = request.headers.get("Origin");
   if (origin && ALLOWED_ORIGINS.includes(origin)) {
@@ -32,15 +22,21 @@ function withCors(response, request) {
   return response;
 }
 
-function getTagsArray(tagString) {
+// Simple SHA-256 hash (working version)
+async function hashPassword(password) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password);
+  const hash = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(hash))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}function getTagsArray(tagString) {
   if (!tagString) return [];
   return tagString
     .split(",")
     .map((t) => t.trim())
     .filter((t) => t.length > 0);
-}
-
-// Generate signed token (HMAC-SHA256, no external lib)
+}// Generate signed token (HMAC-SHA256, no external lib)
 async function generateToken(payload, env) {
   const header = btoa(
     JSON.stringify({
@@ -67,9 +63,7 @@ async function generateToken(payload, env) {
     String.fromCharCode(...new Uint8Array(signature)),
   ).replace(/=+$/, "");
   return `${data}.${signatureB64}`;
-}
-
-// Validate token
+}// Validate token
 async function validateToken(token, env) {
   if (!token) return null;
   const parts = token.split(".");
@@ -103,9 +97,7 @@ async function validateToken(token, env) {
   } catch {
     return null;
   }
-}
-
-// Helper: Refresh Gmail access token using stored refresh token
+}// Helper: Refresh Gmail access token using stored refresh token
 async function refreshGmailToken(env) {
   const response = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
@@ -127,9 +119,7 @@ async function refreshGmailToken(env) {
     );
   }
   return data.access_token;
-}
-
-async function getUser(request, env) {
+}async function getUser(request, env) {
   const bucket = env.Media;
   const bucketName = "lunepusa";
   const db = env.Db;
@@ -171,9 +161,7 @@ export default {
       response = Response.json({
         user: user || null,
       });
-    }
-
-    // Unified login/signup — returns token
+    }    // Unified login/signup — returns token
     else if (url.pathname === "/login" && request.method === "POST") {
       const { username, password, mode = "login" } = await request.json();
       console.log("Login attempt:", {
@@ -310,8 +298,7 @@ export default {
           status: 200,
         },
       );
-    }
-    // Admin upload-batch (legacy)
+    }    // Admin upload-batch (legacy)
     else if (url.pathname === "/upload-batch" && request.method === "POST") {
       const user = await getUser(request, env);
       if (!user || !user.is_admin) {
@@ -547,9 +534,7 @@ export default {
         );
       }
       console.log("=== MEDIA SEARCH DEBUG END ===");
-    }
-
-    // ====================== PRESIGN ======================
+    }    // ====================== PRESIGN ======================
     else if (url.pathname === "/presign" && request.method === "POST") {
       try {
         const user = await getUser(request, env);
@@ -635,9 +620,7 @@ export default {
           },
         );
       }
-    }
-
-    // ====================== UPLOAD COMPLETE ======================
+    }    // ====================== UPLOAD COMPLETE ======================
     else if (url.pathname === "/upload-complete" && request.method === "POST") {
       try {
         const user = await getUser(request, env);
@@ -777,10 +760,7 @@ response = Response.json({ success: true });
           },
         );
       }
-    } else if (
-      url.pathname === "/change-password" &&
-      request.method === "POST"
-    ) {
+    } else if (      url.pathname === "/change-password" && request.method === "POST" ) {
       const user = await getUser(request, env);
       if (!user) {
         response = new Response("Unauthorized", {
@@ -826,9 +806,8 @@ response = Response.json({ success: true });
           );
         }
       }
-    }
-    // GET /admin-users — list all users (admin only)
-    else if (url.pathname === "/admin-users" && request.method === "GET") {
+    }    // GET /get-users — list all users (admin only)
+    else if (url.pathname === "/get-users" && request.method === "GET") {
       const user = await getUser(request, env);
       if (!user || user.username !== "lunepusa") {
         response = new Response("Unauthorized", {
@@ -844,12 +823,8 @@ response = Response.json({ success: true });
           users: users.results,
         });
       }
-    }
-    // POST /admin-update-user — update admin status or expiry
-    else if (
-      url.pathname === "/admin-update-user" &&
-      request.method === "POST"
-    ) {
+    }    // POST /admin-update-user — update admin status or expiry
+    else if (      url.pathname === "/admin-update-user" && request.method === "POST"    ) {
       const user = await getUser(request, env);
       if (!user || user.username !== "lunepusa") {
         response = new Response("Unauthorized", {
@@ -960,12 +935,8 @@ response = Response.json({ success: true });
       response = Response.json({
         success: true,
       });
-    }
-    // NEW: POST /generate-share-token — admin only
-    else if (
-      url.pathname === "/generate-share-token" &&
-      request.method === "POST"
-    ) {
+    }    // NEW: POST /generate-share-token — admin only
+    else if (url.pathname === "/generate-share-token" && request.method === "POST") {
       const user = await getUser(request, env);
       if (!user || !user.is_admin) {
         response = new Response("Unauthorized", {
@@ -1009,8 +980,7 @@ response = Response.json({ success: true });
           );
         }
       }
-    }
-    // NEW: GET /share/:token — dedicated shared view
+    }    // NEW: GET /share/:token — dedicated shared view
     else if (url.pathname.startsWith("/share/") && request.method === "GET") {
       const token = url.pathname.split("/")[2];
       if (!token) {
@@ -1090,13 +1060,8 @@ response = Response.json({ success: true });
           );
         }
       }
-    }
-
-    // GET /saved-payment-pairs — return the user's current saved pairs
-    else if (
-      url.pathname === "/saved-payment-pairs" &&
-      request.method === "GET"
-    ) {
+    }    // GET /get-payment-pairs — return the user's current saved pairs
+    else if (url.pathname === "/get-payment-pairs" && request.method === "GET" ) {
       const user = await getUser(request, env);
       if (!user) {
         response = new Response("Unauthorized", {
@@ -1131,10 +1096,7 @@ response = Response.json({ success: true });
           );
         }
       }
-    } else if (
-      url.pathname === "/save-payment-pair" &&
-      request.method === "POST"
-    ) {
+    } else if (url.pathname === "/save-payment-pair" && request.method === "POST" ) {
       const user = await getUser(request, env);
       if (!user) {
         response = new Response("Unauthorized", {
@@ -1558,10 +1520,7 @@ response = Response.json({ success: true });
           );
         }
       }
-    } else if (
-      url.pathname === "/migrate-flatten-r2" &&
-      request.method === "GET"
-    ) {
+    } else if (url.pathname === "/migrate-flatten-r2" && request.method === "GET"    ) {
       try {
         // ADDED LIMIT 50: This avoids hitting Cloudflare's sub-request maximum limit.
         // Every time you refresh, it pulls the next 50 un-migrated items.
@@ -1758,8 +1717,7 @@ response = Response.json({ success: true });
           { status: 500 },
         );
       }
-    } else if (url.pathname === "/blur-test") {
-      response = new Response("Worker is working! Blur route is active.", {
+    } else if (url.pathname === "/blur-test") {response = new Response("Worker is working! Blur route is active.", {
         headers: {
           "Content-Type": "text/plain",
         },
@@ -1768,20 +1726,13 @@ response = Response.json({ success: true });
       response = Response.json({
         R2_PUBLIC_URL: env.R2_PUBLIC_URL || "https://files.lunepusa.com",
       });
-    } else {
-      response = new Response("Not found", {
-        status: 404,
-      });
-    }
-
+    } else {response = new Response("Not found", { status: 404,}); }
     // Ensure 'response' is defined before calling withCors
     if (!response) {
       response = new Response("Not Found", {
         status: 404,
       });
-    }
-
-    // Apply CORS to EVERY response
+    }    // Apply CORS to EVERY response
     return withCors(response, request);
   },
 };

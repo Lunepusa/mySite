@@ -160,7 +160,7 @@ const AuthProvider = ({ children }) => {
 
         // <-- 2. ADDED FETCH LOGIC FOR SAVED PAIRS
         try {
-          const pairsRes = await apiFetch("/saved-payment-pairs");
+          const pairsRes = await apiFetch("/get-payment-pairs");
           const pairsData = await pairsRes.json();
           setSavedPairs(pairsData.pairs || []);
         } catch (e) {
