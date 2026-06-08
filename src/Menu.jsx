@@ -100,7 +100,7 @@ for (let i = 0; i < markupQty; i++) {
     }
 
     const finalPrice = base + totalMarkup - totalDiscount;
-    return Math.floor(finalPrice / 5) * 5;
+    return finalPrice;
     };
 
     // ──────────────────────────────────────────────────────────────────────────────
@@ -286,15 +286,14 @@ return (
               Live
             </h3>
             <h4 style={{ textAlign: "right", width: "65%", display: "inline-block", margin: "0%", verticalAlign: "top" }}>
-              sexting: ${QTY.SEXTING_MIN}-${QTY.SEXTING_MAX}+ ({sextMin} - {sextMax})
-              <br /> calls: ${QTY.CALL_MIN}-${QTY.CALL_MAX}+ ({callMin} - {callMax})
+              sexting: ${sextMin}-${sextMax}+ ({QTY.SEXTING_MIN} - {QTY.SEXTING_MAX} mins)
+              <br /> calls: ${callMin}-${callMax}+ ({QTY.CALL_MIN} - {QTY.CALL_MAX} mins)
             </h4>
           </header-div>
           <p style={{ margin: "0%", paddingTop: "1%" }}>
             {BLURBS.CHATTING}
           </p>
-        </div>
-        <header-div style={{ display: "block", width: "100%" }}>
+           <header-div style={{ display: "block", width: "100%" }}>
             <h3 style={{ textAlign: "left", width: "30%", display: "inline-block", margin: "0%", verticalAlign: "top" }}>
               Casual Chatting
             </h3>
@@ -305,6 +304,7 @@ return (
           <p style={{ margin: "0%", paddingTop: "1%" }}>
             {BLURBS.CHATTING}
           </p>
+        </div>
       </div>
     </section>
   );}
