@@ -47,7 +47,8 @@ BASE_SETUP_VID: 30,
 BASE_SETUP_PIC: 15,
 BASE_SETUP_CALL: 60,
 BASE_SETUP_SEXT: 0,
-BASE_SETUP_VID_RATING: 15,
+BASE_SETUP_VID_RATING: 15
+BASE_DISC_TEXT_RATING: 30,
 BASE_DISC_CHATTING: 6,
 EXTRA_PREP_TAG_MINS: 30,
 };
@@ -100,7 +101,7 @@ for (let i = 0; i < markupQty; i++) {
     }
 
     const finalPrice = base + totalMarkup - totalDiscount;
-    return finalPrice;
+    return Math.round(finalPrice);
     };
 
     // ──────────────────────────────────────────────────────────────────────────────
@@ -387,7 +388,6 @@ setSubType("video");
 }
 if (cat === "rating") {
 setSubType("text");
-setQuantity(1);
 }
 if (cat === "live") {
 setSubType("call");
