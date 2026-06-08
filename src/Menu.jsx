@@ -47,7 +47,7 @@ BASE_SETUP_VID: 30,
 BASE_SETUP_PIC: 15,
 BASE_SETUP_CALL: 60,
 BASE_SETUP_SEXT: 0,
-BASE_SETUP_VID_RATING: 15
+BASE_SETUP_VID_RATING: 15,
 BASE_DISC_TEXT_RATING: 30,
 BASE_DISC_CHATTING: 6,
 EXTRA_PREP_TAG_MINS: 30,
@@ -294,11 +294,11 @@ return (
           <p style={{ margin: "0%", paddingTop: "1%" }}>
             {BLURBS.CHATTING}
           </p>
-           <header-div style={{ display: "block", width: "100%" }}>
-            <h3 style={{ textAlign: "left", width: "30%", display: "inline-block", margin: "0%", verticalAlign: "top" }}>
+           <header-div style={{ display: "block", width: "100%", border:"1px white dashed" }}>
+            <h3 style={{ textAlign: "left", width: "40%", display: "inline-block", margin: "0%", verticalAlign: "top" }}>
               Casual Chatting
             </h3>
-            <h4 style={{ textAlign: "right", width: "65%", display: "inline-block", margin: "0%", verticalAlign: "top" }}>
+            <h4 style={{ textAlign: "right", width: "55%", display: "inline-block", margin: "0%", verticalAlign: "top" }}>
               ${chatting} per Reply
             </h4>
           </header-div>
