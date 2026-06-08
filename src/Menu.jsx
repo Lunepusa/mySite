@@ -35,17 +35,20 @@ VIDEO_MIN: 3,
 VIDEO_MAX: 15,
 PHOTO_MIN: 5,
 PHOTO_MAX: 20,
+VIDRATING_MAX: 5,
 CALL_MIN: 5,
 CALL_MAX: 30,
 SEXTING_MIN: 15,
 SEXTING_MAX: 60,
+CHATTING_MIN: 1,
+CHATTING_MAX: 30,
 BASE_DISCUSSION: 15,
 BASE_SETUP_VID: 30,
 BASE_SETUP_PIC: 15,
 BASE_SETUP_CALL: 60,
 BASE_SETUP_SEXT: 0,
 BASE_SETUP_VID_RATING: 15,
-BASE_DISC_TEXT_RATING: 30,
+BASE_DISC_CHATTING: 6,
 EXTRA_PREP_TAG_MINS: 30,
 };
 
@@ -57,6 +60,8 @@ CUSTOMS:
 LIVE: "I only do live calls and sexting when I can give you my full attention and really have fun. Join my VIP mailer to catch me when I'm in the mood. Payment required upfront.",
 RATING:
 "Detailed ratings, same-day turnaround typically. message me first to confirm. Payment required upfront.",
+CHATTING:
+"Extremely casual, text only, asynchronous, no performance, replies when I have time between other things.",
 };
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -147,9 +152,13 @@ for (let i = 0; i < markupQty; i++) {
     export const vidRating = calculatePrice({
     discussionQty: QTY.BASE_DISCUSSION,
     prePostQty: QTY.BASE_SETUP_VID_RATING,
-    contentQty: 5,
+    contentQty: QTY.VIDRATING_MAX,
     markupQty: 1,
     discountQty: 1,
+    });
+    export const chatting = calculatePrice({
+    discussionQty: 6,
+    
     });
 
     // Max Calculations (Assuming max of 2 extra prep tags for calculation purposes)
@@ -177,6 +186,13 @@ for (let i = 0; i < markupQty; i++) {
     prePostQty: QTY.BASE_SETUP_CALL + Math.max(2, Math.floor( QTY.CALL_MAX / 2.5)),
     contentQty: QTY.CALL_MAX,
     markupQty: 1,
+    });
+    export const vidRatingMax = calculatePrice({
+    discussionQty: QTY.BASE_DISCUSSION,
+    prePostQty: QTY.BASE_SETUP_VID_RATING + Math.max(2, Math.floor( QTY.vidRating * 0.5 / 2.5)),
+    contentQty: 5,
+    markupQty: 1,
+    discountQty: 1,
     });
     // Max no extra prep time Calculations
     export const picvanMax = calculatePrice({
@@ -220,12 +236,12 @@ return (
         />
         <div style={{ margin: "0%", padding: "0%", width: "68%", display: "inline-block", verticalAlign: "top" }}>
           <header-div style={{ display: "block", width: "100%" }}>
-            <h3 style={{ textAlign: "left", width: "40%", display: "inline-block", margin: "0%", verticalAlign: "top" }}>
+            <h3 style={{ textAlign: "left", width: "30%", display: "inline-block", margin: "0%", verticalAlign: "top" }}>
               Customs
             </h3>
-            <h4 style={{ textAlign: "right", width: "55%", display: "inline-block", margin: "0%", verticalAlign: "top" }}>
-              pics:${QTY.PHOTO_MIN}-${QTY.PHOTO_MAX} ({picMin} - {picMax})
-              <br /> vids: ${QTY.VIDEO_MIN}-${QTY.VIDEO_MAX} ({vidMin} - {vidMax})
+            <h4 style={{ textAlign: "right", width: "65%", display: "inline-block", margin: "0%", verticalAlign: "top" }}>
+              pics:${picMin} - ${picMax}+ ({QTY.PHOTO_MIN}-{QTY.PHOTO_MAX} pics)
+              <br /> vids: ${vidMin} - ${vidMax}+ ({QTY.VIDEO_MIN}-{QTY.VIDEO_MAX} mins )
             </h4>
           </header-div>
           <p style={{ margin: "0%", paddingTop: "1%" }}>
@@ -238,10 +254,10 @@ return (
       <div style={{ border: "1px dashed white", padding: "1%", width: "98%", display: "block", marginBottom: "2%" }}>
         <div style={{ width: "68%", margin: "0%", padding: "0%", display: "inline-block", verticalAlign: "top" }}>
           <header-div style={{ display: "block", width: "100%" }}>
-            <h3 style={{ textAlign: "left", width: "40%", display: "inline-block", margin: "0%", verticalAlign: "top" }}>
+            <h3 style={{ textAlign: "left", width: "30%", display: "inline-block", margin: "0%", verticalAlign: "top" }}>
               Ratings
             </h3>
-            <h4 style={{ textAlign: "right", width: "55%", display: "inline-block", margin: "0%", verticalAlign: "top" }}>
+            <h4 style={{ textAlign: "right", width: "65%", display: "inline-block", margin: "0%", verticalAlign: "top" }}>
               text: ${txtRating}
               <br /> vid: ${vidRating}
             </h4>
@@ -266,18 +282,29 @@ return (
         />
         <div style={{ width: "68%", margin: "0%", padding: "0%", display: "inline-block", verticalAlign: "top" }}>
           <header-div style={{ display: "block", width: "100%" }}>
-            <h3 style={{ textAlign: "left", width: "40%", display: "inline-block", margin: "0%", verticalAlign: "top" }}>
+            <h3 style={{ textAlign: "left", width: "30%", display: "inline-block", margin: "0%", verticalAlign: "top" }}>
               Live
             </h3>
-            <h4 style={{ textAlign: "right", width: "55%", display: "inline-block", margin: "0%", verticalAlign: "top" }}>
-              sexting: ${QTY.SEXTING_MIN}-${QTY.SEXTING_MAX} ({sextMin} - {sextMax})
-              <br /> calls: ${QTY.CALL_MIN}-${QTY.CALL_MAX} ({callMin} - {callMax})
+            <h4 style={{ textAlign: "right", width: "65%", display: "inline-block", margin: "0%", verticalAlign: "top" }}>
+              sexting: ${QTY.SEXTING_MIN}-${QTY.SEXTING_MAX}+ ({sextMin} - {sextMax})
+              <br /> calls: ${QTY.CALL_MIN}-${QTY.CALL_MAX}+ ({callMin} - {callMax})
             </h4>
           </header-div>
           <p style={{ margin: "0%", paddingTop: "1%" }}>
-            {BLURBS.LIVE}
+            {BLURBS.CHATTING}
           </p>
         </div>
+        <header-div style={{ display: "block", width: "100%" }}>
+            <h3 style={{ textAlign: "left", width: "30%", display: "inline-block", margin: "0%", verticalAlign: "top" }}>
+              Casual Chatting
+            </h3>
+            <h4 style={{ textAlign: "right", width: "65%", display: "inline-block", margin: "0%", verticalAlign: "top" }}>
+              ${chatting} per Reply
+            </h4>
+          </header-div>
+          <p style={{ margin: "0%", paddingTop: "1%" }}>
+            {BLURBS.CHATTING}
+          </p>
       </div>
     </section>
   );}
@@ -598,15 +625,15 @@ style={{margin:"auto"}}
 {category === "custom" && (
 <>
 <SelectionButton
-active={subType==="video"}
-onClick={()=> handleSubTypeChange("video", QTY.VIDEO_MIN)}
-label="Video"
-style={{margin:"auto"}}
-/>
-<SelectionButton
 active={subType==="photo"}
 onClick={()=> handleSubTypeChange("photo", QTY.PHOTO_MIN)}
 label="Photo Set"
+style={{margin:"auto"}}
+/>
+<SelectionButton
+active={subType==="video"}
+onClick={()=> handleSubTypeChange("video", QTY.VIDEO_MIN)}
+label="Video"
 style={{margin:"auto"}}
 /><br />
 </>
@@ -630,17 +657,17 @@ style={{margin:"auto"}}
 {category === "live" && (
 <>
 <SelectionButton
-active={subType==="call"}
-onClick={()=> handleSubTypeChange("call", QTY.CALL_MIN)}
-label="Video Call"
-style={{margin:"auto"}}
-/>
-<SelectionButton
 active={subType==="sexting"}
 onClick={()=>
 handleSubTypeChange("sexting", QTY.SEXTING_MIN)
 }
 label="Sexting"
+style={{margin:"auto"}}
+/>
+<SelectionButton
+active={subType==="call"}
+onClick={()=> handleSubTypeChange("call", QTY.CALL_MIN)}
+label="Video Call"
 style={{margin:"auto"}}
 />
 </>
