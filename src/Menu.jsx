@@ -266,6 +266,17 @@ return (
           <p style={{ margin: "0%", paddingTop: "1%" }}>
             {BLURBS.RATING}
           </p>
+            <header-div style={{ display: "block", width: "100%"}}>
+            <h3 style={{ textAlign: "left", width: "40%", display: "inline-block", margin: "0%", verticalAlign: "top" }}>
+              Casual Chatting
+            </h3>
+            <h4 style={{ textAlign: "right", width: "55%", display: "inline-block", margin: "0%", verticalAlign: "top" }}>
+              ${chatting} per Reply
+            </h4>
+          </header-div>
+          <p style={{ margin: "0%", paddingTop: "1%" }}>
+            {BLURBS.CHATTING}
+          </p>
         </div>
         <img
           src={dmpreview}
@@ -283,28 +294,18 @@ return (
         />
         <div style={{ width: "68%", margin: "0%", padding: "0%", display: "inline-block", verticalAlign: "top" }}>
           <header-div style={{ display: "block", width: "100%" }}>
-            <h3 style={{ textAlign: "left", width: "30%", display: "inline-block", margin: "0%", verticalAlign: "top" }}>
+            <h3 style={{ textAlign: "left", width: "20%", display: "inline-block", margin: "0%", verticalAlign: "top" }}>
               Live
             </h3>
-            <h4 style={{ textAlign: "right", width: "65%", display: "inline-block", margin: "0%", verticalAlign: "top" }}>
+            <h4 style={{ textAlign: "right", width: "75%", display: "inline-block", margin: "0%", verticalAlign: "top" }}>
               sexting: ${sextMin}-${sextMax}+ ({QTY.SEXTING_MIN} - {QTY.SEXTING_MAX} mins)
               <br /> calls: ${callMin}-${callMax}+ ({QTY.CALL_MIN} - {QTY.CALL_MAX} mins)
             </h4>
           </header-div>
           <p style={{ margin: "0%", paddingTop: "1%" }}>
-            {BLURBS.CHATTING}
+            {BLURBS.LIVE}
           </p>
-           <header-div style={{ display: "block", width: "100%", border:"1px white dashed" }}>
-            <h3 style={{ textAlign: "left", width: "40%", display: "inline-block", margin: "0%", verticalAlign: "top" }}>
-              Casual Chatting
-            </h3>
-            <h4 style={{ textAlign: "right", width: "55%", display: "inline-block", margin: "0%", verticalAlign: "top" }}>
-              ${chatting} per Reply
-            </h4>
-          </header-div>
-          <p style={{ margin: "0%", paddingTop: "1%" }}>
-            {BLURBS.CHATTING}
-          </p>
+         
         </div>
       </div>
     </section>
@@ -689,7 +690,7 @@ subType === "photo"
 ? `${ QTY.CALL_MIN} ($${callMin})`
 : `${ QTY.SEXTING_MIN} ($${sextMin})`}</span>
 <input
-style={{margin:"auto", width:"5%"}}
+style={{margin:"auto", width:"15%"}}
 type="number"
 min={
 subType==="photo"
@@ -709,7 +710,7 @@ subType==="photo"
 ? QTY.CALL_MAX
 : QTY.SEXTING_MAX
 }
-step={subType==="call" ? 5 : subType==="sexting" ? 15 : 1}
+step={ subType==="sexting" ? 5 : 1}
 value={quantity}
 onChange={(e)=> setQuantity(Number(e.target.value))}
 />
@@ -769,7 +770,7 @@ subType==="photo"
 ? QTY.CALL_MAX
 : QTY.SEXTING_MAX
 }
-step={subType==="call" ? 5 : subType==="sexting" ? 15 : 1}
+step={ subType==="sexting" ? 5 : 1}
 value={quantity}
 onChange={(e)=> setQuantity(Number(e.target.value))}
 />
