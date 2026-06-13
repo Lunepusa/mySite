@@ -22,17 +22,18 @@ import Lounge from "./Lounge.jsx";
 import Profile from "./Profile.jsx";
 import ShareView from "./ShareView.jsx";
 
+const SmartSearchRedirector = () => {
+  const location = useLocation();
+  const searchQuery = decodeURIComponent(location.pathname.substring(1));
+  return <Navigate to={`/Lounge#${searchQuery}`} replace />;
+};
 
 export default function App() {
   const location = useLocation();
   const { setAnalyticsData } = useAnalytics();
   const { analyticsData } = useAnalytics();
   const { showConfirmation, handleAgree, handleDecline } = useFirstVisit();
-const SmartSearchRedirector = () => {
-  const location = useLocation();
-  const searchQuery = decodeURIComponent(location.pathname.substring(1));
-  return <Navigate to={`/Lounge#${searchQuery}`} replace />;
-};
+
   // GA4 Tracking useEffect
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
