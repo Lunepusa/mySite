@@ -25,7 +25,7 @@ import ShareView from "./ShareView.jsx";
 const SmartSearchRedirector = () => {
   const location = useLocation();
   const searchQuery = decodeURIComponent(location.pathname.substring(1));
-  return <link to={`/Lounge#${searchQuery}`} replace />;
+  return <Navigate to={`/Lounge#${searchQuery}`} replace />;
 };
 
 export default function App() {

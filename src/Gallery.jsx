@@ -27,6 +27,7 @@ import Collapse from "./Utility";
 //              isVideo: row.file_type?.startsWith('video/') || false,
 //            }));
 
+
 const Gallery = () => {
 	const { isSubscriber, isLoggedIn, isAdmin, user, unlockedDates } =
 		useAuth();
@@ -119,6 +120,102 @@ const Gallery = () => {
 
 		return normalizedOrGroups.join("~");
 	};
+
+	const searchBar = () => {
+return(
+<div
+				style={{
+					padding: "5px",
+					textAlign: "center",
+					background: "#111",
+					width: "100%",
+					maxWidth: "600px",
+				}}
+			>
+				<h1 style={{ marginBottom: "1px" }}>Gallery</h1>
+				<h2 style={{ color: "#aaa" }}>
+					Total: {stats.photos} photos • {stats.videos} videos
+				</h2>
+
+				<div style={{ margin: "5px 0", width: "95%" }}>
+					<input
+						type="text"
+						placeholder="Search, Ex. tits+ass, tits -ass, tits ass,   space=OR, +=AND, -exclude)"
+						value={searchInput}
+						onChange={e => setSearchInput(e.target.value)}
+						onKeyDown={e => {
+							if (e.key === "Enter") {
+								triggerSearch();
+							}
+						}}
+						style={{
+							padding: "8px",
+							width: "80%",
+							maxWidth: "100%",
+							fontSize: "1em",
+							borderRadius: "8px",
+							border: "1px solid #ccc"
+						}}
+					/>
+					<button
+						onClick={triggerSearch}
+						style={{ marginLeft: "2px", padding: "1px 3px" }}
+					>
+						Search
+					</button>
+					{activeSearchQuery && (
+						<>
+							<button
+								onClick={() => {
+									setSearchInput("");
+									setActiveSearchQuery("");
+									setDisplayedQuery("");
+									setMedia([]);
+									setOffset(0);
+									hasMoreRef.current = true;
+									setHasMore(true);
+									loadMoreGroups(0, "", true);
+									window.history.pushState(
+										null,
+										"",
+										window.location.pathname
+									);
+								}}
+								style={{
+									marginLeft: "2px",
+									padding: "1px 3px"
+								}}
+							>
+								Clear
+							</button>
+							<p style={{ fontSize: ".8em", margin: "5px 0" }}>
+								Like a particular tag, or want to hide anything
+								with a particular tag? You can add them to your{" "}
+								<a href="/Profile#collapse-favoritemutedtags">
+									favorites or mute lists!
+								</a>
+							</p>
+						</>
+					)}
+				</div>
+
+				{activeSearchQuery && (
+					<p
+						style={{
+							margin: "5px 0",
+							color: "#aaa",
+							fontStyle: "italic"
+						}}
+					>
+						Searching for: <strong>"{displayedQuery}"</strong>
+					</p>
+				)}
+			</div>
+
+
+)
+
+	}
 
 	// 2. STABLE CALLBACK (No 'offset' in dependency array)
 	const loadMoreGroups = useCallback(
@@ -324,6 +421,7 @@ const loadMoreButtonRef = useCallback(node => {
 			<div style={{ textAlign: "center", padding: "6px" }}>
 				{activeSearchQuery ? (
 					<>
+					<searchBar />
 						<p>No results for: "{displayedQuery}"</p>
 						<button
 							onClick={() => {
@@ -496,96 +594,8 @@ const loadMoreButtonRef = useCallback(node => {
 
 	return (
 		<>
-			{/* Sticky search + stats header */}
-			<div
-				style={{
-					padding: "5px",
-					textAlign: "center",
-					background: "#111",
-					width: "100%",
-					maxWidth: "600px",
-				}}
-			>
-				<h1 style={{ marginBottom: "1px" }}>Gallery</h1>
-				<h2 style={{ color: "#aaa" }}>
-					Total: {stats.photos} photos • {stats.videos} videos
-				</h2>
-
-				<div style={{ margin: "5px 0", width: "95%" }}>
-					<input
-						type="text"
-						placeholder="Search, Ex. tits+ass, tits -ass, tits ass,   space=OR, +=AND, -exclude)"
-						value={searchInput}
-						onChange={e => setSearchInput(e.target.value)}
-						onKeyDown={e => {
-							if (e.key === "Enter") {
-								triggerSearch();
-							}
-						}}
-						style={{
-							padding: "8px",
-							width: "80%",
-							maxWidth: "100%",
-							fontSize: "1em",
-							borderRadius: "8px",
-							border: "1px solid #ccc"
-						}}
-					/>
-					<button
-						onClick={triggerSearch}
-						style={{ marginLeft: "2px", padding: "1px 3px" }}
-					>
-						Search
-					</button>
-					{activeSearchQuery && (
-						<>
-							<button
-								onClick={() => {
-									setSearchInput("");
-									setActiveSearchQuery("");
-									setDisplayedQuery("");
-									setMedia([]);
-									setOffset(0);
-									hasMoreRef.current = true;
-									setHasMore(true);
-									loadMoreGroups(0, "", true);
-									window.history.pushState(
-										null,
-										"",
-										window.location.pathname
-									);
-								}}
-								style={{
-									marginLeft: "2px",
-									padding: "1px 3px"
-								}}
-							>
-								Clear
-							</button>
-							<p style={{ fontSize: ".8em", margin: "5px 0" }}>
-								Like a particular tag, or want to hide anything
-								with a particular tag? You can add them to your{" "}
-								<a href="/Profile#collapse-favoritemutedtags">
-									favorites or mute lists!
-								</a>
-							</p>
-						</>
-					)}
-				</div>
-
-				{activeSearchQuery && (
-					<p
-						style={{
-							margin: "5px 0",
-							color: "#aaa",
-							fontStyle: "italic"
-						}}
-					>
-						Searching for: <strong>"{displayedQuery}"</strong>
-					</p>
-				)}
-			</div>
-
+				<searchBar />
+			
 			{/* Main content wrapper */}
 			<div>
 				{/* Admin Multi-Select Toggle */}
