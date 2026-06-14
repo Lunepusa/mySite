@@ -13,7 +13,7 @@ import {
   AnalyticsProvider,
   useAnalytics,
 } from "./Utility.jsx";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import React, { useEffect } from "react";
 import Auth from "./Auth.jsx";
 import AuthProvider from "./Auth.jsx";
@@ -25,7 +25,7 @@ import ShareView from "./ShareView.jsx";
 const SmartSearchRedirector = () => {
   const location = useLocation();
   const searchQuery = decodeURIComponent(location.pathname.substring(1));
-  return <Navigate to={`/Lounge#${searchQuery}`} replace />;
+  return <link to={`/Lounge#${searchQuery}`} replace />;
 };
 
 export default function App() {
