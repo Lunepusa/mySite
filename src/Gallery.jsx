@@ -319,7 +319,7 @@ const loadMoreButtonRef = useCallback(node => {
 			</p>
 		);
 
-	if (media.length === 0)
+	/*/if (media.length === 0)
 		return (
 			<div style={{ textAlign: "center", padding: "6px" }}>
 				{activeSearchQuery ? (
@@ -349,7 +349,7 @@ const loadMoreButtonRef = useCallback(node => {
 					"No media yet."
 				)}
 			</div>
-		);
+		);*/
 
 	const openFullscreen = item => setFullscreenItem(item);
 	const closeFullscreen = () => setFullscreenItem(null);
