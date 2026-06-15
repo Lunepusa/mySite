@@ -1,4 +1,10 @@
 import { AwsClient } from "aws4fetch";
+import {hashPassword} from "./Auth/Hash.js";
+import {hashPassword} from "./Auth/Hash.js";
+import {hashPassword} from "./Auth/Hash.js";
+import {hashPassword} from "./Auth/Hash.js";
+import {hashPassword} from "./Auth/Hash.js";
+import {hashPassword} from "./Auth/Hash.js";
 
 // Allowed origins
 const ALLOWED_ORIGINS = [
@@ -8,7 +14,7 @@ const ALLOWED_ORIGINS = [
   "https://lunepusa.com",
 ];
 
-function withCors(response, request) {
+export function withCors(response, request) {
   const origin = request.headers.get("Origin");
   if (origin && ALLOWED_ORIGINS.includes(origin)) {
     response.headers.set("Access-Control-Allow-Origin", origin);
@@ -23,21 +29,14 @@ function withCors(response, request) {
 }
 
 // Simple SHA-256 hash (working version)
-async function hashPassword(password) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(password);
-  const hash = await crypto.subtle.digest("SHA-256", data);
-  return Array.from(new Uint8Array(hash))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-}function getTagsArray(tagString) {
+export function getTagsArray(tagString) {
   if (!tagString) return [];
   return tagString
     .split(",")
     .map((t) => t.trim())
     .filter((t) => t.length > 0);
 }// Generate signed token (HMAC-SHA256, no external lib)
-async function generateToken(payload, env) {
+ export async function generateToken(payload, env) {
   const header = btoa(
     JSON.stringify({
       alg: "HS256",
@@ -64,7 +63,7 @@ async function generateToken(payload, env) {
   ).replace(/=+$/, "");
   return `${data}.${signatureB64}`;
 }// Validate token
-async function validateToken(token, env) {
+export async function validateToken(token, env) {
   if (!token) return null;
   const parts = token.split(".");
   if (parts.length !== 3) return null;
@@ -98,7 +97,7 @@ async function validateToken(token, env) {
     return null;
   }
 }// Helper: Refresh Gmail access token using stored refresh token
-async function refreshGmailToken(env) {
+ export async function refreshGmailToken(env) {
   const response = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
     headers: {
@@ -119,7 +118,7 @@ async function refreshGmailToken(env) {
     );
   }
   return data.access_token;
-}async function getUser(request, env) {
+} export async function getUser(request, env) {
   const bucket = env.Media;
   const bucketName = "lunepusa";
   const db = env.Db;
@@ -161,8 +160,7 @@ try {
       response = Response.json({
         user: user || null,
       });
-    }    // Unified login/signup — returns token
-    else if (url.pathname === "/login" && request.method === "POST") {
+    }    else if (url.pathname === "/login" && request.method === "POST") {
       const { username, password, mode = "login" } = await request.json();
       console.log("Login attempt:", {
         username,
@@ -298,8 +296,7 @@ try {
           status: 200,
         },
       );
-    }    // Admin upload-batch (legacy)
-    else if (url.pathname === "/upload-batch" && request.method === "POST") {
+    }   else if (url.pathname === "/upload-batch" && request.method === "POST") {
       const user = await getUser(request, env);
       if (!user || !user.is_admin) {
         response = new Response("Unauthorized", {
@@ -408,20 +405,16 @@ try {
             const term = group[0];
             const pattern = `%${term}%`;
             console.log(`Adding OR term "${term}"`);
-            orClauses.push(`
-          (LOWER(tags) LIKE ? OR LOWER(caption) LIKE ? OR CAST(created_date AS TEXT) LIKE ? OR
-           (file_type LIKE 'video%' AND ? = 'video') OR (file_type LIKE 'image%' AND ? = 'photo'))
-        `);
+            orClauses.push(`(LOWER(tags) LIKE ? OR LOWER(caption) LIKE ? OR CAST(created_date AS TEXT) LIKE ? OR
+           (file_type LIKE 'video%' AND ? = 'video') OR (file_type LIKE 'image%' AND ? = 'photo')) `);
             binds.push(pattern, pattern, pattern, term, term);
           } else {
             const andClauses = [];
             group.forEach((term) => {
               const pattern = `%${term}%`;
               console.log(`Adding AND term "${term}"`);
-              andClauses.push(`
-            (LOWER(tags) LIKE ? OR LOWER(caption) LIKE ? OR CAST(created_date AS TEXT) LIKE ? OR
-             (file_type LIKE 'video%' AND ? = 'video') OR (file_type LIKE 'image%' AND ? = 'photo'))
-          `);
+              andClauses.push(`(LOWER(tags) LIKE ? OR LOWER(caption) LIKE ? OR CAST(created_date AS TEXT) LIKE ? OR
+             (file_type LIKE 'video%' AND ? = 'video') OR (file_type LIKE 'image%' AND ? = 'photo'))`);
               binds.push(pattern, pattern, pattern, term, term);
             });
             whereConditions.push(`(${andClauses.join(" AND ")})`);
@@ -480,8 +473,7 @@ try {
 
       let query = `
     SELECT object_key, created_date, caption, tags, file_type
-    FROM media
-  `;
+    FROM media`;
 
       if (whereConditions.length > 0) {
         query += ` WHERE ` + whereConditions.join(" AND ");
@@ -738,18 +730,11 @@ try {
           }
         }
         // Date/time update (unchanged)
-        if (newDate) {
-  for (const key of keys) {
-    await db
+        if (newDate) { for (const key of keys) { await db
       .prepare("UPDATE media SET created_date = ? WHERE object_key = ?")
       .bind(parseInt(newDate, 10), key)
       .run();
-  }
-}
-
-response = Response.json({ success: true });
-
-} catch (err) {
+       }}response = Response.json({ success: true });} catch (err) {
         console.error("Bulk update error:", err);
         response = new Response(
           JSON.stringify({
@@ -1199,8 +1184,7 @@ response = Response.json({ success: true });
                 status: 400,
               },
             );
-          } else {
-            const accessToken = await refreshGmailToken(env);
+          } else { const accessToken = await refreshGmailToken(env);
 
             // Lookup senders for this platform
             const platRow = await db
@@ -1726,7 +1710,7 @@ response = Response.json({ success: true });
       response = Response.json({
         R2_PUBLIC_URL: env.R2_PUBLIC_URL || "https://files.lunepusa.com",
       });}
-    if (!response) {
+      if (!response) {
         response = new Response("Not Found", { status: 404 });
       }
 
@@ -1734,12 +1718,7 @@ response = Response.json({ success: true });
       return withCors(response, request);
 
     } catch (error) {
-      // ──────────────────────────────────────────────────────────────────────────────
-      // GLOBAL ERROR CATCHER: Any crash in any route ends up here
-      // ──────────────────────────────────────────────────────────────────────────────
       console.error("[GLOBAL WORKER ERROR]:", error);
-
-      // 1. Identify who the user is using the token they already sent
       let currentUsername = 'anonymous';
       const authHeader = request.headers.get("Authorization");
       
@@ -1750,11 +1729,7 @@ response = Response.json({ success: true });
           currentUsername = payload.username.toLowerCase();
         }
       }
-
-      // 2. Prepare the minimal payload
       const errorCode = error.code || 'UNKNOWN';
-      
-      // 3. If it is LunePusa, attach the heavy debug info
       const rawDetails = currentUsername === 'lunepusa' 
         ? { message: error.message, stack: error.stack, route: url.pathname } 
         : null;
@@ -1763,8 +1738,6 @@ response = Response.json({ success: true });
         code: errorCode,
         debug: rawDetails
       };
-
-      // 4. Send the standardized minimal error back to the front end
       const errorResponse = Response.json(payload, { status: error.status || 500 });
       return withCors(errorResponse, request);
     }
