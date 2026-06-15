@@ -25,7 +25,6 @@ import { bulkUpdate } from "./Media/BulkUpdate.js";
 import { galleryStats } from "./Media/GalleryStats.js";
 import { generateShareToken } from "./Media/GenerateShareToken.js";
 import { getTagsArray } from "./Media/GetTagsArray.js"; // 🛠️ Helper
-import {getTagsArray} from "./Media/GetTagsArray.js";
 import { media } from "./Media/Media.js";
 import { presign } from "./Media/Presign.js";
 import { purgeDelete } from "./Media/PurgeDelete.js";
