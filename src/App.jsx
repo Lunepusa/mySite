@@ -21,6 +21,7 @@ import { useAuth, apiFetch } from "./Auth";
 import Lounge from "./Lounge.jsx";
 import Profile from "./Profile.jsx";
 import ShareView from "./ShareView.jsx";
+import ErrorUI from "../ErrorUI.jsx"
 
 const SmartSearchRedirector = () => {
   const location = useLocation();
@@ -91,6 +92,7 @@ export default function App() {
       />
       <Navbar />
       <AuthProvider>
+        <ErrorUI />
         <Routes>
           <Route path="/" element={<Links />} />
           <Route path="/links" element={<Links />} />

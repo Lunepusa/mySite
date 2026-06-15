@@ -12,6 +12,7 @@ export const R2_PUBLIC_URL = "https://files.lunepusa.com";
 // ──────────────────────────────────────────────────────────────────────────────
 export const apiFetch = async (endpoint, options = {}) => {
   const token = localStorage.getItem("token");
+  const storedUser = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null;
 
   const headers = {
     "Content-Type": "application/json",
@@ -24,11 +25,39 @@ export const apiFetch = async (endpoint, options = {}) => {
 
   const url = `https://api.lunepusa.workers.dev${endpoint}`;
 
-  return fetch(url, {
-    ...options,
-    headers,
-    credentials: "include", // needed for any cookie-based auth (if used)
-  });
+try {
+    const res = await fetch(url, {
+      ...options,
+      headers,
+      credentials: "include", 
+    });
+
+    // 👉 WE ADD THIS TO BROADCAST WORKER ERRORS:
+    if (!res.ok) {
+      let workerPayload = { code: "UNKNOWN", debug: null };
+      try {
+        workerPayload = await res.json(); 
+      } catch (e) {
+        // Fallback just in case the worker crashes and sends text instead of JSON
+      }
+
+      window.dispatchEvent(
+        new CustomEvent("api-error", { detail: workerPayload })
+      );
+    }
+
+    // If it was successful, just hand it back like normal
+    return res; 
+
+  // 👉 WE ADD THIS TO CATCH PHYSICAL NETWORK DISCONNECTIONS (e.g., lost WiFi):
+  } catch (networkError) {
+    window.dispatchEvent(
+      new CustomEvent("api-error", {
+        detail: { code: "NETWORK_DOWN", debug: { message: networkError.message } }
+      })
+    );
+    throw networkError; 
+  }
 };
 
 // ──────────────────────────────────────────────────────────────────────────────

@@ -10,22 +10,20 @@ const Lounge = () => {
   return (
   <div  style={{ textAlign: "center" }}>
     <p className="notice" style={{width:"100%"}}>
-    this is area is a work in progress, but has more of .y cobtent then anywhere else. send me a $10 tip and your username here and i will give you access for a month. </p>,
+    Send me a $10 tip and your username here and i will give you access for a month. </p>,
     {!user ? (
       <div style={{ fontSize: "1.3em", textAlign: "center" }}>
-        This is a private area. Log in below and subscribe to remove the blurring.
-        <h5>subscription is currently a manual process. please reach out to Lune for more details.</h5>
+        This is a private area. subscribe to remove the blurring.
         <Login />
       </div>
     ) : !isSubscriber ? (
       <div style={{ fontSize: "1em", textAlign: "center" }}>
         Welcome back, <a href="/Profile">{user.username}!</a> Please subscribe to remove the blurring.
-        <h5>subscription is currently a manual process. please reach out to Lune for more details.</h5>
-        <Login />
+                <Login />
       </div>
     ) : (
       <div style={{ fontSize: "1em", textAlign: "center" }}>
-       <p>Welcome back, <a href="/Profile">{user.username}!</a> Enjoy the exclusive content.
+       <p>Welcome back <a href="/Profile">{user.username}!</a> Enjoy the exclusive content.
         <Login /></p>
             {/* Upload section only for admin */}
       {user?.is_admin && (

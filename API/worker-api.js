@@ -152,7 +152,7 @@ export default {
     if (request.method === "OPTIONS") {
       return withCors(new Response(null, { status: 204 }), request);
     }
-
+try {
     let response;
 
     // All routes go here — ensures CORS is applied to everything
@@ -1725,14 +1725,48 @@ response = Response.json({ success: true });
     } else if (url.pathname === "/getFiles" && request.method === "GET") {
       response = Response.json({
         R2_PUBLIC_URL: env.R2_PUBLIC_URL || "https://files.lunepusa.com",
-      });
-    } else {response = new Response("Not found", { status: 404,}); }
-    // Ensure 'response' is defined before calling withCors
+      });}
     if (!response) {
-      response = new Response("Not Found", {
-        status: 404,
-      });
-    }    // Apply CORS to EVERY response
-    return withCors(response, request);
+        response = new Response("Not Found", { status: 404 });
+      }
+
+      // If everything worked perfectly, send the normal response
+      return withCors(response, request);
+
+    } catch (error) {
+      // ──────────────────────────────────────────────────────────────────────────────
+      // GLOBAL ERROR CATCHER: Any crash in any route ends up here
+      // ──────────────────────────────────────────────────────────────────────────────
+      console.error("[GLOBAL WORKER ERROR]:", error);
+
+      // 1. Identify who the user is using the token they already sent
+      let currentUsername = 'anonymous';
+      const authHeader = request.headers.get("Authorization");
+      
+      if (authHeader && authHeader.startsWith("Bearer ")) {
+        const token = authHeader.slice(7);
+        const payload = await validateToken(token, env);
+        if (payload && payload.username) {
+          currentUsername = payload.username.toLowerCase();
+        }
+      }
+
+      // 2. Prepare the minimal payload
+      const errorCode = error.code || 'UNKNOWN';
+      
+      // 3. If it is LunePusa, attach the heavy debug info
+      const rawDetails = currentUsername === 'lunepusa' 
+        ? { message: error.message, stack: error.stack, route: url.pathname } 
+        : null;
+
+      const payload = {
+        code: errorCode,
+        debug: rawDetails
+      };
+
+      // 4. Send the standardized minimal error back to the front end
+      const errorResponse = Response.json(payload, { status: error.status || 500 });
+      return withCors(errorResponse, request);
+    }
   },
 };
