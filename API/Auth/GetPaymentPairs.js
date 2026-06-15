@@ -1,9 +1,13 @@
 import {getUser} from "./GetUser.js";
 
- export async function getPaymentPairs" && request.method === "GET" ) {
+ export async function getPaymentPairs(request, env) {
+     const bucket = env.Media;
+ const bucketName = "lunepusa";
+ const db = env.Db;
+ const kv = env.kv;
       const user = await getUser(request, env);
       if (!user) {
-        return New  Response("Unauthorized", {
+        return new  Response("Unauthorized", {
           status: 401,
         });
       } else {
@@ -20,7 +24,7 @@ import {getUser} from "./GetUser.js";
               pairs = [];
             }
           }
-          return = Response.json({
+          return Response.json({
             pairs,
           });
         }

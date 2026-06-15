@@ -152,7 +152,7 @@ import {getUser} from "../Auth/GetUser.js";
           type: row.file_type,
           isVideo: row.file_type?.startsWith("video/") || false,
         }));
-        return = Response.json({
+        return Response.json({
           media,
         });
       }}

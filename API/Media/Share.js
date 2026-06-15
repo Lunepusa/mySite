@@ -5,7 +5,7 @@ export async function share(request, env) {
       const url = new URL(request.url); 
     const token = url.pathname.split("/share/")[1];
       if (!token) {
-        return New  Response("Invalid share link", {
+        return new  Response("Invalid share link", {
           status: 400,
         });
       } else {
@@ -17,7 +17,7 @@ export async function share(request, env) {
             .bind(token)
             .first();
           if (!share) {
-            return New  Response("Invalid share link", {
+            return new  Response("Invalid share link", {
               status: 404,
             });
           } else {
@@ -64,7 +64,7 @@ export async function share(request, env) {
               tags: row.tags || "",
               isVideo: row.file_type?.startsWith("video/") || false,
             }));
-            return = Response.json({
+            return Response.json({
               media,
               date: share.target_type === "date" ? share.target_value : null,
             });

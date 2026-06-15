@@ -69,26 +69,26 @@ import {getUser} from "./GetUser.js";
               const olderRowId = conflictCheck.id;
               const olderRowTags = conflictCheck.tags || "";
               const olderTargetFilename = `${baseName}_duplicate${extension}`;
-              const olderNewKey = `media/${olderTargetFilename}`;
+              const oldernewKey = `media/${olderTargetFilename}`;
               const olderUpdatedTags = olderRowTags
                 ? `${olderRowTags}, delete`
                 : "delete";
 
               resultsLog.push(
-                `[Conflict Resolved] Existing row is older. Relocating old row to: ${olderNewKey}`,
+                `[Conflict Resolved] Existing row is older. Relocating old row to: ${oldernewKey}`,
               );
 
               await db
                 .prepare(
                   "UPDATE media SET object_key = ?, tags = ? WHERE id = ?",
                 )
-                .bind(olderNewKey, olderUpdatedTags, olderRowId)
+                .bind(oldernewKey, olderUpdatedTags, olderRowId)
                 .run();
 
               try {
                 const sourceObjectOlder = await bucket.get(newKey);
                 if (sourceObjectOlder) {
-                  await bucket.put(olderNewKey, sourceObjectOlder.body, {
+                  await bucket.put(oldernewKey, sourceObjectOlder.body, {
                     customMetadata: sourceObjectOlder.customMetadata,
                     httpMetadata: sourceObjectOlder.httpMetadata,
                   });
@@ -137,7 +137,7 @@ import {getUser} from "./GetUser.js";
           Math.floor(Math.random() * 16777215)
             .toString(16)
             .padStart(6, "0");
-        return = Response.json({
+        return Response.json({
           success: true,
           trackingColor: randomColor,
           message: `Batch complete. Successfully flattened ${dbUpdatedCount} rows and moved ${movedCount} files.`,

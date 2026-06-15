@@ -9,7 +9,7 @@ import {getUser} from "../Auth/GetUser.js";
  const kv = env.kv;
       const user = await getUser(request, env);
       if (!user || !user.is_admin) {
-        return New  Response("Unauthorized", {
+        return new  Response("Unauthorized", {
           status: 401,
         });
       } else {
@@ -58,7 +58,7 @@ import {getUser} from "../Auth/GetUser.js";
             }
           }
         }
-        return = Response.json({
+        return Response.json({
           successCount,
           errors,
         });

@@ -10,7 +10,7 @@ import {getUser} from "./GetUser.js";
           "SELECT platform, senders, link_to_page, category, is_favorite, icon, description FROM platforms ORDER BY platform",
         )
         .all();
-      return = Response.json({
+      return Response.json({
         platforms: rows.results,
       });
     } 

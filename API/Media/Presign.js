@@ -9,7 +9,7 @@ import {getUser} from "../Auth/GetUser.js";
       try {
         const user = await getUser(request, env);
         if (!user || !user.is_admin) {
-          return New  Response("Unauthorized", {
+          return new  Response("Unauthorized", {
             status: 401,
           });
         } else {
@@ -18,7 +18,7 @@ import {getUser} from "../Auth/GetUser.js";
             const body = await request.json();
             files = body.files || body;
           } catch (e) {
-            return = Response.json(
+            return Response.json(
               {
                 error: "Invalid JSON",
               },
@@ -29,7 +29,7 @@ import {getUser} from "../Auth/GetUser.js";
           }
 
           if (!files || !Array.isArray(files)) {
-            return = Response.json(
+            return Response.json(
               {
                 error: "Invalid structure",
               },
@@ -74,7 +74,7 @@ import {getUser} from "../Auth/GetUser.js";
                 presignedUrl: signed.url,
               });
             }
-            return = Response.json({
+            return Response.json({
               presigned,
             });
           }

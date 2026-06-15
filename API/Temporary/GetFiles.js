@@ -5,9 +5,9 @@ import {getUser} from "./GetUser.js";
  const bucketName = "lunepusa";
  const db = env.Db;
  const kv = env.kv;
-      return = Response.json({
+      return Response.json({
         R2_PUBLIC_URL: env.R2_PUBLIC_URL || "https://files.lunepusa.com",
       });}
       if (!response) {
-        return New  Response("Not Found", { status: 404 });
+        return new  Response("Not Found", { status: 404 });
       }

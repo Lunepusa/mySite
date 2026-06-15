@@ -8,14 +8,14 @@ import {refreshGmailToken} from "./RefreshGmailToken";
  const kv = env.kv;
       const user = await getUser(request, env);
       if (!user) {
-        return New  Response("Unauthorized", {
+        return new  Response("Unauthorized", {
           status: 401,
         });
       } else {
         try {
           const { platform, username } = await request.json();
           if (!platform || !username) {
-            return = Response.json(
+            return Response.json(
               {
                 error: "Missing platform or username",
               },
@@ -61,7 +61,7 @@ import {refreshGmailToken} from "./RefreshGmailToken";
             const listData = await listRes.json();
 
             if (!listData.messages || listData.messages.length === 0) {
-              return = Response.json({
+              return Response.json({
                 success: false,
                 message: "No matching emails found in the last 7 days.",
               });
@@ -202,7 +202,7 @@ import {refreshGmailToken} from "./RefreshGmailToken";
                 processedIds.push(msg.id);
               }
 
-              return = Response.json({
+              return Response.json({
                 success: foundPayments > 0,
                 message:
                   foundPayments > 0

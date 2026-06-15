@@ -7,7 +7,7 @@ import {getUser} from "./GetUser.js";
  const kv = env.kv;
       const user = await getUser(request, env);
       if (!user) {
-        return New  Response("Unauthorized", {
+        return new  Response("Unauthorized", {
           status: 401,
         });
       } else {
@@ -18,7 +18,7 @@ import {getUser} from "./GetUser.js";
             description = "Purchase",
           } = await request.json();
           if (!amountCents || amountCents <= 0 || !itemSlug) {
-            return = Response.json(
+            return Response.json(
               {
                 error: "Missing or invalid amount/item",
               },
@@ -41,7 +41,7 @@ import {getUser} from "./GetUser.js";
             const currentBalance = walletData.balance || 0;
 
             if (currentBalance < amountCents) {
-              return = Response.json({
+              return Response.json({
                 success: false,
                 message: `Insufficient balance. You have $${(currentBalance / 100).toFixed(2)} available.`,
               });
@@ -92,10 +92,10 @@ import {getUser} from "./GetUser.js";
                 )
                 .run();
 
-              return = Response.json({
+              return Response.json({
                 success: true,
                 message:
-                  `$${(amountCents / 100).toFixed(2)} spent. New balance: $${(walletData.balance / 100).toFixed(2)}.` +
+                  `$${(amountCents / 100).toFixed(2)} spent. new balance: $${(walletData.balance / 100).toFixed(2)}.` +
                   (daysToAdd > 0
                     ? ` Subscription extended by ${daysToAdd} days.`
                     : ""),

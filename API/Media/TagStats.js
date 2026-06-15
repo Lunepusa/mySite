@@ -15,6 +15,6 @@ import {getUser} from "../Auth/GetUser.js";
         });
         // Sort descending by count
         const sorted = Object.entries(countMap).sort((a, b) => b[1] - a[1]);
-        return = Response.json(Object.fromEntries(sorted));
+        return Response.json(Object.fromEntries(sorted));
       }
     }

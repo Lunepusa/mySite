@@ -9,7 +9,7 @@ import {getUser} from "../Auth/GetUser.js";
       try {
         const user = await getUser(request, env);
         if (!user || !user.is_admin) {
-          return New  Response("Unauthorized", {
+          return new  Response("Unauthorized", {
             status: 401,
           });
         } else {
@@ -33,12 +33,12 @@ import {getUser} from "../Auth/GetUser.js";
               .run();
 
             console.log(`✅ Safe upload complete: ${objectKey}`);
-            return = Response.json({
+            return Response.json({
               success: true,
             });
           } catch (err) {
             console.error("Upload complete error:", err);
-            return = Response.json(
+            return Response.json(
               {
                 error: err.message,
               },

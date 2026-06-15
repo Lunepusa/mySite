@@ -8,7 +8,7 @@ import{hashPassword} from "./Hash.js";
  const kv = env.kv;
       const user = await getUser(request, env);
       if (!user) {
-        return New  Response("Unauthorized", {
+        return new  Response("Unauthorized", {
           status: 401,
         });
       } else {
@@ -36,7 +36,7 @@ import{hashPassword} from "./Hash.js";
             .prepare("UPDATE users SET password_hash = ? WHERE id = ?")
             .bind(newHash, user.id)
             .run();
-          return = Response.json({
+          return Response.json({
             success: true,
           });
         }

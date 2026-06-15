@@ -40,6 +40,6 @@ import {getUser} from "../Auth/GetUser.js";
         }
 
         // 6. Return success using the JSON helper
-        return = Response.json({ success: true, deleted: deletedCount });
+        return Response.json({ success: true, deleted: deletedCount });
       }
     }

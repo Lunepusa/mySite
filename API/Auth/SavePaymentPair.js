@@ -1,16 +1,20 @@
 import {getUser} from "./GetUser.js";
 
- export async function savePaymentPair" && request.method === "POST" ) {
+ export async function savePaymentPair(request, env) {
+     const bucket = env.Media;
+ const bucketName = "lunepusa";
+ const db = env.Db;
+ const kv = env.kv;
       const user = await getUser(request, env);
       if (!user) {
-        return New  Response("Unauthorized", {
+        return new  Response("Unauthorized", {
           status: 401,
         });
       } else {
         try {
           const { platform, username } = await request.json();
           if (!platform || !username) {
-            return = Response.json(
+            return Response.json(
               {
                 error: "Missing platform or username",
               },
@@ -52,7 +56,7 @@ import {getUser} from "./GetUser.js";
             );
 
             if (exists) {
-              return = Response.json({
+              return Response.json({
                 success: true,
                 message: "Pair already saved",
                 pairs,
@@ -66,7 +70,7 @@ import {getUser} from "./GetUser.js";
                 .bind(JSON.stringify(pairs), user.id)
                 .run();
 
-              return = Response.json({
+              return Response.json({
                 success: true,
                 message: "Payment pair saved successfully",
                 pairs,

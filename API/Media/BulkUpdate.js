@@ -56,9 +56,9 @@ import {getUser} from "../Auth/GetUser.js";
       .prepare("UPDATE media SET created_date = ? WHERE object_key = ?")
       .bind(parseInt(newDate, 10), key)
       .run();
-       }}return = Response.json({ success: true });} catch (err) {
+       }}return Response.json({ success: true });} catch (err) {
         console.error("Bulk update error:", err);
-        return New  Response(
+        return new  Response(
           JSON.stringify({
             error: err.message,
           }),

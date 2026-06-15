@@ -10,7 +10,7 @@ import {getUser} from "./GetUser.js";
  const db = env.Db;
  const kv = env.kv;
       const user = await getUser(request, env);
-      return = Response.json({
+      return Response.json({
         user: user || null,
       });
     };

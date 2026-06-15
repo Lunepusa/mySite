@@ -6,7 +6,7 @@ import {getUser} from "./GetUser.js";
  const bucketName = "lunepusa";
  const db = env.Db;
  const kv = env.kv;
-      return New  Response(
+      return new  Response(
         JSON.stringify({
           success: true,
         }),

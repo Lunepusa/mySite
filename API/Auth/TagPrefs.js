@@ -32,7 +32,7 @@ import {getUser} from "./GetUser.js";
         )
         .bind(newFavorite, newMuted, user.id)
         .run();
-      return = Response.json({
+      return Response.json({
         success: true,
       });
     }

@@ -7,14 +7,14 @@ import {getUser} from "../Auth/GetUser.js";
  const kv = env.kv;
       const user = await getUser(request, env);
       if (!user || !user.is_admin) {
-        return New  Response("Unauthorized", {
+        return new  Response("Unauthorized", {
           status: 401,
         });
       } else {
         try {
           const { target_type, target_value } = await request.json();
           if (!["date", "media"].includes(target_type) || !target_value) {
-            return = Response.json(
+            return Response.json(
               {
                 error: "Invalid target",
               },
@@ -31,7 +31,7 @@ import {getUser} from "../Auth/GetUser.js";
               .bind(token, target_type, target_value, user.id)
               .run();
             const link = `https://lunepusa.pages.dev/share/${token}`;
-            return = Response.json({
+            return Response.json({
               success: true,
               link,
             });

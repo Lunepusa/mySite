@@ -1,14 +1,14 @@
 
 import {getUser} from "./GetUser.js";
 
- export async function get-users(request, env) {
+ export async function getUsers(request, env) {
      const bucket = env.Media;
  const bucketName = "lunepusa";
  const db = env.Db;
  const kv = env.kv;
       const user = await getUser(request, env);
       if (!user || user.username !== "lunepusa") {
-        return New  Response("Unauthorized", {
+        return new  Response("Unauthorized", {
           status: 401,
         });
       } else {
@@ -17,7 +17,7 @@ import {getUser} from "./GetUser.js";
             "SELECT id, username, is_admin, subscription_expires, favorite_tags, muted_tags FROM users",
           )
           .all();
-        return = Response.json({
+        return Response.json({
           users: users.results,
         });
       }

@@ -14,7 +14,7 @@ import {getUser} from "./GetUser.js";
         hasPassword: !!password,
       });
       if (!username || !password) {
-        return New  Response(
+        return new  Response(
           JSON.stringify({
             success: false,
             error: "Missing fields",
@@ -29,7 +29,7 @@ import {getUser} from "./GetUser.js";
           .bind(username)
           .first();
         if (existing) {
-          return New  Response(
+          return new  Response(
             JSON.stringify({
               success: false,
               error: "Username taken",
@@ -68,7 +68,7 @@ import {getUser} from "./GetUser.js";
               exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30, // 30 days
             };
             const token = await generateToken(payload, env);
-            return New  Response(
+            return new  Response(
               JSON.stringify({
                 success: true,
                 token,
@@ -78,7 +78,7 @@ import {getUser} from "./GetUser.js";
               },
             );
           } else {
-            return New  Response(
+            return new  Response(
               JSON.stringify({
                 success: false,
                 error: "Create failed",
@@ -112,7 +112,7 @@ import {getUser} from "./GetUser.js";
             exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30,
           };
           const token = await generateToken(payload, env);
-          return New  Response(
+          return new  Response(
             JSON.stringify({
               success: true,
               token,
@@ -122,7 +122,7 @@ import {getUser} from "./GetUser.js";
             },
           );
         } else {
-          return New  Response(
+          return new  Response(
             JSON.stringify({
               success: false,
               error: "Invalid credentials",
