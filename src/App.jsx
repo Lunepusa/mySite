@@ -21,7 +21,7 @@ import { useAuth, apiFetch } from "./Auth";
 import Lounge from "./Lounge.jsx";
 import Profile from "./Profile.jsx";
 import ShareView from "./ShareView.jsx";
-import ErrorUI from "../ErrorUI.jsx"
+import ErrorUI from "./ErrorUI.jsx"
 
 const SmartSearchRedirector = () => {
   const location = useLocation();
