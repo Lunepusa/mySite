@@ -1,10 +1,4 @@
 import { AwsClient } from "aws4fetch";
-import {hashPassword} from "./Auth/Hash.js";
-import {hashPassword} from "./Auth/Hash.js";
-import {hashPassword} from "./Auth/Hash.js";
-import {hashPassword} from "./Auth/Hash.js";
-import {hashPassword} from "./Auth/Hash.js";
-import {hashPassword} from "./Auth/Hash.js";
 
 // Allowed origins
 const ALLOWED_ORIGINS = [
