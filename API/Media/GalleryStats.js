@@ -1,6 +1,6 @@
 import {getUser} from "../Auth/GetUser.js";
 
- export async function gallery-stats(request, env) {
+ export async function galleryStats(request, env) {
      const bucket = env.Media;
  const bucketName = "lunepusa";
  const db = env.Db;
@@ -22,14 +22,5 @@ import {getUser} from "../Auth/GetUser.js";
           videos: result.videos || 0,
           total: result.total || 0,
         });
-      } catch (err) {
-        return = New Response(
-          JSON.stringify({
-            error: err.message,
-          }),
-          {
-            status: 500,
-          },
-        );
       }
     }

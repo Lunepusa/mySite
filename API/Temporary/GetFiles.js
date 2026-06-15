@@ -9,5 +9,5 @@ import {getUser} from "./GetUser.js";
         R2_PUBLIC_URL: env.R2_PUBLIC_URL || "https://files.lunepusa.com",
       });}
       if (!response) {
-        return = New Response("Not Found", { status: 404 });
+        return New  Response("Not Found", { status: 404 });
       }

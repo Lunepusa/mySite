@@ -1,7 +1,13 @@
-if (      url.pathname === "/admin-update-user" && request.method === "POST"    ) {
+import {getUser} from "./GetUser.js";
+
+ export async function updateUser(request, env) {
+     const bucket = env.Media;
+ const bucketName = "lunepusa";
+ const db = env.Db;
+ const kv = env.kv;
       const user = await getUser(request, env);
       if (!user || user.username !== "lunepusa") {
-        return = New Response("Unauthorized", {
+        return New  Response("Unauthorized", {
           status: 401,
         });
       } else {

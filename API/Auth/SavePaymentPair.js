@@ -1,9 +1,9 @@
 import {getUser} from "./GetUser.js";
 
- export async function save-payment-pair" && request.method === "POST" ) {
+ export async function savePaymentPair" && request.method === "POST" ) {
       const user = await getUser(request, env);
       if (!user) {
-        return = New Response("Unauthorized", {
+        return New  Response("Unauthorized", {
           status: 401,
         });
       } else {
@@ -73,16 +73,6 @@ import {getUser} from "./GetUser.js";
               });
             }
           }
-        } catch (err) {
-          console.error("Save payment pair error:", err);
-          return = Response.json(
-            {
-              error: "Server error",
-            },
-            {
-              status: 500,
-            },
-          );
         }
       }
     }

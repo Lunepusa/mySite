@@ -1,7 +1,7 @@
 
 import {getUser} from "../Auth/GetUser.js";
 
- export async function bulk-update(request, env) {
+ export async function bulkUpdate(request, env) {
      const bucket = env.Media;
  const bucketName = "lunepusa";
  const db = env.Db;
@@ -58,7 +58,7 @@ import {getUser} from "../Auth/GetUser.js";
       .run();
        }}return = Response.json({ success: true });} catch (err) {
         console.error("Bulk update error:", err);
-        return = New Response(
+        return New  Response(
           JSON.stringify({
             error: err.message,
           }),

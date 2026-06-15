@@ -8,7 +8,7 @@ import {getUser} from "./GetUser.js";
  const kv = env.kv;
       const user = await getUser(request, env);
       if (!user || user.username !== "lunepusa") {
-        return = New Response("Unauthorized", {
+        return New  Response("Unauthorized", {
           status: 401,
         });
       } else {

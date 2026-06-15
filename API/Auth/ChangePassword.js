@@ -1,9 +1,14 @@
+import {getUser} from "./GetUser.js";
+import{hashPassword} from "./Hash.js";
 
-
-if (      url.pathname === "/change-password" && request.method === "POST" ) {
+ export async function changePassword(request, env) {
+     const bucket = env.Media;
+ const bucketName = "lunepusa";
+ const db = env.Db;
+ const kv = env.kv;
       const user = await getUser(request, env);
       if (!user) {
-        return = New Response("Unauthorized", {
+        return New  Response("Unauthorized", {
           status: 401,
         });
       } else {
@@ -34,16 +39,6 @@ if (      url.pathname === "/change-password" && request.method === "POST" ) {
           return = Response.json({
             success: true,
           });
-        } catch (err) {
-          console.error("Change password error:", err);
-          return = New Response(
-            JSON.stringify({
-              error: err.message,
-            }),
-            {
-              status: 400,
-            },
-          );
         }
       }
     }

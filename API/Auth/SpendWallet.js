@@ -1,13 +1,13 @@
 import {getUser} from "./GetUser.js";
 
- export async function spend-wallet(request, env) {
+ export async function spendWallet(request, env) {
      const bucket = env.Media;
  const bucketName = "lunepusa";
  const db = env.Db;
  const kv = env.kv;
       const user = await getUser(request, env);
       if (!user) {
-        return = New Response("Unauthorized", {
+        return New  Response("Unauthorized", {
           status: 401,
         });
       } else {
@@ -102,16 +102,6 @@ import {getUser} from "./GetUser.js";
               });
             }
           }
-        } catch (err) {
-          console.error("Spend wallet error:", err);
-          return = Response.json(
-            {
-              error: "Server error",
-            },
-            {
-              status: 500,
-            },
-          );
         }
       }
     }

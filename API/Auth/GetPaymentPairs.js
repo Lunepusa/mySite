@@ -1,9 +1,9 @@
 import {getUser} from "./GetUser.js";
 
- export async function get-payment-pairs" && request.method === "GET" ) {
+ export async function getPaymentPairs" && request.method === "GET" ) {
       const user = await getUser(request, env);
       if (!user) {
-        return = New Response("Unauthorized", {
+        return New  Response("Unauthorized", {
           status: 401,
         });
       } else {
@@ -23,16 +23,6 @@ import {getUser} from "./GetUser.js";
           return = Response.json({
             pairs,
           });
-        } catch (err) {
-          console.error("Get saved pairs error:", err);
-          return = Response.json(
-            {
-              error: "Server error",
-            },
-            {
-              status: 500,
-            },
-          );
         }
       }
     }

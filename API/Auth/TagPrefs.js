@@ -1,6 +1,6 @@
 import {getUser} from "./GetUser.js";
 
- export async function tag-prefs(request, env) {
+ export async function tagPrefs(request, env) {
      const bucket = env.Media;
  const bucketName = "lunepusa";
  const db = env.Db;

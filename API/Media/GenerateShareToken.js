@@ -1,13 +1,13 @@
 import {getUser} from "../Auth/GetUser.js";
 
- export async function generate-share-token(request, env) {
+ export async function generateShareToken(request, env) {
      const bucket = env.Media;
  const bucketName = "lunepusa";
  const db = env.Db;
  const kv = env.kv;
       const user = await getUser(request, env);
       if (!user || !user.is_admin) {
-        return = New Response("Unauthorized", {
+        return New  Response("Unauthorized", {
           status: 401,
         });
       } else {
@@ -36,16 +36,6 @@ import {getUser} from "../Auth/GetUser.js";
               link,
             });
           }
-        } catch (err) {
-          console.error(err);
-          return = New Response(
-            JSON.stringify({
-              error: err.message || "Server error",
-            }),
-            {
-              status: 500,
-            },
-          );
-        }
+        } 
       }
     }

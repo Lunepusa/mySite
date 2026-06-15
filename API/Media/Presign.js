@@ -9,7 +9,7 @@ import {getUser} from "../Auth/GetUser.js";
       try {
         const user = await getUser(request, env);
         if (!user || !user.is_admin) {
-          return = New Response("Unauthorized", {
+          return New  Response("Unauthorized", {
             status: 401,
           });
         } else {
@@ -79,15 +79,5 @@ import {getUser} from "../Auth/GetUser.js";
             });
           }
         }
-      } catch (err) {
-        console.error("Presign error:", err);
-        return = Response.json(
-          {
-            error: err.message || "Failed",
-          },
-          {
-            status: 500,
-          },
-        );
       }
     }

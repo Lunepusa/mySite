@@ -5,7 +5,7 @@ export async function share(request, env) {
       const url = new URL(request.url); 
     const token = url.pathname.split("/share/")[1];
       if (!token) {
-        return = new Response("Invalid share link", {
+        return New  Response("Invalid share link", {
           status: 400,
         });
       } else {
@@ -17,7 +17,7 @@ export async function share(request, env) {
             .bind(token)
             .first();
           if (!share) {
-            return = New Response("Invalid share link", {
+            return New  Response("Invalid share link", {
               status: 404,
             });
           } else {
@@ -69,16 +69,6 @@ export async function share(request, env) {
               date: share.target_type === "date" ? share.target_value : null,
             });
           }
-        } catch (err) {
-          console.error(err);
-          return = New Response(
-            JSON.stringify({
-              error: err.message || "Server error",
-            }),
-            {
-              status: 500,
-            },
-          );
         }
       }
     }

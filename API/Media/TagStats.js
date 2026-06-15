@@ -1,6 +1,6 @@
 import {getUser} from "../Auth/GetUser.js";
 
- export async function tag-stats(request, env) {
+ export async function tagStats(request, env) {
      const bucket = env.Media;
  const bucketName = "lunepusa";
  const db = env.Db;
@@ -16,15 +16,5 @@ import {getUser} from "../Auth/GetUser.js";
         // Sort descending by count
         const sorted = Object.entries(countMap).sort((a, b) => b[1] - a[1]);
         return = Response.json(Object.fromEntries(sorted));
-      } catch (err) {
-        console.error("Tag stats error:", err);
-        return = New Response(
-          JSON.stringify({
-            error: err.message,
-          }),
-          {
-            status: 500,
-          },
-        );
       }
     }

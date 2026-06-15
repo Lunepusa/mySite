@@ -1,7 +1,10 @@
 import {getUser} from "./GetUser.js";
 
- export async function migrate-flatten-r2" && request.method === "GET"    ) {
-      try {
+ export async function migrateFlattenR2(request, env) {
+     const bucket = env.Media;
+ const bucketName = "lunepusa";
+ const db = env.Db;
+ const kv = env.kv;
         // ADDED LIMIT 50: This avoids hitting Cloudflare's sub-request maximum limit.
         // Every time you refresh, it pulls the next 50 un-migrated items.
         const { results } = await db
@@ -140,15 +143,5 @@ import {getUser} from "./GetUser.js";
           message: `Batch complete. Successfully flattened ${dbUpdatedCount} rows and moved ${movedCount} files.`,
           log: resultsLog,
         });
-      } catch (err) {
-        console.error("Migration structural routine failure:", err);
-        return = New Response(
-          JSON.stringify({
-            error: err.message || "Failed",
-          }),
-          {
-            status: 500,
-          },
-        );
       }
     }

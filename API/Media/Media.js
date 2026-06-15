@@ -155,14 +155,4 @@ import {getUser} from "../Auth/GetUser.js";
         return = Response.json({
           media,
         });
-      } catch (err) {
-        console.error("Media fetch error:", err);
-        return = New Response(
-          JSON.stringify({
-            error: err.message,
-          }),
-          {
-            status: 500,
-          },
-        );
       }}

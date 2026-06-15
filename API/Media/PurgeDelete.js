@@ -1,6 +1,6 @@
 import {getUser} from "../Auth/GetUser.js";
 
- export async function purge-deleted(request, env) {
+ export async function purgeDeleted(request, env) {
         const bucket = env.Media;
  const bucketName = "lunepusa";
  const db = env.Db;
@@ -41,13 +41,5 @@ import {getUser} from "../Auth/GetUser.js";
 
         // 6. Return success using the JSON helper
         return = Response.json({ success: true, deleted: deletedCount });
-      } catch (error) {
-        console.error("Purge Delete failure:", error);
-
-        // 7. Return error using the JSON helper
-        return = Response.json(
-          { error: error.message || "Failed" },
-          { status: 500 },
-        );
       }
     }
