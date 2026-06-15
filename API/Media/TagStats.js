@@ -5,7 +5,7 @@ import {getUser} from "../Auth/GetUser.js";
  const bucketName = "lunepusa";
  const db = env.Db;
  const kv = env.kv;
-      try {
+      
         const all = await db.prepare("SELECT tags FROM media").all();
         const countMap = {};
         all.results.forEach((row) => {
@@ -17,4 +17,4 @@ import {getUser} from "../Auth/GetUser.js";
         const sorted = Object.entries(countMap).sort((a, b) => b[1] - a[1]);
         return Response.json(Object.fromEntries(sorted));
       }
-    }
+    

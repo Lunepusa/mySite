@@ -12,7 +12,7 @@ import{hashPassword} from "./Hash.js";
           status: 401,
         });
       } else {
-        try {
+        
           const { currentPassword, newPassword } = await request.json();
           if (!currentPassword || !newPassword) {
             throw new Error("Missing passwords");
@@ -39,6 +39,6 @@ import{hashPassword} from "./Hash.js";
           return Response.json({
             success: true,
           });
-        }
+        
       }
     }

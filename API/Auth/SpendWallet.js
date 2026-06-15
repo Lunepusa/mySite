@@ -11,7 +11,7 @@ import {getUser} from "./GetUser.js";
           status: 401,
         });
       } else {
-        try {
+        
           const {
             amountCents,
             itemSlug,
@@ -104,4 +104,4 @@ import {getUser} from "./GetUser.js";
           }
         }
       }
-    }
+    

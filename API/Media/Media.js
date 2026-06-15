@@ -126,7 +126,7 @@ import {getUser} from "../Auth/GetUser.js";
       console.log("Final SQL query:", query);
       console.log("Final binds:", binds);
 
-      try {
+      
         const mediaList = await db
           .prepare(query)
           .bind(...binds)
@@ -155,4 +155,4 @@ import {getUser} from "../Auth/GetUser.js";
         return Response.json({
           media,
         });
-      }}
+      }

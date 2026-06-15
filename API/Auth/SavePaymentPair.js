@@ -11,7 +11,7 @@ import {getUser} from "./GetUser.js";
           status: 401,
         });
       } else {
-        try {
+        
           const { platform, username } = await request.json();
           if (!platform || !username) {
             return Response.json(
@@ -79,4 +79,3 @@ import {getUser} from "./GetUser.js";
           }
         }
       }
-    }

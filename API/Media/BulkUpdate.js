@@ -6,7 +6,7 @@ import {getUser} from "../Auth/GetUser.js";
  const bucketName = "lunepusa";
  const db = env.Db;
  const kv = env.kv;
-      try {
+      
         const {
           keys,
           addedTags = [],
@@ -67,4 +67,4 @@ import {getUser} from "../Auth/GetUser.js";
           },
         );
       }
-    }
+    

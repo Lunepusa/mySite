@@ -11,7 +11,7 @@ import {getUser} from "../Auth/GetUser.js";
           status: 401,
         });
       } else {
-        try {
+        
           const { target_type, target_value } = await request.json();
           if (!["date", "media"].includes(target_type) || !target_value) {
             return Response.json(
@@ -38,4 +38,4 @@ import {getUser} from "../Auth/GetUser.js";
           }
         } 
       }
-    }
+    

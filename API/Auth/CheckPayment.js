@@ -12,7 +12,7 @@ import {refreshGmailToken} from "./RefreshGmailToken";
           status: 401,
         });
       } else {
-        try {
+        
           const { platform, username } = await request.json();
           if (!platform || !username) {
             return Response.json(
@@ -212,6 +212,6 @@ import {refreshGmailToken} from "./RefreshGmailToken";
               });
             }
           }
-        } 
+        
       }
     }

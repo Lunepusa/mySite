@@ -5,7 +5,7 @@ import {getUser} from "../Auth/GetUser.js";
  const bucketName = "lunepusa";
  const db = env.Db;
  const kv = env.kv;  
-    try {
+    
         // 1. Find all rows that might have the delete tag
         const { results } = await db
           .prepare("SELECT * FROM media WHERE tags LIKE '%delete%'")
@@ -42,4 +42,4 @@ import {getUser} from "../Auth/GetUser.js";
         // 6. Return success using the JSON helper
         return Response.json({ success: true, deleted: deletedCount });
       }
-    }
+    

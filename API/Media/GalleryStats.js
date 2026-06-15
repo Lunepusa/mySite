@@ -5,7 +5,7 @@ import {getUser} from "../Auth/GetUser.js";
  const bucketName = "lunepusa";
  const db = env.Db;
  const kv = env.kv;
-      try {
+      
         const result = await db
           .prepare(
             `
@@ -22,5 +22,5 @@ import {getUser} from "../Auth/GetUser.js";
           videos: result.videos || 0,
           total: result.total || 0,
         });
-      }
-    }
+      
+    

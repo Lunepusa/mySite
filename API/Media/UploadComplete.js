@@ -6,7 +6,7 @@ import {getUser} from "../Auth/GetUser.js";
  const bucketName = "lunepusa";
  const db = env.Db;
  const kv = env.kv;
-      try {
+      
         const user = await getUser(request, env);
         if (!user || !user.is_admin) {
           return new  Response("Unauthorized", {
@@ -49,4 +49,4 @@ import {getUser} from "../Auth/GetUser.js";
           }
         }
       }
-    }
+    

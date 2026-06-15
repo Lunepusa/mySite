@@ -11,7 +11,7 @@ import {getUser} from "./GetUser.js";
           status: 401,
         });
       } else {
-        try {
+        
           let pairs = [];
           if (
             user.saved_payment_pairs &&
@@ -29,4 +29,3 @@ import {getUser} from "./GetUser.js";
           });
         }
       }
-    }

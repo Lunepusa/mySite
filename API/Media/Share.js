@@ -9,7 +9,7 @@ export async function share(request, env) {
           status: 400,
         });
       } else {
-        try {
+        
           const share = await db
             .prepare(
               "SELECT target_type, target_value FROM share_links WHERE token = ?",
@@ -71,4 +71,4 @@ export async function share(request, env) {
           }
         }
       }
-    }
+    
