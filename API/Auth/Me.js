@@ -1,10 +1,9 @@
 import {getUser} from "./GetUser.js";
 
 
- export async function 
-import {getUser} from "./GetUser.js";
 
- export async function me") {
+
+ export async function me(request, env) {
      const bucket = env.Media;
  const bucketName = "lunepusa";
  const db = env.Db;

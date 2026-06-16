@@ -11,7 +11,7 @@ import{hashPassword} from "./Hash.js";
         return new  Response("Unauthorized", {
           status: 401,
         });
-      } else {
+      }
         
           const { currentPassword, newPassword } = await request.json();
           if (!currentPassword || !newPassword) {
@@ -23,12 +23,12 @@ import{hashPassword} from "./Hash.js";
             .bind(user.id);
           const result = await stmt.first();
           if (!result) {
-            throw new Error("User not found");
+            return Response.json({ code: "BAD_INPUT", message: "User not found" }, { status: 404 });
           }
           // Compare current password
           const currentHash = await hashPassword(currentPassword);
           if (result.password_hash !== currentHash) {
-            throw new Error("Current password incorrect");
+            return Response.json({ code: "BAD_INPUT", message: "Current password incorrect" }, { status: 400 });
           }
           // Update with new hash
           const newHash = await hashPassword(newPassword);
@@ -41,4 +41,3 @@ import{hashPassword} from "./Hash.js";
           });
         
       }
-    }

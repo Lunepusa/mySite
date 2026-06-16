@@ -7,35 +7,35 @@ import {getUser} from "../Auth/GetUser.js";
  const kv = env.kv;
       const user = await getUser(request, env);
       if (!user || !user.is_admin) {
-        return new  Response("Unauthorized", {
-          status: 401,
-        });
-      } else {
-        
-          const { target_type, target_value } = await request.json();
-          if (!["date", "media"].includes(target_type) || !target_value) {
-            return Response.json(
-              {
-                error: "Invalid target",
-              },
-              {
-                status: 400,
-              },
-            );
-          } else {
-            const token = crypto.randomUUID().slice(0, 16);
-            await db
-              .prepare(
-                "INSERT INTO share_links (token, target_type, target_value, created_by) VALUES (?, ?, ?, ?)",
-              )
-              .bind(token, target_type, target_value, user.id)
-              .run();
-            const link = `https://lunepusa.pages.dev/share/${token}`;
-            return Response.json({
-              success: true,
-              link,
-            });
-          }
-        } 
-      }
+    // 👉 Change here
+    return Response.json({ code: "AUTH_FAILED" }, { status: 401 });
+  } 
+  
+  // 👉Start
+  // Flattened out the nested 'else' blocks
+  const { target_type, target_value } = await request.json();
+
+  if (!["date", "media"].includes(target_type) || !target_value) {
+    return Response.json(
+      { code: "BAD_INPUT", error: "Invalid target" },
+      { status: 400 }
+    );
+  } 
+  
+  const token = crypto.randomUUID().slice(0, 16);
+  
+  await db
+    .prepare(
+      "INSERT INTO share_links (token, target_type, target_value, created_by) VALUES (?, ?, ?, ?)",
+    )
+    .bind(token, target_type, target_value, user.id)
+    .run();
     
+  const link = `https://lunepusa.pages.dev/share/${token}`;
+  
+  return Response.json({
+    success: true,
+    link,
+  });
+  // 👈 End
+}

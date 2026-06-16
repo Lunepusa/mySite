@@ -1,5 +1,5 @@
 import {getUser} from "./GetUser.js";
-import {refreshGmailToken} from "./RefreshGmailToken";
+import {refreshGmailToken} from "./RefreshGmailToken.js";
 
  export async function checkPayment(request, env) {
      const bucket = env.Media;
@@ -7,211 +7,204 @@ import {refreshGmailToken} from "./RefreshGmailToken";
  const db = env.Db;
  const kv = env.kv;
       const user = await getUser(request, env);
-      if (!user) {
-        return new  Response("Unauthorized", {
-          status: 401,
-        });
-      } else {
-        
-          const { platform, username } = await request.json();
-          if (!platform || !username) {
-            return Response.json(
-              {
-                error: "Missing platform or username",
-              },
-              {
-                status: 400,
-              },
-            );
-          } else { const accessToken = await refreshGmailToken(env);
+if (!user) {
+   
+    return Response.json({ code: "AUTH_FAILED" }, { status: 401 });
+  } 
+  
+  const { platform, username } = await request.json();
 
-            // Lookup senders for this platform
-            const platRow = await db
-              .prepare("SELECT senders FROM platforms WHERE platform = ?")
-              .bind(platform)
-              .first();
+  if (!platform || !username) {
+    return Response.json(
+      { code: "BAD_INPUT", error: "Missing platform or username" },
+      { status: 400 }
+    );
+  } 
 
-            const senders = platRow ? JSON.parse(platRow.senders || "[]") : [];
+  const accessToken = await refreshGmailToken(env);
+ 
 
-            let fromClause = "";
-            if (senders.length > 0) {
-              fromClause = senders.map((s) => `from:${s}`).join(" OR ");
-            } else {
-              const domain =
-                platform.toLowerCase().replace(/\s+/g, "") + ".com";
-              fromClause = `from:@${domain}`;
-            }
+  // Lookup senders for this platform
+  const platRow = await db
+    .prepare("SELECT senders FROM platforms WHERE platform = ?")
+    .bind(platform)
+    .first();
 
-            // Last 7 days only
-            const daysBack = 7;
-            const sinceDate = new Date();
-            sinceDate.setDate(sinceDate.getDate() - daysBack);
-            const sinceStr = sinceDate.toISOString().split("T")[0];
+  const senders = platRow ? JSON.parse(platRow.senders || "[]") : [];
 
-            const query = `${fromClause} "${username}" after:${sinceStr}`;
+  let fromClause = "";
+  if (senders.length > 0) {
+    fromClause = senders.map((s) => `from:${s}`).join(" OR ");
+  } else {
+    const domain = platform.toLowerCase().replace(/\s+/g, "") + ".com";
+    fromClause = `from:@${domain}`;
+  }
 
-            const listRes = await fetch(
-              `https://gmail.googleapis.com/gmail/v1/users/me/messages?q=${encodeURIComponent(query)}&maxResults=10`,
-              {
-                headers: {
-                  Authorization: `Bearer ${accessToken}`,
-                },
-              },
-            );
-            const listData = await listRes.json();
+  // Last 7 days only
+  const daysBack = 7;
+  const sinceDate = new Date();
+  sinceDate.setDate(sinceDate.getDate() - daysBack);
+  const sinceStr = sinceDate.toISOString().split("T")[0];
 
-            if (!listData.messages || listData.messages.length === 0) {
-              return Response.json({
-                success: false,
-                message: "No matching emails found in the last 7 days.",
-              });
-            } else {
-              let foundPayments = 0;
-              let totalAddedCents = 0;
-              let processedIds = [];
+  const query = `${fromClause} "${username}" after:${sinceStr}`;
 
-              for (const msg of listData.messages) {
-                const msgRes = await fetch(
-                  `https://gmail.googleapis.com/gmail/v1/users/me/messages/${msg.id}?format=full`,
-                  {
-                    headers: {
-                      Authorization: `Bearer ${accessToken}`,
-                    },
-                  },
-                );
-                const msgData = await msgRes.json();
+  const listRes = await fetch(
+    `https://gmail.googleapis.com/gmail/v1/users/me/messages?q=${encodeURIComponent(query)}&maxResults=10`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+  const listData = await listRes.json();
 
-                const labels = msgData.labelIds || [];
+  if (!listData.messages || listData.messages.length === 0) {
+    return Response.json({
+      success: false,
+      message: "No matching emails found in the last 7 days.",
+    });
+  } 
+  
+ let foundPayments = 0;
+  let totalAddedCents = 0;
+  let processedIds = [];
 
-                // Exclude if already claimed or Non-Payment
-                if (
-                  labels.includes("Label_1909551957303359400") ||
-                  labels.includes("Label_2723636466645469159")
-                ) {
-                  continue;
-                }
+  for (const msg of listData.messages) {
+    const msgRes = await fetch(
+      `https://gmail.googleapis.com/gmail/v1/users/me/messages/${msg.id}?format=full`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
+    const msgData = await msgRes.json();
 
-                // Extract text body
-                let bodyText = "";
-                const payload = msgData.payload;
-                if (payload.parts) {
-                  const textPart = payload.parts.find(
-                    (p) => p.mimeType === "text/plain",
-                  );
-                  if (textPart && textPart.body && textPart.body.data) {
-                    bodyText = atob(
-                      textPart.body.data.replace(/-/g, "+").replace(/_/g, "/"),
-                    );
-                  }
-                } else if (payload.body && payload.body.data) {
-                  bodyText = atob(
-                    payload.body.data.replace(/-/g, "+").replace(/_/g, "/"),
-                  );
-                }
+    const labels = msgData.labelIds || [];
 
-                // Special handling for "Direct from LunePusa"
-                if (platform === "Direct from LunePusa") {
-                  const dateHeader = payload.headers.find(
-                    (h) => h.name === "Date",
-                  )?.value;
-                  if (!dateHeader) continue;
+    // Exclude if already claimed or Non-Payment
+    if (
+      labels.includes("Label_1909551957303359400") ||
+      labels.includes("Label_2723636466645469159")
+    ) {
+      continue;
+    }
 
-                  const sendDate = new Date(dateHeader);
-                  if (isNaN(sendDate.getTime())) continue;
+    // Extract text body
+    let bodyText = "";
+    const payload = msgData.payload;
+    if (payload.parts) {
+      const textPart = payload.parts.find(
+        (p) => p.mimeType === "text/plain",
+      );
+      if (textPart && textPart.body && textPart.body.data) {
+        bodyText = atob(
+          textPart.body.data.replace(/-/g, "+").replace(/_/g, "/"),
+        );
+      }
+    } else if (payload.body && payload.body.data) {
+      bodyText = atob(
+        payload.body.data.replace(/-/g, "+").replace(/_/g, "/"),
+      );
+    }
 
-                  const mtDate = sendDate.toLocaleString("en-US", {
-                    timeZone: "America/Denver",
-                    month: "2-digit",
-                    day: "2-digit",
-                    year: "numeric",
-                  });
+    // Special handling for "Direct from LunePusa"
+    if (platform === "Direct from LunePusa") {
+      const dateHeader = payload.headers.find(
+        (h) => h.name === "Date",
+      )?.value;
+      if (!dateHeader) continue;
 
-                  const [month, day, year] = mtDate.split("/");
-                  const creditCode = `CREDIT${month}${day}${year}`;
+      const sendDate = new Date(dateHeader);
+      if (isNaN(sendDate.getTime())) continue;
 
-                  if (!bodyText.includes(creditCode)) {
-                    continue;
-                  }
-                }
+      const mtDate = sendDate.toLocaleString("en-US", {
+        timeZone: "America/Denver",
+        month: "2-digit",
+        day: "2-digit",
+        year: "numeric",
+      });
 
-                // Find non-zero dollar amount
-                const dollarRegex =
-                  /\$[1-9]\d*(\.\d{1,2})?|USD\s*[1-9]\d*(\.\d{1,2})?/gi;
-                const matches = bodyText.match(dollarRegex);
-                if (!matches) continue;
+      const [month, day, year] = mtDate.split("/");
+      const creditCode = `CREDIT${month}${day}${year}`;
 
-                let paymentCents = 0;
-                for (const match of matches) {
-                  const dollars = parseFloat(match.replace(/\$|USD\s*/gi, ""));
-                  if (dollars > 0) {
-                    paymentCents = Math.round(dollars * 100);
-                    break;
-                  }
-                }
-                if (paymentCents === 0) continue;
-
-                // Process payment
-                let walletData = {
-                  balance: 0,
-                };
-                if (user.wallet && user.wallet.trim() !== "[]") {
-                  try {
-                    walletData = JSON.parse(user.wallet);
-                  } catch (e) {
-                    console.error("Invalid wallet JSON:", e);
-                  }
-                }
-                walletData.balance = (walletData.balance || 0) + paymentCents;
-
-                await db
-                  .prepare("UPDATE users SET wallet = ? WHERE id = ?")
-                  .bind(JSON.stringify(walletData), user.id)
-                  .run();
-
-                await db
-                  .prepare(
-                    "INSERT INTO claimed_payments (user_id, username, platform, gmail_message_id, amount_cents, claimed_at) VALUES (?, ?, ?, ?, ?, ?)",
-                  )
-                  .bind(
-                    user.id,
-                    username,
-                    platform,
-                    msg.id,
-                    paymentCents,
-                    Math.floor(Date.now() / 1000),
-                  )
-                  .run();
-
-                // Apply "claimed" label using correct ID
-                await fetch(
-                  `https://gmail.googleapis.com/gmail/v1/users/me/messages/${msg.id}/modify`,
-                  {
-                    method: "POST",
-                    headers: {
-                      Authorization: `Bearer ${accessToken}`,
-                      "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                      addLabelIds: ["Label_1909551957303359400"],
-                    }),
-                  },
-                );
-
-                foundPayments++;
-                totalAddedCents += paymentCents;
-                processedIds.push(msg.id);
-              }
-
-              return Response.json({
-                success: foundPayments > 0,
-                message:
-                  foundPayments > 0
-                    ? `Found ${foundPayments} payment(s) totaling $${(totalAddedCents / 100).toFixed(2)} – added to wallet!`
-                    : "No valid recent payments found (last 7 days). Contact LunePusa for older payments.",
-                processedIds,
-              });
-            }
-          }
-        
+      if (!bodyText.includes(creditCode)) {
+        continue;
       }
     }
+
+    // Find non-zero dollar amount
+    const dollarRegex = /\$[1-9]\d*(\.\d{1,2})?|USD\s*[1-9]\d*(\.\d{1,2})?/gi;
+    const matches = bodyText.match(dollarRegex);
+    if (!matches) continue;
+
+    let paymentCents = 0;
+    for (const match of matches) {
+      const dollars = parseFloat(match.replace(/\$|USD\s*/gi, ""));
+      if (dollars > 0) {
+        paymentCents = Math.round(dollars * 100);
+        break;
+      }
+    }
+    if (paymentCents === 0) continue;
+
+    // Process payment
+    let walletData = { balance: 0 };
+    if (user.wallet && user.wallet.trim() !== "[]") {
+      // NOTE: Because checking a wallet's JSON structure can actually crash if the DB data is corrupted, this local try/catch is correct to keep!
+      try {
+        walletData = JSON.parse(user.wallet);
+      } catch (e) {
+        console.error("Invalid wallet JSON:", e);
+      }
+    }
+    walletData.balance = (walletData.balance || 0) + paymentCents;
+
+    await db
+      .prepare("UPDATE users SET wallet = ? WHERE id = ?")
+      .bind(JSON.stringify(walletData), user.id)
+      .run();
+
+    await db
+      .prepare(
+        "INSERT INTO claimed_payments (user_id, username, platform, gmail_message_id, amount_cents, claimed_at) VALUES (?, ?, ?, ?, ?, ?)",
+      )
+      .bind(
+        user.id,
+        username,
+        platform,
+        msg.id,
+        paymentCents,
+        Math.floor(Date.now() / 1000),
+      )
+      .run();
+
+    // Apply "claimed" label using correct ID
+    await fetch(
+      `https://gmail.googleapis.com/gmail/v1/users/me/messages/${msg.id}/modify`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          addLabelIds: ["Label_1909551957303359400"],
+        }),
+      },
+    );
+
+    foundPayments++;
+    totalAddedCents += paymentCents;
+    processedIds.push(msg.id);
+  }
+
+  return Response.json({
+    success: foundPayments > 0,
+    message:
+      foundPayments > 0
+        ? `Found ${foundPayments} payment(s) totaling $${(totalAddedCents / 100).toFixed(2)} – added to wallet!`
+        : "No valid recent payments found (last 7 days). Contact LunePusa for older payments.",
+    processedIds,
+  });
+}

@@ -7,77 +7,63 @@ import {getUser} from "../Auth/GetUser.js";
  const db = env.Db;
  const kv = env.kv;
       
-        const user = await getUser(request, env);
-        if (!user || !user.is_admin) {
-          return new  Response("Unauthorized", {
-            status: 401,
-          });
-        } else {
-          let files;
-          try {
-            const body = await request.json();
-            files = body.files || body;
-          } catch (e) {
-            return Response.json(
-              {
-                error: "Invalid JSON",
-              },
-              {
-                status: 400,
-              },
-            );
-          }
+// 👉Start
+  const user = await getUser(request, env);
 
-          if (!files || !Array.isArray(files)) {
-            return Response.json(
-              {
-                error: "Invalid structure",
-              },
-              {
-                status: 400,
-              },
-            );
-          } else {
-            const presigned = [];
-            const aws = new AwsClient({
-              accessKeyId: env.R2_ACCESS_KEY_ID,
-              secretAccessKey: env.R2_SECRET_ACCESS_KEY,
-              service: "s3",
-              region: "auto",
-              unsignableHeaders: new Set(["host"]),
-            });
+  if (!user || !user.is_admin) {
+    return Response.json({ code: "AUTH_FAILED" }, { status: 401 });
+  }
 
-            for (const file of files) {
-              let cleanName = file.name || "unnamed_file";
-              cleanName = cleanName.replace(/^media\//, "");
-              if (cleanName.startsWith("PXL_"))
-                cleanName = cleanName.substring(4);
+  let files;
+  try {
+    const body = await request.json();
+    files = body.files || body;
+  } catch (e) {
+    return Response.json({ code: "BAD_INPUT", error: "Invalid JSON" }, { status: 400 });
+  }
 
-              const objectKey = `media/${cleanName}`;
-              const signUrl = new URL(
-                `https://${env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com/${bucketName}/${objectKey}`,
-              );
+  if (!files || !Array.isArray(files)) {
+    return Response.json({ code: "BAD_INPUT", error: "Invalid structure" }, { status: 400 });
+  }
 
-              const signed = await aws.sign(signUrl, {
-                method: "PUT",
-                headers: {
-                  "Content-Type": file.type || "application/octet-stream",
-                },
-                aws: {
-                  signQuery: true,
-                  expires: 600,
-                },
-              });
+  const presigned = [];
+  const aws = new AwsClient({
+    accessKeyId: env.R2_ACCESS_KEY_ID,
+    secretAccessKey: env.R2_SECRET_ACCESS_KEY,
+    service: "s3",
+    region: "auto",
+    unsignableHeaders: new Set(["host"]),
+  });
 
-              presigned.push({
-                objectKey,
-                presignedUrl: signed.url,
-              });
-            }
-            return Response.json({
-              presigned,
-            });
-          }
-        }
-      }
-    
+  for (const file of files) {
+    let cleanName = file.name || "unnamed_file";
+    cleanName = cleanName.replace(/^media\//, "");
+    if (cleanName.startsWith("PXL_")) {
+      cleanName = cleanName.substring(4);
+    }
+
+    const objectKey = `media/${cleanName}`;
+    const signUrl = new URL(
+      `https://${env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com/${bucketName}/${objectKey}`,
+    );
+
+    const signed = await aws.sign(signUrl, {
+      method: "PUT",
+      headers: {
+        "Content-Type": file.type || "application/octet-stream",
+      },
+      aws: {
+        signQuery: true,
+        expires: 600,
+      },
+    });
+
+    presigned.push({
+      objectKey,
+      presignedUrl: signed.url,
+    });
+  }
+
+  return Response.json({
+    presigned,
+  });
