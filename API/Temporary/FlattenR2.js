@@ -1,6 +1,6 @@
 import {getUser} from "../Auth/GetUser.js";
 
- export async function migrateFlattenR2(request, env) {
+ export async function flattenR2(request, env) {
      const bucket = env.Media;
  const bucketName = "lunepusa";
  const db = env.Db;

@@ -1,6 +1,6 @@
 import {getUser} from "../Auth/GetUser.js";
 
- export async function purgeDeleted(request, env) {
+ export async function purgeDelete(request, env) {
         const bucket = env.Media;
  const bucketName = "lunepusa";
  const db = env.Db;
