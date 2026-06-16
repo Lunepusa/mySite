@@ -59,7 +59,7 @@ export default function ErrorUI() {
       boxSizing: 'border-box'
     }}>
       <div style={{ display: 'inline-block', width: '85%', verticalAlign: 'top' }}>
-        <h4 style={{ margin: '0 0 0.5rem 0', color: borderColor, fontSize: '1.1rem' }}>{title}</h4>
+        <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '1.1rem' }}>{title}</h4>
         <p style={{ margin: '0', fontSize: '0.9rem', lineHeight: '1.4' }}>{message}</p>
         
         {rawError && (

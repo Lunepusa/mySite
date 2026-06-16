@@ -5,6 +5,7 @@ import {getUser} from "../Auth/GetUser.js";
  const bucketName = "lunepusa";
  const db = env.Db;
  const kv = env.kv;
+ const url = new URL(request.url);
     const offset = parseInt(url.searchParams.get("offset") || "0", 10);
   const limit = parseInt(url.searchParams.get("limit") || "100", 10);
   const q = url.searchParams.get("q") || "";
