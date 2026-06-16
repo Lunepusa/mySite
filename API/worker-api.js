@@ -34,12 +34,13 @@ import { uploadBatch } from "./Media/UploadBatch.js";
 import { uploadComplete } from "./Media/UploadComplete.js";
 
 // Root
-import { platforms } from "./Platforms.js";
+
 
 // Temporary
 import { blurTest } from "./Temporary/BlurTest.js";
 import { flattenR2 } from "./Temporary/FlattenR2.js";
 import { getFiles } from "./Temporary/GetFiles.js";
+import { platforms } from "./Temporary/Platforms.js";
 import { testGmailToken } from "./Temporary/TestGmailToken.js";
 
 

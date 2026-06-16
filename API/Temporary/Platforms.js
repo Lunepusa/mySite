@@ -1,4 +1,4 @@
-import {getUser} from "./GetUser.js";
+import {getUser} from "../Auth/GetUser.js";
 
  export async function platforms(request, env) {
      const bucket = env.Media;

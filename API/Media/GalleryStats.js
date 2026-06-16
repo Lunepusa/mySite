@@ -21,6 +21,6 @@ import {getUser} from "../Auth/GetUser.js";
           photos: result.photos || 0,
           videos: result.videos || 0,
           total: result.total || 0,
-        });
+        });}
       
     

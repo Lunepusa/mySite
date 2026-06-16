@@ -1,8 +1,8 @@
 
-import {getUser} from "./GetUser.js";
-import {refreshGmailToken} from "./RefreshGmailToken";
+import {getUser} from "../Auth/GetUser.js";
+import {refreshGmailToken} from "../Auth/RefreshGmailToken";
 
- export async function test-gmail-token") {
+ export async function testGmailToken") {
       
         const token = await refreshGmailToken(env);
         return new  Response(

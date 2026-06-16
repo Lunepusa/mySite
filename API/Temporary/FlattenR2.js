@@ -1,4 +1,4 @@
-import {getUser} from "./GetUser.js";
+import {getUser} from "../Auth/GetUser.js";
 
  export async function migrateFlattenR2(request, env) {
      const bucket = env.Media;

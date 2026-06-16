@@ -68,4 +68,4 @@ if (!token) {
   return Response.json({
     media,
     date: share.target_type === "date" ? share.target_value : null,
-  });
+  });}

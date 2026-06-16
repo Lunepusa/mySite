@@ -1,4 +1,4 @@
-import {getUser} from "./GetUser.js";
+import {getUser} from "../Auth/GetUser.js";
 
  export async function blurTest(request, env) {return new  Response("Worker is working! Blur route is active.", {
         headers: {
