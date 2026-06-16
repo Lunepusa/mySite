@@ -1,4 +1,5 @@
 import {getUser} from "../Auth/GetUser.js";
+import {getTagsArray} from "./GetTagsArray.js";
 
  export async function tagStats(request, env) {
      const bucket = env.Media;
