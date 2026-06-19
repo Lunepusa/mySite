@@ -1,6 +1,3 @@
-import { AwsClient } from "aws4fetch";
-
-
 // Auth
 import { changePassword } from "./Auth/ChangePassword.js";
 import { checkPayment } from "./Auth/CheckPayment.js";
