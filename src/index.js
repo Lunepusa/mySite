@@ -2,7 +2,7 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import "./styles.css";
 import { BrowserRouter } from "react-router-dom";
-import { AnalyticsProvider } from "./Utility";
+import { AnalyticsProvider } from "src/Utility/Utility.jsx";
 
 import App from "./App";
 

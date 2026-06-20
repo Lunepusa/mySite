@@ -1,6 +1,6 @@
 import React from "react";
 import "./styles.css";
-import Collapse from "./Utility";
+import Collapse from "src/Utility/Utility.jsx";
 
 export default function WIP() {
   return (

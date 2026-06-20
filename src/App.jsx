@@ -12,11 +12,11 @@ import {
   getSourceMedium,
   AnalyticsProvider,
   useAnalytics,
-} from "./Utility.jsx";
+} from "src/Utility/Utility.jsx.jsx";
 import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import React, { useEffect } from "react";
-import Auth from "./Auth.jsx";
-import AuthProvider from "./Auth.jsx";
+import Auth from "src/Profile/Auth.jsx";
+import AuthProvider from "src/Profile/Auth.jsx";
 import { useAuth, apiFetch } from "./Auth";
 import Lounge from "./Lounge.jsx";
 import Profile from "./Profile.jsx";

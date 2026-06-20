@@ -1,7 +1,7 @@
 // ./Tags.jsx
 
 import React, { useState, useEffect } from "react";
-import { apiFetch } from "./Auth.jsx"
+import { apiFetch } from "src/Profile/Auth.jsx"
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Canonical / preferred tag names — all incoming tags should normalize to these

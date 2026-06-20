@@ -1,6 +1,6 @@
 // GlobalErrorUI.jsx
 import React, { useEffect, useState } from 'react';
-import { useAuth } from './Auth.jsx';
+import { useAuth } from 'src/Profile/Auth.jsx';
 import { apiError, browserError } from './Error.js';
 
 export default function ErrorUI() {

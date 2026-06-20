@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { useAuth, apiFetch, Login, R2_PUBLIC_URL} from "./Auth.jsx";
-import { ClickableTags } from "./Tags.jsx"; // assuming this is where ClickableTags lives
+import { useAuth, apiFetch, Login, R2_PUBLIC_URL} from "src/Profile/Auth.jsx";
+import { ClickableTags } from "src/Lounge/Tag/tags.jsx"; // assuming this is where ClickableTags lives
 
 const ShareView = () => {
   const { token } = useParams();

@@ -8,8 +8,8 @@ import React, {
 } from "react";
 import { useLocation } from "react-router-dom";
 import "./styles.css";
-import { useAuth, apiFetch, Login } from "./Auth";
-import { PaymentChecker } from "./Profile";
+import { useAuth, apiFetch, Login } from "src/Profile/Auth.jsx";
+import { PaymentChecker } from "src/Profile/Profile.jsx";
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Collapsible section component (accordion-style)

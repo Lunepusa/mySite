@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth, apiFetch, Login} from "./Auth";
-import Collapse from "./Utility";
-import { TagSelect, searchTags, getTagsArray, ClickableTags } from "./Tags";
+import Collapse from "src/Utility/Utility.jsx";
+import { TagSelect, searchTags, getTagsArray, ClickableTags } from "src/Lounge/Tag/tags.jsx";
 
 
 export const PaymentChecker = () => {

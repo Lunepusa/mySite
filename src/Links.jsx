@@ -1,8 +1,8 @@
 import React from "react";
 import "./styles.css";
 import { useLocation } from "react-router-dom";
-import { trackOnClick, useAnalytics, handlerightclick } from "./Utility";
-import Collapse from "./Utility";
+import { trackOnClick, useAnalytics, handlerightclick } from "src/Utility/Utility.jsx";
+import Collapse from "src/Utility/Utility.jsx";
 
 // All image imports for link cards
 import Fansly from "./Images/link/Fansly.jpg";

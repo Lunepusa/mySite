@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useAuth, apiFetch } from "./Auth";
-import { searchTags, TagSelect } from "./Tags";
+import { useAuth, apiFetch } from "src/Profile/Auth.jsx";
+import { searchTags, TagSelect } from "src/Lounge/Tag/tags.jsx";
 
 // ... (generateThumbnailBlob exactly the same) ...
 const generateThumbnailBlob = async (videoFile) => {

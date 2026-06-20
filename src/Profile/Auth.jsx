@@ -1,15 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-
-// ──────────────────────────────────────────────────────────────────────────────
-// Public Cloudflare R2 bucket URL for media assets
-// Used across the app for img/video src attributes
-// ──────────────────────────────────────────────────────────────────────────────
 export const R2_PUBLIC_URL = "https://files.lunepusa.com";
-
-// ──────────────────────────────────────────────────────────────────────────────
-// Centralized fetch wrapper with automatic Bearer token + base URL
-// All API calls should go through this function
-// ──────────────────────────────────────────────────────────────────────────────
 export const apiFetch = async (endpoint, options = {}) => {
   const token = localStorage.getItem("token");
   const storedUser = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null;

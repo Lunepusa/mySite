@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./styles.css"; // Your global styles untouched
-import Collapse from "./Utility";
+import Collapse from "src/Utility/Utility.jsx";
 import loungepreview from "./Images/Preview/lounge.jpg";
 import dmpreview from "./Images/Preview/dm.jpg";
 import headerimg from "./Images/Preview/headerimg.png";
@@ -14,7 +14,7 @@ import textratepreview from "./Images/Preview/textrate.jpg";
 import vidratepreview from "./Images/Preview/vidrate.jpg";
 import vidcallpreview from "./Images/Preview/vidcall.png";
 import sextpreview from "./Images/Preview/sext.jpg";
-import { SpendFromWallet } from "./Utility";
+import { SpendFromWallet } from "src/Utility/Utility.jsx";
 import { useAuth, apiFetch, Login } from "./Auth";
 import { ClickableTags } from "./Tags";
 

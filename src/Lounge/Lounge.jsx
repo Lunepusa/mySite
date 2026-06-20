@@ -1,8 +1,8 @@
 import React from "react";
-import Auth, { useAuth, Login } from "./Auth"; // Adjust path if needed
-import Collapse from "./Utility";
-import Upload from "./Upload";
-import Gallery from "./Gallery";
+import Auth, { useAuth, Login } from "src/Profile/Auth.jsx"; // Adjust path if needed
+import Collapse from "src/Utility/Utility.jsx";
+import Upload from "src/Lounge/upload.jsx";
+import gallery from "src/Lounge/gallery.jsx";
 
 const Lounge = () => {
     const { isSubscriber, isLoggedIn, isAdmin, user, walletBalance } = useAuth();
@@ -33,7 +33,7 @@ const Lounge = () => {
       )}
        </div>
     )}
-      <Gallery />
+      <gallery />
     </div>
   );
 };

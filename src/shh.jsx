@@ -1,7 +1,7 @@
 import React from "react";
 import "./styles.css";
-import Collapse from "./Utility";
-import PaymentChecker from "./Profile"
+import Collapse from "src/Utility/Utility.jsx";
+import PaymentChecker from "src/Profile/profile"
 
 export default function Shh() {
   return (
