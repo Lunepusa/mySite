@@ -12,7 +12,7 @@ import {
   getSourceMedium,
   AnalyticsProvider,
   useAnalytics,
-} from "src/Utility/Utility.jsx.jsx";
+} from "src/Utility/Utility.jsx";
 import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import React, { useEffect } from "react";
 import Auth from "src/Profile/Auth.jsx";
