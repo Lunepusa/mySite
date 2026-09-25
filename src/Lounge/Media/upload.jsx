@@ -6,14 +6,20 @@ import { searchTags, TagSelect } from "src/Lounge/Tag/tags.jsx";
 const generateThumbnailBlob = async (videoFile) => {
   return new Promise((resolve, reject) => {
     const video = document.createElement("video");
-    video.crossOrigin = "anonymous";
+    // Removed crossOrigin flag to prevent Chrome from blocking blob: URLs
     video.muted = true;
-    video.preload = "metadata";
+    video.preload = "auto";
     video.playsInline = true;
 
     const videoUrl = URL.createObjectURL(videoFile);
 
-    video.onloadedmetadata = () => {
+    const timeoutId = setTimeout(() => {
+      video.src = "";
+      URL.revokeObjectURL(videoUrl);
+      reject(new Error("Thumbnail generation timed out"));
+    }, 10000);
+
+    video.onloadeddata = () => {
       if (video.duration && isFinite(video.duration) && video.duration > 0) {
         video.currentTime = video.duration / 2;
       } else {
@@ -23,7 +29,7 @@ const generateThumbnailBlob = async (videoFile) => {
 
     video.onseeked = async () => {
       try {
-        const canvas = document.createElement("canvas");
+        const canvas = document.createElement("canvas");("canvas");
 
         const videoWidth = video.videoWidth;
         const videoHeight = video.videoHeight;
@@ -95,6 +101,7 @@ const generateThumbnailBlob = async (videoFile) => {
     };
 
     video.onerror = () => {
+      clearTimeout(timeoutId);
       video.onerror = null;
       video.src = "";
       URL.revokeObjectURL(videoUrl);
@@ -182,10 +189,11 @@ const handleDrop = (e) => {
 
     try {
       const processedFiles = files.map((file) => {
-        if (file.name.startsWith("PXL_")) {
-          return new File([file], file.name.substring(4), { type: file.type });
-        }
-        return file;
+        const ext = file.name.split('.').pop().toLowerCase();
+        const type = ext === 'mp4' ? 'video/mp4' : 'image/jpeg';
+        const newName = file.name.startsWith("PXL_") ? file.name.substring(4) : file.name;
+        
+        return new File([file], newName, { type });
       });
 
       if (thumbOnly) {
@@ -246,13 +254,17 @@ const handleDrop = (e) => {
             if (xhr.status === 200) {
               setProgress((prev) => ({ ...prev, [file.name]: 100 }));
               try {
+                const safeTag = typeof initialTag === 'string' 
+                  ? initialTag 
+                  : (Array.isArray(initialTag) ? initialTag[0] : initialTag?.name || String(initialTag));
+
                 await apiFetch("/upload-complete", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({
                     objectKey,
                     fileType: file.type,
-                    initialTag,
+                    initialTag: safeTag,
                   }),
                 });
                 if (file.type.startsWith("video/")) {
